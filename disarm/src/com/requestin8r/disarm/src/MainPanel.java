@@ -687,7 +687,7 @@ public class MainPanel extends JPanel implements ActionListener {
 			final JTextPane epane = new JTextPane();
 			final RTFEditorKit rtfk = new RTFEditorKit();
 			try {
-				rtfk.read(com.matrixeater.src.MainPanel.class.getResourceAsStream("credits.rtf"), panel, 0);
+				rtfk.read(MainPanel.class.getResourceAsStream("credits.rtf"), panel, 0);
 			} catch (final MalformedURLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

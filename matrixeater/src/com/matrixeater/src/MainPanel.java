@@ -1,142 +1,19 @@
 package com.matrixeater.src;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-
-import javax.imageio.ImageIO;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.rtf.RTFEditorKit;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rtextarea.RTextScrollPane;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector4f;
-
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
-import com.hiveworkshop.wc3.gui.animedit.ControllableTimeBoundProvider;
-import com.hiveworkshop.wc3.gui.animedit.TimeBoundChangeListener;
-import com.hiveworkshop.wc3.gui.animedit.TimeBoundChooserPanel;
-import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
-import com.hiveworkshop.wc3.gui.animedit.TimeSliderPanel;
-import com.hiveworkshop.wc3.gui.animedit.TimeSliderTimeListener;
+import com.hiveworkshop.wc3.gui.animedit.*;
 import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
-import com.hiveworkshop.wc3.gui.modeledit.ActiveViewportWatcher;
-import com.hiveworkshop.wc3.gui.modeledit.CoordDisplayListener;
-import com.hiveworkshop.wc3.gui.modeledit.FaceCreationException;
-import com.hiveworkshop.wc3.gui.modeledit.ImportPanel;
-import com.hiveworkshop.wc3.gui.modeledit.MaterialListRenderer;
-import com.hiveworkshop.wc3.gui.modeledit.ModeButton;
-import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
-import com.hiveworkshop.wc3.gui.modeledit.ModelPanelCloseListener;
-import com.hiveworkshop.wc3.gui.modeledit.PerspDisplayPanel;
-import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
-import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
-import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
-import com.hiveworkshop.wc3.gui.modeledit.UndoHandler;
-import com.hiveworkshop.wc3.gui.modeledit.Viewport;
+import com.hiveworkshop.wc3.gui.modeledit.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorMultiManipulatorActivity;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorViewportActivity;
-import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
+import com.hiveworkshop.wc3.gui.modeledit.activity.*;
 import com.hiveworkshop.wc3.gui.modeledit.creator.CreatorModelingPanel;
 import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditorManager;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.ModelEditorActionType;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.ExtendWidgetManipulatorBuilder;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.ExtrudeWidgetManipulatorBuilder;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.MoverWidgetManipulatorBuilder;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.RotatorWidgetManipulatorBuilder;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.ScaleWidgetManipulatorBuilder;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.builder.model.*;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ClonedNodeNamePicker;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionItemTypes;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
@@ -150,35 +27,10 @@ import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.gui.mpqbrowser.MPQBrowser;
 import com.hiveworkshop.wc3.jworldedit.models.BetterUnitEditorModelSelector;
-import com.hiveworkshop.wc3.jworldedit.objects.DoodadTabTreeBrowserBuilder;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTreeBrowser;
+import com.hiveworkshop.wc3.jworldedit.objects.*;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTreeBrowser.MDLLoadListener;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitTabTreeBrowserBuilder;
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.EventObject;
-import com.hiveworkshop.wc3.mdl.ExtLog;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetAnim;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Helper;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.Normal;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.TVertex;
-import com.hiveworkshop.wc3.mdl.TimelineContainer;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.UVLayer;
-import com.hiveworkshop.wc3.mdl.Vertex;
-import com.hiveworkshop.wc3.mdl.VisibilitySource;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
@@ -189,14 +41,8 @@ import com.hiveworkshop.wc3.mdx.MdxUtils;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.resources.Resources;
 import com.hiveworkshop.wc3.resources.WEString;
-import com.hiveworkshop.wc3.units.DataTable;
-import com.hiveworkshop.wc3.units.GameObject;
-import com.hiveworkshop.wc3.units.ModelOptionPane;
+import com.hiveworkshop.wc3.units.*;
 import com.hiveworkshop.wc3.units.ModelOptionPane.ModelElement;
-import com.hiveworkshop.wc3.units.ModelOptionPanel;
-import com.hiveworkshop.wc3.units.StandardObjectData;
-import com.hiveworkshop.wc3.units.UnitOptionPane;
-import com.hiveworkshop.wc3.units.UnitOptionPanel;
 import com.hiveworkshop.wc3.units.fields.UnitFields;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
@@ -215,30 +61,45 @@ import com.matrixeater.imp.AnimationTransfer;
 import com.matrixeaterhayate.TextureManager;
 import com.owens.oobjloader.builder.Build;
 import com.owens.oobjloader.parser.Parse;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
-import net.infonode.docking.DockingWindow;
-import net.infonode.docking.DockingWindowListener;
-import net.infonode.docking.FloatingWindow;
-import net.infonode.docking.OperationAbortedException;
-import net.infonode.docking.RootWindow;
-import net.infonode.docking.SplitWindow;
-import net.infonode.docking.TabWindow;
-import net.infonode.docking.View;
+import net.infonode.docking.*;
 import net.infonode.docking.title.DockingWindowTitleProvider;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.tabbedpanel.TabAreaVisiblePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabBorderSizePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabSizePolicy;
 import net.miginfocom.swing.MigLayout;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector4f;
 
-/**
- * Write a description of class MainPanel here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
+import javax.imageio.ImageIO;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.rtf.RTFEditorKit;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Queue;
+import java.util.*;
+
 /**
  * Write a description of class MainPanel here.
  *
@@ -251,7 +112,7 @@ public class MainPanel extends JPanel
 	JMenu fileMenu, recentMenu, editMenu, toolsMenu, mirrorSubmenu, tweaksSubmenu, viewMenu, importMenu, addMenu,
 			scriptsMenu, windowMenu, addParticle, animationMenu, singleAnimationMenu, aboutMenu, fetch;
 	JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
-	ArrayList geoItems = new ArrayList();
+//	ArrayList geoItems = new ArrayList();
 	JMenuItem newModel, open, fetchUnit, fetchModel, fetchObject, save, close, exit, revert, mergeGeoset, saveAs,
 			importButton, importUnit, importGameModel, importGameObject, importFromWorkspace, importButtonS,
 			newDirectory, creditsButton, changelogButton, clearRecent, nullmodelButton, selectAll, invertSelect,
@@ -2619,201 +2480,199 @@ public class MainPanel extends JPanel
 		addParticle = new JMenu("Particle");
 		addParticle.setMnemonic(KeyEvent.VK_P);
 		addMenu.add(addParticle);
-
-		final File stockFolder = new File("stock/particles");
+		final File stockFolder = new File("matrixeater/stock/particles");
 		final File[] stockFiles = stockFolder.listFiles(new FilenameFilter() {
-
 			@Override
 			public boolean accept(final File dir, final String name) {
 				return name.endsWith(".mdx");
 			}
 		});
 		for (final File file : stockFiles) {
-			final String basicName = file.getName().split("\\.")[0];
-			final File pngImage = new File(file.getParent() + File.separatorChar + basicName + ".png");
-			if (pngImage.exists()) {
-				try {
-					final Image image = ImageIO.read(pngImage);
-					final JMenuItem particleItem = new JMenuItem(basicName,
-							new ImageIcon(image.getScaledInstance(28, 28, Image.SCALE_DEFAULT)));
-					particleItem.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(final ActionEvent e) {
-							final ParticleEmitter2 particle = EditableModel.read(file)
-									.sortedIdObjects(ParticleEmitter2.class).get(0);
+				final String basicName = file.getName().split("\\.")[0];
+				final File pngImage = new File(file.getParent() + File.separatorChar + basicName + ".png");
+				if (pngImage.exists()) {
+					try {
+						final Image image = ImageIO.read(pngImage);
+						final JMenuItem particleItem = new JMenuItem(basicName,
+								new ImageIcon(image.getScaledInstance(28, 28, Image.SCALE_DEFAULT)));
+						particleItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(final ActionEvent e) {
+								final ParticleEmitter2 particle = EditableModel.read(file)
+										.sortedIdObjects(ParticleEmitter2.class).get(0);
 
-							final JPanel particlePanel = new JPanel();
-							final List<IdObject> idObjects = new ArrayList<>(currentMDL().getIdObjects());
-							final Bone nullBone = new Bone("No parent");
-							idObjects.add(0, nullBone);
-							final JComboBox<IdObject> parent = new JComboBox<>(idObjects.toArray(new IdObject[0]));
-							parent.setRenderer(new BasicComboBoxRenderer() {
-								@Override
-								public Component getListCellRendererComponent(final JList list, final Object value,
-										final int index, final boolean isSelected, final boolean cellHasFocus) {
-									final IdObject idObject = (IdObject) value;
-									if (idObject == nullBone) {
-										return super.getListCellRendererComponent(list, "No parent", index, isSelected,
-												cellHasFocus);
-									}
-									return super.getListCellRendererComponent(list,
-											value.getClass().getSimpleName() + " \"" + idObject.getName() + "\"", index,
-											isSelected, cellHasFocus);
-								}
-							});
-							final JLabel parentLabel = new JLabel("Parent:");
-							final JLabel imageLabel = new JLabel(
-									new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-							final JLabel titleLabel = new JLabel("Add " + basicName);
-							titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-
-							final JLabel nameLabel = new JLabel("Particle Name:");
-							final JTextField nameField = new JTextField("MyBlizParticle");
-
-							final JLabel xLabel = new JLabel("Z:");
-							final JSpinner xSpinner = new JSpinner(
-									new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-
-							final JLabel yLabel = new JLabel("X:");
-							final JSpinner ySpinner = new JSpinner(
-									new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-
-							final JLabel zLabel = new JLabel("Y:");
-							final JSpinner zSpinner = new JSpinner(
-									new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-							parent.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(final ActionEvent e) {
-									final IdObject choice = parent.getItemAt(parent.getSelectedIndex());
-									xSpinner.setValue(choice.getPivotPoint().x);
-									ySpinner.setValue(choice.getPivotPoint().y);
-									zSpinner.setValue(choice.getPivotPoint().z);
-								}
-							});
-
-							final JPanel animPanel = new JPanel();
-							final List<Animation> anims = currentMDL().getAnims();
-							animPanel.setLayout(new GridLayout(anims.size() + 1, 1));
-							final JCheckBox[] checkBoxes = new JCheckBox[anims.size()];
-							int animIndex = 0;
-							for (final Animation anim : anims) {
-								animPanel.add(checkBoxes[animIndex] = new JCheckBox(anim.getName()));
-								checkBoxes[animIndex].setSelected(true);
-								animIndex++;
-							}
-							final JButton chooseAnimations = new JButton("Choose when to show!");
-							chooseAnimations.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(final ActionEvent e) {
-									JOptionPane.showMessageDialog(particlePanel, animPanel);
-								}
-							});
-							final JButton[] colorButtons = new JButton[3];
-							final Color[] colors = new Color[colorButtons.length];
-							for (int i = 0; i < colorButtons.length; i++) {
-								final Vertex colorValues = particle.getSegmentColor(i);
-								final Color color = new Color((int) (colorValues.z * 255), (int) (colorValues.y * 255),
-										(int) (colorValues.x * 255));
-
-								final JButton button = new JButton("Color " + (i + 1),
-										new ImageIcon(IconUtils.createBlank(color, 32, 32)));
-								colors[i] = color;
-								final int index = i;
-								button.addActionListener(new ActionListener() {
+								final JPanel particlePanel = new JPanel();
+								final List<IdObject> idObjects = new ArrayList<>(currentMDL().getIdObjects());
+								final Bone nullBone = new Bone("No parent");
+								idObjects.add(0, nullBone);
+								final JComboBox<IdObject> parent = new JComboBox<>(idObjects.toArray(new IdObject[0]));
+								parent.setRenderer(new BasicComboBoxRenderer() {
 									@Override
-									public void actionPerformed(final ActionEvent e) {
-										final Color colorChoice = JColorChooser.showDialog(MainPanel.this,
-												"Chooser Color", colors[index]);
-										if (colorChoice != null) {
-											colors[index] = colorChoice;
-											button.setIcon(new ImageIcon(IconUtils.createBlank(colors[index], 32, 32)));
+									public Component getListCellRendererComponent(final JList list, final Object value,
+																				  final int index, final boolean isSelected, final boolean cellHasFocus) {
+										final IdObject idObject = (IdObject) value;
+										if (idObject == nullBone) {
+											return super.getListCellRendererComponent(list, "No parent", index, isSelected,
+													cellHasFocus);
 										}
+										return super.getListCellRendererComponent(list,
+												value.getClass().getSimpleName() + " \"" + idObject.getName() + "\"", index,
+												isSelected, cellHasFocus);
 									}
 								});
-								colorButtons[i] = button;
-							}
+								final JLabel parentLabel = new JLabel("Parent:");
+								final JLabel imageLabel = new JLabel(
+										new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
+								final JLabel titleLabel = new JLabel("Add " + basicName);
+								titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
 
-							final GroupLayout layout = new GroupLayout(particlePanel);
+								final JLabel nameLabel = new JLabel("Particle Name:");
+								final JTextField nameField = new JTextField("MyBlizParticle");
 
-							layout.setHorizontalGroup(
-									layout.createSequentialGroup().addComponent(imageLabel).addGap(8)
-											.addGroup(layout.createParallelGroup(Alignment.CENTER)
-													.addComponent(titleLabel)
-													.addGroup(layout.createSequentialGroup().addComponent(nameLabel)
-															.addGap(4).addComponent(nameField))
-													.addGroup(layout.createSequentialGroup().addComponent(parentLabel)
-															.addGap(4).addComponent(parent))
-													.addComponent(chooseAnimations)
-													.addGroup(layout.createSequentialGroup().addComponent(xLabel)
-															.addComponent(xSpinner).addGap(4).addComponent(yLabel)
-															.addComponent(ySpinner).addGap(4).addComponent(zLabel)
-															.addComponent(zSpinner))
-													.addGroup(
-															layout.createSequentialGroup().addComponent(colorButtons[0])
-																	.addGap(4).addComponent(colorButtons[1]).addGap(4)
-																	.addComponent(colorButtons[2]))));
-							layout.setVerticalGroup(
-									layout.createParallelGroup(Alignment.CENTER).addComponent(imageLabel)
-											.addGroup(
-													layout.createSequentialGroup().addComponent(titleLabel)
-															.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addComponent(nameLabel).addComponent(nameField))
-															.addGap(4)
-															.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addComponent(parentLabel).addComponent(parent))
-															.addGap(4).addComponent(chooseAnimations).addGap(4)
-															.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addComponent(xLabel).addComponent(xSpinner)
-																	.addComponent(yLabel).addComponent(ySpinner)
-																	.addComponent(zLabel).addComponent(zSpinner))
-															.addGap(4)
-															.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addComponent(colorButtons[0])
-																	.addComponent(colorButtons[1])
-																	.addComponent(colorButtons[2]))));
-							particlePanel.setLayout(layout);
-							final int x = JOptionPane.showConfirmDialog(MainPanel.this, particlePanel,
-									"Add " + basicName, JOptionPane.OK_CANCEL_OPTION);
-							if (x == JOptionPane.OK_OPTION) {
-								// do stuff
-								particle.setPivotPoint(new Vertex(((Number) xSpinner.getValue()).doubleValue(),
-										((Number) ySpinner.getValue()).doubleValue(),
-										((Number) zSpinner.getValue()).doubleValue()));
-								for (int i = 0; i < colors.length; i++) {
-									particle.setSegmentColor(i, new Vertex(colors[i].getBlue() / 255.00,
-											colors[i].getGreen() / 255.00, colors[i].getRed() / 255.00));
-								}
-								final IdObject parentChoice = parent.getItemAt(parent.getSelectedIndex());
-								if (parentChoice == nullBone) {
-									particle.setParent(null);
-								} else {
-									particle.setParent(parentChoice);
-								}
-								AnimFlag oldFlag = particle.getVisibilityFlag();
-								if (oldFlag == null) {
-									oldFlag = new AnimFlag("Visibility");
-								}
-								final AnimFlag visFlag = AnimFlag.buildEmptyFrom(oldFlag);
-								animIndex = 0;
-								for (final Animation anim : anims) {
-									if (!checkBoxes[animIndex].isSelected()) {
-										visFlag.addEntry(anim.getStart(), new Integer(0));
+								final JLabel xLabel = new JLabel("Z:");
+								final JSpinner xSpinner = new JSpinner(
+										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
+
+								final JLabel yLabel = new JLabel("X:");
+								final JSpinner ySpinner = new JSpinner(
+										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
+
+								final JLabel zLabel = new JLabel("Y:");
+								final JSpinner zSpinner = new JSpinner(
+										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
+								parent.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(final ActionEvent e) {
+										final IdObject choice = parent.getItemAt(parent.getSelectedIndex());
+										xSpinner.setValue(choice.getPivotPoint().x);
+										ySpinner.setValue(choice.getPivotPoint().y);
+										zSpinner.setValue(choice.getPivotPoint().z);
 									}
+								});
+
+								final JPanel animPanel = new JPanel();
+								final List<Animation> anims = currentMDL().getAnims();
+								animPanel.setLayout(new GridLayout(anims.size() + 1, 1));
+								final JCheckBox[] checkBoxes = new JCheckBox[anims.size()];
+								int animIndex = 0;
+								for (final Animation anim : anims) {
+									animPanel.add(checkBoxes[animIndex] = new JCheckBox(anim.getName()));
+									checkBoxes[animIndex].setSelected(true);
 									animIndex++;
 								}
-								particle.setVisibilityFlag(visFlag);
-								particle.setName(nameField.getText());
-								currentMDL().add(particle);
-								modelStructureChangeListener.nodesAdded(Collections.<IdObject>singletonList(particle));
+								final JButton chooseAnimations = new JButton("Choose when to show!");
+								chooseAnimations.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(final ActionEvent e) {
+										JOptionPane.showMessageDialog(particlePanel, animPanel);
+									}
+								});
+								final JButton[] colorButtons = new JButton[3];
+								final Color[] colors = new Color[colorButtons.length];
+								for (int i = 0; i < colorButtons.length; i++) {
+									final Vertex colorValues = particle.getSegmentColor(i);
+									final Color color = new Color((int) (colorValues.z * 255), (int) (colorValues.y * 255),
+											(int) (colorValues.x * 255));
+
+									final JButton button = new JButton("Color " + (i + 1),
+											new ImageIcon(IconUtils.createBlank(color, 32, 32)));
+									colors[i] = color;
+									final int index = i;
+									button.addActionListener(new ActionListener() {
+										@Override
+										public void actionPerformed(final ActionEvent e) {
+											final Color colorChoice = JColorChooser.showDialog(MainPanel.this,
+													"Chooser Color", colors[index]);
+											if (colorChoice != null) {
+												colors[index] = colorChoice;
+												button.setIcon(new ImageIcon(IconUtils.createBlank(colors[index], 32, 32)));
+											}
+										}
+									});
+									colorButtons[i] = button;
+								}
+
+								final GroupLayout layout = new GroupLayout(particlePanel);
+
+								layout.setHorizontalGroup(
+										layout.createSequentialGroup().addComponent(imageLabel).addGap(8)
+												.addGroup(layout.createParallelGroup(Alignment.CENTER)
+														.addComponent(titleLabel)
+														.addGroup(layout.createSequentialGroup().addComponent(nameLabel)
+																.addGap(4).addComponent(nameField))
+														.addGroup(layout.createSequentialGroup().addComponent(parentLabel)
+																.addGap(4).addComponent(parent))
+														.addComponent(chooseAnimations)
+														.addGroup(layout.createSequentialGroup().addComponent(xLabel)
+																.addComponent(xSpinner).addGap(4).addComponent(yLabel)
+																.addComponent(ySpinner).addGap(4).addComponent(zLabel)
+																.addComponent(zSpinner))
+														.addGroup(
+																layout.createSequentialGroup().addComponent(colorButtons[0])
+																		.addGap(4).addComponent(colorButtons[1]).addGap(4)
+																		.addComponent(colorButtons[2]))));
+								layout.setVerticalGroup(
+										layout.createParallelGroup(Alignment.CENTER).addComponent(imageLabel)
+												.addGroup(
+														layout.createSequentialGroup().addComponent(titleLabel)
+																.addGroup(layout.createParallelGroup(Alignment.CENTER)
+																		.addComponent(nameLabel).addComponent(nameField))
+																.addGap(4)
+																.addGroup(layout.createParallelGroup(Alignment.CENTER)
+																		.addComponent(parentLabel).addComponent(parent))
+																.addGap(4).addComponent(chooseAnimations).addGap(4)
+																.addGroup(layout.createParallelGroup(Alignment.CENTER)
+																		.addComponent(xLabel).addComponent(xSpinner)
+																		.addComponent(yLabel).addComponent(ySpinner)
+																		.addComponent(zLabel).addComponent(zSpinner))
+																.addGap(4)
+																.addGroup(layout.createParallelGroup(Alignment.CENTER)
+																		.addComponent(colorButtons[0])
+																		.addComponent(colorButtons[1])
+																		.addComponent(colorButtons[2]))));
+								particlePanel.setLayout(layout);
+								final int x = JOptionPane.showConfirmDialog(MainPanel.this, particlePanel,
+										"Add " + basicName, JOptionPane.OK_CANCEL_OPTION);
+								if (x == JOptionPane.OK_OPTION) {
+									// do stuff
+									particle.setPivotPoint(new Vertex(((Number) xSpinner.getValue()).doubleValue(),
+											((Number) ySpinner.getValue()).doubleValue(),
+											((Number) zSpinner.getValue()).doubleValue()));
+									for (int i = 0; i < colors.length; i++) {
+										particle.setSegmentColor(i, new Vertex(colors[i].getBlue() / 255.00,
+												colors[i].getGreen() / 255.00, colors[i].getRed() / 255.00));
+									}
+									final IdObject parentChoice = parent.getItemAt(parent.getSelectedIndex());
+									if (parentChoice == nullBone) {
+										particle.setParent(null);
+									} else {
+										particle.setParent(parentChoice);
+									}
+									AnimFlag oldFlag = particle.getVisibilityFlag();
+									if (oldFlag == null) {
+										oldFlag = new AnimFlag("Visibility");
+									}
+									final AnimFlag visFlag = AnimFlag.buildEmptyFrom(oldFlag);
+									animIndex = 0;
+									for (final Animation anim : anims) {
+										if (!checkBoxes[animIndex].isSelected()) {
+											visFlag.addEntry(anim.getStart(), 0);
+										}
+										animIndex++;
+									}
+									particle.setVisibilityFlag(visFlag);
+									particle.setName(nameField.getText());
+									currentMDL().add(particle);
+									modelStructureChangeListener.nodesAdded(Collections.<IdObject>singletonList(particle));
+								}
 							}
-						}
-					});
-					addParticle.add(particleItem);
-				} catch (final IOException e1) {
-					e1.printStackTrace();
+						});
+						addParticle.add(particleItem);
+					} catch (final IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
-		}
 
 		animationMenu = new JMenu("Animation");
 		animationMenu.setMnemonic(KeyEvent.VK_A);
@@ -2968,7 +2827,7 @@ public class MainPanel extends JPanel
 								.interpolateAt(editorRenderModel.getAnimatedRenderEnvironment());
 						if (visibilityValue instanceof Double) {
 							final Double visibility = (Double) visibilityValue;
-							final double visvalue = visibility.doubleValue();
+							final double visvalue = visibility;
 							if (visvalue < 0.01) {
 								geosetIterator.remove();
 								snapshotModel.remove(geosetAnim);
