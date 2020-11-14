@@ -22,11 +22,11 @@ public class ViewController extends JTabbedPane {
 		if (spawnFrame) {
 			frame = new JFrame("View Controller");
 			frame.setContentPane(this);
-			frame.setIconImage(GlobalIcons.redIcon.getImage());
+			frame.setIconImage(GlobalIcons.RED_ICON.getImage());
 		}
 		modelViewManagingTree = disp;
 		geoScroll = new JScrollPane(modelViewManagingTree);
-		addTab("", GlobalIcons.geoIcon, geoScroll, "Controls visibility");
+		addTab("", GlobalIcons.GEO_ICON, geoScroll, "Controls visibility");
 		if (spawnFrame) {
 			frame.setVisible(true);
 			frame.pack();

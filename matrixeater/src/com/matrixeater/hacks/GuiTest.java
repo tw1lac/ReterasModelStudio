@@ -52,7 +52,7 @@ public class GuiTest {
 		final RootWindow rootWindow = new RootWindow(new StringViewMap());
 		final JPanel jPanel = new JPanel();
 		jPanel.add(new JLabel("content"));
-		rootWindow.setWindow(new View("ASDF", GlobalIcons.MDLIcon, jPanel));
+		rootWindow.setWindow(new View("ASDF", GlobalIcons.MDL_ICON, jPanel));
 		rootWindow.getRootWindowProperties().getViewProperties().getViewTitleBarProperties().setVisible(true);
 		rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties()
 				.getComponentProperties().setBackgroundColor(Color.GREEN);

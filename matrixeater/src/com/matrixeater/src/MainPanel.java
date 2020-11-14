@@ -838,7 +838,7 @@ public class MainPanel extends JPanel
 				}
 			}
 		});
-		setKeyframe = new JButton(GlobalIcons.setKeyframeIcon);
+		setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
 		setKeyframe.setMargin(new Insets(0, 0, 0, 0));
 		setKeyframe.setToolTipText("Create Keyframe");
 		setKeyframe.addActionListener(new ActionListener() {
@@ -852,7 +852,7 @@ public class MainPanel extends JPanel
 				repaintSelfAndChildren(mpanel);
 			}
 		});
-		setTimeBounds = new JButton(GlobalIcons.setTimeBoundsIcon);
+		setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
 		setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
 		setTimeBounds.setToolTipText("Choose Time Bounds");
 		setTimeBounds.addActionListener(new ActionListener() {
@@ -4618,7 +4618,7 @@ public class MainPanel extends JPanel
 			}
 			final ModelPanel temp = new ModelPanel(this, mdl, prefs, MainPanel.this, selectionItemTypeGroup,
 					selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-					activeViewportWatcher, GlobalIcons.MDLIcon, false, textureExporter);
+					activeViewportWatcher, GlobalIcons.MDL_ICON, false, textureExporter);
 			loadModel(true, true, temp);
 		}
 
@@ -5236,7 +5236,7 @@ public class MainPanel extends JPanel
 		loadModel(workingDirectory == null, true,
 				new ModelPanel(MainPanel.this, blankTextureModel, prefs, MainPanel.this, selectionItemTypeGroup,
 						selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-						activeViewportWatcher, GlobalIcons.orangeIcon, true, textureExporter));
+						activeViewportWatcher, GlobalIcons.ORANGE_ICON, true, textureExporter));
 	}
 
 	public void loadModel(final boolean temporary, final boolean selectNewTab, final ModelPanel temp) {
