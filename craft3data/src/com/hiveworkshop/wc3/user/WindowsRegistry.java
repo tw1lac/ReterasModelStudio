@@ -15,7 +15,7 @@ public class WindowsRegistry {
 	 * @param key      registry key
 	 * @return registry value or null if not found
 	 */
-	public static final String readRegistry(final String location, final String key) {
+	public static String readRegistry(final String location, final String key) {
 		try {
 			// Run reg query, then read output with StreamReader (internal class)
 			final Process process = Runtime.getRuntime().exec("reg query " + '"' + location + "\" /v " + key);
@@ -58,7 +58,7 @@ public class WindowsRegistry {
 				while ((c = is.read()) != -1) {
 					sw.write(c);
 				}
-			} catch (final IOException e) {
+			} catch (final IOException ignored) {
 			}
 		}
 

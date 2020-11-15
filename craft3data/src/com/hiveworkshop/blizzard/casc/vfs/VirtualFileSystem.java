@@ -205,7 +205,7 @@ public final class VirtualFileSystem {
 	/**
 	 * Path separator used by path strings.
 	 */
-	public static final String PATH_SEPERATOR = "\\";
+	public static final String PATH_SEPARATOR = "\\";
 
 	/**
 	 * Compares the path fragments of a node with a section of file path fragments.
@@ -249,7 +249,7 @@ public final class VirtualFileSystem {
 	 *                                  fragments.
 	 */
 	public static byte[][] convertFilePath(final String filePath) throws CharacterCodingException {
-		final String[] fragmentStrings = filePath.toLowerCase(Locale.ROOT).split("\\" + PATH_SEPERATOR);
+		final String[] fragmentStrings = filePath.toLowerCase(Locale.ROOT).split("\\" + PATH_SEPARATOR);
 		final byte[][] pathFragments = new byte[fragmentStrings.length][]; 
 
 		final CharsetEncoder encoder = PATH_ENCODING.newEncoder();
@@ -291,7 +291,7 @@ public final class VirtualFileSystem {
 			fragmentStrings[index] = decoder.decode(ByteBuffer.wrap(pathFragments[index])).toString();
 		}
 
-		return String.join(PATH_SEPERATOR, fragmentStrings);
+		return String.join(PATH_SEPARATOR, fragmentStrings);
 	}
 
 	/**

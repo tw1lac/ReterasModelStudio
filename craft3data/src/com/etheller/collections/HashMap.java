@@ -63,7 +63,7 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 		return hash & capacityMinusOne;
 	}
 
-	private static final int hash(final Object key) {
+	private static int hash(final Object key) {
 		return key == null ? 0 : key.hashCode();
 	}
 
@@ -74,8 +74,8 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 
 	@Override
 	public boolean containsValue(final VALUE value) {
-		for (int i = 0; i < table.length; i++) {
-			Node<KEY, VALUE> node = table[i];
+		for (Node<KEY, VALUE> keyValueNode : table) {
+			Node<KEY, VALUE> node = keyValueNode;
 			while (node != null) {
 				final VALUE nodeValue = node.getValue();
 				if (matchingValues(value, nodeValue)) {
@@ -417,7 +417,7 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 	/**
 	 * Returns a power of two size for the given target capacity.
 	 */
-	private static final int tableSizeFor(final int capacity) {
+	private static int tableSizeFor(final int capacity) {
 		int numElements = capacity - 1;
 		numElements |= numElements >>> 1;
 		numElements |= numElements >>> 2;

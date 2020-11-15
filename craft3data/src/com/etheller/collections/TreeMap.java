@@ -1433,7 +1433,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	 * Test two values for equality. Differs from o1.equals(o2) only in that it
 	 * copes with {@code null} o1 properly.
 	 */
-	static final boolean valEquals(final Object o1, final Object o2) {
+	static boolean valEquals(final Object o1, final Object o2) {
 		return (o1 == null ? o2 == null : o1.equals(o2));
 	}
 
