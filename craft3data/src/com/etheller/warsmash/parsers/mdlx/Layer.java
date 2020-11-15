@@ -16,7 +16,7 @@ public class Layer extends AnimatedObject {
 	// 4: add alpha
 	// 5: modulate
 	// 6: modulate 2x
-	public static enum FilterMode {
+	public enum FilterMode {
 		NONE("None"),
 		TRANSPARENT("Transparent"),
 		BLEND("Blend"),

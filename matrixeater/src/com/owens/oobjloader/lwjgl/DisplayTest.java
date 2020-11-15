@@ -306,7 +306,7 @@ public class DisplayTest {
             ArrayList<Face> triangleList = splitQuads(faceList);
             log.log(INFO, "Calculating any missing vertex normals.");
             calcMissingVertexNormals(triangleList);
-            log.log(INFO, "Ready to build VBO of " + triangleList.size() + " triangles");;
+            log.log(INFO, "Ready to build VBO of " + triangleList.size() + " triangles");
             
             if (triangleList.size() <= 0) {
                 continue;

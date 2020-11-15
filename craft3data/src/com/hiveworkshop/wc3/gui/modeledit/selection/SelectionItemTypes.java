@@ -16,7 +16,7 @@ public enum SelectionItemTypes implements ToolbarButtonType {
 	private final String name;
 	private final ImageIcon imageIcon;
 
-	private SelectionItemTypes(final String name, final ImageIcon imageIcon) {
+	SelectionItemTypes(final String name, final ImageIcon imageIcon) {
 		this.name = name;
 		this.imageIcon = imageIcon;
 	}

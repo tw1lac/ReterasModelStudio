@@ -7,7 +7,7 @@ public enum GUITheme {
 
 	private String displayName;
 
-	private GUITheme(final String displayName) {
+	GUITheme(final String displayName) {
 		this.displayName = displayName;
 	}
 

@@ -12,7 +12,7 @@ public interface TextureExporter {
 	void exportTexture(final String suggestedName, final TextureExporterClickListener fileHandler,
 			final Component parent);
 
-	public static interface TextureExporterClickListener {
+	interface TextureExporterClickListener {
 		void onClickOK(File selectedFile, FileFilter selectedFilter);
 	}
 }

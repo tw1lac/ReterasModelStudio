@@ -13,7 +13,7 @@ public class ParticleEmitter2 extends GenericObject {
 	// 2: modulate
 	// 3: modulate 2x
 	// 4: alphakey
-	public static enum FilterMode {
+	public enum FilterMode {
 		BLEND("Blend"),
 		ADDITIVE("Additive"),
 		MODULATE("Modulate"),

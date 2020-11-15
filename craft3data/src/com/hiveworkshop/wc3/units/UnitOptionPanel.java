@@ -66,6 +66,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 					for (int i = 0; i < 6; i++) {
 						if (race.equals(raceKey(i))) {
 							showLevel = false;
+							break;
 						}
 					}
 					if (showLevel) {
@@ -366,25 +367,25 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 			uberTip = uberTip.replace("|cffffcc00", "");
 			uberTip = uberTip.replace("|r", "");
 
-			String newUberTip = "";
+			StringBuilder newUberTip = new StringBuilder();
 			int depth = 0;
 			for (int i = 0; i < uberTip.length(); i++) {
 				final char c = uberTip.charAt(i);
 				if (c == '<' && uberTip.length() > i + 4 && uberTip.substring(i, i + 4).equals("<br>")) {
 					i += 3;
 					depth = 0;
-					newUberTip += "<br>";
+					newUberTip.append("<br>");
 				} else {
 					if (depth > 80 && c == ' ') {
 						depth = 0;
-						newUberTip += "<br>";
+						newUberTip.append("<br>");
 					}
-					newUberTip += "" + c;
+					newUberTip.append("").append(c);
 					depth++;
 				}
 			}
 
-			uberTip = newUberTip;
+			uberTip = newUberTip.toString();
 			String name = unit.getName();
 			// if( unit.getField("campaign").startsWith("1") &&
 			// Character.isUpperCase(unit.getUnitId().charAt(0)) ) {
@@ -398,6 +399,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 			for (int i = 0; i < 6; i++) {
 				if (race.equals(raceKey(i))) {
 					showLevel = false;
+					break;
 				}
 			}
 			// if( unit.getField("EditorSuffix").length() > 0 )

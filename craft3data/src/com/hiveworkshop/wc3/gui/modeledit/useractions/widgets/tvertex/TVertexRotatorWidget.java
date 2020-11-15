@@ -134,7 +134,7 @@ public final class TVertexRotatorWidget {
 		}
 	}
 
-	public static enum RotateDirection {
+	public enum RotateDirection {
 		VERTICALLY, HORIZONTALLY, SPIN, FREE, NONE
-	};
+	}
 }

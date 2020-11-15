@@ -41,20 +41,19 @@ public class UVLayer
     {
         //Here we may assume the header "TVertices" to already have been written,
         // based on addHeader
-        String tabs = "";
+        StringBuilder tabs = new StringBuilder();
         for( int i = 0; i < tabHeight; i++ )
         {
-            tabs = tabs + "\t";
+            tabs.append("\t");
         }
-        String inTabs = tabs;
+        String inTabs = tabs.toString();
         if( addHeader )
         {
             inTabs = inTabs + "\t";
             writer.println(tabs + "TVertices "+tverts.size() +" {");
         }
-        for( int i = 0; i < tverts.size(); i++ )
-        {
-            writer.println(inTabs+tverts.get(i).toString()+",");
+        for (TVertex tvert : tverts) {
+            writer.println(inTabs + tvert.toString() + ",");
         }
        
         if( addHeader )

@@ -158,8 +158,8 @@ public class UnitEditorTreeBrowser extends UnitEditorTree {
 		});
 	}
 
-	public static interface MDLLoadListener {
-		public void loadFile(String filePathMdx, boolean b, boolean c, ImageIcon icon);
+	public interface MDLLoadListener {
+		void loadFile(String filePathMdx, boolean b, boolean c, ImageIcon icon);
 	}
 
 	private String convertPathToMDX(String filepath) {

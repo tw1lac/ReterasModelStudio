@@ -802,6 +802,8 @@ public class BuildWLists implements BuilderInterface {
 				if (name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".tga")
 						|| name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".bmp")) {
 					hasPNGs = true;
+					break;
+					break;
 				}
 			}
 		}

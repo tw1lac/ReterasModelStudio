@@ -28,9 +28,7 @@ public class CompoundDataSource implements DataSource {
 
 	public CompoundDataSource(final List<DataSource> dataSources) {
 		if (dataSources != null) {
-			for (final DataSource dataSource : dataSources) {
-				this.mpqList.add(dataSource);
-			}
+			this.mpqList.addAll(dataSources);
 		}
 	}
 
@@ -137,9 +135,7 @@ public class CompoundDataSource implements DataSource {
 		for (final DataSource mpqGuy : this.mpqList) {
 			final Collection<String> dataSourceListfile = mpqGuy.getListfile();
 			if (dataSourceListfile != null) {
-				for (final String element : dataSourceListfile) {
-					listfile.add(element);
-				}
+				listfile.addAll(dataSourceListfile);
 			}
 		}
 		return listfile;

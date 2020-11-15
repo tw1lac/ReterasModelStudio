@@ -101,9 +101,7 @@ public class GeosetVertexTVertexEditor extends AbstractTVertexEditor<GeosetVerte
 		final ArrayList<GeosetVertex> oldSelection = new ArrayList<>(selectionManager.getSelection());
 		final Set<GeosetVertex> allSelection = new HashSet<>();
 		for (final Geoset geo : model.getEditableGeosets()) {
-			for (final GeosetVertex geosetVertex : geo.getVertices()) {
-				allSelection.add(geosetVertex);
-			}
+			allSelection.addAll(geo.getVertices());
 		}
 		selectionManager.setSelection(allSelection);
 		return new SetSelectionAction<>(allSelection, oldSelection, selectionManager, "select all");

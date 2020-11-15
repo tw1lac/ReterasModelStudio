@@ -788,12 +788,16 @@ public class Build implements BuilderInterface {
 				for (final GeosetVertex gv : geo.getVertices()) {
 					if (Math.abs(gv.x) > sizeLimit || Math.abs(gv.y) > sizeLimit || Math.abs(gv.z) > sizeLimit) {
 						allLessThan2 = false;
+						break;
+						break;
 					}
 				}
 			}
 			for (final Vertex pivot : mdl.getPivots()) {
 				if (Math.abs(pivot.x) > sizeLimit || Math.abs(pivot.y) > sizeLimit || Math.abs(pivot.z) > sizeLimit) {
 					allLessThan2 = false;
+					break;
+					break;
 				}
 			}
 			if (allLessThan2) {
@@ -986,7 +990,7 @@ public class Build implements BuilderInterface {
 			geo.addUVLayer(uvLayer);
 			final List<VertexKey> vertexKeys = new ArrayList<>();
 			vertexKeys.addAll(vertexKeysToIndices.keySet());
-			Collections.sort(vertexKeys, new Comparator<VertexKey>() {
+			vertexKeys.sort(new Comparator<VertexKey>() {
 				@Override
 				public int compare(final VertexKey a, final VertexKey b) {
 					return vertexKeysToIndices.get(a).compareTo(vertexKeysToIndices.get(b));

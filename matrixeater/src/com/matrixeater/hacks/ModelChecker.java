@@ -30,9 +30,10 @@ public class ModelChecker {
 				try {
 					final EditableModel model = EditableModel.read(file);
 					for (final Geoset geoset : model.getGeosets()) {
-						if (geoset.getUVLayers().size() >= 2) {
-							usesSecondLayer = true;
-						}
+                        if (geoset.getUVLayers().size() >= 2) {
+                            usesSecondLayer = true;
+                            break;
+                        }
 					}
 					if (usesSecondLayer) {
 						matchingModels.add(file.getPath());

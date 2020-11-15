@@ -155,7 +155,7 @@ public final class MoverWidget {
 		}
 	}
 
-	public static enum MoveDirection {
+	public enum MoveDirection {
 		UP, RIGHT, BOTH, NONE
-	};
+	}
 }

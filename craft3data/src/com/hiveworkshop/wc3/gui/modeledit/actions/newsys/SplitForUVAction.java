@@ -32,9 +32,7 @@ public final class SplitForUVAction<T> implements UndoAction {
 		final Set<GeosetVertex> verticesInTheTriangles = new HashSet<>();
 		final Set<Geoset> geosetsToCopy = new HashSet<>();
 		for (final Triangle tri : trisToSeparate) {
-			for (final GeosetVertex gv : tri.getVerts()) {
-				verticesInTheTriangles.add(gv);
-			}
+			verticesInTheTriangles.addAll(Arrays.asList(tri.getVerts()));
 			geosetsToCopy.add(tri.getGeoset());
 		}
 		final Map<Geoset, Geoset> oldGeoToNewGeo = new HashMap<>();

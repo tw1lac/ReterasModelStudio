@@ -283,6 +283,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 				for (final Vertex vertex : collisionShape.getVertices()) {
 					if (oldSelection.contains(vertex)) {
 						selected = true;
+						break;
 					}
 				}
 				if (selected) {
@@ -444,9 +445,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 			@Override
 			public void collisionShape(final CollisionShape collisionShape) {
 				allSelection.add(collisionShape.getPivotPoint());
-				for (final Vertex vertex : collisionShape.getVertices()) {
-					allSelection.add(vertex);
-				}
+				allSelection.addAll(collisionShape.getVertices());
 			}
 
 			@Override
@@ -997,7 +996,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 	}
 
 	private static String getNumberName(final String name, final int number) {
-		return name + String.format("%3s", Integer.toString(number)).replace(' ', '0');
+		return name + String.format("%3s", number).replace(' ', '0');
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class VBO {
     public final static int ATTR_V_OFFSET_FLOATS = 0;
     public final static int ATTR_N_OFFSET_FLOATS = ATTR_V_FLOATS_PER;
     public final static int ATTR_N_OFFSET_BYTES = ATTR_N_OFFSET_FLOATS * FL_SIZE;
-    ;
+
 
     public final static int ATTR_T_OFFSET_FLOATS = ATTR_V_FLOATS_PER + ATTR_N_FLOATS_PER;
     public final static int ATTR_T_OFFSET_BYTES = ATTR_T_OFFSET_FLOATS * FL_SIZE;

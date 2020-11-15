@@ -25,9 +25,7 @@ public class MultiPartSelectionView implements SelectionView {
 	public Vertex getCenter() {
 		final List<Vertex> vertices = new ArrayList<>();
 		for (final SelectionView selectionView : selectionViews) {
-			for (final Vertex vertex : selectionView.getSelectedVertices()) {
-				vertices.add(vertex);
-			}
+			vertices.addAll(selectionView.getSelectedVertices());
 		}
 		return Vertex.centerOfGroup(vertices);
 	}
@@ -36,9 +34,7 @@ public class MultiPartSelectionView implements SelectionView {
 	public Collection<Triangle> getSelectedFaces() {
 		final List<Triangle> faces = new ArrayList<>();
 		for (final SelectionView selectionView : selectionViews) {
-			for (final Triangle face : selectionView.getSelectedFaces()) {
-				faces.add(face);
-			}
+			faces.addAll(selectionView.getSelectedFaces());
 		}
 		return faces;
 	}
@@ -47,9 +43,7 @@ public class MultiPartSelectionView implements SelectionView {
 	public Collection<? extends Vertex> getSelectedVertices() {
 		final List<Vertex> vertices = new ArrayList<>();
 		for (final SelectionView selectionView : selectionViews) {
-			for (final Vertex vertex : selectionView.getSelectedVertices()) {
-				vertices.add(vertex);
-			}
+			vertices.addAll(selectionView.getSelectedVertices());
 		}
 		return vertices;
 	}
@@ -92,9 +86,7 @@ public class MultiPartSelectionView implements SelectionView {
 	public TVertex getUVCenter(final int tvertexLayerId) {
 		final List<TVertex> vertices = new ArrayList<>();
 		for (final SelectionView selectionView : selectionViews) {
-			for (final TVertex vertex : selectionView.getSelectedTVertices(tvertexLayerId)) {
-				vertices.add(vertex);
-			}
+			vertices.addAll(selectionView.getSelectedTVertices(tvertexLayerId));
 		}
 		return TVertex.centerOfGroup(vertices);
 	}
@@ -103,9 +95,7 @@ public class MultiPartSelectionView implements SelectionView {
 	public Collection<? extends TVertex> getSelectedTVertices(final int tvertexLayerId) {
 		final List<TVertex> vertices = new ArrayList<>();
 		for (final SelectionView selectionView : selectionViews) {
-			for (final TVertex vertex : selectionView.getSelectedTVertices(tvertexLayerId)) {
-				vertices.add(vertex);
-			}
+			vertices.addAll(selectionView.getSelectedTVertices(tvertexLayerId));
 		}
 		return vertices;
 	}

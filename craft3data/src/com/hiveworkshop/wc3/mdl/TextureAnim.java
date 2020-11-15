@@ -90,13 +90,12 @@ public class TextureAnim {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		writer.println(tabs + "TVertexAnim {");
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag temp = animFlags.get(i);
+		for (final AnimFlag temp : animFlags) {
 			temp.printTo(writer, tabHeight + 1);
 		}
 		writer.println(tabs + "}");

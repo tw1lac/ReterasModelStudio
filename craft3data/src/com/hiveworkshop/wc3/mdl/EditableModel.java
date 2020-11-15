@@ -449,7 +449,7 @@ public class EditableModel implements Named {
 	public void parseVertex(final String input, final Geoset geoset) {
 		final String[] entries = input.split(",");
 		try {
-			geoset.addVertex(new GeosetVertex(Double.parseDouble(entries[0].substring(4, entries[0].length())),
+			geoset.addVertex(new GeosetVertex(Double.parseDouble(entries[0].substring(4)),
 					Double.parseDouble(entries[1]),
 					Double.parseDouble(entries[2].substring(0, entries[2].length() - 1))));
 		} catch (final NumberFormatException e) {
@@ -461,7 +461,7 @@ public class EditableModel implements Named {
 	public void parseTriangles(final String input, final Geoset g) {
 		// Loading triangles to a geoset requires verteces to be loaded first
 		final String[] s = input.split(",");
-		s[0] = s[0].substring(4, s[0].length());
+		s[0] = s[0].substring(4);
 		final int s_size = countContainsString(input, ",");
 		s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
 		for (int t = 0; t < (s_size - 1); t += 3)// s[t+3].equals("")||
@@ -1742,6 +1742,7 @@ public class EditableModel implements Named {
 					for (final Bitmap btm : textures) {
 						if (lay.texture.equals(btm)) {
 							good = false;
+							break;
 						}
 					}
 					if (good) {
@@ -1755,6 +1756,7 @@ public class EditableModel implements Named {
 							for (final Bitmap btm : textures) {
 								if (temp.equals(btm)) {
 									good = false;
+									break;
 								}
 							}
 							if (good) {
@@ -1774,6 +1776,7 @@ public class EditableModel implements Named {
 				for (final Bitmap btm : textures) {
 					if (pe.texture.equals(btm)) {
 						good = false;
+						break;
 					}
 				}
 				if (good) {
@@ -2190,6 +2193,7 @@ public class EditableModel implements Named {
 				final GeosetAnim ga = geosetAnims.get(i);
 				if (ga.geosetId != -1) {
 					noIds = false;
+					break;
 				}
 			}
 			if (noIds) {

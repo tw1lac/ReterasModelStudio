@@ -212,7 +212,6 @@ public final class MPQBrowser extends JPanel {
 									"File \"" + selectedFile.getName() + "\" already exists. Overwrite anyway?",
 									"Export File", JOptionPane.WARNING_MESSAGE,
 									JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-								return;
 							} else {
 								selectedFile.delete();
 							}

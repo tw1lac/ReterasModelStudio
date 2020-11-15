@@ -10,7 +10,7 @@ public enum DefaultUnitRace implements SortRace {
 	private final String keyString;
 	private final String displayName;
 
-	private DefaultUnitRace(final String keyString, final String displayKey) {
+	DefaultUnitRace(final String keyString, final String displayKey) {
 		this.keyString = keyString;
 		this.displayName = displayKey;
 	}

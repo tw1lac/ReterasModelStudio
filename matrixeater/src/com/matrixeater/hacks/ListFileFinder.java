@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -62,7 +63,7 @@ public class ListFileFinder {
 					}
 				}
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-						MpqCodebase.get().getResourceAsStream("Scripts\\war3map.j"), Charset.forName("utf-8")))) {
+						MpqCodebase.get().getResourceAsStream("Scripts\\war3map.j"), StandardCharsets.UTF_8))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						final String startingLine = line;

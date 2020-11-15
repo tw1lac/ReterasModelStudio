@@ -14,7 +14,7 @@ public class WorldEditArt {
 
 	public ImageIcon getIcon(final String iconName) {
 		String iconTexturePath = worldEditorData.get("WorldEditArt").getField(iconName);
-		if (!iconTexturePath.toString().endsWith(".blp")) {
+		if (!iconTexturePath.endsWith(".blp")) {
 			iconTexturePath += ".blp";
 		}
 		return new ImageIcon(BLPHandler.get().getGameTex(iconTexturePath));

@@ -92,6 +92,7 @@ public class FaceModelEditor extends AbstractModelEditor<Triangle> {
 				for (final GeosetVertex vertex : triangle.getVerts()) {
 					if (!newSelection.contains(vertex)) {
 						allInSelection = false;
+						break;
 					}
 				}
 				if (allInSelection) {
@@ -146,9 +147,7 @@ public class FaceModelEditor extends AbstractModelEditor<Triangle> {
 		final Set<Triangle> oldSelection = new HashSet<>(selectionManager.getSelection());
 		final Set<Triangle> allSelection = new HashSet<>();
 		for (final Geoset geoset : model.getEditableGeosets()) {
-			for (final Triangle triangle : geoset.getTriangles()) {
-				allSelection.add(triangle);
-			}
+			allSelection.addAll(geoset.getTriangles());
 		}
 		selectionManager.setSelection(allSelection);
 		return new SetSelectionAction<>(allSelection, oldSelection, selectionManager, "select all");

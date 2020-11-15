@@ -5,7 +5,7 @@ public interface VertexVisitor {
 
 	void vertexFinished();
 
-	public static final VertexVisitor NO_ACTION = new VertexVisitor() {
+	VertexVisitor NO_ACTION = new VertexVisitor() {
 		@Override
 		public void textureCoords(final double u, final double v) {
 		}

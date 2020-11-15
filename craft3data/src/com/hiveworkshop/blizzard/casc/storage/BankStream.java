@@ -28,7 +28,7 @@ public class BankStream {
 	 * the remaining size of the buffer exactly matches the container size.
 	 *
 	 * @param storageBuffer Storage buffer, as specified by an index file.
-	 * @param key           File encoding key to check contents with, or null if no
+	 * @param encodingKey   File encoding key to check contents with, or null if no
 	 *                      such check is required.
 	 * @throws IOException If an exception occurs during decoding of the
 	 *                     storageBuffer.

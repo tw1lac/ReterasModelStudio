@@ -23,7 +23,7 @@ public class GigapixelHelper {
 	public static int howManyMipmaps(final File file) {
 		final BLPReader reader = new BLPReader(new BLPReaderSpi());
 		try {
-			try (FileImageInputStream fileImageInputStream = new FileImageInputStream(file);) {
+			try (FileImageInputStream fileImageInputStream = new FileImageInputStream(file)) {
 				reader.setInput(fileImageInputStream);
 				try {
 					reader.read(0, reader.getDefaultReadParam());

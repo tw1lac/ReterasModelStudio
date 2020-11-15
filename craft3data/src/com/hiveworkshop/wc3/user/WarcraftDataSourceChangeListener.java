@@ -5,7 +5,7 @@ import com.etheller.util.SubscriberSetNotifier;
 public interface WarcraftDataSourceChangeListener {
 	void dataSourcesChanged();
 
-	public final class WarcraftDataSourceChangeNotifier extends SubscriberSetNotifier<WarcraftDataSourceChangeListener>
+	final class WarcraftDataSourceChangeNotifier extends SubscriberSetNotifier<WarcraftDataSourceChangeListener>
 			implements WarcraftDataSourceChangeListener {
 
 		@Override

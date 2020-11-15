@@ -166,8 +166,8 @@ public class MDLReader {
 		System.out.println(vez.getX() + "," + vez.getY() + "," + vez.getZ());// mrx.size()+":"+mrx.getBoneId(0));//+","+mrx.getBoneId(1)+","+mrx.getBoneId(2)+","+mrx.getBoneId(3)+","+mrx.getBoneId(4));//
 		final String[] eatTest = breakElement(test, 1);
 		System.out.println(readIntTitle(test[1]));
-		for (int i = 0; i < eatTest.length; i++) {
-			System.out.println(eatTest[i]);
+		for (String s : eatTest) {
+			System.out.println(s);
 		}
 		System.out.println((occurrencesIn("yo", "yo mana so low yo dun know it you dog you")));
 		System.out.println((new Double(5.3)).toString());
@@ -176,14 +176,14 @@ public class MDLReader {
 //         testList.add(new IdObject());
 		System.out.println(Bone.class.isAssignableFrom((testList.get(0).getClass())));
 		System.out.println(Bone.class.isAssignableFrom((testList.get(1).getClass())));
-		final String name[] = String.class.getName().split("\\.");
+		final String[] name = String.class.getName().split("\\.");
 
 		System.out.println("The name of a String is: " + name[name.length - 1]);
 		System.out.println("It is: " + (new Date(System.currentTimeMillis())).toString());
 	}
 
 	public static String getClassName(final Class what) {
-		final String name[] = what.getName().split("\\.");
+		final String[] name = what.getName().split("\\.");
 		return name[name.length - 1];
 	}
 
@@ -291,9 +291,7 @@ public class MDLReader {
 				if (wasInt) {
 					if (outputs != null) {
 						final int[] clone = new int[outputs.length + 1];
-						for (int i = 0; i < outputs.length; i++) {
-							clone[i] = outputs[i];
-						}
+						System.arraycopy(outputs, 0, clone, 0, outputs.length);
 						outputs = clone;
 					} else {
 						outputs = new int[1];
@@ -341,9 +339,7 @@ public class MDLReader {
 		if (wasInt) {
 			if (outputs != null) {
 				final int[] clone = new int[outputs.length + 1];
-				for (int i = 0; i < outputs.length; i++) {
-					clone[i] = outputs[i];
-				}
+				System.arraycopy(outputs, 0, clone, 0, outputs.length);
 				outputs = clone;
 			} else {
 				outputs = new int[1];
@@ -395,12 +391,14 @@ public class MDLReader {
 			for (int e = 0; (e < 10) && !isInt; e++) {
 				if (s.substring(index, index + 1).equals((new Integer(e)).toString())) {
 					isInt = true;
+					break;
 				}
 			}
 			if (!isInt && s.substring(index, index + 1).equals("-") && !wasInt) {
 				for (int e = 0; (e < 10) && !isInt; e++) {
 					if (s.substring(index + 1, index + 2).equals((new Integer(e)).toString())) {
 						isInt = true;
+						break;
 					}
 				}
 			}
@@ -408,9 +406,7 @@ public class MDLReader {
 				if (wasInt) {
 					if (outputs != null) {
 						final int[] clone = new int[outputs.length + 1];
-						for (int i = 0; i < outputs.length; i++) {
-							clone[i] = outputs[i];
-						}
+						System.arraycopy(outputs, 0, clone, 0, outputs.length);
 						outputs = clone;
 					} else {
 						outputs = new int[1];
@@ -434,9 +430,7 @@ public class MDLReader {
 		if (wasInt) {
 			if (outputs != null) {
 				final int[] clone = new int[outputs.length + 1];
-				for (int i = 0; i < outputs.length; i++) {
-					clone[i] = outputs[i];
-				}
+				System.arraycopy(outputs, 0, clone, 0, outputs.length);
 				outputs = clone;
 			} else {
 				outputs = new int[1];

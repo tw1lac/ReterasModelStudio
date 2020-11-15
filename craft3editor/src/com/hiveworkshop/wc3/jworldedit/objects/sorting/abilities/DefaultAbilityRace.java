@@ -15,7 +15,7 @@ public enum DefaultAbilityRace implements SortRace {
 	private final String keyString;
 	private final String displayName;
 
-	private DefaultAbilityRace(final String keyString, final String displayKey) {
+	DefaultAbilityRace(final String keyString, final String displayKey) {
 		this.keyString = keyString;
 		this.displayName = WEString.getString(displayKey);
 	}

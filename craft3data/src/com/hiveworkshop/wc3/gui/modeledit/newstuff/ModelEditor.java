@@ -26,8 +26,6 @@ import com.hiveworkshop.wc3.mdl.Vertex;
  * silly Item objects, but the code hasn't been reworked to be this thing yet
  *
  * @author Eric
- *
- * @param <T>
  */
 public interface ModelEditor extends ComponentVisibilityListener {
 	UndoAction autoCenterSelectedBones();

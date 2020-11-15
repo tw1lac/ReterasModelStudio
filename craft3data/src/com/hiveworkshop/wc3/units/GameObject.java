@@ -9,31 +9,31 @@ import javax.swing.ImageIcon;
 
 public interface GameObject {
 
-	public void setField(String field, String value);
+	void setField(String field, String value);
 
-	public void setField(String field, String value, int index);
+	void setField(String field, String value, int index);
 
-	public String getField(String field);
+	String getField(String field);
 
-	public String getField(String field, int index);
+	String getField(String field, int index);
 
-	public int getFieldValue(String field);
+	int getFieldValue(String field);
 
-	public int getFieldValue(String field, int index);
+	int getFieldValue(String field, int index);
 
-	public List<? extends GameObject> getFieldAsList(String field, ObjectData objectData);
+	List<? extends GameObject> getFieldAsList(String field, ObjectData objectData);
 
-	public String getId();
+	String getId();
 
-	public ObjectData getTable();
+	ObjectData getTable();
 
-	public String getName();
+	String getName();
 
-	public Set<String> keySet();
+	Set<String> keySet();
 
-	public ImageIcon getScaledIcon(final double amt);
+	ImageIcon getScaledIcon(final double amt);
 
-	public ImageIcon getScaledTintedIcon(final Color tint, final double amt);
+	ImageIcon getScaledTintedIcon(final Color tint, final double amt);
 
-	public Image getImage();
+	Image getImage();
 }

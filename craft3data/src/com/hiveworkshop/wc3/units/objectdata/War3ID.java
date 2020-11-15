@@ -39,7 +39,7 @@ public final class War3ID implements Comparable<War3ID> {
 		final String asStringValue = asStringValue();
 		String result = asStringValue.substring(0, index);
 		result += c;
-		result += asStringValue.substring(index + 1, asStringValue.length());
+		result += asStringValue.substring(index + 1);
 		return War3ID.fromString(result);
 	}
 

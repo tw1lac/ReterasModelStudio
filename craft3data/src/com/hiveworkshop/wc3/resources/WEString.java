@@ -3,6 +3,7 @@ package com.hiveworkshop.wc3.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -19,7 +20,7 @@ public class WEString {
 			try {
 				fis = MpqCodebase.get().getResourceAsStream("UI\\WorldEditStrings.txt");
 				try {
-					bundle = new PropertyResourceBundle(new InputStreamReader(fis, "utf-8"));
+					bundle = new PropertyResourceBundle(new InputStreamReader(fis, StandardCharsets.UTF_8));
 				} catch (final IOException e) {
 					e.printStackTrace();
 				} finally {
@@ -39,7 +40,7 @@ public class WEString {
 			try {
 				fis = MpqCodebase.get().getResourceAsStream("UI\\WorldEditGameStrings.txt");
 				try {
-					bundlegs = new PropertyResourceBundle(new InputStreamReader(fis, "utf-8"));
+					bundlegs = new PropertyResourceBundle(new InputStreamReader(fis, StandardCharsets.UTF_8));
 				} catch (final IOException e) {
 					e.printStackTrace();
 				} finally {

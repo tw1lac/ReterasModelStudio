@@ -149,6 +149,8 @@ public class BlizzardDataInputStream
         for (int i = 0; i < charCount; i++) {
             if (result[i] != 0) {
                 isNull = false;
+                break;
+                break;
             }
         }
         if (isNull) {

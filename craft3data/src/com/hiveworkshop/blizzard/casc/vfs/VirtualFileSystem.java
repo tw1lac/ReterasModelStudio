@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
+import java.nio.charset.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -200,7 +196,7 @@ public final class VirtualFileSystem {
 	/**
 	 * Character encoding used internally by file paths.
 	 */
-	public static final Charset PATH_ENCODING = Charset.forName("UTF8");
+	public static final Charset PATH_ENCODING = StandardCharsets.UTF_8;
 
 	/**
 	 * Path separator used by path strings.

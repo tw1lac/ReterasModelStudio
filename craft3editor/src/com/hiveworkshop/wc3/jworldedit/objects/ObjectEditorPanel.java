@@ -215,7 +215,7 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 						ObjectEditorFrame.main(new String[] {});
 					}
 				});
-		;
+
 		return toolBar;
 	}
 

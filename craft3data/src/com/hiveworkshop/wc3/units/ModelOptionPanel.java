@@ -790,250 +790,250 @@ public class ModelOptionPanel extends JPanel {
 		for (final String str : unitsModelData.keySet()) {
 			final NamedList<String> unitList = unitsModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			units.models.add(nextModel);
 		}
-		Collections.sort(units.models, new ModelComparator());
+		units.models.sort(new ModelComparator());
 		groups.add(units);
 
 		final ModelGroup unitsMissiles = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_UNIT_MSSL"));
 		for (final String str : unitsMissileData.keySet()) {
 			final NamedList<String> unitList = unitsMissileData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			unitsMissiles.models.add(nextModel);
 		}
-		Collections.sort(unitsMissiles.models, new ModelComparator());
+		unitsMissiles.models.sort(new ModelComparator());
 		groups.add(unitsMissiles);
 
 		final ModelGroup unitsSpecial = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_UNIT_SPEC"));
 		for (final String str : unitsSpecialData.keySet()) {
 			final NamedList<String> unitList = unitsSpecialData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			unitsSpecial.models.add(nextModel);
 		}
-		Collections.sort(unitsSpecial.models, new ModelComparator());
+		unitsSpecial.models.sort(new ModelComparator());
 		groups.add(unitsSpecial);
 
 		final ModelGroup items = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_ITEM"));
 		for (final String str : itemsModelData.keySet()) {
 			final NamedList<String> unitList = itemsModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			items.models.add(nextModel);
 		}
-		Collections.sort(items.models, new ModelComparator());
+		items.models.sort(new ModelComparator());
 		groups.add(items);
 
 		final ModelGroup abilities = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_ABIL"));
 		for (final String str : abilityModelData.keySet()) {
 			final NamedList<String> unitList = abilityModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			abilities.models.add(nextModel);
 		}
-		Collections.sort(abilities.models, new ModelComparator());
+		abilities.models.sort(new ModelComparator());
 		groups.add(abilities);
 
 		final ModelGroup buffs = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_BUFF"));
 		for (final String str : buffModelData.keySet()) {
 			final NamedList<String> unitList = buffModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			buffs.models.add(nextModel);
 		}
-		Collections.sort(buffs.models, new ModelComparator());
+		buffs.models.sort(new ModelComparator());
 		groups.add(buffs);
 
 		final ModelGroup destructibles = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_DEST"));
 		for (final String str : destModelData.keySet()) {
 			final NamedList<String> unitList = destModelData.get(str);
 			Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			destructibles.models.add(nextModel);
 		}
-		Collections.sort(destructibles.models, new ModelComparator());
+		destructibles.models.sort(new ModelComparator());
 		groups.add(destructibles);
 
 		final ModelGroup doodads = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_DOOD"));
 		for (final String str : doodModelData.keySet()) {
 			final NamedList<String> unitList = doodModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			doodads.models.add(nextModel);
 		}
-		Collections.sort(doodads.models, new ModelComparator());
+		doodads.models.sort(new ModelComparator());
 		groups.add(doodads);
 
 		final ModelGroup spawns = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_SPWN"));
 		for (final String str : spawnModelData.keySet()) {
 			final NamedList<String> unitList = spawnModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			spawns.models.add(nextModel);
 		}
-		Collections.sort(spawns.models, new ModelComparator());
+		spawns.models.sort(new ModelComparator());
 		groups.add(spawns);
 
 		final ModelGroup ginters = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_SKIN"));
 		for (final String str : ginterModelData.keySet()) {
 			final NamedList<String> unitList = ginterModelData.get(str);
 			// Collections.sort(unitList);
-			String nameOutput = "";
+			StringBuilder nameOutput = new StringBuilder();
 			for (final String unitName : unitList) {
 				if (nameOutput.length() > 0) {
-					nameOutput += ", ";
+					nameOutput.append(", ");
 				}
 				if ((nameOutput.length() + unitName.length()) > lengthCap) {
-					nameOutput += "...";
+					nameOutput.append("...");
 					break;
 				} else {
-					nameOutput += unitName;
+					nameOutput.append(unitName);
 				}
 			}
 			final Model nextModel = new Model();
-			nextModel.displayName = nameOutput;
+			nextModel.displayName = nameOutput.toString();
 			nextModel.filepath = unitList.name;
 			nextModel.cachedIcon = unitList.getCachedIconPath();
 			ginters.models.add(nextModel);
 		}
-		Collections.sort(ginters.models, new ModelComparator());
+		ginters.models.sort(new ModelComparator());
 		groups.add(ginters);
 
 		final ModelGroup extra = new ModelGroup(WEString.getString("WESTRING_OE_TYPECAT_XTRA"));
@@ -1055,7 +1055,7 @@ public class ModelOptionPanel extends JPanel {
 
 			emId++;
 		}
-		Collections.sort(extra.models, new ModelComparator());
+		extra.models.sort(new ModelComparator());
 		groups.add(extra);
 
 		for (final Model model : extra.models) {

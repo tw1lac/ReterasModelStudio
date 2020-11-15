@@ -56,29 +56,29 @@ public final class MutableObjectData {
 	private void resolveStringReferencesInNames(final ObjectData sourceSLKData) {
 		for (final String key : sourceSLKData.keySet()) {
 			final GameObject gameObject = sourceSLKData.get(key);
-			String name = gameObject.getField("Name");
+			StringBuilder name = new StringBuilder(gameObject.getField("Name"));
 			final String suffix = gameObject.getField("EditorSuffix");
-			if (name.startsWith("WESTRING")) {
-				if (!name.contains(" ")) {
-					name = WEString.getString(name);
+			if (name.toString().startsWith("WESTRING")) {
+				if (!name.toString().contains(" ")) {
+					name = new StringBuilder(WEString.getString(name.toString()));
 				} else {
-					final String[] names = name.split(" ");
-					name = "";
+					final String[] names = name.toString().split(" ");
+					name = new StringBuilder();
 					for (final String subName : names) {
 						if (name.length() > 0) {
-							name += " ";
+							name.append(" ");
 						}
 						if (subName.startsWith("WESTRING")) {
-							name += WEString.getString(subName);
+							name.append(WEString.getString(subName));
 						} else {
-							name += subName;
+							name.append(subName);
 						}
 					}
 				}
-				if (name.startsWith("\"") && name.endsWith("\"")) {
-					name = name.substring(1, name.length() - 1);
+				if (name.toString().startsWith("\"") && name.toString().endsWith("\"")) {
+					name = new StringBuilder(name.substring(1, name.length() - 1));
 				}
-				gameObject.setField("Name", name);
+				gameObject.setField("Name", name.toString());
 			}
 			if (suffix.startsWith("WESTRING")) {
 				gameObject.setField("EditorSuffix", WEString.getString(suffix));
@@ -94,7 +94,7 @@ public final class MutableObjectData {
 //			final String newId = JOptionPane.showInputDialog("Choose UNIT ID");
 			final War3ID nextDefaultEditorId = /* War3ID.fromString(newId); */getNextDefaultEditorId(
 					War3ID.fromString(entry.getKey().charAt(0) + "000"));
-			;
+
 			System.out.println("Merging " + nextDefaultEditorId + " for  " + entry.getKey());
 			// createNew API will notifier the changeNotifier
 			final MutableGameObject newObject = createNew(nextDefaultEditorId, entry.getValue().getOldId(), false);
@@ -110,8 +110,8 @@ public final class MutableObjectData {
 		for (final War3ID unitId : newObjects) {
 			final MutableGameObject unit = get(unitId);
 			for (final War3ID field : fieldsToCheck) {
-				final String techtreeString = unit.getFieldAsString(field, 0);
-				final java.util.List<String> techList = Arrays.asList(techtreeString.split(","));
+				final String techTreeString = unit.getFieldAsString(field, 0);
+				final String[] techList = techTreeString.split(",");
 				final ArrayList<String> resultingTechList = new ArrayList<>();
 				for (final String tech : techList) {
 					if (tech.length() == 4) {
@@ -181,8 +181,8 @@ public final class MutableObjectData {
 		for (final War3ID unitId : changeEditManager.keySet()) {
 			final MutableGameObject unit = changeEditManager.get(unitId);
 			for (final War3ID field : fieldsToCheck) {
-				final String techtreeString = unit.getFieldAsString(field, 0);
-				final java.util.List<String> techList = Arrays.asList(techtreeString.split(","));
+				final String techTreeString = unit.getFieldAsString(field, 0);
+				final String[] techList = techTreeString.split(",");
 				final ArrayList<String> resultingTechList = new ArrayList<>();
 				for (final String tech : techList) {
 					if (tech.length() == 4) {
@@ -491,7 +491,6 @@ public final class MutableObjectData {
 				customUnitData.getChanges().delete(field, existingChange);
 				fireChangedEvent(field, level);
 			}
-			return;
 		}
 
 		public void setField(final War3ID field, final int level, final float value) {
@@ -598,14 +597,14 @@ public final class MutableObjectData {
 		}
 
 		public String getName() {
-			String name = getFieldAsString(editorData.getNameField(),
-					worldEditorDataType == WorldEditorDataType.UPGRADES ? 1 : 0);
+			StringBuilder name = new StringBuilder(getFieldAsString(editorData.getNameField(),
+					worldEditorDataType == WorldEditorDataType.UPGRADES ? 1 : 0));
 			boolean nameKnown = name.length() >= 1;
 			if (!nameKnown && !readSLKTag("code").equals(getAlias().toString()) && (readSLKTag("code").length() >= 4)
 					&& !isCustom()) {
 				final MutableGameObject codeObject = get(War3ID.fromString(readSLKTag("code").substring(0, 4)));
 				if (codeObject != null) {
-					name = codeObject.getName();
+					name = new StringBuilder(codeObject.getName());
 					nameKnown = true;
 				}
 			}
@@ -617,12 +616,12 @@ public final class MutableObjectData {
 			case BUFFS_EFFECTS:
 				final String editorName = getFieldAsString(BUFF_EDITOR_NAME, 0);
 				if (!nameKnown && (editorName.length() > 1)) {
-					name = editorName;
+					name = new StringBuilder(editorName);
 					nameKnown = true;
 				}
 				final String buffTip = getFieldAsString(BUFF_BUFFTIP, 0);
 				if (!nameKnown && (buffTip.length() > 1)) {
-					name = buffTip;
+					name = new StringBuilder(buffTip);
 					nameKnown = true;
 				}
 				suf = getFieldAsString(BUFF_EDITOR_SUFFIX, 0);
@@ -636,9 +635,9 @@ public final class MutableObjectData {
 				break;
 			case UNITS:
 				if (getFieldAsBoolean(UNIT_CAMPAIGN, 0) && Character.isUpperCase(getAlias().charAt(0))) {
-					name = getFieldAsString(HERO_PROPER_NAMES, 0);
-					if (name.contains(",")) {
-						name = name.split(",")[0];
+					name = new StringBuilder(getFieldAsString(HERO_PROPER_NAMES, 0));
+					if (name.toString().contains(",")) {
+						name = new StringBuilder(name.toString().split(",")[0]);
 					}
 				}
 				suf = getFieldAsString(UNIT_EDITOR_SUFFIX, 0);
@@ -648,39 +647,39 @@ public final class MutableObjectData {
 				break;
 			}
 			if (nameKnown/* && name.startsWith("WESTRING") */) {
-				if (!name.contains(" ")) {
+				if (!name.toString().contains(" ")) {
 					// name = WEString.getString(name);
 				} else {
-					final String[] names = name.split(" ");
-					name = "";
+					final String[] names = name.toString().split(" ");
+					name = new StringBuilder();
 					for (final String subName : names) {
 						if (name.length() > 0) {
-							name += " ";
+							name.append(" ");
 						}
 						// if (subName.startsWith("WESTRING")) {
 						// name += WEString.getString(subName);
 						// } else {
-						name += subName;
+						name.append(subName);
 						// }
 					}
 				}
-				if (name.startsWith("\"") && name.endsWith("\"")) {
-					name = name.substring(1, name.length() - 1);
+				if (name.toString().startsWith("\"") && name.toString().endsWith("\"")) {
+					name = new StringBuilder(name.substring(1, name.length() - 1));
 				}
 			}
 			if (!nameKnown) {
-				name = WEString.getString("WESTRING_UNKNOWN") + " '" + getAlias().toString() + "'";
+				name = new StringBuilder(WEString.getString("WESTRING_UNKNOWN") + " '" + getAlias().toString() + "'");
 			}
 			if ((suf.length() > 0) && !suf.equals("_")) {
 				// if (suf.startsWith("WESTRING")) {
 				// suf = WEString.getString(suf);
 				// }
 				if (!suf.startsWith(" ")) {
-					name += " ";
+					name.append(" ");
 				}
-				name += suf;
+				name.append(suf);
 			}
-			return name;
+			return name.toString();
 		}
 
 		private String getFieldStringFromSLKs(final War3ID field, final int level) {
@@ -834,7 +833,7 @@ public final class MutableObjectData {
 
 		private String extension;
 
-		private WorldEditorDataType(final String extension) {
+		WorldEditorDataType(final String extension) {
 			this.extension = extension;
 		}
 

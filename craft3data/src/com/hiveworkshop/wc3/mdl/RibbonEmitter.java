@@ -21,16 +21,16 @@ import com.hiveworkshop.wc3.mdx.RibbonEmitterChunk;
  * Eric Theller 3/10/2012 3:32 PM
  */
 public class RibbonEmitter extends IdObject implements VisibilitySource {
-	public static enum TimeDoubles {
-		HeightAbove, HeightBelow, Alpha, TextureSlot;
+	public enum TimeDoubles {
+		HeightAbove, HeightBelow, Alpha, TextureSlot
 	}
 
-	public static enum LoneDoubles {
-		LifeSpan, Gravity;
+	public enum LoneDoubles {
+		LifeSpan, Gravity
 	}
 
-	public static enum LoneInts {
-		EmissionRate, Rows, Columns, MaterialID;
+	public enum LoneInts {
+		EmissionRate, Rows, Columns, MaterialID
 	}
 
 	static final String[] timeDoubleNames = { "HeightAbove", "HeightBelow", "Alpha", "TextureSlot" };

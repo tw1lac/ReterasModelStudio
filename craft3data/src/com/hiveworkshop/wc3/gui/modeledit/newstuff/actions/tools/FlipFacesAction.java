@@ -48,9 +48,10 @@ public final class FlipFacesAction implements UndoAction {
 		for (int i = selTris.size() - 1; i >= 0; i--) {
 			boolean goodTri = true;
 			for (final Vertex v : selTris.get(i).getAll()) {
-				if (!selection.contains(v)) {
-					goodTri = false;
-				}
+                if (!selection.contains(v)) {
+                    goodTri = false;
+                    break;
+                }
 			}
 			if (!goodTri) {
 				selTris.remove(i);

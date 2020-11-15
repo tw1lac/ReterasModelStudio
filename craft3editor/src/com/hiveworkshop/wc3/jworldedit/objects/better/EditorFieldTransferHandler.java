@@ -129,7 +129,6 @@ public class EditorFieldTransferHandler extends TransferHandler {
 	@Override
 	protected void exportDone(final JComponent c, final Transferable data, final int action) {
 		if (action != MOVE) {
-			return;
 		}
 		// final JList list = (JList) c;
 		// final DefaultListModel model = (DefaultListModel) list.getModel();

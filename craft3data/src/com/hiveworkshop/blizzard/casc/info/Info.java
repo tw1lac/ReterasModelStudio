@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -26,7 +27,7 @@ public class Info {
 	/**
 	 * Character encoding used by info files.
 	 */
-	public static final Charset FILE_ENCODING = Charset.forName("UTF8");
+	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 
 	/**
 	 * Field separator used by CASC info files.

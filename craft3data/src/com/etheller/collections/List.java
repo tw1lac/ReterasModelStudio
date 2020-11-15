@@ -16,7 +16,7 @@ public interface List<TYPE> extends ListView<TYPE>, Collection<TYPE> {
 
 	ListIterator<TYPE> listIterator();
 
-	public final class Util {
+	final class Util {
 
 		public static <TYPE> void addAll(final List<TYPE> list, final ListView<TYPE> toAdd) {
 			for (final TYPE item : toAdd) {

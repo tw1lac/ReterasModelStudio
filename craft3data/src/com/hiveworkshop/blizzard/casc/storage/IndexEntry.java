@@ -26,16 +26,11 @@ public class IndexEntry {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("IndexEntry{key=");
-		builder.append(key);
-		builder.append(", dataOffset=");
-		builder.append(dataOffset);
-		builder.append(", fileSize=");
-		builder.append(fileSize);
-		builder.append("}");
 
-		return builder.toString();
+		return "IndexEntry{key=" + key
+				+ ", dataOffset=" + dataOffset
+				+ ", fileSize=" + fileSize
+				+ "}";
 	}
 
 	public long getDataOffset() {

@@ -3692,26 +3692,23 @@ public class MainPanel extends JPanel
 
 	private void createTeamColorMenuItems() {
 		for (int i = 0; i < 25; i++) {
-			final String colorNumber = String.format("%2s", Integer.toString(i)).replace(' ', '0');
+			final String colorNumber = String.format("%2s", i).replace(' ', '0');
 			try {
 				final String colorName = WEString.getString("WESTRING_UNITCOLOR_" + colorNumber);
 				final JMenuItem menuItem = new JMenuItem(colorName, new ImageIcon(BLPHandler.get()
 						.getGameTex("ReplaceableTextures\\TeamColor\\TeamColor" + colorNumber + ".blp")));
 				teamColorMenu.add(menuItem);
 				final int teamColorValueNumber = i;
-				menuItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(final ActionEvent e) {
-						Material.teamColor = teamColorValueNumber;
-						final ModelPanel modelPanel = currentModelPanel();
-						if (modelPanel != null) {
-							modelPanel.getAnimationViewer().reloadAllTextures();
-							modelPanel.getPerspArea().reloadAllTextures();
+				menuItem.addActionListener(e -> {
+					Material.teamColor = teamColorValueNumber;
+					final ModelPanel modelPanel = currentModelPanel();
+					if (modelPanel != null) {
+						modelPanel.getAnimationViewer().reloadAllTextures();
+						modelPanel.getPerspArea().reloadAllTextures();
 
-							reloadComponentBrowser(modelPanel);
-						}
-						profile.getPreferences().setTeamColor(teamColorValueNumber);
+						reloadComponentBrowser(modelPanel);
 					}
+					profile.getPreferences().setTeamColor(teamColorValueNumber);
 				});
 			} catch (final Exception ex) {
 				// load failed
@@ -3753,7 +3750,7 @@ public class MainPanel extends JPanel
 						loadStreamMdx(MpqCodebase.get().getResourceAsStream(filepath), true, true,
 								unitFetched.getScaledIcon(0.25f));
 						final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-								+ filepath.substring(filepath.lastIndexOf('.'), filepath.length());
+								+ filepath.substring(filepath.lastIndexOf('.'));
 						if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
 							loadStreamMdx(MpqCodebase.get().getResourceAsStream(portrait), true, false,
 									unitFetched.getScaledIcon(0.25f));
@@ -3774,7 +3771,7 @@ public class MainPanel extends JPanel
 								: MDLIcon;
 						loadStreamMdx(MpqCodebase.get().getResourceAsStream(filepath), true, true, icon);
 						final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-								+ filepath.substring(filepath.lastIndexOf('.'), filepath.length());
+								+ filepath.substring(filepath.lastIndexOf('.'));
 						if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
 							loadStreamMdx(MpqCodebase.get().getResourceAsStream(portrait), true, false, icon);
 						}
@@ -3793,7 +3790,7 @@ public class MainPanel extends JPanel
 										.getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
 										.getScaledInstance(16, 16, Image.SCALE_FAST)));
 						final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-								+ filepath.substring(filepath.lastIndexOf('.'), filepath.length());
+								+ filepath.substring(filepath.lastIndexOf('.'));
 						if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
 							loadStreamMdx(MpqCodebase.get().getResourceAsStream(portrait), true, false,
 									new ImageIcon(BLPHandler.get()
@@ -4003,7 +4000,6 @@ public class MainPanel extends JPanel
 				onClickSave();
 			} else if (e.getSource() == saveAs) {
 				if (!onClickSaveAs()) {
-					return;
 				}
 				// } else if (e.getSource() == contextClose) {
 				// if (((ModelPanel) tabbedPane.getComponentAt(contextClickedTab)).close()) {//
@@ -4451,7 +4447,7 @@ public class MainPanel extends JPanel
 					}
 					final String name = temp.getName();
 					if (name.lastIndexOf('.') != -1) {
-						if (!name.substring(name.lastIndexOf('.'), name.length()).equals(ext)) {
+						if (!name.substring(name.lastIndexOf('.')).equals(ext)) {
 							temp = new File(
 									temp.getAbsolutePath().substring(0, temp.getAbsolutePath().lastIndexOf('.')) + ext);
 						}
@@ -5525,7 +5521,7 @@ public class MainPanel extends JPanel
 	public void parseTriangles(final String input, final Geoset g) {
 		// Loading triangles to a geoset requires verteces to be loaded first
 		final String[] s = input.split(",");
-		s[0] = s[0].substring(4, s[0].length());
+		s[0] = s[0].substring(4);
 		final int s_size = countContainsString(input, ",");
 		s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
 		for (int t = 0; t < (s_size - 1); t += 3)// s[t+3].equals("")||

@@ -19,24 +19,24 @@ public class StringUtils {
     // ----------------------------------------------------------------------
     // String parsing stuff
     // ----------------------------------------------------------------------
-    public static void printErrMsg(String methodName, String errorMsg, int mCount, char message[]) {
+    public static void printErrMsg(String methodName, String errorMsg, int mCount, char[] message) {
         log.log(SEVERE, methodName + ": " + errorMsg);
-        String msg1 = "ERROR: " + methodName + ": msg=\\";
-        String msg2 = "ERROR: " + methodName + ":      ";
-        for (int loopi = 0; loopi < message.length; loopi++) {
-            msg1 = msg1 + message[loopi];
-            msg2 = msg2 + " ";
+        StringBuilder msg1 = new StringBuilder("ERROR: " + methodName + ": msg=\\");
+        StringBuilder msg2 = new StringBuilder("ERROR: " + methodName + ":      ");
+        for (char c : message) {
+            msg1.append(c);
+            msg2.append(" ");
         }
-        msg1 = msg1 + "\\";
-        msg2 = msg2 + "^";
-        log.log(SEVERE, msg1);
-        log.log(SEVERE, msg1);
+        msg1.append("\\");
+        msg2.append("^");
+        log.log(SEVERE, msg1.toString());
+        log.log(SEVERE, msg2.toString());
     }
 
     // if errMsg != null, then we test if we've run past end of message
     // and if so, printErrMsg(errMsg), and return -1.  If no error then
     // we return the mCount indexing the next non-whitespace char.
-    public static int skipWhiteSpace(int mCount, char messageChars[], String errMsg) {
+    public static int skipWhiteSpace(int mCount, char[] messageChars, String errMsg) {
         //Skip whitespace
         while (mCount < messageChars.length) {
             if (messageChars[mCount] == ' ' || messageChars[mCount] == '\n' || messageChars[mCount] == '\t') {
@@ -66,7 +66,7 @@ public class StringUtils {
         int returnArrayCount = 0;
 
         // Copy list into a char array.
-        char listChars[];
+        char[] listChars;
         listChars = new char[list.length()];
         list.getChars(0, list.length(), listChars, 0);
         int listLength = listChars.length;
@@ -114,7 +114,7 @@ public class StringUtils {
         ArrayList<Integer> returnList = new ArrayList<Integer>();
 
         // Copy list into a char array.
-        char listChars[];
+        char[] listChars;
         listChars = new char[list.length()];
         list.getChars(0, list.length(), listChars, 0);
         int listLength = listChars.length;
@@ -146,7 +146,7 @@ public class StringUtils {
             count = itemEnd;
         }
 
-        int returnArray[] = new int[returnList.size()];
+        int[] returnArray = new int[returnList.size()];
         for (int loopi = 0; loopi < returnList.size(); loopi++) {
             returnArray[loopi] = returnList.get(loopi);
         }
@@ -219,14 +219,14 @@ public class StringUtils {
         //	log.log(INFO, "found "+vertexStrings.length+" strings in parseWhitespaceList");
 
         ArrayList<Integer> returnList = new ArrayList<Integer>();
-        Integer emptyMarker = new Integer(BuilderInterface.EMPTY_VERTEX_VALUE);
+        Integer emptyMarker = BuilderInterface.EMPTY_VERTEX_VALUE;
 
-        for (int loopi = 0; loopi < vertexStrings.length; loopi++) {
+        for (String vertexString : vertexStrings) {
             //	    log.log(INFO, "parsing vertexStrings["+loopi+"]=|"+vertexStrings[loopi]+"|");
-            parseVerticeNTuple(vertexStrings[loopi], returnList, emptyMarker, expectedValuesPerTuple);
+            parseVerticeNTuple(vertexString, returnList, emptyMarker, expectedValuesPerTuple);
         }
 
-        int returnArray[] = new int[returnList.size()];
+        int[] returnArray = new int[returnList.size()];
         for (int loopi = 0; loopi < returnList.size(); loopi++) {
             returnArray[loopi] = returnList.get(loopi);
         }
@@ -272,7 +272,7 @@ public class StringUtils {
         String[] returnArray = null;
 
         // Copy list into a char array.
-        char listChars[];
+        char[] listChars;
         listChars = new char[list.length()];
         list.getChars(0, list.length(), listChars, 0);
 
@@ -318,7 +318,7 @@ public class StringUtils {
         String[] returnArray = null;
 
         // Copy list into a char array.
-        char listChars[];
+        char[] listChars;
         listChars = new char[list.length()];
         list.getChars(0, list.length(), listChars, 0);
 

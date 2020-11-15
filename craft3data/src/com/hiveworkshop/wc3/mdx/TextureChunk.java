@@ -32,8 +32,8 @@ public class TextureChunk {
 		int nrOfTextures = texture.length;
 		out.writeNByteString("TEXS", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < texture.length; i++) {
-			texture[i].save(out);
+		for (Texture value : texture) {
+			value.save(out);
 		}
 
 	}

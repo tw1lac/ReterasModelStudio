@@ -8,8 +8,8 @@ package com.hiveworkshop.wc3.mdl;
  */
 public interface VisibilitySource extends Named
 {
-    public AnimFlag getVisibilityFlag();
-    public void setVisibilityFlag(AnimFlag what);
+    AnimFlag getVisibilityFlag();
+    void setVisibilityFlag(AnimFlag what);
 //     public String getVisTagname();
-    public String visFlagName();
+String visFlagName();
 }

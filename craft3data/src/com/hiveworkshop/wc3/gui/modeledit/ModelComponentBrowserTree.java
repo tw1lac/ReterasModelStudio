@@ -1231,7 +1231,7 @@ public final class ModelComponentBrowserTree extends JTree {
 		}
 	}
 
-	public static interface ModelComponentListener {
+	public interface ModelComponentListener {
 
 		void selectedBlank();
 

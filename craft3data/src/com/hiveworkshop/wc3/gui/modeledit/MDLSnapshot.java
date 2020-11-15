@@ -372,9 +372,10 @@ public class MDLSnapshot {
 					final String[] animationNames = animProps.split(",");
 					boolean isGoodAnimation = true;
 					for (final String name : animationNames) {
-						if (!anim.getName().toLowerCase().contains(name.toLowerCase())) {
-							isGoodAnimation = false;
-						}
+                        if (!anim.getName().toLowerCase().contains(name.toLowerCase())) {
+                            isGoodAnimation = false;
+                            break;
+                        }
 					}
 					if (isGoodAnimation && ((bestStandAnim == null)
 							|| (anim.getName().length() < bestStandAnim.getName().length()))) {

@@ -729,8 +729,7 @@ public class Parse {
         if (tokens[0].equals("spectral")) {
             // Ka spectral file.rfl factor_num
             log.log(WARNING, "Sorry Charlie, this parse doesn't handle \'spectral\' parsing.  (Mostly because I can't find any info on the spectra.rfl file.)");
-            return;
-// 	    if(tokens.length < 2) {
+            // 	    if(tokens.length < 2) {
 // 		log.log(SEVERE, "Got spectral line with not enough tokens, need at least one token for spectral file and one value for factor, found "+(tokens.length-1)+" line = |"+line+"|");
 // 		return;
 // 	    }

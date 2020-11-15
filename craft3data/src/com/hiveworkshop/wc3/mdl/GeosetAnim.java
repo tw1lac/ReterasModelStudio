@@ -111,18 +111,18 @@ public class GeosetAnim implements VisibilitySource, Named {
 
 	public void printTo(final PrintWriter writer, final int tabHeight) {
 
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
-		String inTabs = tabs;
+		String inTabs = tabs.toString();
 		inTabs = inTabs + "\t";
 		writer.println(tabs + "GeosetAnim {");
 		if (dropShadow) {
 			writer.println(inTabs + "DropShadow,");
 		}
-		for (int i = 0; i < animFlags.size(); i++) {
-			animFlags.get(i).printTo(writer, 1);
+		for (AnimFlag animFlag : animFlags) {
+			animFlag.printTo(writer, 1);
 		}
 		if (staticAlpha != -1) {
 			writer.println(inTabs + "static Alpha " + staticAlpha + ",");

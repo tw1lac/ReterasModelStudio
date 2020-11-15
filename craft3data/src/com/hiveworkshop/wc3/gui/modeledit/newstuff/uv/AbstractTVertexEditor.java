@@ -171,9 +171,7 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	public TVertex getSelectionCenter() {
 //		return selectionManager.getCenter();
 		final Set<TVertex> tvertices = new HashSet<>();
-		for (final TVertex vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
-			tvertices.add(vertex);
-		}
+		tvertices.addAll(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
 		return TVertex.centerOfGroup(tvertices); // TODO is this correct?
 	}
 
@@ -181,9 +179,8 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	public UndoAction selectFromViewer(final SelectionView viewerSelectionView) {
 		final Set<T> previousSelection = selectionManager.getSelection();
 		selectByVertices(viewerSelectionView.getSelectedVertices());
-		final SetSelectionAction<T> setSelectionAction = new SetSelectionAction<>(selectionManager.getSelection(),
+		return new SetSelectionAction<>(selectionManager.getSelection(),
 				previousSelection, selectionManager, "select UV from viewer");
-		return setSelectionAction;
 	}
 
 	@Override

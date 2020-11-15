@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -389,7 +390,7 @@ public class DataTable implements ObjectData {
 	}
 
 	public void readTXT(final InputStream txt, final boolean canProduce) throws IOException {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(txt, "utf-8"));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(txt, StandardCharsets.UTF_8));
 		// BOM marker will only appear on the very beginning
 		reader.mark(4);
 		if ('\ufeff' != reader.read()) {
@@ -469,7 +470,7 @@ public class DataTable implements ObjectData {
 	}
 
 	public void readSLK(final InputStream txt) throws IOException {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(txt, "utf-8"));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(txt, StandardCharsets.UTF_8));
 
 		String input = "";
 		Element currentUnit = null;

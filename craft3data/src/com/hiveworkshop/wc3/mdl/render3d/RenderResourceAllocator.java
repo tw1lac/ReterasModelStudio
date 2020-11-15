@@ -9,7 +9,7 @@ import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
 public interface RenderResourceAllocator {
 	InternalResource allocateTexture(Bitmap bitmap, ParticleEmitter2 textureSource);
 
-	public static final RenderResourceAllocator DO_NOTHINGX = new RenderResourceAllocator() {
+	RenderResourceAllocator DO_NOTHINGX = new RenderResourceAllocator() {
 		@Override
 		public InternalResource allocateTexture(final Bitmap bitmap, final ParticleEmitter2 textureSource) {
 			return new InternalResource() {

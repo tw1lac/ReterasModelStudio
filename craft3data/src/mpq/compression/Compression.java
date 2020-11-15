@@ -274,7 +274,7 @@ public class Compression {
 		}
 		
 		block.clear();
-		extra.rewind();;
+		extra.rewind();
 	}
 	
 	public boolean blockDecompress(ByteBuffer block, ByteBuffer extra) throws DecompressionException{

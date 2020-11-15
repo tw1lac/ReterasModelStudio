@@ -24,7 +24,7 @@ import com.hiveworkshop.wc3.mdx.Node;
 public abstract class IdObject extends AbstractAnimatedNode implements Named {
 	public static final int DEFAULT_CLICK_RADIUS = 8;
 
-	public static enum NodeFlags {
+	public enum NodeFlags {
 		DONTINHERIT_TRANSLATION("DontInherit { Translation }"), DONTINHERIT_SCALING("DontInherit { Scaling }"),
 		DONTINHERIT_ROTATION("DontInherit { Rotation }"), BILLBOARDED("Billboarded"),
 		BILLBOARD_LOCK_X("BillboardedLockX", "BillboardLockX"), BILLBOARD_LOCK_Y("BillboardedLockY", "BillboardLockY"),

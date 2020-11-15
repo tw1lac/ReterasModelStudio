@@ -7,7 +7,7 @@ public interface ListView<TYPE> extends CollectionView<TYPE> {
 
 	<T> T[] toArray(T[] a);
 
-	public final class Util {
+	final class Util {
 		@SafeVarargs
 		public static <TYPE> ListView<TYPE> of(final TYPE... array) {
 			final List<TYPE> list = new ArrayList<>();

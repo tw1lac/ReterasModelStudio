@@ -25,20 +25,20 @@ import com.hiveworkshop.wc3.mdx.ParticleEmitter2Chunk;
  * Eric Theller 3/10/2012 3:32 PM
  */
 public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySource {
-	public static enum TimeDoubles {
-		Speed, Variation, Latitude, Gravity, EmissionRate, Width, Length;
+	public enum TimeDoubles {
+		Speed, Variation, Latitude, Gravity, EmissionRate, Width, Length
 	}
 
-	public static enum LoneDoubles {
-		LifeSpan, TailLength, Time;
+	public enum LoneDoubles {
+		LifeSpan, TailLength, Time
 	}
 
-	public static enum LoneInts {
-		Rows, Columns, TextureID, ReplaceableId, PriorityPlane;
+	public enum LoneInts {
+		Rows, Columns, TextureID, ReplaceableId, PriorityPlane
 	}
 
-	public static enum VertexData {
-		Alpha, ParticleScaling, LifeSpanUVAnim, DecayUVAnim, TailUVAnim, TailDecayUVAnim;
+	public enum VertexData {
+		Alpha, ParticleScaling, LifeSpanUVAnim, DecayUVAnim, TailUVAnim, TailDecayUVAnim
 	}
 
 	static final String[] timeDoubleNames = { "Speed", "Variation", "Latitude", "Gravity", "EmissionRate", "Width",
@@ -990,9 +990,9 @@ public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySourc
 		return getEmissionRate();
 	}
 
-	public static enum FilterMode {
-		Blend, Additive, Modulate, Modulate2x, AlphaKey;
-	};
+	public enum FilterMode {
+		Blend, Additive, Modulate, Modulate2x, AlphaKey
+	}
 
 	public FilterMode getFilterModeReallyBadReallySlow() {
 		FilterMode filterMode = FilterMode.Blend;

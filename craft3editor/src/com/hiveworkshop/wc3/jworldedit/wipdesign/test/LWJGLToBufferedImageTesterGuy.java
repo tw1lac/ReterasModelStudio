@@ -7,8 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.lwjgl.LWJGLUtil;
-
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.hiveworkshop.wc3.gui.modeledit.MDLSnapshot;
 import com.hiveworkshop.wc3.mdl.EditableModel;
@@ -25,13 +23,7 @@ public class LWJGLToBufferedImageTesterGuy {
 		LwjglNativesLoader.load();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (final ClassNotFoundException e2) {
-			e2.printStackTrace();
-		} catch (final InstantiationException e2) {
-			e2.printStackTrace();
-		} catch (final IllegalAccessException e2) {
-			e2.printStackTrace();
-		} catch (final UnsupportedLookAndFeelException e2) {
+		} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e2) {
 			e2.printStackTrace();
 		}
 

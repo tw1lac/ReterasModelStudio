@@ -313,12 +313,12 @@ public class GeosetVertex extends Vertex {
 		// if( getDimEditable(dim1) )
 		double nextDim = (Math.cos(verAng + radians) * r) + cx;
 		if (!Double.isNaN(nextDim)) {
-			vertex[firstXYZ] = (float) ((Math.cos(verAng + radians) * r) + cx);
+			vertex[firstXYZ] = (float) nextDim;
 		}
 		// if( getDimEditable(dim2) )
 		nextDim = (Math.sin(verAng + radians) * r) + cy;
 		if (!Double.isNaN(nextDim)) {
-			vertex[secondXYZ] = (float) ((Math.sin(verAng + radians) * r) + cy);
+			vertex[secondXYZ] = (float) (nextDim);
 		}
 	}
 

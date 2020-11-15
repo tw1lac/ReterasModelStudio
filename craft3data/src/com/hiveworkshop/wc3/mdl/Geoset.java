@@ -840,13 +840,13 @@ public class Geoset implements Named, VisibilitySource {
 		if (trianglesTogether) {
 			writer.println("\tFaces 1 " + (triangles.size() * 3) + " {");
 			writer.println("\t\tTriangles {");
-			String triangleOut = "\t\t\t{ ";
+			StringBuilder triangleOut = new StringBuilder("\t\t\t{ ");
 			for (int i = 0; i < triangles.size(); i++) {
 				triangles.get(i).updateVertexIds(this);
 				if (i != (triangles.size() - 1)) {
-					triangleOut = triangleOut + triangles.get(i).toString() + ", ";
+					triangleOut.append(triangles.get(i).toString()).append(", ");
 				} else {
-					triangleOut = triangleOut + triangles.get(i).toString() + " ";
+					triangleOut.append(triangles.get(i).toString()).append(" ");
 				}
 			}
 			writer.println(triangleOut + "},");
@@ -855,28 +855,28 @@ public class Geoset implements Named, VisibilitySource {
 			writer.println("\tFaces " + triangles.size() + " " + (triangles.size() * 3) + " {");
 			writer.println("\t\tTriangles {");
 			final String triangleOut = "\t\t\t{ ";
-			for (int i = 0; i < triangles.size(); i++) {
-				triangles.get(i).updateVertexIds(this);
-				writer.println(triangleOut + triangles.get(i).toString() + " },");
+			for (Triangle triangle : triangles) {
+				triangle.updateVertexIds(this);
+				writer.println(triangleOut + triangle.toString() + " },");
 			}
 			writer.println("\t\t}");
 		}
 		writer.println("\t}");
 		int boneRefCount = 0;
-		for (int i = 0; i < matrix.size(); i++) {
-			boneRefCount += matrix.get(i).bones.size();
+		for (Matrix value : matrix) {
+			boneRefCount += value.bones.size();
 		}
 		writer.println("\tGroups " + matrix.size() + " " + boneRefCount + " {");
-		for (int i = 0; i < matrix.size(); i++) {
-			matrix.get(i).updateIds(mdlr);
-			matrix.get(i).printTo(writer, 2);// 2 is the tab height
+		for (Matrix value : matrix) {
+			value.updateIds(mdlr);
+			value.printTo(writer, 2);// 2 is the tab height
 		}
 		writer.println("\t}");
 		if (extents != null) {
 			extents.printTo(writer, 1);
 		}
-		for (int i = 0; i < anims.size(); i++) {
-			anims.get(i).printTo(writer, 1);
+		for (Animation anim : anims) {
+			anim.printTo(writer, 1);
 		}
 
 		writer.println("\tMaterialID " + materialID + ",");
@@ -885,8 +885,8 @@ public class Geoset implements Named, VisibilitySource {
 			writer.println("\tLevelOfDetail " + levelOfDetail + ",");
 			writer.println("\tName \"" + levelOfDetailName + "\",");
 		}
-		for (int i = 0; i < flags.size(); i++) {
-			writer.println("\t" + flags.get(i) + ",");
+		for (String flag : flags) {
+			writer.println("\t" + flag + ",");
 		}
 
 		writer.println("}");
@@ -901,8 +901,8 @@ public class Geoset implements Named, VisibilitySource {
 		uvlayers.clear();
 		int bigNum = 0;
 		int littleNum = -1;
-		for (int i = 0; i < vertex.size(); i++) {
-			final int temp = vertex.get(i).tverts.size();
+		for (GeosetVertex value : vertex) {
+			final int temp = value.tverts.size();
 			if (temp > bigNum) {
 				bigNum = temp;
 			}
@@ -917,12 +917,12 @@ public class Geoset implements Named, VisibilitySource {
 		for (int i = 0; i < bigNum; i++) {
 			uvlayers.add(new UVLayer());
 		}
-		for (int i = 0; i < vertex.size(); i++) {
-			if (vertex.get(i).getNormal() != null) {
-				normals.add(vertex.get(i).getNormal());
+		for (GeosetVertex value : vertex) {
+			if (value.getNormal() != null) {
+				normals.add(value.getNormal());
 			}
 			for (int uv = 0; uv < bigNum; uv++) {
-				final TVertex temp = vertex.get(i).getTVertex(uv);
+				final TVertex temp = value.getTVertex(uv);
 				if (temp != null) {
 					uvlayers.get(uv).addTVertex(temp);
 				} else {
@@ -932,8 +932,7 @@ public class Geoset implements Named, VisibilitySource {
 		}
 		// Clearing matrix list
 		matrix.clear();
-		for (int i = 0; i < vertex.size(); i++) {
-			final GeosetVertex geosetVertex = vertex.get(i);
+		for (final GeosetVertex geosetVertex : vertex) {
 			if (geosetVertex.getSkinBones() != null) {
 				if (matrix.isEmpty()) {
 					final ArrayList<Bone> bones = mdlr.sortedIdObjects(Bone.class);
@@ -962,7 +961,7 @@ public class Geoset implements Named, VisibilitySource {
 				}
 				geosetVertex.VertexGroup = -1;
 			} else {
-				Matrix newTemp = new Matrix(vertex.get(i).bones);
+				Matrix newTemp = new Matrix(geosetVertex.bones);
 				boolean newMatrix = true;
 				for (int m = 0; (m < matrix.size()) && newMatrix; m++) {
 					if (newTemp.equals(matrix.get(m))) {
@@ -974,19 +973,19 @@ public class Geoset implements Named, VisibilitySource {
 					matrix.add(newTemp);
 					newTemp.updateIds(mdlr);
 				}
-				vertex.get(i).VertexGroup = matrix.indexOf(newTemp);
-				vertex.get(i).setMatrix(newTemp);
+				geosetVertex.VertexGroup = matrix.indexOf(newTemp);
+				geosetVertex.setMatrix(newTemp);
 			}
 		}
-		for (int i = 0; i < triangles.size(); i++) {
-			triangles.get(i).updateVertexIds(this);
+		for (Triangle triangle : triangles) {
+			triangle.updateVertexIds(this);
 		}
 		int boneRefCount = 0;
-		for (int i = 0; i < matrix.size(); i++) {
-			boneRefCount += matrix.get(i).bones.size();
+		for (Matrix value : matrix) {
+			boneRefCount += value.bones.size();
 		}
-		for (int i = 0; i < matrix.size(); i++) {
-			matrix.get(i).updateIds(mdlr);
+		for (Matrix value : matrix) {
+			value.updateIds(mdlr);
 		}
 	}
 

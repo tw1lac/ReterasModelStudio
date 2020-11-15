@@ -8,7 +8,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 
 public class CollisionShape extends GenericObject {
-	public static enum Type {
+	public enum Type {
 		BOX,
 		PLANE,
 		SPHERE,
@@ -18,11 +18,11 @@ public class CollisionShape extends GenericObject {
 
 		private final boolean boundsRadius;
 
-		private Type() {
+		Type() {
 			this.boundsRadius = false;
 		}
 
-		private Type(final boolean boundsRadius) {
+		Type(final boolean boundsRadius) {
 			this.boundsRadius = boundsRadius;
 		}
 

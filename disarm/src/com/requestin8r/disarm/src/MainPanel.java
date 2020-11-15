@@ -549,7 +549,7 @@ public class MainPanel extends JPanel implements ActionListener {
 					final String ext = ff.accept(new File("junk.mdl")) ? ".mdl" : ".mdx";
 					final String name = temp.getName();
 					if (name.lastIndexOf('.') != -1) {
-						if (!name.substring(name.lastIndexOf('.'), name.length()).equals(ext)) {
+						if (!name.substring(name.lastIndexOf('.')).equals(ext)) {
 							temp = (new File(
 									temp.getAbsolutePath().substring(0, temp.getAbsolutePath().lastIndexOf('.'))
 											+ ext));
@@ -924,6 +924,7 @@ public class MainPanel extends JPanel implements ActionListener {
 				for (final String str : keywords) {
 					if (atch.getName().toLowerCase().contains(str.toLowerCase())) {
 						match = true;
+						break;
 					}
 				}
 				if (match) {
@@ -1025,6 +1026,7 @@ public class MainPanel extends JPanel implements ActionListener {
 				for (final String str : keywords) {
 					if (atch.getName().toLowerCase().contains(str.toLowerCase())) {
 						match = true;
+						break;
 					}
 				}
 				if (match) {

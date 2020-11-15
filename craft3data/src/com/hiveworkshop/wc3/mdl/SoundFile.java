@@ -69,9 +69,9 @@ public class SoundFile {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight, final boolean useCoords, final int version) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		writer.println(tabs + "SoundFile {");
 		writer.println(tabs + "\tPath \"" + path + "\",");

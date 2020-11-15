@@ -47,8 +47,8 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 		return false;
 	}
 
-	public static enum TimeDoubles {
-		EmissionRate, Gravity, Longitude, Latitude, LifeSpan, InitVelocity;
+	public enum TimeDoubles {
+		EmissionRate, Gravity, Longitude, Latitude, LifeSpan, InitVelocity
 	}
 
 	static final String[] timeDoubleNames = { "EmissionRate", "Gravity", "Longitude", "Latitude", "LifeSpan",

@@ -42,8 +42,7 @@ public class MdxUtils {
 
 		in.mark(8);
 		try {
-			final String readCharsAsString = in.readCharsAsString(4);
-			return readCharsAsString;
+			return in.readCharsAsString(4);
 		} finally {
 			in.reset();
 		}
@@ -82,7 +81,7 @@ public class MdxUtils {
 	 */
 
 	public static float[] loadFloatArray(final BlizzardDataInputStream in, final int size) throws IOException {
-		final float array[] = new float[size];
+		final float[] array = new float[size];
 
 		for (int i = 0; i < size; i++) {
 			array[i] = in.readFloat();
@@ -94,7 +93,7 @@ public class MdxUtils {
 		if (size == -1) {
 			return new int[0];
 		}
-		final int array[] = new int[size];
+		final int[] array = new int[size];
 
 		for (int i = 0; i < size; i++) {
 			array[i] = in.readInt();
@@ -104,7 +103,7 @@ public class MdxUtils {
 	}
 
 	public static short[] loadShortArray(final BlizzardDataInputStream in, final int size) throws IOException {
-		final short array[] = new short[size];
+		final short[] array = new short[size];
 
 		for (int i = 0; i < size; i++) {
 			array[i] = (short) (in.readShort() & 0xFFFF);
@@ -114,7 +113,7 @@ public class MdxUtils {
 	}
 
 	public static byte[] loadByteArray(final BlizzardDataInputStream in, final int size) throws IOException {
-		final byte array[] = new byte[size];
+		final byte[] array = new byte[size];
 
 		for (int i = 0; i < size; i++) {
 			array[i] = in.readByte();
@@ -123,7 +122,7 @@ public class MdxUtils {
 	}
 
 	public static char[] loadCharArray(final BlizzardDataInputStream in, final int size) throws IOException {
-		final char array[] = new char[size];
+		final char[] array = new char[size];
 
 		for (int i = 0; i < size; i++) {
 			array[i] = in.readChar();
@@ -132,26 +131,26 @@ public class MdxUtils {
 	}
 
 	public static void saveFloatArray(final BlizzardDataOutputStream out, final float[] array) throws IOException {
-		for (int i = 0; i < array.length; i++) {
-			out.writeFloat(array[i]);
+		for (float v : array) {
+			out.writeFloat(v);
 		}
 	}
 
 	public static void saveIntArray(final BlizzardDataOutputStream out, final int[] array) throws IOException {
-		for (int i = 0; i < array.length; i++) {
-			out.writeInt(array[i]);
+		for (int value : array) {
+			out.writeInt(value);
 		}
 	}
 
 	public static void saveShortArray(final BlizzardDataOutputStream out, final short[] array) throws IOException {
-		for (int i = 0; i < array.length; i++) {
-			out.writeNByteInt(array[i], 2);
+		for (short value : array) {
+			out.writeNByteInt(value, 2);
 		}
 	}
 
 	public static void saveByteArray(final BlizzardDataOutputStream out, final byte[] array) throws IOException {
-		for (int i = 0; i < array.length; i++) {
-			out.writeByte(array[i]);
+		for (byte b : array) {
+			out.writeByte(b);
 		}
 	}
 

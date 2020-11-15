@@ -11,5 +11,5 @@ public enum ViewableElement {
 	RIBBONEMITTERS,
 	EVENTOBJECTS,
 	COLLISION,
-	CAMERAS;
+	CAMERAS
 }

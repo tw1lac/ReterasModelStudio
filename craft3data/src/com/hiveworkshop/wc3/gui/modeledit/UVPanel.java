@@ -69,7 +69,6 @@ import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.viewport.TVertexEditorMana
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.wc3.gui.modeledit.selection.TVertexSelectionItemTypes;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
-import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonListener;
 import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportIconUtils;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.Geoset;
@@ -80,7 +79,6 @@ import com.hiveworkshop.wc3.mdl.TVertex;
 import com.hiveworkshop.wc3.mdl.Triangle;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.user.SaveProfile;
-import com.hiveworkshop.wc3.util.IconUtils;
 
 import net.infonode.docking.View;
 

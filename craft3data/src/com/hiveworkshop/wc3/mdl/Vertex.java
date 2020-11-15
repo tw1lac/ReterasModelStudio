@@ -356,12 +356,12 @@ public class Vertex {
 		// if( getDimEditable(dim1) )
 		double nextDim = (Math.cos(verAng + radians) * r) + cx;
 		if (!Double.isNaN(nextDim)) {
-			vertex.setCoord(firstXYZ, (Math.cos(verAng + radians) * r) + cx);
+			vertex.setCoord(firstXYZ, nextDim);
 		}
 		// if( getDimEditable(dim2) )
 		nextDim = (Math.sin(verAng + radians) * r) + cy;
 		if (!Double.isNaN(nextDim)) {
-			vertex.setCoord(secondXYZ, (Math.sin(verAng + radians) * r) + cy);
+			vertex.setCoord(secondXYZ, nextDim);
 		}
 	}
 

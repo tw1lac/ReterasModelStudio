@@ -12,7 +12,7 @@ public interface Collection<T> extends CollectionView<T> {
 
 	void clear();
 
-	public final class Util {
+	final class Util {
 		public static <TYPE> void addAll(final Collection<TYPE> list, final CollectionView<TYPE> toAdd) {
 			for (final TYPE item : toAdd) {
 				list.add(item);

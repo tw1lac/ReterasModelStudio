@@ -224,7 +224,7 @@ public class TriggerTree extends JTree {
 		return createTrigger(TypedTriggerInstantiator.COMMENT);
 	}
 
-	private static enum TypedTriggerInstantiator {
+	private enum TypedTriggerInstantiator {
 		TRIGGER() {
 			@Override
 			public Trigger create(final TriggerTreeController controller, final TriggerCategory category) {
@@ -238,7 +238,7 @@ public class TriggerTree extends JTree {
 			}
 		};
 		public abstract Trigger create(TriggerTreeController controller, TriggerCategory category);
-	};
+	}
 
 	private Trigger createTrigger(final TypedTriggerInstantiator instantiator) {
 		final TreePath selectionPath = getSelectionPath();

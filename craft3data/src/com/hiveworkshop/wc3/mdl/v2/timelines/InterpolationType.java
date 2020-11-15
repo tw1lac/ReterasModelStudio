@@ -5,7 +5,7 @@ public enum InterpolationType {
 
 	private String name;
 
-	private InterpolationType(final String name) {
+	InterpolationType(final String name) {
 		this.name = name;
 	}
 

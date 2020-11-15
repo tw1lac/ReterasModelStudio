@@ -3,13 +3,14 @@ package com.etheller.warsmash.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 
 public class ParseUtils {
-	public static final Charset UTF8 = Charset.forName("utf-8");
+	public static final Charset UTF8 = StandardCharsets.UTF_8;
 
 	public static long readUInt32(final LittleEndianDataInputStream stream) throws IOException {
 		return stream.readInt() & 0xFFFFFFFFL;

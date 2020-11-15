@@ -5,7 +5,7 @@ import com.etheller.util.SubscriberSetNotifier;
 public interface WarcraftDirectoryChangeListener {
 	void directoryChanged();
 
-	public final class WarcraftDirectoryChangeNotifier extends SubscriberSetNotifier<WarcraftDirectoryChangeListener>
+	final class WarcraftDirectoryChangeNotifier extends SubscriberSetNotifier<WarcraftDirectoryChangeListener>
 			implements WarcraftDirectoryChangeListener {
 
 		@Override

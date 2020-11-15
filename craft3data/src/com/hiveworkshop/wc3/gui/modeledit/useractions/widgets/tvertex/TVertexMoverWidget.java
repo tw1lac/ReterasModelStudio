@@ -155,7 +155,7 @@ public final class TVertexMoverWidget {
 		}
 	}
 
-	public static enum MoveDirection {
+	public enum MoveDirection {
 		UP, RIGHT, BOTH, NONE
-	};
+	}
 }

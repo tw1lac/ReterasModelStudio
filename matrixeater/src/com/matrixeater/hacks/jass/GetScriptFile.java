@@ -6,9 +6,7 @@ import mpq.MPQException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 public class GetScriptFile {
     public static void main(String[] args) {
@@ -16,10 +14,7 @@ public class GetScriptFile {
         try {
             mpq = MpqCodebase.get().loadMPQ(Paths
                     .get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/FromTemplarAndHitari/NWU S3 B14.w3x"));
-        } catch (final MPQException e1) {
-            e1.printStackTrace();
-            return;
-        } catch (final IOException e1) {
+        } catch (final MPQException | IOException e1) {
             e1.printStackTrace();
             return;
         }

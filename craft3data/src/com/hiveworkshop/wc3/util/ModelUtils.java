@@ -37,7 +37,7 @@ public final class ModelUtils {
 
 	public static String getPortrait(final String filepath) {
 		final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-				+ filepath.substring(filepath.lastIndexOf('.'), filepath.length());
+				+ filepath.substring(filepath.lastIndexOf('.'));
 		return portrait;
 	}
 
@@ -201,12 +201,6 @@ public final class ModelUtils {
 	/**
 	 * Creates a box ready to add to the dataGeoset, but does not actually modify
 	 * the geoset itself
-	 *
-	 * @param max
-	 * @param min
-	 * @param segments
-	 * @param dataGeoset
-	 * @return
 	 */
 	public static Mesh createBox(final Vertex max, final Vertex min, final int lengthSegs, final int widthSegs,
 			final int heightSegs, final Geoset dataGeoset) {
@@ -257,12 +251,8 @@ public final class ModelUtils {
 
 				final Mesh sidedPlane = createPlane(dimension, side != 1, coordinateAtSide, minFirst, minSecond,
 						maxFirst, maxSecond, segsX, segsY);
-				for (final GeosetVertex vertex : sidedPlane.vertices) {
-					box.vertices.add(vertex);
-				}
-				for (final Triangle triangle : sidedPlane.triangles) {
-					box.triangles.add(triangle);
-				}
+				box.vertices.addAll(sidedPlane.vertices);
+				box.triangles.addAll(sidedPlane.triangles);
 			}
 		}
 		for (final GeosetVertex vertex : box.getVertices()) {

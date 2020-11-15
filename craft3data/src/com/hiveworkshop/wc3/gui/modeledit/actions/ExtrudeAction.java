@@ -128,9 +128,7 @@ public class ExtrudeAction implements UndoAction {
 		if (type) {
 			for (final Triangle t : addedTriangles) {
 				for (final GeosetVertex gv : t.getAll()) {
-					if (gv.getTriangles().contains(t)) {
-						gv.getTriangles().remove(t);
-					}
+					gv.getTriangles().remove(t);
 				}
 				t.getGeoset().removeTriangle(t);
 			}
@@ -153,9 +151,7 @@ public class ExtrudeAction implements UndoAction {
 		} else {
 			for (final Triangle t : addedTriangles) {
 				for (final GeosetVertex gv : t.getAll()) {
-					if (gv.getTriangles().contains(t)) {
-						gv.getTriangles().remove(t);
-					}
+					gv.getTriangles().remove(t);
 				}
 				t.getGeoset().removeTriangle(t);
 			}

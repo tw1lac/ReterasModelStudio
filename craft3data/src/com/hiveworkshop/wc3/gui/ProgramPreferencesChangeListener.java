@@ -5,7 +5,7 @@ import com.etheller.util.SubscriberSetNotifier;
 public interface ProgramPreferencesChangeListener {
 	void preferencesChanged();
 
-	public final class ProgramPreferencesChangeNotifier extends SubscriberSetNotifier<ProgramPreferencesChangeListener>
+	final class ProgramPreferencesChangeNotifier extends SubscriberSetNotifier<ProgramPreferencesChangeListener>
 			implements ProgramPreferencesChangeListener {
 
 		@Override

@@ -13,7 +13,7 @@ public enum SelectionMode implements ToolbarButtonType {
 	private final String name;
 	private final ImageIcon imageIcon;
 
-	private SelectionMode(final String name, final ImageIcon imageIcon) {
+	SelectionMode(final String name, final ImageIcon imageIcon) {
 		this.name = name;
 		this.imageIcon = imageIcon;
 	}

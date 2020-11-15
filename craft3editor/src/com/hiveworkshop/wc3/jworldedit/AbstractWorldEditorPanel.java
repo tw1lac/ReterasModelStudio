@@ -62,7 +62,7 @@ public abstract class AbstractWorldEditorPanel extends JPanel {
 
 	public static ImageIcon getIcon(final DataTable worldEditorData, final String iconName) {
 		String iconTexturePath = worldEditorData.get("WorldEditArt").getField(iconName);
-		if (!iconTexturePath.toString().endsWith(".blp")) {
+		if (!iconTexturePath.endsWith(".blp")) {
 			iconTexturePath += ".blp";
 		}
 		return new ImageIcon(BLPHandler.get().getGameTex(iconTexturePath));

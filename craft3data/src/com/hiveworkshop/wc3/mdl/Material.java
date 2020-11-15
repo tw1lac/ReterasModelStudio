@@ -43,41 +43,39 @@ public class Material implements MaterialView {
 	}
 
 	public String getName() {
-		String name = "";
+		StringBuilder name = new StringBuilder();
 		if (layers.size() > 0) {
 			if (SHADER_HD_DEFAULT_UNIT.equals(shaderString)) {
 				try {
-					name = name + " over " + layers.get(0).texture.getName();
+					name.append(" over ").append(layers.get(0).texture.getName());
 					if (layers.get(0).getFlag("Alpha") != null) {
-						name = name + " (animated Alpha)";
+						name.append(" (animated Alpha)");
 					}
 				} catch (final NullPointerException e) {
-					name = name + " over " + "animated texture layers (" + layers.get(0).textures.get(0).getName()
-							+ ")";
+					name.append(" over ").append("animated texture layers (").append(layers.get(0).textures.get(0).getName()).append(")");
 				}
 			} else {
 				if (layers.get(layers.size() - 1).texture != null) {
-					name = layers.get(layers.size() - 1).texture.getName();
+					name = new StringBuilder(layers.get(layers.size() - 1).texture.getName());
 					if (layers.get(layers.size() - 1).getFlag("Alpha") != null) {
-						name = name + " (animated Alpha)";
+						name.append(" (animated Alpha)");
 					}
 				} else {
-					name = "animated texture layers";
+					name = new StringBuilder("animated texture layers");
 				}
 				for (int i = layers.size() - 2; i >= 0; i--) {
 					try {
-						name = name + " over " + layers.get(i).texture.getName();
+						name.append(" over ").append(layers.get(i).texture.getName());
 						if (layers.get(i).getFlag("Alpha") != null) {
-							name = name + " (animated Alpha)";
+							name.append(" (animated Alpha)");
 						}
 					} catch (final NullPointerException e) {
-						name = name + " over " + "animated texture layers (" + layers.get(i).textures.get(0).getName()
-								+ ")";
+						name.append(" over ").append("animated texture layers (").append(layers.get(i).textures.get(0).getName()).append(")");
 					}
 				}
 			}
 		}
-		return name;
+		return name.toString();
 	}
 
 	public Layer firstLayer() {
@@ -234,13 +232,8 @@ public class Material implements MaterialView {
 			return false;
 		}
 		if (shaderString == null) {
-			if (other.shaderString != null) {
-				return false;
-			}
-		} else if (!shaderString.equals(other.shaderString)) {
-			return false;
-		}
-		return true;
+			return other.shaderString == null;
+		} else return shaderString.equals(other.shaderString);
 	}
 
 	public static Material read(final BufferedReader mdl, final EditableModel mdlr) {
@@ -294,9 +287,9 @@ public class Material implements MaterialView {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight, final int version) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		writer.println(tabs + "Material {");
 		if ((shaderString != null) && ModelUtils.isShaderStringSupported(version)) {
@@ -305,8 +298,8 @@ public class Material implements MaterialView {
 		if (priorityPlane != 0) {
 			writer.println(tabs + "\tPriorityPlane " + priorityPlane + ",");
 		}
-		for (int i = 0; i < flags.size(); i++) {
-			writer.println(tabs + "\t" + flags.get(i) + ",");
+		for (String flag : flags) {
+			writer.println(tabs + "\t" + flag + ",");
 		}
 		boolean useCoords = false;
 		for (int i = 0; i < layers.size(); i++) {

@@ -23,7 +23,7 @@ public interface CoordinateSystem extends CoordinateAxes {
 
 	CoordinateSystem copy();
 
-	public final class Util {
+	final class Util {
 		private static final class IdentityCoordinateSystem implements CoordinateSystem {
 			private final byte b;
 			private final byte a;

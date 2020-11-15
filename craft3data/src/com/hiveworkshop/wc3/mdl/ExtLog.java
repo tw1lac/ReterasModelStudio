@@ -136,9 +136,9 @@ public class ExtLog {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		if (minimumExtent != null) {
 			writer.println(tabs + "MinimumExtent " + minimumExtent.toString() + ",");

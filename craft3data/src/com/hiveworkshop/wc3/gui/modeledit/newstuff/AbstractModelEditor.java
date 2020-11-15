@@ -161,9 +161,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 				geosetsToIncorporate.add(geoset);
 			}
 		} else {
-			for (final Geoset geoset : model.getModel().getGeosets()) {
-				geosetsToIncorporate.add(geoset);
-			}
+			geosetsToIncorporate.addAll(model.getModel().getGeosets());
 		}
 		final RecalculateExtentsAction recalculateExtentsAction = new RecalculateExtentsAction(model,
 				geosetsToIncorporate);

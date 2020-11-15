@@ -13,7 +13,7 @@ public enum DefaultBuffRace implements SortRace {
 	private final String keyString;
 	private final String displayName;
 
-	private DefaultBuffRace(final String keyString, final String displayKey) {
+	DefaultBuffRace(final String keyString, final String displayKey) {
 		this.keyString = keyString;
 		this.displayName = WEString.getString(displayKey);
 	}

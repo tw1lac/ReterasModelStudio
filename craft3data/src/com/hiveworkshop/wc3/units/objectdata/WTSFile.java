@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,12 +21,12 @@ public class WTSFile implements WTS {
 	private final InputStream source;
 	private final Map<Integer, String> trigStrings = new Hashtable<>();
 
-	private static enum ParseState {
-		NEXT_TRIGSTR, START_OF_DATA, END_OF_DATA;
+	private enum ParseState {
+		NEXT_TRIGSTR, START_OF_DATA, END_OF_DATA
 	}
 
 	private void parse() throws IOException {
-		final BufferedReader sourceReader = new BufferedReader(new InputStreamReader(source, Charset.forName("utf-8")));
+		final BufferedReader sourceReader = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8));
 		ParseState state = ParseState.NEXT_TRIGSTR;
 
 		// WTS files may start with a Byte Order Mark, which we will have to skip.

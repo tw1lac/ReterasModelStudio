@@ -665,8 +665,8 @@ public class DataSourceChooserPanel extends JPanel {
 		}
 	}
 
-	private static enum SupportedCascPatchFormat {
-		PATCH130, PATCH131, PATCH132, UNKNOWN_FUTURE_PATCH;
+	private enum SupportedCascPatchFormat {
+		PATCH130, PATCH131, PATCH132, UNKNOWN_FUTURE_PATCH
 	}
 
 	public static void main(final String[] args) {
@@ -797,8 +797,8 @@ public class DataSourceChooserPanel extends JPanel {
 						}
 					}
 					if (localeOptions.isEmpty()) {
-						localeOptions.addAll(Arrays.asList(new String[] { "zhCN", "ruRU", "esES", "itIT", "zhTW",
-								"frFR", "enUS", "koKR", "deDE", "plPL" }));
+						localeOptions.addAll(Arrays.asList("zhCN", "ruRU", "esES", "itIT", "zhTW",
+								"frFR", "enUS", "koKR", "deDE", "plPL"));
 					}
 					final JPanel userChooseLocalePanel = new JPanel();
 					userChooseLocalePanel.setLayout(new GridLayout(localeOptions.size() + 5, 1));

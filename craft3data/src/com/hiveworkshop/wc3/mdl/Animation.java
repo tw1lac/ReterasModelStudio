@@ -336,9 +336,9 @@ public class Animation implements BasicTimeBoundProvider {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		if (!this.name.equals("")) {
 			writer.println(tabs + "Anim \"" + this.name + "\" {");

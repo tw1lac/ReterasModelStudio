@@ -84,9 +84,9 @@ public class Node {
 
 	}
 
-	public static enum NodeFlag {
-		DONTINHERIT_TRANSLATION("DontInherit { Translation }", 0x1),
-		DONTINHERIT_SCALING("DontInherit { Scaling }", 0x2), DONTINHERIT_ROTATION("DontInherit { Rotation }", 0x4),
+	public enum NodeFlag {
+		DONT_INHERIT_TRANSLATION("DontInherit { Translation }", 0x1),
+		DONT_INHERIT_SCALING("DontInherit { Scaling }", 0x2), DONTINHERIT_ROTATION("DontInherit { Rotation }", 0x4),
 		BILLBOARDED("Billboarded", 0x8), BILLBOARD_LOCK_X("BillboardLockX", 0x10),
 		BILLBOARD_LOCK_Y("BillboardLockY", 0x20), BILLBOARD_LOCK_Z("BillboardLockZ", 0x40),
 		CAMERA_ANCHORED("CameraAnchored", 0x80), EMITTER_USES_MDL("EmitterUsesMDL", 0x8000),

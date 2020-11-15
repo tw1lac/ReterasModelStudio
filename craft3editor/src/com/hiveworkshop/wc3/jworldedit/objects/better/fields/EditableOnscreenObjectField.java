@@ -26,7 +26,7 @@ public interface EditableOnscreenObjectField {
 
 	// void setValue(final MutableGameObject gameUnit, final Object value);
 
-	public static String categoryName(final String cat) {
+	static String categoryName(final String cat) {
 		switch (cat.toLowerCase()) {
 		case "abil":
 			return WEString.getString("WESTRING_OE_CAT_ABILITIES").replace("&", "");

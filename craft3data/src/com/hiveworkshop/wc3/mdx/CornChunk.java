@@ -33,8 +33,8 @@ public class CornChunk {
 		final int nrOfLights = corns.length;
 		out.writeNByteString(key, 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < nrOfLights; i++) {
-			corns[i].save(out);
+		for (ParticleEmitterPopcorn corn : corns) {
+			corn.save(out);
 		}
 
 	}
@@ -43,8 +43,8 @@ public class CornChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < corns.length; i++) {
-			a += corns[i].getSize();
+		for (ParticleEmitterPopcorn corn : corns) {
+			a += corn.getSize();
 		}
 
 		return a;
@@ -188,7 +188,7 @@ public class CornChunk {
 						cornVisibility.visibilityTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -205,7 +205,7 @@ public class CornChunk {
 						cornEmissionRate.emissionRateTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.emissionRate = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -222,7 +222,7 @@ public class CornChunk {
 						cornAlpha.alphaTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -239,7 +239,7 @@ public class CornChunk {
 						cornSpeed.speedTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -256,7 +256,7 @@ public class CornChunk {
 						cornLifeSpan.lifeSpanTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.lifeSpan = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -280,7 +280,7 @@ public class CornChunk {
 						// mdxEntry.color[2] = blue;
 						// ========== RGB for some reason, mdl is BGR
 						// ==============
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();

@@ -67,7 +67,7 @@ public class JCheckBoxTree extends JTree {
 	}
 
 	public interface CheckChangeEventListener extends EventListener {
-		public void checkStateChanged(CheckChangeEvent event);
+		void checkStateChanged(CheckChangeEvent event);
 	}
 
 	public void addCheckChangeEventListener(final CheckChangeEventListener listener) {

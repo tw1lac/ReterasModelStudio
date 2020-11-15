@@ -5,10 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
+import java.nio.charset.*;
 import java.util.Iterator;
 
 import com.etheller.collections.ArrayList;
@@ -452,8 +449,8 @@ public final class War3ObjectDataChangeset {
 		}
 	}
 
-	public static enum CollisionHandling {
-		CREATE_NEW_ID, REPLACE, MERGE;
+	public enum CollisionHandling {
+		CREATE_NEW_ID, REPLACE, MERGE
 	}
 
 	public void merge(final War3ObjectDataChangeset obj, final CollisionHandling collisionHandling) {
@@ -476,7 +473,7 @@ public final class War3ObjectDataChangeset {
 			final WTS wts, final boolean inlineWTS) throws IOException {
 		final War3ID noid = new War3ID(0);
 		final ByteBuffer stringByteBuffer = ByteBuffer.allocate(1024); // TODO check max len?
-		final CharsetDecoder decoder = Charset.forName("utf-8").newDecoder().onMalformedInput(CodingErrorAction.REPLACE)
+		final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPLACE)
 				.onUnmappableCharacter(CodingErrorAction.REPLACE);
 		int ptr;
 		final int count = stream.readInt();
@@ -695,7 +692,7 @@ public final class War3ObjectDataChangeset {
 
 	public boolean saveTable(final BlizzardDataOutputStream outputStream, final ObjectMap map, final boolean isOriginal)
 			throws IOException {
-		final CharsetEncoder encoder = Charset.forName("utf-8").newEncoder().onMalformedInput(CodingErrorAction.REPLACE)
+		final CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder().onMalformedInput(CodingErrorAction.REPLACE)
 				.onUnmappableCharacter(CodingErrorAction.REPLACE);
 		final CharBuffer charBuffer = CharBuffer.allocate(1024);
 		final ByteBuffer byteBuffer = ByteBuffer.allocate(1024);

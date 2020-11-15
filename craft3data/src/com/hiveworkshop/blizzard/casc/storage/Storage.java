@@ -284,7 +284,7 @@ public class Storage implements AutoCloseable {
 			storageBuffer = ByteBuffer.allocate((int) length);
 			while (storageBuffer.hasRemaining()
 					&& (fileChannel.read(storageBuffer, offset + storageBuffer.position()) != -1)) {
-				;
+
 			}
 
 			if (storageBuffer.hasRemaining()) {
@@ -318,7 +318,7 @@ public class Storage implements AutoCloseable {
 			} else {
 				fileBuffer = ByteBuffer.allocate((int) fileLength);
 				while (fileBuffer.hasRemaining() && (channel.read(fileBuffer, fileBuffer.position()) != -1)) {
-					;
+
 				}
 
 				if (fileBuffer.hasRemaining()) {

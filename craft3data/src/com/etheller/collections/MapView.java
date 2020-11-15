@@ -17,17 +17,17 @@ public interface MapView<KEY, VALUE> extends Iterable<MapView.Entry<KEY, VALUE>>
 
 	void forEach(MapView.ForEach<? super KEY, ? super VALUE> forEach);
 
-	public static interface ForEach<K, V> {
+	interface ForEach<K, V> {
 		boolean onEntry(K key, V value);
 	}
 
-	public static interface Entry<K, V> {
+	interface Entry<K, V> {
 		K getKey();
 
 		V getValue();
 	}
 
-	public static final class Util {
+	final class Util {
 		public static boolean isEmpty(final MapView<?, ?> map) {
 			return map.size() == 0;
 		}

@@ -17,7 +17,7 @@ public interface MaterialView {
 
 	boolean isFullResolution();
 
-	public static final class Util {
+	final class Util {
 		private static final TextureNameGetter TEXTURE_NAME_GETTER = new TextureNameGetter();
 		private static final IsAlphaAnimatedChecker IS_ALPHA_ANIMATED_CHECKER = new IsAlphaAnimatedChecker();
 

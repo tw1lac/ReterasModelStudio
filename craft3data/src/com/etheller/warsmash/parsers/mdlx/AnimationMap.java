@@ -71,7 +71,7 @@ public enum AnimationMap {
 	private final TimelineDescriptor implementation;
 	private final War3ID war3id;
 
-	private AnimationMap(final String mdlToken, final TimelineDescriptor implementation) {
+	AnimationMap(final String mdlToken, final TimelineDescriptor implementation) {
 		this.mdlToken = mdlToken;
 		this.implementation = implementation;
 		this.war3id = War3ID.fromString(this.name());

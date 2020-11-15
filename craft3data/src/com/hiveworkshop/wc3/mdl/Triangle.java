@@ -154,6 +154,7 @@ public class Triangle {
 		for (int i = 0; i < 3 && equal; i++) {
 			if (t.verts[i] != verts[i]) {
 				equal = false;
+				break;
 			}
 		}
 		return equal;
@@ -164,6 +165,7 @@ public class Triangle {
 		for (int i = 0; i < 3 && equal; i++) {
 			if (t.verts[i] != verts[i] || t.vertIds[i] != vertIds[i]) {
 				equal = false;
+				break;
 			}
 		}
 		return equal;
@@ -203,7 +205,7 @@ public class Triangle {
 		final ArrayList<Triangle> output = new ArrayList<>();
 		for (int l = 1; l < input.length; l++) {
 			final String[] s = input[l].split(",");
-			s[0] = s[0].substring(4, s[0].length());
+			s[0] = s[0].substring(4);
 			final int s_size = MDLReader.occurrencesIn(input[l], ",");
 			s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
 			for (int t = 0; t < s_size - 1; t += 3)// s[t+3].equals("")||
@@ -232,7 +234,7 @@ public class Triangle {
 		while (!(line = MDLReader.nextLine(mdl)).contains("\t}")) {
 			// System.out.println("Interpreting "+line+" for Triangles");
 			final String[] s = line.split(",");
-			s[0] = s[0].substring(4, s[0].length());
+			s[0] = s[0].substring(4);
 			final int s_size = MDLReader.occurrencesIn(",", line);
 			// System.out.println("We broke it into "+s_size+" parts.");
 			s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
@@ -262,7 +264,7 @@ public class Triangle {
 		while (!(line = MDLReader.nextLine(mdl)).contains("\t}")) {
 			// System.out.println("Interpreting "+line+" for Triangles");
 			final String[] s = line.split(",");
-			s[0] = s[0].substring(4, s[0].length());
+			s[0] = s[0].substring(4);
 			final int s_size = MDLReader.occurrencesIn(",", line);
 			// System.out.println("We broke it into "+s_size+" parts.");
 			s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);

@@ -2,7 +2,7 @@ package com.hiveworkshop.wc3.gui.modeledit.actions;
 
 public enum SelectionActionType {
 	SELECT, ADD, DESELECT, SELECT_ALL, INVERT_SELECTION, EXPAND_SELECTION;
-	;
+
 
 	public static SelectionActionType fromLegacyId(final int selectionType) {
 		switch (selectionType) {

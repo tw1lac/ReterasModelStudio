@@ -2015,13 +2015,13 @@ public class AnimFlag {
 	public void printTo(final PrintWriter writer, final int tabHeight) {
 		if (size() > 0) {
 			sort();
-			String tabs = "";
+			StringBuilder tabs = new StringBuilder();
 			for (int i = 0; i < tabHeight; i++) {
-				tabs = tabs + "\t";
+				tabs.append("\t");
 			}
 			writer.println(tabs + title + " " + times.size() + " {");
-			for (int i = 0; i < tags.size(); i++) {
-				writer.println(tabs + "\t" + tags.get(i) + ",");
+			for (String tag : tags) {
+				writer.println(tabs + "\t" + tag + ",");
 			}
 			if (hasGlobalSeq) {
 				writer.println(tabs + "\tGlobalSeqId " + globalSeqId + ",");
@@ -2517,10 +2517,6 @@ public class AnimFlag {
 	/**
 	 * Interpolates at a given time. The lack of generics on this function is
 	 * abysmal, but currently this is how the codebase is.
-	 *
-	 * @param time
-	 * @param animation
-	 * @return
 	 */
 	public Object interpolateAt(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {

@@ -42,20 +42,13 @@ public class StorageReference {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("FileReference{encodingKey=");
-		builder.append(encodingKey);
-		builder.append(", offset=");
-		builder.append(offset);
-		builder.append(", size=");
-		builder.append(size);
-		builder.append(", physicalSize=");
-		builder.append(physicalSize);
-		builder.append(", actualSize=");
-		builder.append(actualSize);
-		builder.append("}");
 
-		return builder.toString();
+		return "FileReference{encodingKey=" + encodingKey
+				+ ", offset=" + offset
+				+ ", size=" + size
+				+ ", physicalSize=" + physicalSize
+				+ ", actualSize=" + actualSize
+				+ "}";
 	}
 
 	public long getOffset() {

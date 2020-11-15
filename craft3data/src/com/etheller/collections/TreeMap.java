@@ -1062,7 +1062,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		@Override
 		public void forEach(final CollectionView.ForEach<? super V> forEach) {
 			final int expectedModCount = modCount;
-			;
+
 			for (TreeMap.Entry<K, V> entry = getFirstEntry(); entry != null; entry = successor(entry)) {
 				if (modCount != expectedModCount) {
 					throw new ConcurrentModificationException();
@@ -1122,7 +1122,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		@Override
 		public void forEach(final CollectionView.ForEach<? super MapView.Entry<K, V>> forEach) {
 			final int expectedModCount = modCount;
-			;
+
 			for (TreeMap.Entry<K, V> entry = getFirstEntry(); entry != null; entry = successor(entry)) {
 				if (modCount != expectedModCount) {
 					throw new ConcurrentModificationException();
@@ -1297,7 +1297,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 				}
 			}
 			final int expectedModCount = ((TreeMap<E, Object>) m).modCount;
-			;
+
 			for (TreeMap.Entry<E, Object> entry = ((TreeMap<E, Object>) m)
 					.getFirstEntry(); entry != null; entry = successor(entry)) {
 				if (((TreeMap<E, Object>) m).modCount != expectedModCount) {
@@ -2905,7 +2905,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	@Override
 	public void forEach(final MapView.ForEach<? super K, ? super V> forEach) {
 		final int expectedModCount = modCount;
-		;
+
 		for (TreeMap.Entry<K, V> entry = getFirstEntry(); entry != null; entry = successor(entry)) {
 			if (modCount != expectedModCount) {
 				throw new ConcurrentModificationException();

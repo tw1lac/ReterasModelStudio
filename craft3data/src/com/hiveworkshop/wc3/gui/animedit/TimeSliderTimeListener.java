@@ -5,7 +5,7 @@ import com.etheller.util.SubscriberSetNotifier;
 public interface TimeSliderTimeListener {
 	void timeChanged(int currentTime);
 
-	public static final class TimeSliderTimeNotifier extends SubscriberSetNotifier<TimeSliderTimeListener>
+	final class TimeSliderTimeNotifier extends SubscriberSetNotifier<TimeSliderTimeListener>
 			implements TimeSliderTimeListener {
 		@Override
 		public void timeChanged(final int currentTime) {

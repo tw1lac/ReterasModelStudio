@@ -55,10 +55,10 @@ public class Face {
 
     @Override
 	public String toString() {
-        String result = "\tvertices: "+vertices.size()+" :\n";
+        StringBuilder result = new StringBuilder("\tvertices: " + vertices.size() + " :\n");
         for(final FaceVertex f : vertices) {
-            result += " \t\t( "+f.toString()+" )\n";
+            result.append(" \t\t( ").append(f.toString()).append(" )\n");
         }
-        return result;
+        return result.toString();
     }
 }

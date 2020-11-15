@@ -643,6 +643,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 						for (int animationId = 0; animationId < 10; animationId++) {
 							if (lastWord.contains(Integer.toString(animationId))) {
 								chunkHasInt = true;
+								break;
 							}
 						}
 						if (lastWord.contains("-") || chunkHasInt || lastWord.toLowerCase().contains("alternate")

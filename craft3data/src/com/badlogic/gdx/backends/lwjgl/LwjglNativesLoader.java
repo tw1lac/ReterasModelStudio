@@ -33,7 +33,7 @@ public final class LwjglNativesLoader {
 
 		// Don't extract natives if using JWS.
 		try {
-			Method method = Class.forName("javax.jnlp.ServiceManager").getDeclaredMethod("lookup", new Class[] {String.class});
+			Method method = Class.forName("javax.jnlp.ServiceManager").getDeclaredMethod("lookup", String.class);
 			method.invoke(null, "javax.jnlp.PersistenceService");
 			load = false;
 		} catch (Throwable ex) {

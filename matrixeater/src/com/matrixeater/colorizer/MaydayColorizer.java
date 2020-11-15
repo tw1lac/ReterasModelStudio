@@ -195,9 +195,9 @@ public class MaydayColorizer extends JPanel {
 		}
 		try {
 			final String selectedText = inputTextArea.getText(selectionStart, selectionEnd - selectionStart);
-			String hexString = Integer.toHexString(color.getRGB());
+			StringBuilder hexString = new StringBuilder(Integer.toHexString(color.getRGB()));
 			while (hexString.length() < 8) {
-				hexString = "0" + hexString;
+				hexString.insert(0, "0");
 			}
 			final String resultingGeneratedText = inputTextArea.getText(0, selectionStart) + "|c" + hexString
 					+ selectedText + "|r"
@@ -250,8 +250,7 @@ public class MaydayColorizer extends JPanel {
 							}
 							if (validHexString) {
 								skip = true;
-								sb.append("<span style=\"color:#" + text.substring(i + 4, i + 10)
-										+ text.substring(i + 2, i + 4) + "\">");
+								sb.append("<span style=\"color:#").append(text.substring(i + 4, i + 10)).append(text.substring(i + 2, i + 4)).append("\">");
 								i += 9;
 							}
 						}
@@ -319,9 +318,9 @@ public class MaydayColorizer extends JPanel {
 				if (Math.abs(a - a1) > Math.abs(dam)) {
 					a = a2;
 				}
-				String hexString = Integer.toHexString(new Color(r, g, b, a).getRGB());
+				StringBuilder hexString = new StringBuilder(Integer.toHexString(new Color(r, g, b, a).getRGB()));
 				while (hexString.length() < 8) {
-					hexString = "0" + hexString;
+					hexString.insert(0, "0");
 				}
 				resultingText.append("|c");
 				resultingText.append(hexString);
@@ -356,7 +355,6 @@ public class MaydayColorizer extends JPanel {
 		public WrappedHtmlEditorKit() {
 			super();
 			this.viewFactory = new WrappedHtmlFactory();
-			return;
 		}
 
 		@Override
@@ -385,7 +383,6 @@ public class MaydayColorizer extends JPanel {
 			private static class WrapLabelView extends LabelView {
 				public WrapLabelView(final Element elem) {
 					super(elem);
-					return;
 				}
 
 				@Override

@@ -27,7 +27,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 	// 4: add alpha
 	// 5: modulate
 	// 6: modulate 2x
-	public static enum FilterMode {
+	public enum FilterMode {
 		NONE("None"), TRANSPARENT("Transparent"), BLEND("Blend"), ADDITIVE("Additive"), ADDALPHA("AddAlpha"),
 		MODULATE("Modulate"), MODULATE2X("Modulate2x");
 
@@ -560,20 +560,19 @@ public class Layer implements Named, VisibilitySource, LayerView {
 	}
 
 	public void printTo(final PrintWriter writer, final int tabHeight, final boolean useCoords, final int version) {
-		String tabs = "";
+		StringBuilder tabs = new StringBuilder();
 		for (int i = 0; i < tabHeight; i++) {
-			tabs = tabs + "\t";
+			tabs.append("\t");
 		}
 		writer.println(tabs + "Layer {");
 		writer.println(tabs + "\tFilterMode " + filterMode + ",");
-		for (int i = 0; i < flags.size(); i++) {
-			writer.println(tabs + "\t" + flags.get(i) + ",");
+		for (String flag : flags) {
+			writer.println(tabs + "\t" + flag + ",");
 		}
 		if (textureId != -1) {
 			writer.println(tabs + "\tstatic TextureID " + textureId + ",");
 		}
-		for (int i = 0; i < anims.size(); i++) {
-			final AnimFlag temp = anims.get(i);
+		for (final AnimFlag temp : anims) {
 			if (temp.getName().equals("TextureID")) {
 				temp.printTo(writer, tabHeight + 1);
 			}
@@ -585,8 +584,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 			writer.println(tabs + "\tCoordId " + CoordId + ",");
 		}
 		boolean foundAlpha = false;
-		for (int i = 0; i < anims.size(); i++) {
-			final AnimFlag temp = anims.get(i);
+		for (final AnimFlag temp : anims) {
 			if (temp.getName().equals("Alpha")) {
 				temp.printTo(writer, tabHeight + 1);
 				foundAlpha = true;
@@ -597,8 +595,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 		}
 		if (ModelUtils.isEmissiveLayerSupported(version)) {
 			boolean foundEmissive = false;
-			for (int i = 0; i < anims.size(); i++) {
-				final AnimFlag temp = anims.get(i);
+			for (final AnimFlag temp : anims) {
 				if (temp.getName().startsWith("Emissive")) {
 					temp.printTo(writer, tabHeight + 1);
 					foundEmissive = true;
@@ -610,8 +607,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 		}
 		if (ModelUtils.isFresnelColorLayerSupported(version)) {
 			boolean foundFresnelColor = false;
-			for (int i = 0; i < anims.size(); i++) {
-				final AnimFlag temp = anims.get(i);
+			for (final AnimFlag temp : anims) {
 				if (temp.getName().startsWith("FresnelColor")) {
 					temp.printTo(writer, tabHeight + 1);
 					foundFresnelColor = true;
@@ -623,8 +619,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 				writer.println(tabs + "\tstatic FresnelColor " + fresnelColor + ",");
 			}
 			boolean foundFresnelOpacity = false;
-			for (int i = 0; i < anims.size(); i++) {
-				final AnimFlag temp = anims.get(i);
+			for (final AnimFlag temp : anims) {
 				if (temp.getName().startsWith("FresnelOpacity")) {
 					temp.printTo(writer, tabHeight + 1);
 					foundFresnelOpacity = true;
@@ -634,8 +629,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 				writer.println(tabs + "\tstatic FresnelOpacity " + MDLReader.doubleToString(fresnelOpacity) + ",");
 			}
 			boolean foundFresnelTeamColor = false;
-			for (int i = 0; i < anims.size(); i++) {
-				final AnimFlag temp = anims.get(i);
+			for (final AnimFlag temp : anims) {
 				if (temp.getName().startsWith("FresnelTeamColor")) {
 					temp.printTo(writer, tabHeight + 1);
 					foundFresnelTeamColor = true;

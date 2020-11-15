@@ -181,7 +181,7 @@ public final class TVertexScalerWidget {
 		}
 	}
 
-	public static enum ScaleDirection {
+	public enum ScaleDirection {
 		UP, RIGHT, FLAT_XY, XYZ, NONE
-	};
+	}
 }

@@ -506,20 +506,20 @@ public class ModelPanel implements ActionListener, MouseListener {
 				}
 			}
 		}
-		String boneList = "";
+		StringBuilder boneList = new StringBuilder();
 		for (int i = 0; i < boneRefs.size(); i++) {
 			if (i == (boneRefs.size() - 2)) {
-				boneList = boneList + boneRefs.get(i).getName() + " and ";
+				boneList.append(boneRefs.get(i).getName()).append(" and ");
 			} else if (i == (boneRefs.size() - 1)) {
-				boneList = boneList + boneRefs.get(i).getName();
+				boneList.append(boneRefs.get(i).getName());
 			} else {
-				boneList = boneList + boneRefs.get(i).getName() + ", ";
+				boneList.append(boneRefs.get(i).getName()).append(", ");
 			}
 		}
 		if (boneRefs.size() == 0) {
-			boneList = "Nothing was selected that was attached to any bones.";
+			boneList = new StringBuilder("Nothing was selected that was attached to any bones.");
 		}
-		final JTextArea tpane = new JTextArea(boneList);
+		final JTextArea tpane = new JTextArea(boneList.toString());
 		tpane.setLineWrap(true);
 		tpane.setWrapStyleWord(true);
 		tpane.setEditable(false);

@@ -28,7 +28,7 @@ public final class Key implements Comparable<Key> {
 	 * Constructs a key from a hexadecimal key string. Bytes are order in the order
 	 * they appear in the string, which can be considered big endian.
 	 *
-	 * @param keyString hexadecimal key form of key.
+	 * @param key hexadecimal key form of key.
 	 */
 	public Key(final CharSequence key) {
 		this.key = Hex.decodeHex(key);
@@ -42,17 +42,13 @@ public final class Key implements Comparable<Key> {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if ((obj == null) || !(obj instanceof Key)) {
+		if (!(obj instanceof Key)) {
 			return false;
 		}
 
 		final Key otherKey = (Key) obj;
 		final int commonLength = Math.min(key.length, otherKey.key.length);
-		if (!ReteraCASCUtils.arraysEquals(key, 0, commonLength, otherKey.key, 0, commonLength)) {
-			return false;
-		}
-
-		return true;
+		return ReteraCASCUtils.arraysEquals(key, 0, commonLength, otherKey.key, 0, commonLength);
 	}
 
 	/**

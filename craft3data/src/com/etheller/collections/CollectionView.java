@@ -7,11 +7,11 @@ public interface CollectionView<T> extends Iterable<T> {
 
 	void forEach(ForEach<? super T> forEach);
 
-	public static interface ForEach<T> {
+	interface ForEach<T> {
 		boolean onEntry(T item);
 	}
 
-	public static final class Util {
+	final class Util {
 		public static boolean isEmpty(final CollectionView<?> collection) {
 			return collection.size() == 0;
 		}

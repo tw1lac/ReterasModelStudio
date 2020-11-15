@@ -183,7 +183,7 @@ public class DrawBoxActivity implements ModelEditorViewportActivity {
 		return false;
 	}
 
-	private static enum DrawingState {
-		NOTHING, WANT_BEGIN_BASE, BASE, HEIGHT;
+	private enum DrawingState {
+		NOTHING, WANT_BEGIN_BASE, BASE, HEIGHT
 	}
 }

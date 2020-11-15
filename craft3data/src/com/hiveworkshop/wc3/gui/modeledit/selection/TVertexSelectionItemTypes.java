@@ -12,7 +12,7 @@ public enum TVertexSelectionItemTypes implements ToolbarButtonType {
 	private final String name;
 	private final ImageIcon imageIcon;
 
-	private TVertexSelectionItemTypes(final String name, final ImageIcon imageIcon) {
+	TVertexSelectionItemTypes(final String name, final ImageIcon imageIcon) {
 		this.name = name;
 		this.imageIcon = imageIcon;
 	}
