@@ -106,12 +106,10 @@ public class ReignOfChaosMissionFixerTool {
 					} catch (final InterruptedException e) {
 						e.printStackTrace();
 					}
-				} catch (final MPQException e) {
-					e.printStackTrace();
-				} catch (final IOException e) {
+				} catch (final MPQException | IOException e) {
 					e.printStackTrace();
 				}
-			}
+            }
 		}
 	}
 

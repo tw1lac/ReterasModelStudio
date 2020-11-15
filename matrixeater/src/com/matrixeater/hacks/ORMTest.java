@@ -19,14 +19,11 @@ public class ORMTest {
 		try {
 			final BufferedImage read = ImageIO.read(dds);
 			JOptionPane.showMessageDialog(null, new ImageIcon(forceBufferedImagesRGB(read)));
-		} catch (final HeadlessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final IOException e) {
+		} catch (final HeadlessException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+    }
 
 	/**
 	 * Convert an input buffered image into sRGB color space using component values

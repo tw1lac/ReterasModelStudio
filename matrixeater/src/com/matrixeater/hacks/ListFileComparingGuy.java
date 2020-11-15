@@ -3,8 +3,8 @@ package com.matrixeater.hacks;
 import java.io.File;
 
 public class ListFileComparingGuy {
-	private static String zezulaPath = "C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Maps\\Download\\TemplarNaruto\\Archive";
-	private static String myPath = "C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Maps\\Download\\TemplarNaruto\\JavaArchive";
+	private static final String zezulaPath = "C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Maps\\Download\\TemplarNaruto\\Archive";
+	private static final String myPath = "C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Maps\\Download\\TemplarNaruto\\JavaArchive";
 
 	public static void main(final String[] args) {
 		traverseMyPath(new File(myPath));

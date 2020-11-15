@@ -94,14 +94,11 @@ public class GridHotkeyMaker {
 		try {
 			mpq = MpqCodebase.get().loadMPQ(Paths
 					.get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/Altered Melee/(2)HFAlteracIsle.w3x"));
-		} catch (final MPQException e1) {
-			e1.printStackTrace();
-			return;
-		} catch (final IOException e1) {
+		} catch (final MPQException | IOException e1) {
 			e1.printStackTrace();
 			return;
 		}
-		Warcraft3MapObjectData objectData;
+        Warcraft3MapObjectData objectData;
 		try {
 			objectData = Warcraft3MapObjectData.load(true);
 		} catch (final IOException e) {

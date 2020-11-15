@@ -23,10 +23,11 @@ import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 public class AnimationPanel extends JPanel implements ActionListener {
-	List<SliderBarHandler> bars = new ArrayList<>();
-	JButton okay, cancel;
-	ModelView mdlDisp;
-	AnimationFrame parentFrame;
+	final List<SliderBarHandler> bars = new ArrayList<>();
+	final JButton okay;
+    final JButton cancel;
+	final ModelView mdlDisp;
+	final AnimationFrame parentFrame;
 	private final UndoActionListener undoActionListener;
 	private final Runnable onFinish;
 

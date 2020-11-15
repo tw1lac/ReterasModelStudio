@@ -49,9 +49,9 @@ public class BuildWLists implements BuilderInterface {
 	public String objFilename = null;
 	// these accumulate each type of vertex as they are parsed, so they can then
 	// be referenced via index.
-	public ArrayList<VertexGeometric> verticesG = new ArrayList<>();
-	public ArrayList<VertexTexture> verticesT = new ArrayList<>();
-	public ArrayList<VertexNormal> verticesN = new ArrayList<>();
+	public final ArrayList<VertexGeometric> verticesG = new ArrayList<>();
+	public final ArrayList<VertexTexture> verticesT = new ArrayList<>();
+	public final ArrayList<VertexNormal> verticesN = new ArrayList<>();
 	// we use this map to consolidate redundant face vertices. Since a face is
 	// defined as a list of index
 	// triplets, each index referring to a vertex within ONE of the three
@@ -59,23 +59,22 @@ public class BuildWLists implements BuilderInterface {
 	// or verticesN, two faces might end up specifying the same combination.
 	// Clearly (@TODO: really?) this
 	// combination should be shared between both faces.
-	HashMap<String, FaceVertex> faceVerticeMap = new HashMap<>();
+	final HashMap<String, FaceVertex> faceVerticeMap = new HashMap<>();
 	// Each face vertex as it is parsed, minus the redundant face vertices.
 	// @TODO: Not used anywhere yet, maybe get rid of this.
-	public ArrayList<FaceVertex> faceVerticeList = new ArrayList<>();
-	public ArrayList<Face> faces = new ArrayList<>();
-	public HashMap<Integer, ArrayList<Face>> smoothingGroups = new HashMap<>();
-	private int currentSmoothingGroupNumber = NO_SMOOTHING_GROUP;
+	public final ArrayList<FaceVertex> faceVerticeList = new ArrayList<>();
+	public final ArrayList<Face> faces = new ArrayList<>();
+	public final HashMap<Integer, ArrayList<Face>> smoothingGroups = new HashMap<>();
 	private ArrayList<Face> currentSmoothingGroup = null;
-	public HashMap<String, ArrayList<Face>> groups = new HashMap<>();
+	public final HashMap<String, ArrayList<Face>> groups = new HashMap<>();
 	private final ArrayList<String> currentGroups = new ArrayList<>();
 	private final ArrayList<ArrayList<Face>> currentGroupFaceLists = new ArrayList<>();
 	public String objectName = null;
 	private Material currentMaterial = null;
 	private Material currentMap = null;
-	public HashMap<String, Material> materialLib = new HashMap<>();
+	public final HashMap<String, Material> materialLib = new HashMap<>();
 	private Material currentMaterialBeingParsed = null;
-	public HashMap<String, Material> mapLib = new HashMap<>();
+	public final HashMap<String, Material> mapLib = new HashMap<>();
 	private final Material currentMapBeingParsed = null;
 	public int faceTriCount = 0;
 	public int faceQuadCount = 0;
@@ -335,9 +334,7 @@ public class BuildWLists implements BuilderInterface {
 		for (String name : names) {
 			final String group = name.trim();
 			currentGroups.add(group);
-			if (null == groups.get(group)) {
-				groups.put(group, new ArrayList<Face>());
-			}
+			groups.computeIfAbsent(group, k -> new ArrayList<>());
 			currentGroupFaceLists.add(groups.get(group));
 		}
 	}
@@ -349,13 +346,12 @@ public class BuildWLists implements BuilderInterface {
 
 	@Override
 	public void setCurrentSmoothingGroup(final int groupNumber) {
-		currentSmoothingGroupNumber = groupNumber;
-		if (currentSmoothingGroupNumber == NO_SMOOTHING_GROUP) {
+		if (groupNumber == NO_SMOOTHING_GROUP) {
 			return;
 		}
-		if (null == smoothingGroups.get(currentSmoothingGroupNumber)) {
+		if (null == smoothingGroups.get(groupNumber)) {
 			currentSmoothingGroup = new ArrayList<>();
-			smoothingGroups.put(currentSmoothingGroupNumber, currentSmoothingGroup);
+			smoothingGroups.put(groupNumber, currentSmoothingGroup);
 		}
 	}
 
@@ -609,7 +605,7 @@ public class BuildWLists implements BuilderInterface {
 	 * @author Eric "Retera"
 	 *
 	 */
-	private final class VertexKey {
+	private static final class VertexKey {
 		private final float posX, posY, posZ;
 		private final float normX, normY, normZ;
 		private final float uvU, uvV;
@@ -828,14 +824,14 @@ public class BuildWLists implements BuilderInterface {
 					if (userWantsSwapToBLP) {
 						try {
 							File imageFilePNG = new File(objFolder.getPath() + "/" + name);
-							if (!imageFilePNG.exists() && name.indexOf("_") >= 0) {
+							if (!imageFilePNG.exists() && name.contains("_")) {
 								imageFilePNG = new File(
 										objFolder.getPath() + "/" + name.substring(name.indexOf("_") + 1));
 							}
 							if (!imageFilePNG.exists()) {
 								imageFilePNG = new File(objFolder.getPath() + "/textures/" + name);
 							}
-							if (!imageFilePNG.exists() && name.indexOf("_") >= 0) {
+							if (!imageFilePNG.exists() && name.contains("_")) {
 								imageFilePNG = new File(
 										objFolder.getPath() + "/textures/" + name.substring(name.indexOf("_") + 1));
 							}
@@ -879,7 +875,7 @@ public class BuildWLists implements BuilderInterface {
 			for (int subTriangleIndex = 0; subTriangleIndex < face.vertices.size() - 2; subTriangleIndex++) {
 				Subgroup subgroup = materialToSubgroup.get(face.material);
 				if (subgroup == null) {
-					subgroup = new Subgroup(new ArrayList<VertexKey>(), new Geoset());
+					subgroup = new Subgroup(new ArrayList<>(), new Geoset());
 					materialToSubgroup.put(face.material, subgroup);
 				}
 				final Geoset geo = subgroup.getGeo();

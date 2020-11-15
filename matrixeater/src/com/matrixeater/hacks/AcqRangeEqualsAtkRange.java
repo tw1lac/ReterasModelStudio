@@ -23,10 +23,7 @@ public class AcqRangeEqualsAtkRange {
 		try {
 			mpq = MpqCodebase.get()
 					.loadMPQ(Paths.get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/HeroAbilityJassTest.w3x"));
-		} catch (final MPQException e1) {
-			e1.printStackTrace();
-			return;
-		} catch (final IOException e1) {
+		} catch (final MPQException | IOException e1) {
 			e1.printStackTrace();
 			return;
 		}

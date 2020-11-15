@@ -1,7 +1,6 @@
 package com.matrixeater.hacks;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,11 +46,9 @@ public class GetMeDatas3 {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-		} catch (final FileNotFoundException e1) {
-			e1.printStackTrace();
 		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
-	}
+    }
 
 }

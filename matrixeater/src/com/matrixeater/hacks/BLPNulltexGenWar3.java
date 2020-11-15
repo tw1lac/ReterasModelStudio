@@ -10,8 +10,6 @@ public final class BLPNulltexGenWar3 {
 	private static final List<String> failed = new ArrayList<>();
 	private static final List<String> passed = new ArrayList<>();
 	private static File root;
-	private static File texRoot;
-	private static File compressRoot;
 	private static File checkFolder;
 	private static File nulltex;
 	private static File nullgenRoot;
@@ -24,8 +22,8 @@ public final class BLPNulltexGenWar3 {
 		}
 		final File target = new File(args[0]);
 		root = target;
-		texRoot = new File(target.getParent() + "/ns" + "textures");
-		compressRoot = new File(target.getParent() + "/ns" + "texturesCompressed");
+		File texRoot = new File(target.getParent() + "/ns" + "textures");
+		File compressRoot = new File(target.getParent() + "/ns" + "texturesCompressed");
 		checkFolder = new File(target.getParent() + "/wc3nosound-bk");
 		nulltex = new File(target.getParent() + "/scratch/nulltex.blp");
 		nullgenRoot = new File(target.getParent() + "/nullgenTextures");

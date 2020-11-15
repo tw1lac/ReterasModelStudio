@@ -2,7 +2,6 @@ package com.matrixeater.hacks;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,12 +49,10 @@ public class GetMeDatas11 {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-		} catch (final FileNotFoundException e1) {
-			e1.printStackTrace();
 		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
-	}
+    }
 
 	private static void fix(final AnimFlag visibilityAnimation, final Animation deathSequence) {
 		final int startOfDeath = deathSequence.getStart();

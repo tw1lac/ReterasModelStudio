@@ -96,91 +96,75 @@ public class MainFrame extends JFrame {
 
             setTheme(preferences);
 
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        final List<DataSourceDescriptor> dataSources = SaveProfile.get().getDataSources();
-                        if ((dataSources == null) || dataPromptForced) {
-                            final DataSourceChooserPanel dataSourceChooserPanel = new DataSourceChooserPanel(
-                                    dataSources);
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    final List<DataSourceDescriptor> dataSources = SaveProfile.get().getDataSources();
+                    if ((dataSources == null) || dataPromptForced) {
+                        final DataSourceChooserPanel dataSourceChooserPanel = new DataSourceChooserPanel(
+                                dataSources);
 //							JF
-                            final JFrame jFrame = new JFrame("Retera Model Studio: Setup");
+                        final JFrame jFrame = new JFrame("Retera Model Studio: Setup");
 //							jFrame.setContentPane(dataSourceChooserPanel);
-                            jFrame.setUndecorated(true);
-                            jFrame.pack();
-                            jFrame.setSize(0, 0);
-                            jFrame.setLocationRelativeTo(null);
-                            jFrame.setIconImage(MAIN_PROGRAM_ICON);
-                            jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                            jFrame.setVisible(true);
-                            try {
-                                if (JOptionPane.showConfirmDialog(jFrame, dataSourceChooserPanel,
-                                        "Retera Model Studio: Setup", JOptionPane.OK_CANCEL_OPTION,
-                                        JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) {
-                                    return;
-                                }
-                            } finally {
-                                jFrame.setVisible(false);
+                        jFrame.setUndecorated(true);
+                        jFrame.pack();
+                        jFrame.setSize(0, 0);
+                        jFrame.setLocationRelativeTo(null);
+                        jFrame.setIconImage(MAIN_PROGRAM_ICON);
+                        jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        jFrame.setVisible(true);
+                        try {
+                            if (JOptionPane.showConfirmDialog(jFrame, dataSourceChooserPanel,
+                                    "Retera Model Studio: Setup", JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) {
+                                return;
                             }
-                            SaveProfile.get().setDataSources(dataSourceChooserPanel.getDataSourceDescriptors());
-                            SaveProfile.save();
-                            MpqCodebase.get().refresh(SaveProfile.get().getDataSources());
-                            // cache priority order...
-                            UnitOptionPanel.dropRaceCache();
-                            DataTable.dropCache();
-                            ModelOptionPanel.dropCache();
-                            WEString.dropCache();
-                            Resources.dropCache();
-                            BLPHandler.get().dropCache();
+                        } finally {
+                            jFrame.setVisible(false);
                         }
+                        SaveProfile.get().setDataSources(dataSourceChooserPanel.getDataSourceDescriptors());
+                        SaveProfile.save();
+                        MpqCodebase.get().refresh(SaveProfile.get().getDataSources());
+                        // cache priority order...
+                        UnitOptionPanel.dropRaceCache();
+                        DataTable.dropCache();
+                        ModelOptionPanel.dropCache();
+                        WEString.dropCache();
+                        Resources.dropCache();
+                        BLPHandler.get().dropCache();
+                    }
 
-                        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-                        frame = new MainFrame("Retera Model Studio v0.04.2020.08.09 Nightly Build");
-                        panel.init();
-                        if (!startupModelPaths.isEmpty()) {
-                            for (final String path : startupModelPaths) {
-                                panel.openFile(new File(path));
-                            }
-                        }
-                    } catch (final Throwable th) {
-                        th.printStackTrace();
-                        ExceptionPopup.display(th);
-                        if (!dataPromptForced) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    main(new String[]{"-forcedataprompt"});
-                                }
-                            }).start();
-                        } else {
-                            JOptionPane.showMessageDialog(null,
-                                    "Retera Model Studio startup sequence has failed for two attempts. The program will now exit.",
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-                            System.exit(-1);
+                    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+                    frame = new MainFrame("Retera Model Studio v0.04.2020.08.09 Nightly Build");
+                    panel.init();
+                    if (!startupModelPaths.isEmpty()) {
+                        for (final String path : startupModelPaths) {
+                            panel.openFile(new File(path));
                         }
                     }
-                }
-            });
-        } catch (final Throwable th) {
-            th.printStackTrace();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
+                } catch (final Throwable th) {
+                    th.printStackTrace();
                     ExceptionPopup.display(th);
-                }
-            });
-            if (!dataPromptForced) {
-                main(new String[]{"-forcedataprompt"});
-            } else {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
+                    if (!dataPromptForced) {
+                        new Thread(() -> main(new String[]{"-forcedataprompt"})).start();
+                    } else {
                         JOptionPane.showMessageDialog(null,
                                 "Retera Model Studio startup sequence has failed for two attempts. The program will now exit.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                         System.exit(-1);
                     }
+                }
+            });
+        } catch (final Throwable th) {
+            th.printStackTrace();
+            SwingUtilities.invokeLater(() -> ExceptionPopup.display(th));
+            if (!dataPromptForced) {
+                main(new String[]{"-forcedataprompt"});
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null,
+                            "Retera Model Studio startup sequence has failed for two attempts. The program will now exit.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(-1);
                 });
             }
         }

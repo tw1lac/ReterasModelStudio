@@ -2,7 +2,6 @@ package com.matrixeater.hacks;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.hiveworkshop.wc3.mdx.LayerChunk;
@@ -47,13 +46,10 @@ public class FixMyProgramSir {
 						materialId++;
 					}
 				}
-			} catch (final FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (final IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+        }
 	}
 }

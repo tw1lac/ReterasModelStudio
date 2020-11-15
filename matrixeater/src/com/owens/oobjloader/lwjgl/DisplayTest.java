@@ -37,7 +37,7 @@ import com.owens.oobjloader.parser.Parse;
 // Based on tutorial code from http://lwjgl.org/wiki/doku.php/lwjgl/tutorials/opengl/basicopengl
 public class DisplayTest {
     
-    private static Logger log = Logger.getLogger(DisplayTest.class.getName());
+    private static final Logger log = Logger.getLogger(DisplayTest.class.getName());
     
     public static final String WINDOW_TITLE = "Test OBJ loader";
     /**
@@ -85,9 +85,9 @@ public class DisplayTest {
 
     // iterate over face list from builder, and break it up into a set of face lists by material, i.e. each for each face list, all faces in that specific list use the same material
     private static ArrayList<ArrayList<Face>> createFaceListsByMaterial(Build builder) {
-        ArrayList<ArrayList<Face>> facesByTextureList = new ArrayList<ArrayList<Face>>();
+        ArrayList<ArrayList<Face>> facesByTextureList = new ArrayList<>();
         Material currentMaterial = null;
-        ArrayList<Face> currentFaceList = new ArrayList<Face>();
+        ArrayList<Face> currentFaceList = new ArrayList<>();
         for (Face face : builder.faces) {
             if (face.material != currentMaterial) {
                 if (!currentFaceList.isEmpty()) {
@@ -96,7 +96,7 @@ public class DisplayTest {
                 }
                 log.log(INFO, "Creating new list of faces for material " + face.material);
                 currentMaterial = face.material;
-                currentFaceList = new ArrayList<Face>();
+                currentFaceList = new ArrayList<>();
             }
             currentFaceList.add(face);
         }
@@ -174,7 +174,7 @@ public class DisplayTest {
     // and drop all polygons with more than 4 vertices.  (I was originally just dropping quads as well but then I kept ending up with nothing
     // left to display. :-)  Or at least, not much. )
     private static ArrayList<Face> splitQuads(ArrayList<Face> faceList) {
-        ArrayList<Face> triangleList = new ArrayList<Face>();
+        ArrayList<Face> triangleList = new ArrayList<>();
         int countTriangles = 0;
         int countQuads = 0;
         int countNGons = 0;
@@ -262,10 +262,7 @@ public class DisplayTest {
         Parse obj = null;
         try {
             obj = new Parse(builder, filename);
-        } catch (java.io.FileNotFoundException e) {
-            log.log(SEVERE, "Exception loading object!  e=" + e);
-            e.printStackTrace();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             log.log(SEVERE, "Exception loading object!  e=" + e);
             e.printStackTrace();
         }
@@ -381,7 +378,7 @@ public class DisplayTest {
             else {
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
                 logic();
 

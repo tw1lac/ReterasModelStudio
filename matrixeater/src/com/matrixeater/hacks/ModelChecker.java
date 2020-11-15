@@ -8,7 +8,7 @@ import com.hiveworkshop.wc3.mdl.Geoset;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 
 public class ModelChecker {
-	private static List<String> matchingModels = new ArrayList<>();
+	private static final List<String> matchingModels = new ArrayList<>();
 
 	public static void main(final String[] args) {
 		traverse(new File(

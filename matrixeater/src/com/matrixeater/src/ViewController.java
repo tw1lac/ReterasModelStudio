@@ -15,7 +15,7 @@ import com.hiveworkshop.wc3.gui.modeledit.ModelViewManagingTree;
 public class ViewController extends JTabbedPane {
 	JFrame frame;
 	ModelViewManagingTree modelViewManagingTree;
-	JScrollPane geoScroll;
+	final JScrollPane geoScroll;
 
 	public ViewController(final ModelViewManagingTree disp, final boolean spawnFrame) {
 		super();

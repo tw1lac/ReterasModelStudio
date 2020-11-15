@@ -6,8 +6,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class SliderBarHandler implements ChangeListener {
-		JSlider bar;
-		JSpinner spinner;
+		final JSlider bar;
+		final JSpinner spinner;
 		boolean isAdjusting = false;
 
 		public SliderBarHandler(final JSlider slider, final JSpinner spinner) {
@@ -35,7 +35,7 @@ public class SliderBarHandler implements ChangeListener {
 //							spinner.setValue(75.00);
 //						}
 
-						bar.setValue((int)(((Double)spinner.getValue()).doubleValue() * 1000));
+						bar.setValue((int)((Double) spinner.getValue() * 1000));
 					}
 
 					isAdjusting = false;

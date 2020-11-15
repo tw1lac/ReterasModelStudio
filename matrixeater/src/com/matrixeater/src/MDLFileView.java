@@ -9,7 +9,7 @@ package com.matrixeater.src;
 public class MDLFileView
 {
     // instance variables - replace the example below with your own
-    private int x;
+    private final int x;
 
     /**
      * Constructor for objects of class MDLFileView

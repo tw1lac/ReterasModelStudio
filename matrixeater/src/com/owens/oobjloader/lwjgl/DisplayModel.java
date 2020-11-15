@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class DisplayModel {
 
-    ArrayList<VBO> vboList = new ArrayList<VBO>();
+    final ArrayList<VBO> vboList = new ArrayList<>();
 
     public DisplayModel() {
     }
@@ -22,8 +22,8 @@ public class DisplayModel {
     }
 
     public void render() {
-        for (int loopi = 0; loopi < vboList.size(); loopi++) {
-            vboList.get(loopi).render();
+        for (VBO vbo : vboList) {
+            vbo.render();
         }
     }
 }

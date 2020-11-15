@@ -27,7 +27,7 @@ import com.owens.oobjloader.builder.FaceVertex;
 
 public class VBOFactory {
     
-    private static Logger log = Logger.getLogger(VBOFactory.class.getName());
+    private static final Logger log = Logger.getLogger(VBOFactory.class.getName());
 
 
     public static VBO build(int textureID, ArrayList<Face> triangles) {
@@ -45,9 +45,9 @@ public class VBOFactory {
         // And while we're at it, assign each unique FaceVertex object an index as we run across them, storing
         // this index in the map, for use later when we build the "index" buffer that refers to the vertice buffer.
         // And lastly, keep a list of the unique vertice objects, in the order that we find them in.  
-        HashMap<FaceVertex, Integer> indexMap = new HashMap<FaceVertex, Integer>();
+        HashMap<FaceVertex, Integer> indexMap = new HashMap<>();
         int nextVertexIndex = 0;
-        ArrayList<FaceVertex> faceVertexList = new ArrayList<FaceVertex>();
+        ArrayList<FaceVertex> faceVertexList = new ArrayList<>();
         for (Face face : triangles) {
             for (FaceVertex vertex : face.vertices) {
                 if (!indexMap.containsKey(vertex)) {

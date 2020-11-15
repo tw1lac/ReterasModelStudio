@@ -31,15 +31,29 @@ import com.matrixeater.src.MainFrame;
 import com.matrixeater.src.MainPanel;
 
 public class AnimationTransfer extends JPanel implements ActionListener {
-	JLabel baseFileLabel, animFileLabel, outFileLabel, transSingleLabel, pickAnimLabel, visFromLabel;
-	JTextField baseFileInput, animFileInput, outFileInput;
-	JCheckBox transferSingleAnimation, useCurrentModel;
-	JButton baseBrowse, animBrowse, outBrowse, transfer, done, goAdvanced;
-	JComboBox<Animation> pickAnimBox, visFromBox;
+	final JLabel baseFileLabel;
+	final JLabel animFileLabel;
+	final JLabel outFileLabel;
+	final JLabel transSingleLabel;
+	final JLabel pickAnimLabel;
+	final JLabel visFromLabel;
+	final JTextField baseFileInput;
+	final JTextField animFileInput;
+	final JTextField outFileInput;
+	final JCheckBox transferSingleAnimation;
+	JCheckBox useCurrentModel;
+	final JButton baseBrowse;
+	final JButton animBrowse;
+	final JButton outBrowse;
+	final JButton transfer;
+	final JButton done;
+	final JButton goAdvanced;
+	final JComboBox<Animation> pickAnimBox;
+	final JComboBox<Animation> visFromBox;
 	DefaultComboBoxModel<Animation> baseAnims;
 	DefaultComboBoxModel<Animation> animAnims;
 
-	JFileChooser fc = new JFileChooser();
+	final JFileChooser fc = new JFileChooser();
 
 	EditableModel sourceFile;
 	EditableModel animFile;
@@ -335,158 +349,152 @@ public class AnimationTransfer extends JPanel implements ActionListener {
 
 		if (!transferSingleAnimation.isSelected()) {
 			final ImportPanel importPanel = new ImportPanel(sourceFile, animFile, show);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					importPanel.animTransfer(transferSingleAnimation.isSelected(),
-							pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
-							visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
-					while (importPanel.getParentFrame().isVisible()
-							&& (!importPanel.importStarted() || importPanel.importEnded())) {
-						// JOptionPane.showMessageDialog(null, "check 1!");
+			new Thread(() -> {
+				importPanel.animTransfer(transferSingleAnimation.isSelected(),
+						pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
+						visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
+				while (importPanel.getParentFrame().isVisible()
+						&& (!importPanel.importStarted() || importPanel.importEnded())) {
+					// JOptionPane.showMessageDialog(null, "check 1!");
+					try {
+						Thread.sleep(1);
+					} catch (final Exception e) {
+						ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
+					}
+				}
+				// if( !importPanel.getParentFrame().isVisible() &&
+				// !importPanel.importEnded() )
+				// JOptionPane.showMessageDialog(null,"bad voodoo
+				// "+importPanel.importSuccessful());
+				// else
+				// JOptionPane.showMessageDialog(null,"good voodoo
+				// "+importPanel.importSuccessful());
+				// if( importPanel.importSuccessful() )
+				// {
+				// newModel.saveFile();
+				// loadFile(newModel.getFile());
+				// }
+
+				if (importPanel.importStarted()) {
+					while (!importPanel.importEnded()) {
+						// JOptionPane.showMessageDialog(null, "check 2!");
 						try {
 							Thread.sleep(1);
 						} catch (final Exception e) {
 							ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
 						}
 					}
-					// if( !importPanel.getParentFrame().isVisible() &&
-					// !importPanel.importEnded() )
-					// JOptionPane.showMessageDialog(null,"bad voodoo
-					// "+importPanel.importSuccessful());
-					// else
-					// JOptionPane.showMessageDialog(null,"good voodoo
-					// "+importPanel.importSuccessful());
-					// if( importPanel.importSuccessful() )
-					// {
-					// newModel.saveFile();
-					// loadFile(newModel.getFile());
-					// }
 
-					if (importPanel.importStarted()) {
-						while (!importPanel.importEnded()) {
-							// JOptionPane.showMessageDialog(null, "check 2!");
-							try {
-								Thread.sleep(1);
-							} catch (final Exception e) {
-								ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
-							}
+					// JOptionPane.showMessageDialog(null, "Animation
+					// transfer 99% done!");
+
+					if (importPanel.importSuccessful()) {
+						String filepath = outFileInput.getText();
+						if (!filepath.toLowerCase().endsWith(".mdl") && !filepath.toLowerCase().endsWith(".mdx")) {
+							filepath += ".mdl";
 						}
-
-						// JOptionPane.showMessageDialog(null, "Animation
-						// transfer 99% done!");
-
-						if (importPanel.importSuccessful()) {
-							String filepath = outFileInput.getText();
-							if (!filepath.toLowerCase().endsWith(".mdl") && !filepath.toLowerCase().endsWith(".mdx")) {
-								filepath += ".mdl";
-							}
-							sourceFile.printTo(new File(filepath));
-							JOptionPane.showMessageDialog(null, "Animation transfer done!");
-						}
+						sourceFile.printTo(new File(filepath));
+						JOptionPane.showMessageDialog(null, "Animation transfer done!");
 					}
-
-					// forceRefreshModels();
 				}
+
+				// forceRefreshModels();
 			}).start();
 		} else {
-			final Thread watcher = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					final ImportPanel importPanel = new ImportPanel(sourceFile, animFile, show);
-					importPanel.animTransfer(transferSingleAnimation.isSelected(),
-							pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
-							visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
+			final Thread watcher = new Thread(() -> {
+				final ImportPanel importPanel = new ImportPanel(sourceFile, animFile, show);
+				importPanel.animTransfer(transferSingleAnimation.isSelected(),
+						pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
+						visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
 
-					// while(importPanel.getParentFrame().isVisible() &&
-					// (!importPanel.importStarted() ||
-					// importPanel.importEnded()) )
-					while (importPanel.getParentFrame().isVisible()
-							&& (!importPanel.importStarted() || importPanel.importEnded())) {
-						// JOptionPane.showMessageDialog(null, "check 1!");
+				// while(importPanel.getParentFrame().isVisible() &&
+				// (!importPanel.importStarted() ||
+				// importPanel.importEnded()) )
+				while (importPanel.getParentFrame().isVisible()
+						&& (!importPanel.importStarted() || importPanel.importEnded())) {
+					// JOptionPane.showMessageDialog(null, "check 1!");
+					try {
+						Thread.sleep(1);
+					} catch (final Exception e) {
+						ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
+					}
+				}
+				// if( !importPanel.getParentFrame().isVisible() &&
+				// !importPanel.importEnded() )
+				// JOptionPane.showMessageDialog(null,"bad voodoo
+				// "+importPanel.importSuccessful());
+				// else
+				// JOptionPane.showMessageDialog(null,"good voodoo
+				// "+importPanel.importSuccessful());
+				// if( importPanel.importSuccessful() )
+				// {
+				// newModel.saveFile();
+				// loadFile(newModel.getFile());
+				// }
+
+				if (importPanel.importStarted()) {
+					while (!importPanel.importEnded()) {
+						// JOptionPane.showMessageDialog(null, "check 2!");
 						try {
 							Thread.sleep(1);
 						} catch (final Exception e) {
 							ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
 						}
 					}
-					// if( !importPanel.getParentFrame().isVisible() &&
-					// !importPanel.importEnded() )
-					// JOptionPane.showMessageDialog(null,"bad voodoo
-					// "+importPanel.importSuccessful());
-					// else
-					// JOptionPane.showMessageDialog(null,"good voodoo
-					// "+importPanel.importSuccessful());
-					// if( importPanel.importSuccessful() )
-					// {
-					// newModel.saveFile();
-					// loadFile(newModel.getFile());
-					// }
 
-					if (importPanel.importStarted()) {
-						while (!importPanel.importEnded()) {
-							// JOptionPane.showMessageDialog(null, "check 2!");
+					// JOptionPane.showMessageDialog(null, "Animation
+					// transfer 99% done!");
+
+					if (importPanel.importSuccessful()) {
+						final ImportPanel importPanel2 = new ImportPanel(sourceFile, EditableModel.read(sourceFile.getFile()),
+								show);
+						importPanel2.animTransferPartTwo(transferSingleAnimation.isSelected(),
+								pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
+								visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
+
+						while (importPanel2.getParentFrame().isVisible()
+								&& (!importPanel2.importStarted() || importPanel2.importEnded())) {
+							// JOptionPane.showMessageDialog(null, "check
+							// 1!");
 							try {
 								Thread.sleep(1);
 							} catch (final Exception e) {
 								ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
 							}
 						}
+						// if( !importPanel.getParentFrame().isVisible() &&
+						// !importPanel.importEnded() )
+						// JOptionPane.showMessageDialog(null,"bad voodoo
+						// "+importPanel.importSuccessful());
+						// else
+						// JOptionPane.showMessageDialog(null,"good voodoo
+						// "+importPanel.importSuccessful());
+						// if( importPanel.importSuccessful() )
+						// {
+						// newModel.saveFile();
+						// loadFile(newModel.getFile());
+						// }
 
-						// JOptionPane.showMessageDialog(null, "Animation
-						// transfer 99% done!");
-
-						if (importPanel.importSuccessful()) {
-							final ImportPanel importPanel2 = new ImportPanel(sourceFile, EditableModel.read(sourceFile.getFile()),
-									show);
-							importPanel2.animTransferPartTwo(transferSingleAnimation.isSelected(),
-									pickAnimBox.getItemAt(pickAnimBox.getSelectedIndex()),
-									visFromBox.getItemAt(visFromBox.getSelectedIndex()), show);
-
-							while (importPanel2.getParentFrame().isVisible()
-									&& (!importPanel2.importStarted() || importPanel2.importEnded())) {
-								// JOptionPane.showMessageDialog(null, "check
-								// 1!");
+						if (importPanel2.importStarted()) {
+							while (!importPanel2.importEnded()) {
+								// JOptionPane.showMessageDialog(null,
+								// "check 2!");
 								try {
 									Thread.sleep(1);
 								} catch (final Exception e) {
-									ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
+									ExceptionPopup.display("MatrixEater detected error with Java's wait function",
+											e);
 								}
 							}
-							// if( !importPanel.getParentFrame().isVisible() &&
-							// !importPanel.importEnded() )
-							// JOptionPane.showMessageDialog(null,"bad voodoo
-							// "+importPanel.importSuccessful());
-							// else
-							// JOptionPane.showMessageDialog(null,"good voodoo
-							// "+importPanel.importSuccessful());
-							// if( importPanel.importSuccessful() )
-							// {
-							// newModel.saveFile();
-							// loadFile(newModel.getFile());
-							// }
 
-							if (importPanel2.importStarted()) {
-								while (!importPanel2.importEnded()) {
-									// JOptionPane.showMessageDialog(null,
-									// "check 2!");
-									try {
-										Thread.sleep(1);
-									} catch (final Exception e) {
-										ExceptionPopup.display("MatrixEater detected error with Java's wait function",
-												e);
-									}
-								}
+							// JOptionPane.showMessageDialog(null,
+							// "Animation transfer 99% done!");
 
-								// JOptionPane.showMessageDialog(null,
-								// "Animation transfer 99% done!");
+							if (importPanel2.importSuccessful()) {
+								JOptionPane.showMessageDialog(null, "Animation transfer done!");
+								sourceFile.printTo(new File(outFileInput.getText()));
 
-								if (importPanel2.importSuccessful()) {
-									JOptionPane.showMessageDialog(null, "Animation transfer done!");
-									sourceFile.printTo(new File(outFileInput.getText()));
-
-									// forceRefreshModels();
-								}
+								// forceRefreshModels();
 							}
 						}
 					}
@@ -500,13 +508,7 @@ public class AnimationTransfer extends JPanel implements ActionListener {
 		try {
 			// Set cross-platform Java L&F (also called "Metal")
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (final UnsupportedLookAndFeelException e) {
-			// handle exception
-		} catch (final ClassNotFoundException e) {
-			// handle exception
-		} catch (final InstantiationException e) {
-			// handle exception
-		} catch (final IllegalAccessException e) {
+		} catch (final UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
 			// handle exception
 		}
 

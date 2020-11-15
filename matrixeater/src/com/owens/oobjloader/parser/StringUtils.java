@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class StringUtils {
-    private static Logger log = Logger.getLogger(StringUtils.class.getName());
+    private static final Logger log = Logger.getLogger(StringUtils.class.getName());
 
     // ----------------------------------------------------------------------
     // String parsing stuff
@@ -111,7 +111,7 @@ public class StringUtils {
             return null;
         }
 
-        ArrayList<Integer> returnList = new ArrayList<Integer>();
+        ArrayList<Integer> returnList = new ArrayList<>();
 
         // Copy list into a char array.
         char[] listChars;
@@ -218,7 +218,7 @@ public class StringUtils {
 
         //	log.log(INFO, "found "+vertexStrings.length+" strings in parseWhitespaceList");
 
-        ArrayList<Integer> returnList = new ArrayList<Integer>();
+        ArrayList<Integer> returnList = new ArrayList<>();
         Integer emptyMarker = BuilderInterface.EMPTY_VERTEX_VALUE;
 
         for (String vertexString : vertexStrings) {
@@ -268,7 +268,7 @@ public class StringUtils {
             return null;
         }
 
-        ArrayList<String> returnVec = new ArrayList<String>();
+        ArrayList<String> returnVec = new ArrayList<>();
         String[] returnArray = null;
 
         // Copy list into a char array.
@@ -314,7 +314,7 @@ public class StringUtils {
             return null;
         }
 
-        ArrayList<String> returnVec = new ArrayList<String>();
+        ArrayList<String> returnVec = new ArrayList<>();
         String[] returnArray = null;
 
         // Copy list into a char array.

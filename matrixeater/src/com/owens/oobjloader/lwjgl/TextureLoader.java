@@ -36,10 +36,10 @@ import org.lwjgl.opengl.GL12;
  * @author sean
  */
 public class TextureLoader {
-    private Logger log = Logger.getLogger(TextureLoader.class.getName());
+    private final Logger log = Logger.getLogger(TextureLoader.class.getName());
 
     private final static int TEXTURE_LEVEL = 0;
-    private HashMap<String, Integer> loadedTextures = new HashMap<String, Integer>();
+    private final HashMap<String, Integer> loadedTextures = new HashMap<>();
 
     public int convertToTexture(BufferedImage img) {
         int[] pixels = new int[img.getWidth() * img.getHeight()];

@@ -13,15 +13,12 @@ public class War3ModelUnity {
 	 * Launch the application.
 	 */
 	public static void main(final String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					final War3ModelUnity window = new War3ModelUnity();
-					window.frmWarmodelunity.setVisible(true);
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				final War3ModelUnity window = new War3ModelUnity();
+				window.frmWarmodelunity.setVisible(true);
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}

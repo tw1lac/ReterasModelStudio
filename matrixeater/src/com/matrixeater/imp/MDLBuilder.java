@@ -30,29 +30,28 @@ public class MDLBuilder implements BuilderInterface {
 
     public String objFilename = null;
     // these accumulate each type of vertex as they are parsed, so they can then be referenced via index.
-    public ArrayList<Vertex> verticesG = new ArrayList<Vertex>();
-    public ArrayList<TVertex> verticesT = new ArrayList<TVertex>();
-    public ArrayList<Normal> verticesN = new ArrayList<Normal>();
+    public final ArrayList<Vertex> verticesG = new ArrayList<>();
+    public final ArrayList<TVertex> verticesT = new ArrayList<>();
+    public final ArrayList<Normal> verticesN = new ArrayList<>();
     // we use this map to consolidate redundant face vertices.  Since a face is defined as a list of index
     // triplets, each index referring to a vertex within ONE of the three arraylists verticesG,  verticesT
     // or verticesN, two faces might end up specifying the same combination.  Clearly (@TODO: really?) this
     // combination should be shared between both faces.
-    HashMap<String, FaceVertex> faceVerticeMap = new HashMap<String, FaceVertex>();
+    final HashMap<String, FaceVertex> faceVerticeMap = new HashMap<>();
     // Each face vertex as it is parsed, minus the redundant face vertices.  @TODO: Not used anywhere yet, maybe get rid of this.
-    public ArrayList<FaceVertex> faceVerticeList = new ArrayList<FaceVertex>();
-    public ArrayList<Face> faces = new ArrayList<Face>();
-    public HashMap<Integer, ArrayList<Face>> smoothingGroups = new HashMap<Integer, ArrayList<Face>>();
-    private int currentSmoothingGroupNumber = NO_SMOOTHING_GROUP;
+    public final ArrayList<FaceVertex> faceVerticeList = new ArrayList<>();
+    public final ArrayList<Face> faces = new ArrayList<>();
+    public final HashMap<Integer, ArrayList<Face>> smoothingGroups = new HashMap<>();
     private ArrayList<Face> currentSmoothingGroup = null;
-    public HashMap<String, ArrayList<Face>> groups = new HashMap<String, ArrayList<Face>>();
-    private final ArrayList<String> currentGroups = new ArrayList<String>();
-    private final ArrayList<ArrayList<Face>> currentGroupFaceLists = new ArrayList<ArrayList<Face>>();
+    public final HashMap<String, ArrayList<Face>> groups = new HashMap<>();
+    private final ArrayList<String> currentGroups = new ArrayList<>();
+    private final ArrayList<ArrayList<Face>> currentGroupFaceLists = new ArrayList<>();
     public String objectName = null;
     private Material currentMaterial = null;
     private Material currentMap = null;
-    public HashMap<String, Material> materialLib = new HashMap<String, Material>();
+    public final HashMap<String, Material> materialLib = new HashMap<>();
     private Material currentMaterialBeingParsed = null;
-    public HashMap<String, Material> mapLib = new HashMap<String, Material>();
+    public final HashMap<String, Material> mapLib = new HashMap<>();
     private final Material currentMapBeingParsed = null;
     public int faceTriCount = 0;
     public int faceQuadCount = 0;
@@ -285,12 +284,10 @@ public class MDLBuilder implements BuilderInterface {
             // cleared the currentGroups lists, just return.
             return;
         }
-        for (int loopi = 0; loopi < names.length; loopi++) {
-            final String group = names[loopi].trim();
+        for (String name : names) {
+            final String group = name.trim();
             currentGroups.add(group);
-            if (null == groups.get(group)) {
-                groups.put(group, new ArrayList<Face>());
-            }
+            groups.computeIfAbsent(group, k -> new ArrayList<>());
             currentGroupFaceLists.add(groups.get(group));
         }
     }
@@ -302,13 +299,12 @@ public class MDLBuilder implements BuilderInterface {
 
     @Override
 	public void setCurrentSmoothingGroup(final int groupNumber) {
-        currentSmoothingGroupNumber = groupNumber;
-        if (currentSmoothingGroupNumber == NO_SMOOTHING_GROUP) {
+        if (groupNumber == NO_SMOOTHING_GROUP) {
             return;
         }
-        if (null == smoothingGroups.get(currentSmoothingGroupNumber)) {
-            currentSmoothingGroup = new ArrayList<Face>();
-            smoothingGroups.put(currentSmoothingGroupNumber, currentSmoothingGroup);
+        if (null == smoothingGroups.get(groupNumber)) {
+            currentSmoothingGroup = new ArrayList<>();
+            smoothingGroups.put(groupNumber, currentSmoothingGroup);
         }
     }
 

@@ -2,7 +2,6 @@ package com.matrixeater.hacks;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.hiveworkshop.wc3.units.DataTable;
@@ -30,13 +29,11 @@ public class GetMeTheHeroSkills {
 				new FileInputStream(new File("C:\\Temp\\ud.w3u")))) {
 			customUnitChanges.load(blizData, null, false);
 
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-		final WarcraftData standardUnits = StandardObjectData.getStandardUnits();
+        final WarcraftData standardUnits = StandardObjectData.getStandardUnits();
 		final DataTable standardUnitMeta = StandardObjectData.getStandardUnitMeta();
 		final MutableObjectData unitData = new MutableObjectData(WorldEditorDataType.UNITS, standardUnits,
 				standardUnitMeta, customUnitChanges);
@@ -58,12 +55,10 @@ public class GetMeTheHeroSkills {
 
 		try (BlizzardDataOutputStream outputStream = new BlizzardDataOutputStream(new File("C:\\Temp\\Output.w3u"))) {
 			customUnitChanges.save(outputStream, false);
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-	}
+    }
 
 }

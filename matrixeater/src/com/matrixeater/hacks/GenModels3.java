@@ -117,9 +117,9 @@ public class GenModels3 {
 			geoset.setMaterial(material);
 			System.out.println(geoset.getVertices().size());
 			final ArrayList<GeosetVertex> vertices = geoset.getVertices();
-			for (int i = 0; i < vertices.size(); i++) {
-				vertices.get(i).getTVertex(0).scale(0, 0, 1 / 4f, 1 / 4f);
-				System.out.println(vertices.get(i).getTVertex(0));
+			for (GeosetVertex vertex : vertices) {
+				vertex.getTVertex(0).scale(0, 0, 1 / 4f, 1 / 4f);
+				System.out.println(vertex.getTVertex(0));
 			}
 			final ArrayList<AnimFlag> flags = new ArrayList<>();
 			final AnimFlag translationData = new AnimFlag("Translation");

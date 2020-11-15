@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class Face {
 
-    public ArrayList<FaceVertex> vertices = new ArrayList<FaceVertex>();
+    public final ArrayList<FaceVertex> vertices = new ArrayList<>();
     public Material material = null;
     public Material map = null;
 
@@ -22,7 +22,7 @@ public class Face {
     public void add(final FaceVertex vertex) {
         vertices.add(vertex);
     }
-    public VertexNormal faceNormal = new VertexNormal(0, 0, 0);
+    public final VertexNormal faceNormal = new VertexNormal(0, 0, 0);
 
     // @TODO: This code assumes the face is a triangle.
     public void calculateTriangleNormal() {

@@ -29,15 +29,12 @@ public class YseraFrame extends JFrame {
 		try {
 			// UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (final Exception exc) {
+		} catch (final Exception ignored) {
 		}
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				final YseraFrame frame = new YseraFrame();
-				frame.setVisible(true);
-			}
+		SwingUtilities.invokeLater(() -> {
+			final YseraFrame frame = new YseraFrame();
+			frame.setVisible(true);
 		});
 	}
 }

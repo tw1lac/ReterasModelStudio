@@ -1,8 +1,6 @@
 package com.matrixeater.hacks;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,14 +41,11 @@ public class RigbornRotator extends JPanel {
 		final JTextField inputField = new JTextField(45);
 		final JLabel inputLabel = new JLabel("Input: ");
 		final JButton inputButton = new JButton("Browse");
-		inputButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final int result = jFileChooser.showOpenDialog(RigbornRotator.this);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					if (jFileChooser.getSelectedFile() != null) {
-						inputField.setText(jFileChooser.getSelectedFile().getPath());
-					}
+		inputButton.addActionListener(e -> {
+			final int result = jFileChooser.showOpenDialog(RigbornRotator.this);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				if (jFileChooser.getSelectedFile() != null) {
+					inputField.setText(jFileChooser.getSelectedFile().getPath());
 				}
 			}
 		});
@@ -58,14 +53,11 @@ public class RigbornRotator extends JPanel {
 		final JTextField outputField = new JTextField(45);
 		final JLabel outputLabel = new JLabel("Output: ");
 		final JButton outputButton = new JButton("Browse");
-		outputButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final int result = jFileChooser.showSaveDialog(RigbornRotator.this);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					if (jFileChooser.getSelectedFile() != null) {
-						outputField.setText(jFileChooser.getSelectedFile().getPath());
-					}
+		outputButton.addActionListener(e -> {
+			final int result = jFileChooser.showSaveDialog(RigbornRotator.this);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				if (jFileChooser.getSelectedFile() != null) {
+					outputField.setText(jFileChooser.getSelectedFile().getPath());
 				}
 			}
 		});
@@ -92,38 +84,35 @@ public class RigbornRotator extends JPanel {
 		rotatePanel.add(angleSpinner);
 
 		final JButton generateButton = new JButton("Generate");
-		generateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					final EditableModel model = EditableModel.read(new File(inputField.getText()));
-					final Helper rootRotation = new Helper("Bone_Rotation");
-					rootRotation.setPivotPoint(new Vertex(0, 0, 0));
-					final AnimFlag rotationAnimation = new AnimFlag("Rotation");
-					rotationAnimation.setInterpType(InterpolationType.LINEAR);
-					for (final Animation anim : model.getAnims()) {
-						rotationAnimation.addKeyframe(anim.getIntervalStart(),
-								new QuaternionRotation(
-										new Vertex(((Number) axisXSpinner.getValue()).doubleValue(),
-												((Number) axisYSpinner.getValue()).doubleValue(),
-												((Number) axisZSpinner.getValue()).doubleValue()),
-										Math.toRadians(((Number) angleSpinner.getValue()).doubleValue())));
-					}
-
-					for (final IdObject node : model.getIdObjects()) {
-						if (node.getParent() == null) {
-							node.setParent(rootRotation);
-						}
-					}
-					rootRotation.add(rotationAnimation);
-
-					model.add(rootRotation);
-
-					model.printTo(new File(outputField.getText()));
-				} catch (final Exception exc) {
-					exc.printStackTrace();
-					ExceptionPopup.display(exc);
+		generateButton.addActionListener(e -> {
+			try {
+				final EditableModel model = EditableModel.read(new File(inputField.getText()));
+				final Helper rootRotation = new Helper("Bone_Rotation");
+				rootRotation.setPivotPoint(new Vertex(0, 0, 0));
+				final AnimFlag rotationAnimation = new AnimFlag("Rotation");
+				rotationAnimation.setInterpType(InterpolationType.LINEAR);
+				for (final Animation anim : model.getAnims()) {
+					rotationAnimation.addKeyframe(anim.getIntervalStart(),
+							new QuaternionRotation(
+									new Vertex(((Number) axisXSpinner.getValue()).doubleValue(),
+											((Number) axisYSpinner.getValue()).doubleValue(),
+											((Number) axisZSpinner.getValue()).doubleValue()),
+									Math.toRadians(((Number) angleSpinner.getValue()).doubleValue())));
 				}
+
+				for (final IdObject node : model.getIdObjects()) {
+					if (node.getParent() == null) {
+						node.setParent(rootRotation);
+					}
+				}
+				rootRotation.add(rotationAnimation);
+
+				model.add(rootRotation);
+
+				model.printTo(new File(outputField.getText()));
+			} catch (final Exception exc) {
+				exc.printStackTrace();
+				ExceptionPopup.display(exc);
 			}
 		});
 

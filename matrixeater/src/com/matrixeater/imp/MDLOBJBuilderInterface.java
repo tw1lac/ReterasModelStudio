@@ -20,10 +20,10 @@ import com.owens.oobjloader.parser.BuilderInterface;
 public class MDLOBJBuilderInterface implements BuilderInterface {
 
 	private final EditableModel model;
-	private final List<Vertex> verticesGeometric = new ArrayList<Vertex>();
-	private final List<TVertex> tvertices = new ArrayList<TVertex>();
-	private final List<Normal> normals = new ArrayList<Normal>();
-	private final Map<String,Material> nameToMaterial = new HashMap<String,Material>();
+	private final List<Vertex> verticesGeometric = new ArrayList<>();
+	private final List<TVertex> tvertices = new ArrayList<>();
+	private final List<Normal> normals = new ArrayList<>();
+	private final Map<String,Material> nameToMaterial = new HashMap<>();
 	private final Geoset currentGeoset = new Geoset();
 
 	public MDLOBJBuilderInterface() {

@@ -6,7 +6,7 @@ import com.hiveworkshop.wc3.mdl.EditableModel;
 import java.io.File;
 
 public class GetMeGoodPaths {
-    private static File toFix = new File("F:\\NEEDS_ORGANIZING\\AAAlteracIsle\\Buildings");
+    private static final File toFix = new File("F:\\NEEDS_ORGANIZING\\AAAlteracIsle\\Buildings");
 
     public static void main(String[] args) {
         for(File subFile: toFix.listFiles()) {

@@ -58,7 +58,7 @@ public class Parse {
     BuilderInterface builder = null;
     File objFile = null;
 
-    public Parse(final BuilderInterface builder, final String filename) throws FileNotFoundException, IOException {
+    public Parse(final BuilderInterface builder, final String filename) throws IOException {
         this.builder = builder;
         builder.setObjFilename(filename);
         parseObjFile(filename);
@@ -66,7 +66,7 @@ public class Parse {
         builder.doneParsingObj(filename);
     }
 
-    private void parseObjFile(final String objFilename) throws FileNotFoundException, IOException {
+    private void parseObjFile(final String objFilename) throws IOException {
         int lineCount = 0;
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
@@ -587,17 +587,17 @@ public class Parse {
     // >
     // >     filename is the name of the library file that defines the
     // >     materials.  There is no default.
-    private void processMaterialLib(final String line) throws FileNotFoundException, IOException {
+    private void processMaterialLib(final String line) throws IOException {
         final String[] matlibnames = StringUtils.parseWhitespaceList(line.substring(OBJ_MTLLIB.length()).trim());
 
         if (null != matlibnames) {
         	boolean allNotFound = true;// MatrixEater added 4/11/2016
-            for (int loopi = 0; loopi < matlibnames.length; loopi++) {
+            for (String matlibname : matlibnames) {
                 try {
-                    parseMtlFile(matlibnames[loopi]);
+                    parseMtlFile(matlibname);
                     allNotFound = false;// MatrixEater added 4/11/2016
                 } catch (final FileNotFoundException e) {
-                    log.log(SEVERE, "Can't find material file name='" + matlibnames[loopi] + "', e=" + e);
+                    log.log(SEVERE, "Can't find material file name='" + matlibname + "', e=" + e);
                 }
             }
             if( allNotFound && matlibnames.length > 0 ) {// MatrixEater added 4/11/2016
@@ -627,7 +627,7 @@ public class Parse {
     // ----------------------------------------------------------------------
     // material file processing
     // ----------------------------------------------------------------------
-    private void parseMtlFile(final String mtlFilename) throws FileNotFoundException, IOException {
+    private void parseMtlFile(final String mtlFilename) throws IOException {
         int lineCount = 0;
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;

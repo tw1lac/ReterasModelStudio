@@ -10,10 +10,8 @@ import com.owens.oobjloader.builder.Build;
 
 public class OBJImportSettingsPanel extends JPanel {
 
-	private final JLabel titleLabel;
-
 	public OBJImportSettingsPanel(final Build builder) {
-		titleLabel = new JLabel("OBJ Settings");
+		JLabel titleLabel = new JLabel("OBJ Settings");
 		final Font smallFont = new Font("Arial",Font.BOLD,16);
 		final Font medFont = new Font("Arial",Font.BOLD,28);
 		final Font bigFont = new Font("Arial",Font.BOLD,46);

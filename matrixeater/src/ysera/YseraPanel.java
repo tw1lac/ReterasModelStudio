@@ -37,13 +37,11 @@ public class YseraPanel extends JPanel {
 			perspectiveViewport.setAnimation(footmanMDL.getAnim(0));
 			add(BorderLayout.CENTER, perspectiveViewport);
 
-		} catch (final LWJGLException e) {
+		} catch (final LWJGLException | IOException e) {
 			e.printStackTrace();
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		setPreferredSize(new Dimension(640, 480));
+		} // TODO Auto-generated catch block
+
+        setPreferredSize(new Dimension(640, 480));
 	}
 
 	public JMenuBar createJMenuBar() {

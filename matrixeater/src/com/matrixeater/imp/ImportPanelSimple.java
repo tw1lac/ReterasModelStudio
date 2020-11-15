@@ -9,9 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class ImportPanelSimple extends JPanel implements ActionListener {
-	JButton animationTransfer = new JButton(com.matrixeater.src.MainPanel.AnimIcon);// "Animation
+	final JButton animationTransfer = new JButton(com.matrixeater.src.MainPanel.AnimIcon);// "Animation
 																					// Transferer");
-	JFrame frame;
+                                                                                    final JFrame frame;
 
 	public ImportPanelSimple() {
 		add(animationTransfer);

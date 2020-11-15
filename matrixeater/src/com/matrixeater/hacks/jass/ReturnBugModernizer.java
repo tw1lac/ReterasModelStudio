@@ -2,7 +2,6 @@ package com.matrixeater.hacks.jass;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,12 +22,10 @@ public final class ReturnBugModernizer {
 
 				}
 			}
-		} catch (final FileNotFoundException e) {
-			throw new RuntimeException(e);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
+    }
 
 	private ReturnBugModernizer() {
 

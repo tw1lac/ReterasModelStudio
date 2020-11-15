@@ -38,33 +38,30 @@ public class FtlopMaker4 {
 				System.out.println("Processed 100 items... now at " + i);
 			}
 			final String item = betterList.get(i);
-			newFixedThreadPool.execute(new Runnable() {
-				@Override
-				public void run() {
-					System.out.println(item);
-					if (item.toLowerCase().endsWith(".dds")) {
-						// it's a texture
-						try {
-							final BufferedImage gameTex = BLPHandler.get().getGameTex(item);
-							final File outputFile = new File(
-									outputDump + item.substring(0, item.lastIndexOf('.')) + ".blp");
-							outputFile.getParentFile().mkdirs();
-							ImageIO.write(gameTex, "blp", outputFile);
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
-					} else if (item.toLowerCase().endsWith(".mdx")) {
-						// it's a model
-						try {
-							final File outputFile = new File(outputDump + item);
-							outputFile.getParentFile().mkdirs();
-							final EditableModel model = new EditableModel(MdxUtils.loadModel(
-									new BlizzardDataInputStream(MpqCodebase.get().getResourceAsStream(item))));
-							EditableModel.convertToV800(targetLevelOfDetail, model);
-							model.printTo(outputFile);
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
+			newFixedThreadPool.execute(() -> {
+				System.out.println(item);
+				if (item.toLowerCase().endsWith(".dds")) {
+					// it's a texture
+					try {
+						final BufferedImage gameTex = BLPHandler.get().getGameTex(item);
+						final File outputFile = new File(
+								outputDump + item.substring(0, item.lastIndexOf('.')) + ".blp");
+						outputFile.getParentFile().mkdirs();
+						ImageIO.write(gameTex, "blp", outputFile);
+					} catch (final Exception e) {
+						e.printStackTrace();
+					}
+				} else if (item.toLowerCase().endsWith(".mdx")) {
+					// it's a model
+					try {
+						final File outputFile = new File(outputDump + item);
+						outputFile.getParentFile().mkdirs();
+						final EditableModel model = new EditableModel(MdxUtils.loadModel(
+								new BlizzardDataInputStream(MpqCodebase.get().getResourceAsStream(item))));
+						EditableModel.convertToV800(targetLevelOfDetail, model);
+						model.printTo(outputFile);
+					} catch (final Exception e) {
+						e.printStackTrace();
 					}
 				}
 			});

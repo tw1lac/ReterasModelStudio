@@ -3,7 +3,6 @@ package com.matrixeater.hacks.converts;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -48,14 +47,11 @@ public class GigapixelHelper {
 				((BLPWriteParam) defaultWriteParam).setAutoMipmap(mipmaps);
 				writer.write(image);
 			}
-		} catch (final FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+    }
 
 	public static void main(final String[] args) {
 //		process(new File("C:/MPQBuild/War3.mpq"));
@@ -76,12 +72,10 @@ public class GigapixelHelper {
 				output.getParentFile().mkdirs();
 				try (FileInputStream inpustra = new FileInputStream(file)) {
 					writeMipmaps(ImageIO.read(inpustra), output, mipmaps);
-				} catch (final FileNotFoundException e) {
-					e.printStackTrace();
 				} catch (final IOException e) {
 					e.printStackTrace();
 				}
-			}
+            }
 		}
 	}
 

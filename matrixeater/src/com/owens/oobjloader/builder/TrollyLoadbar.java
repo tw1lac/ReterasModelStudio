@@ -15,13 +15,12 @@ import javax.swing.JProgressBar;
  */
 public class TrollyLoadbar {
 	private final JFrame frame;
-	private final JPanel panel;
 	private final JLabel text;
 	private final JProgressBar bar;
 	public TrollyLoadbar() {
 		frame = new JFrame("Loading...");
 		frame.setUndecorated(true);
-		panel = new JPanel();
+		JPanel panel = new JPanel();
 		text = new JLabel("Loading...");
 		bar = new JProgressBar(0, 100);
 		bar.setPreferredSize(new Dimension(270,20));

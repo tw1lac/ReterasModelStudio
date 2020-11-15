@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -21,30 +20,24 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileFilter;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.datachooser.DataSource;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter;
-import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter.TextureExporterClickListener;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.mdl.Bitmap;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 public class TextureManager extends JPanel {
 	private final JTextField pathField;
-	private final ModelView modelView;
-	private final ModelStructureChangeListener listener;
-	private JPanel panel_1;
+	private final JPanel panel_1;
 
 	/**
 	 * Create the panel.
 	 */
 	public TextureManager(final ModelView modelView, final ModelStructureChangeListener listener,
 			final TextureExporter textureExporter) {
-		this.modelView = modelView;
-		this.listener = listener;
 		setLayout(null);
 
 		final JPanel panel = new JPanel();
@@ -55,13 +48,8 @@ public class TextureManager extends JPanel {
 
 		final JCheckBox chckbxDisplayPath = new JCheckBox("Display Path");
 
-		final JList<Bitmap> list = new JList<Bitmap>();
-		chckbxDisplayPath.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				list.repaint();
-			}
-		});
+		final JList<Bitmap> list = new JList<>();
+		chckbxDisplayPath.addActionListener(e -> list.repaint());
 		panel.add(new JScrollPane(list));
 		Bitmap defaultTexture = null;
 		final DefaultListModel<Bitmap> bitmapListModel = new DefaultListModel<>();
@@ -111,63 +99,37 @@ public class TextureManager extends JPanel {
 		loadBitmap(modelView, defaultTexture);
 
 		final JButton importButton = new JButton("Import");
-		importButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				textureExporter.showOpenDialog("", new TextureExporterClickListener() {
-
-					@Override
-					public void onClickOK(final File file, final FileFilter filter) {
-						final Bitmap newBitmap = new Bitmap(file.getName());
-						modelView.getModel().add(newBitmap);
-						bitmapListModel.addElement(newBitmap);
-						listener.texturesChanged();
-					}
-				}, TextureManager.this);
-			}
-		});
+		importButton.addActionListener(e -> textureExporter.showOpenDialog("", (file, filter) -> {
+			final Bitmap newBitmap = new Bitmap(file.getName());
+			modelView.getModel().add(newBitmap);
+			bitmapListModel.addElement(newBitmap);
+			listener.texturesChanged();
+		}, TextureManager.this));
 		importButton.setBounds(26, 535, 89, 23);
 		add(importButton);
 
 		final JButton exportButton = new JButton("Export");
 		exportButton.setBounds(125, 535, 89, 23);
 		add(exportButton);
-		exportButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Bitmap selectedValue = list.getSelectedValue();
-				if (selectedValue != null) {
-					String selectedPath = selectedValue.getPath();
-					selectedPath = selectedPath.substring(selectedPath.lastIndexOf("\\") + 1);
-					textureExporter.exportTexture(selectedPath, new TextureExporterClickListener() {
-
-						@Override
-						public void onClickOK(final File file, final FileFilter filter) {
-							BLPHandler.exportBitmapTextureFile(TextureManager.this, modelView, selectedValue, file);
-						}
-
-					}, TextureManager.this);
-				}
+		exportButton.addActionListener(e -> {
+			final Bitmap selectedValue = list.getSelectedValue();
+			if (selectedValue != null) {
+				String selectedPath = selectedValue.getPath();
+				selectedPath = selectedPath.substring(selectedPath.lastIndexOf("\\") + 1);
+				textureExporter.exportTexture(selectedPath, (file, filter) -> BLPHandler.exportBitmapTextureFile(TextureManager.this, modelView, selectedValue, file), TextureManager.this);
 			}
 		});
 
 		final JButton btnReplaceTexture = new JButton("Replace Texture");
-		btnReplaceTexture.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Bitmap selectedValue = list.getSelectedValue();
-				if (selectedValue != null) {
-					textureExporter.showOpenDialog("", new TextureExporterClickListener() {
-						@Override
-						public void onClickOK(final File file, final FileFilter filter) {
-							selectedValue.setPath(file.getName());
-							list.repaint();
-							loadBitmap(modelView, selectedValue);
-							listener.texturesChanged();
-						}
-					}, TextureManager.this);
-				}
+		btnReplaceTexture.addActionListener(e -> {
+			final Bitmap selectedValue = list.getSelectedValue();
+			if (selectedValue != null) {
+				textureExporter.showOpenDialog("", (file, filter) -> {
+					selectedValue.setPath(file.getName());
+					list.repaint();
+					loadBitmap(modelView, selectedValue);
+					listener.texturesChanged();
+				}, TextureManager.this);
 			}
 		});
 		btnReplaceTexture.setBounds(25, 569, 185, 23);
@@ -175,15 +137,12 @@ public class TextureManager extends JPanel {
 
 		final JButton btnRemove = new JButton("Remove");
 		btnRemove.setBounds(224, 535, 89, 23);
-		btnRemove.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Bitmap selectedValue = list.getSelectedValue();
-				if (selectedValue != null) {
-					modelView.getModel().remove(selectedValue);
-					bitmapListModel.removeElement(selectedValue);
-					listener.texturesChanged();
-				}
+		btnRemove.addActionListener(e -> {
+			final Bitmap selectedValue = list.getSelectedValue();
+			if (selectedValue != null) {
+				modelView.getModel().remove(selectedValue);
+				bitmapListModel.removeElement(selectedValue);
+				listener.texturesChanged();
 			}
 		});
 		add(btnRemove);
@@ -210,32 +169,25 @@ public class TextureManager extends JPanel {
 		pathField.setColumns(10);
 
 		final JButton btnAdd = new JButton("Add Path");
-		btnAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final String path = JOptionPane.showInputDialog(TextureManager.this, "Enter texture path:",
-						"Add Texture", JOptionPane.PLAIN_MESSAGE);
-				if (path != null) {
-					final Bitmap newBitmap = new Bitmap(path);
-					modelView.getModel().add(newBitmap);
-					bitmapListModel.addElement(newBitmap);
-					listener.texturesChanged();
-				}
+		btnAdd.addActionListener(e -> {
+			final String path = JOptionPane.showInputDialog(TextureManager.this, "Enter texture path:",
+					"Add Texture", JOptionPane.PLAIN_MESSAGE);
+			if (path != null) {
+				final Bitmap newBitmap = new Bitmap(path);
+				modelView.getModel().add(newBitmap);
+				bitmapListModel.addElement(newBitmap);
+				listener.texturesChanged();
 			}
 		});
 		btnAdd.setBounds(415, 569, 89, 23);
 		add(btnAdd);
-		pathField.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Bitmap selectedValue = list.getSelectedValue();
-				if (selectedValue != null) {
-					selectedValue.setPath(pathField.getText());
-					list.repaint();
-					loadBitmap(modelView, selectedValue);
-					listener.texturesChanged();
-				}
+		pathField.addActionListener(e -> {
+			final Bitmap selectedValue = list.getSelectedValue();
+			if (selectedValue != null) {
+				selectedValue.setPath(pathField.getText());
+				list.repaint();
+				loadBitmap(modelView, selectedValue);
+				listener.texturesChanged();
 			}
 		});
 

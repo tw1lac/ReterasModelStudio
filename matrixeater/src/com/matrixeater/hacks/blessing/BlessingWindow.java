@@ -34,7 +34,6 @@ public class BlessingWindow extends JPanel {
 			new Blessing("Pa'ku", "Loa of the Winds"), new Blessing("Rezan", "Loa of Kings"),
 			new Blessing("Bwonsamdi", "Loa of Graves"));
 	private BorderedBox borderedBox;
-	private BufferedImage optionsMenuBorder;
 	private final Rectangle windowBounds;
 
 	private final List<FrameHandle> frameHandles = new ArrayList<>();
@@ -53,7 +52,7 @@ public class BlessingWindow extends JPanel {
 			subtitleFont = font.deriveFont(14f);
 			tooltipFont = font.deriveFont(18f);
 			titleFont = font.deriveFont(36f);
-			optionsMenuBorder = BLPHandler.get().getGameTex("ui\\widgets\\escmenu\\orc\\orc-options-menu-border.blp");
+			BufferedImage optionsMenuBorder = BLPHandler.get().getGameTex("ui\\widgets\\escmenu\\orc\\orc-options-menu-border.blp");
 			borderedBox = new BorderedBox(windowBounds, optionsMenuBorder);
 
 			frameHandles.add(borderedBox);
@@ -79,9 +78,7 @@ public class BlessingWindow extends JPanel {
 			stonesIcon = BLPHandler.get().getGameTex("ui\\widgets\\tooltips\\human\\tooltipstonesicon.blp");
 			tooltipBackground = BLPHandler.get()
 					.getGameTex("ui\\widgets\\tooltips\\human\\human-tooltip-background.blp");
-		} catch (final FontFormatException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
+		} catch (final FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
 

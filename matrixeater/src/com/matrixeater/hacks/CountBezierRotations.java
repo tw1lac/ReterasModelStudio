@@ -38,13 +38,9 @@ public class CountBezierRotations {
 				for (final AnimFlag flag : allAnimFlags) {
 					final InterpolationType interpTypeAsEnum = flag.getInterpTypeAsEnum();
 					final String flagName = flag.getName();
-					Map<String, Integer> interpMap = bigTreeMap.get(flagName);
-					if (interpMap == null) {
-						interpMap = new HashMap<>();
-						bigTreeMap.put(flagName, interpMap);
-					}
+                    Map<String, Integer> interpMap = bigTreeMap.computeIfAbsent(flagName, k -> new HashMap<>());
 
-					Integer previousCount = interpMap.get(interpTypeAsEnum.name());
+                    Integer previousCount = interpMap.get(interpTypeAsEnum.name());
 					if (previousCount == null) {
 						previousCount = 1;
 					} else {

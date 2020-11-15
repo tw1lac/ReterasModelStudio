@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class ParseTest {
 
-    private static Logger log = Logger.getLogger(com.owens.oobjloader.lwjgl.DisplayTest.class.getName());
+    private static final Logger log = Logger.getLogger(com.owens.oobjloader.lwjgl.DisplayTest.class.getName());
 
     public static void main(String[] argv) {
 

@@ -16,10 +16,8 @@ public class LemmeJustGrabAFile {
 			System.out.println(loadMPQ.has("war3map.j"));
 			System.out.println(loadMPQ.has("scripts\\war3map.j"));
 			loadMPQ.unload();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		} catch (final MPQException e) {
+		} catch (final IOException | MPQException e) {
 			e.printStackTrace();
 		}
-	}
+    }
 }

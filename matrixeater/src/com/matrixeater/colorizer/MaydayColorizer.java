@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -63,60 +61,38 @@ public class MaydayColorizer extends JPanel {
 			}
 		};
 		leftColorDisplay.setMinimumSize(new Dimension(55, 25));
-		leftColorDisplay.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Color userValue = JColorChooser.showDialog(MaydayColorizer.this, "Choose Color", leftColor);
-				if (userValue != null) {
-					leftColor = userValue;
-					repaint();
-				}
+		leftColorDisplay.addActionListener(e -> {
+			final Color userValue = JColorChooser.showDialog(MaydayColorizer.this, "Choose Color", leftColor);
+			if (userValue != null) {
+				leftColor = userValue;
+				repaint();
 			}
 		});
 		rightColorDisplay.setMinimumSize(new Dimension(55, 25));
-		rightColorDisplay.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Color userValue = JColorChooser.showDialog(MaydayColorizer.this, "Choose Color", rightColor);
-				if (userValue != null) {
-					rightColor = userValue;
-					repaint();
-				}
+		rightColorDisplay.addActionListener(e -> {
+			final Color userValue = JColorChooser.showDialog(MaydayColorizer.this, "Choose Color", rightColor);
+			if (userValue != null) {
+				rightColor = userValue;
+				repaint();
 			}
 		});
 		gradientDisplay.setMinimumSize(new Dimension(500, 25));
 		final JButton applyLeftColor = new JButton("Apply Color");
-		applyLeftColor.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				applyColor(leftColor);
-			}
-		});
+		applyLeftColor.addActionListener(e -> applyColor(leftColor));
+
 		final JButton applyRightColor = new JButton("Apply Color");
-		applyRightColor.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				applyColor(rightColor);
-			}
-		});
+		applyRightColor.addActionListener(e -> applyColor(rightColor));
+
 		final JButton applyGradient = new JButton("Apply Gradient");
 		applyGradient.setMinimumSize(new Dimension(500, 25));
-		applyGradient.addActionListener(new ActionListener() {
+		applyGradient.addActionListener(e -> applyColor(leftColor, rightColor));
 
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				applyColor(leftColor, rightColor);
-			}
-		});
 		final JCheckBox valueLink = new JCheckBox("Value Link");
 		valueLink.setEnabled(false);
+
 		final JButton newLine = new JButton("New Line");
-		newLine.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				addNewline();
-			}
-		});
+		newLine.addActionListener(e -> addNewline());
+
 		editorPane = new JEditorPane();
 		editorPane.setBackground(new Color(0, 25, 70));
 		editorPane.setText("<span style=\"color:white\">");
@@ -250,7 +226,7 @@ public class MaydayColorizer extends JPanel {
 							}
 							if (validHexString) {
 								skip = true;
-								sb.append("<span style=\"color:#").append(text.substring(i + 4, i + 10)).append(text.substring(i + 2, i + 4)).append("\">");
+								sb.append("<span style=\"color:#").append(text, i + 4, i + 10).append(text, i + 2, i + 4).append("\">");
 								i += 9;
 							}
 						}
