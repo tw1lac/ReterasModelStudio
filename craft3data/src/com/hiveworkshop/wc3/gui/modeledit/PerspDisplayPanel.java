@@ -58,56 +58,21 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		this.title = title;
 		this.dispMDL = dispMDL;
 
-		plusZoom = new JButton("");
 		Dimension dim = new Dimension(20, 20);
-		plusZoom.setMaximumSize(dim);
-		plusZoom.setMinimumSize(dim);
-		plusZoom.setPreferredSize(dim);
-		plusZoom.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/Plus.png")));
-		plusZoom.addActionListener(this);
-		// add(plusZoom);
+		plusZoom = createAndAddIconButton(dim, GlobalIcons.PLUS);
 
-		minusZoom = new JButton("");
-		minusZoom.setMaximumSize(dim);
-		minusZoom.setMinimumSize(dim);
-		minusZoom.setPreferredSize(dim);
-		minusZoom.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/Minus.png")));
-		minusZoom.addActionListener(this);
-		// add(minusZoom);
+		minusZoom = createAndAddIconButton(dim, GlobalIcons.MINUS);
 
-		up = new JButton("");
 		dim = new Dimension(32, 16);
-		up.setMaximumSize(dim);
-		up.setMinimumSize(dim);
-		up.setPreferredSize(dim);
-		up.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowUp.png")));
-		up.addActionListener(this);
-		// add(up);
+		up = createAndAddIconButton(dim, GlobalIcons.ARROW_UP);
 
-		down = new JButton("");
-		down.setMaximumSize(dim);
-		down.setMinimumSize(dim);
-		down.setPreferredSize(dim);
-		down.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowDown.png")));
-		down.addActionListener(this);
-		// add(down);
+		down = createAndAddIconButton(dim, GlobalIcons.ARROW_DOWN);
 
 		dim = new Dimension(16, 32);
-		left = new JButton("");
-		left.setMaximumSize(dim);
-		left.setMinimumSize(dim);
-		left.setPreferredSize(dim);
-		left.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowLeft.png")));
-		left.addActionListener(this);
-		// add(left);
+		left = createAndAddIconButton(dim, GlobalIcons.ARROW_LEFT);
 
-		right = new JButton("");
-		right.setMaximumSize(dim);
-		right.setMinimumSize(dim);
-		right.setPreferredSize(dim);
-		right.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowRight.png")));
-		right.addActionListener(this);
-		// add(right);
+		right = createAndAddIconButton(dim, GlobalIcons.ARROW_RIGHT);
+
 
 		final GroupLayout layout = new GroupLayout(this);
 		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(vp));
@@ -145,6 +110,17 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		// setLayout( new BoxLayout(this,BoxLayout.LINE_AXIS));
 		// setLayout(new GridLayout(1,1));
 		this.view = new View(title, null, this);
+	}
+
+	private JButton createAndAddIconButton(Dimension dim, ImageIcon imageIcon) {
+		JButton button = new JButton("");
+		button.setMaximumSize(dim);
+		button.setMinimumSize(dim);
+		button.setPreferredSize(dim);
+		button.setIcon(imageIcon);
+		button.addActionListener(this);
+		add(button);
+		return button;
 	}
 
 	public void setViewportBackground(final Color background) {

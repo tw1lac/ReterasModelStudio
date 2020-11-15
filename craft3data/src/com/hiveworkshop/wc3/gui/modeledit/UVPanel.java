@@ -93,15 +93,7 @@ import net.infonode.docking.View;
 public class UVPanel extends JPanel
 		implements ActionListener, CoordDisplayListener, TVertexEditorChangeActivityListener {
 
-	static final ImageIcon UVIcon;
-	static {
-		try {
-			UVIcon = new ImageIcon(IconUtils
-					.worldEditStyleIcon(ImageIO.read(GlobalIcons.class.getResourceAsStream("ImageBin/UVMap.png"))));
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	static final ImageIcon UVIcon = GlobalIcons.UV_MAP;
 
 	ModeButton loadImage, selectButton, addButton, deselectButton, moveButton, rotateButton, scaleButton, unwrapButton;
 	private final JComboBox<UnwrapDirection> unwrapDirectionBox;
@@ -250,10 +242,12 @@ public class UVPanel extends JPanel
 		modeToButton.put(selectionModeGroup.getToolbarButtonTypes()[2], deselectButton);
 		deselectButton.addActionListener(new ButtonModeChangeListener(2));
 		selectionModeButtons.add(deselectButton);
+
 		final JLabel[] divider = new JLabel[4];
 		for (int i = 0; i < divider.length; i++) {
 			divider[i] = new JLabel("----------");
 		}
+
 		for (int i = 0; i < mouseCoordDisplay.length; i++) {
 			mouseCoordDisplay[i] = new JTextField("");
 			mouseCoordDisplay[i].setMaximumSize(new Dimension(80, 18));
@@ -263,34 +257,34 @@ public class UVPanel extends JPanel
 		loadImage = new ModeButton("Load Image");
 		moveButton = new ModeButton("Move");
 		moveButton.addActionListener(new ButtonActionChangeListener(0));
+
 		rotateButton = new ModeButton("Rotate");
 		rotateButton.addActionListener(new ButtonActionChangeListener(1));
+
 		scaleButton = new ModeButton("Scale");
 		scaleButton.addActionListener(new ButtonActionChangeListener(2));
+
 		unwrapDirectionBox = new JComboBox<>(UnwrapDirection.values());
 		unwrapButton = new ModeButton("Remap UVs");
-		unwrapButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final UnwrapDirection selectedItem = (UnwrapDirection) unwrapDirectionBox.getSelectedItem();
-				if (selectedItem != null) {
-					switch (selectedItem) {
-					case BOTTOM:
-						remap((byte) 1, (byte) 0, selectedItem);
-						break;
-					case FRONT:
-						remap((byte) 1, (byte) 2, selectedItem);
-						break;
-					case RIGHT:
-						remap((byte) 0, (byte) 2, selectedItem);
-						break;
-					case PERSPECTIVE:
-						break;
-					}
-				} else {
-					JOptionPane.showMessageDialog(UVPanel.this, "Please select a direction", "Error",
-							JOptionPane.ERROR_MESSAGE);
+		unwrapButton.addActionListener(e -> {
+			final UnwrapDirection selectedItem = (UnwrapDirection) unwrapDirectionBox.getSelectedItem();
+			if (selectedItem != null) {
+				switch (selectedItem) {
+				case BOTTOM:
+					remap((byte) 1, (byte) 0, selectedItem);
+					break;
+				case FRONT:
+					remap((byte) 1, (byte) 2, selectedItem);
+					break;
+				case RIGHT:
+					remap((byte) 0, (byte) 2, selectedItem);
+					break;
+				case PERSPECTIVE:
+					break;
 				}
+			} else {
+				JOptionPane.showMessageDialog(UVPanel.this, "Please select a direction", "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		});
 
@@ -314,62 +308,31 @@ public class UVPanel extends JPanel
 		unwrapDirectionBox.setMinimumSize(new Dimension(90, 15));
 		unwrapDirectionBox.addActionListener(this);
 
-		for (int i = 0; i < buttons.size(); i++) {
-			buttons.get(i).setMaximumSize(new Dimension(100, 35));
-			buttons.get(i).setMinimumSize(new Dimension(90, 15));
-			buttons.get(i).addActionListener(this);
+		for (ModeButton button : buttons) {
+			button.setMaximumSize(new Dimension(100, 35));
+			button.setMinimumSize(new Dimension(90, 15));
+			button.addActionListener(this);
 		}
 
-		plusZoom = new JButton("");
 		Dimension dim = new Dimension(20, 20);
-		plusZoom.setMaximumSize(dim);
-		plusZoom.setMinimumSize(dim);
-		plusZoom.setPreferredSize(dim);
-		plusZoom.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/Plus.png")));
-		plusZoom.addActionListener(this);
-		add(plusZoom);
+		plusZoom = createAndAddIconButton(dim, GlobalIcons.PLUS);
 
-		minusZoom = new JButton("");
-		minusZoom.setMaximumSize(dim);
-		minusZoom.setMinimumSize(dim);
-		minusZoom.setPreferredSize(dim);
-		minusZoom.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/Minus.png")));
-		minusZoom.addActionListener(this);
-		add(minusZoom);
+		minusZoom = createAndAddIconButton(dim, GlobalIcons.MINUS);
+//		add(minusZoom);
 
-		up = new JButton("");
 		dim = new Dimension(32, 16);
-		up.setMaximumSize(dim);
-		up.setMinimumSize(dim);
-		up.setPreferredSize(dim);
-		up.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowUp.png")));
-		up.addActionListener(this);
-		add(up);
+		up = createAndAddIconButton(dim, GlobalIcons.ARROW_UP);
+//		add(up);
 
-		down = new JButton("");
-		down.setMaximumSize(dim);
-		down.setMinimumSize(dim);
-		down.setPreferredSize(dim);
-		down.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowDown.png")));
-		down.addActionListener(this);
-		add(down);
+		down = createAndAddIconButton(dim, GlobalIcons.ARROW_DOWN);
+//		add(down);
 
 		dim = new Dimension(16, 32);
-		left = new JButton("");
-		left.setMaximumSize(dim);
-		left.setMinimumSize(dim);
-		left.setPreferredSize(dim);
-		left.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowLeft.png")));
-		left.addActionListener(this);
-		add(left);
+		left = createAndAddIconButton(dim, GlobalIcons.ARROW_LEFT);
+//		add(left);
 
-		right = new JButton("");
-		right.setMaximumSize(dim);
-		right.setMinimumSize(dim);
-		right.setPreferredSize(dim);
-		right.setIcon(new ImageIcon(GlobalIcons.class.getResource("ImageBin/ArrowRight.png")));
-		right.addActionListener(this);
-		add(right);
+		right = createAndAddIconButton(dim, GlobalIcons.ARROW_RIGHT);
+//		add(right);
 
 		toolbar.setMaximumSize(new Dimension(80000, 48));
 		final GroupLayout layout = new GroupLayout(this);
@@ -417,20 +380,15 @@ public class UVPanel extends JPanel
 								.addComponent(unwrapButton).addGap(8).addGap(8))));
 
 		setLayout(layout);
-		selectionModeGroup.addToolbarButtonListener(new ToolbarButtonListener<SelectionMode>() {
-			@Override
-			public void typeChanged(final SelectionMode newType) {
-				resetSelectionModeButtons();
-				final ModeButton selectionModeButton = modeToButton.get(newType);
-				if (selectionModeButton != null) {
-					selectionModeButton.setColors(prefs.getActiveColor1(), prefs.getActiveColor2());
-				}
+		selectionModeGroup.addToolbarButtonListener(newType -> {
+			resetSelectionModeButtons();
+			final ModeButton selectionModeButton = modeToButton.get(newType);
+			if (selectionModeButton != null) {
+				selectionModeButton.setColors(prefs.getActiveColor1(), prefs.getActiveColor2());
 			}
 		});
 
-		selectionItemTypeGroup.addToolbarButtonListener(new ToolbarButtonListener<TVertexSelectionItemTypes>() {
-			@Override
-			public void typeChanged(final TVertexSelectionItemTypes newType) {
+		selectionItemTypeGroup.addToolbarButtonListener(newType -> {
 //				animationModeState = newType == SelectionItemTypes.ANIMATE;
 //				// we need to refresh the state of stuff AFTER the ModelPanels, this
 //				// is a pretty signficant design flaw, so we're just going to
@@ -451,17 +409,13 @@ public class UVPanel extends JPanel
 //					final boolean moveLinked = dialogResult == settings[0];
 //					ModelEditorManager.MOVE_LINKED = moveLinked;
 //				}
-				modelEditorManager.setSelectionItemType(newType);
-				repaint();
-			}
+			modelEditorManager.setSelectionItemType(newType);
+			repaint();
 		});
 
-		actionTypeGroup.addToolbarButtonListener(new ToolbarButtonListener<TVertexToolbarActionButtonType>() {
-			@Override
-			public void typeChanged(final TVertexToolbarActionButtonType newType) {
-				if (newType != null) {
-					changeActivity(newType);
-				}
+		actionTypeGroup.addToolbarButtonListener(newType -> {
+			if (newType != null) {
+				changeActivity(newType);
 			}
 		});
 		actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
@@ -471,6 +425,17 @@ public class UVPanel extends JPanel
 		menuHolderPanel.add(createMenuBar(), BorderLayout.BEFORE_FIRST_LINE);
 		view = new View("Texture Coordinate Editor: " + currentModelPanel().getModel().getName(), UVIcon,
 				menuHolderPanel);
+	}
+
+	private JButton createAndAddIconButton(Dimension dim, ImageIcon imageIcon) {
+		JButton button = new JButton("");
+		button.setMaximumSize(dim);
+		button.setMinimumSize(dim);
+		button.setPreferredSize(dim);
+		button.setIcon(imageIcon);
+		button.addActionListener(this);
+		add(button);
+		return button;
 	}
 
 	protected void remap(final byte xDim, final byte yDim, final UnwrapDirection direction) {
@@ -594,70 +559,56 @@ public class UVPanel extends JPanel
 				.setAccessibleDescription("Control display settings for this Texture Coordinate Editor window.");
 		menuBar.add(dispMenu);
 
-		selectAll = new JMenuItem("Select All");
-		selectAll.setAccelerator(KeyStroke.getKeyStroke("control A"));
-		selectAll.addActionListener(selectAllAction);
-		editMenu.add(selectAll);
+		selectAll = addEditMenuItem("Select All", "control A", selectAllAction);
 
-		invertSelect = new JMenuItem("Invert Selection");
-		invertSelect.setAccelerator(KeyStroke.getKeyStroke("control I"));
-		invertSelect.addActionListener(invertSelectAction);
-		editMenu.add(invertSelect);
+		invertSelect = addEditMenuItem("Invert Selection", "control I", invertSelectAction);
 
-		expandSelection = new JMenuItem("Expand Selection");
-		expandSelection.setAccelerator(KeyStroke.getKeyStroke("control E"));
-		expandSelection.addActionListener(expandSelectionAction);
-		editMenu.add(expandSelection);
+		expandSelection = addEditMenuItem("Expand Selection", "control E", expandSelectionAction);
 
-		selFromMain = new JMenuItem("Select from Viewer");
-		selFromMain.setAccelerator(KeyStroke.getKeyStroke("control V"));
-		selFromMain.addActionListener(selFromMainAction);
-		editMenu.add(selFromMain);
+		selFromMain = addEditMenuItem("Select from Viewer", "control V", selFromMainAction);
+
 
 		final JMenuItem splitVertex = new JMenuItem("Split Vertex");
 		splitVertex.setAccelerator(KeyStroke.getKeyStroke("control V"));
-		splitVertex.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final ModelPanel mpanel = currentModelPanel();
-				if (mpanel != null) {
-					// mpanel.getUndoManager().pushAction(modelEditorManager.getModelEditor()
-					// .selectFromViewer(mpanel.getModelEditorManager().getSelectionView()));
+		splitVertex.addActionListener(e -> {
+			final ModelPanel mpanel = currentModelPanel();
+			if (mpanel != null) {
+				// mpanel.getUndoManager().pushAction(modelEditorManager.getModelEditor()
+				// .selectFromViewer(mpanel.getModelEditorManager().getSelectionView()));
 
-					final Collection<? extends TVertex> selectedTVertices = modelEditorManager.getSelectionView()
-							.getSelectedTVertices(currentLayer());
-					for (final Geoset g : mpanel.getModel().getGeosets()) {
-						for (final GeosetVertex gv : new ArrayList<>(g.getVertices())) {
-							final TVertex tVertex = gv.getTVertex(currentLayer());
-							if (selectedTVertices.contains(tVertex)) {
-								final List<Triangle> triangles = gv.getTriangles();
-								final Iterator<Triangle> iterator = triangles.iterator();
-								if (iterator.hasNext()) {
-									iterator.next(); // keep using gv in 1 triangle, but not more
-								}
-								while (iterator.hasNext()) {
-									final Triangle tri = iterator.next();
-									final int vertexIndex = tri.indexOfRef(gv);
-									final GeosetVertex newVertex = new GeosetVertex(gv);
-									tri.set(vertexIndex, newVertex);
-									newVertex.getTriangles().add(tri);
-									newVertex.getGeoset().add(newVertex);
-									iterator.remove();
-								}
+				final Collection<? extends TVertex> selectedTVertices = modelEditorManager.getSelectionView()
+						.getSelectedTVertices(currentLayer());
+				for (final Geoset g : mpanel.getModel().getGeosets()) {
+					for (final GeosetVertex gv : new ArrayList<>(g.getVertices())) {
+						final TVertex tVertex = gv.getTVertex(currentLayer());
+						if (selectedTVertices.contains(tVertex)) {
+							final List<Triangle> triangles = gv.getTriangles();
+							final Iterator<Triangle> iterator = triangles.iterator();
+							if (iterator.hasNext()) {
+								iterator.next(); // keep using gv in 1 triangle, but not more
+							}
+							while (iterator.hasNext()) {
+								final Triangle tri = iterator.next();
+								final int vertexIndex = tri.indexOfRef(gv);
+								final GeosetVertex newVertex = new GeosetVertex(gv);
+								tri.set(vertexIndex, newVertex);
+								newVertex.getTriangles().add(tri);
+								newVertex.getGeoset().add(newVertex);
+								iterator.remove();
 							}
 						}
 					}
-					/*
-					 * Collection<Triangle> selectedFaces =
-					 * modelEditorManager.getSelectionView().getSelectedFaces(); for(Triangle t:
-					 * selectedFaces) { for(int i = 0; i < 3; i++) { GeosetVertex gv = t.get(i);
-					 * if(gv.getTriangles().size()>1) { GeosetVertex copy = new GeosetVertex(gv);
-					 * t.set(i, copy); copy.getTriangles().add(t); } } }
-					 */
-
 				}
-				repaint();
+				/*
+				 * Collection<Triangle> selectedFaces =
+				 * modelEditorManager.getSelectionView().getSelectedFaces(); for(Triangle t:
+				 * selectedFaces) { for(int i = 0; i < 3; i++) { GeosetVertex gv = t.get(i);
+				 * if(gv.getTriangles().size()>1) { GeosetVertex copy = new GeosetVertex(gv);
+				 * t.set(i, copy); copy.getTriangles().add(t); } } }
+				 */
+
 			}
+			repaint();
 		});
 		editMenu.add(splitVertex);
 
@@ -693,6 +644,14 @@ public class UVPanel extends JPanel
 		mirrorSubmenu.add(mirrorY);
 
 		return menuBar;
+	}
+
+	private JMenuItem addEditMenuItem(String itemText, String keyStroke, AbstractAction listenerAction) {
+		JMenuItem menuItem = new JMenuItem(itemText);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(keyStroke));
+		menuItem.addActionListener(listenerAction);
+		editMenu.add(menuItem);
+		return menuItem;
 	}
 
 	public void setControlsVisible(final boolean flag) {
@@ -1090,7 +1049,7 @@ public class UVPanel extends JPanel
 			panel.add(heightVal);
 			JOptionPane.showMessageDialog(this, panel);
 			vp.setAspectRatio(
-					((Integer) widthVal.getValue()).intValue() / (double) ((Integer) heightVal.getValue()).intValue());
+					(Integer) widthVal.getValue() / (double) (Integer) heightVal.getValue());
 		}
 	}
 
@@ -1105,7 +1064,7 @@ public class UVPanel extends JPanel
 	/**
 	 * A method defining the currently selected UV layer.
 	 *
-	 * @return
+	 * @return uvLayerIndex
 	 */
 	public int currentLayer() {
 		return uvLayerIndex;
@@ -1171,12 +1130,12 @@ public class UVPanel extends JPanel
 		}
 	}
 
-	public static enum UnwrapDirection {
+	public enum UnwrapDirection {
 		FRONT("Front"), RIGHT("Right"), BOTTOM("Bottom"), PERSPECTIVE("Perspective");
 
 		private final String displayText;
 
-		private UnwrapDirection(final String displayText) {
+		UnwrapDirection(final String displayText) {
 			this.displayText = displayText;
 		}
 

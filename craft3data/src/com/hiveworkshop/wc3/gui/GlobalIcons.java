@@ -23,10 +23,13 @@ public class GlobalIcons {
 	public static final ImageIcon MOVE_DOWN_ICON = createIcon("ImageBin/moveDown.png");
 	public static final ImageIcon SET_KEYFRAME_ICON = createIcon("ImageBin/setkey.png");
 	public static final ImageIcon SET_TIME_BOUNDS_ICON = createIcon("ImageBin/setbounds.png");
+	public static final ImageIcon UV_MAP = createIcon("ImageBin/UVMap.png");
 	public static final ImageIcon PLAY = createIcon("ImageBin/btn_play.png");
 	public static final ImageIcon PAUSE = createIcon("ImageBin/btn_pause.png");
-//	public static final ImageIcon ARROW = createIcon("ImageBin/arrow.png");
-//	public static final ImageIcon ARROW = createIcon("ImageBin/arrow.png");
-//	public static final ImageIcon ARROW = createIcon("ImageBin/arrow.png");
-//	public static final ImageIcon ARROW = createIcon("ImageBin/arrow.png");
+	public static final ImageIcon PLUS = createIcon("ImageBin/Plus.png");
+	public static final ImageIcon MINUS = createIcon("ImageBin/Minus.png");
+	public static final ImageIcon ARROW_UP = createIcon("ImageBin/ArrowUp.png");
+	public static final ImageIcon ARROW_DOWN = createIcon("ImageBin/ArrowDown.png");
+	public static final ImageIcon ARROW_LEFT = createIcon("ImageBin/ArrowLeft.png");
+	public static final ImageIcon ARROW_RIGHT = createIcon("ImageBin/ArrowRight.png");
 }
