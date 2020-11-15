@@ -250,11 +250,11 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 		void sort() {
 			final Comparator<GameObject> unitComp = new GameObjectComparator();
 
-			Collections.sort(units, unitComp);
-			Collections.sort(heroes, unitComp);
-			Collections.sort(buildings, unitComp);
-			Collections.sort(buildingsUprooted, unitComp);
-			Collections.sort(special, unitComp);
+			units.sort(unitComp);
+			heroes.sort(unitComp);
+			buildings.sort(unitComp);
+			buildingsUprooted.sort(unitComp);
+			special.sort(unitComp);
 		}
 	}
 

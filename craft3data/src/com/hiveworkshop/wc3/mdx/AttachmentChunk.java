@@ -32,9 +32,9 @@ public class AttachmentChunk {
 		final int nrOfAttachments = attachment.length;
 		out.writeNByteString("ATCH", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < attachment.length; i++) {
-			attachment[i].save(out);
-		}
+        for (Attachment value : attachment) {
+            value.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class AttachmentChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < attachment.length; i++) {
-			a += attachment[i].getSize();
-		}
+        for (Attachment value : attachment) {
+            a += value.getSize();
+        }
 
 		return a;
 	}
@@ -117,7 +117,7 @@ public class AttachmentChunk {
 						attachmentVisibility.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();

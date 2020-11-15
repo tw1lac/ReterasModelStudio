@@ -18,13 +18,13 @@ public class UVMoveAction implements UndoAction {
 	private VertexActionType actType = VertexActionType.UNKNOWN;
 
 	public UVMoveAction(final List<TVertex> selection, final List<TVertex> moveVectors, final VertexActionType actionType) {
-		this.selection = new ArrayList<TVertex>(selection);
+		this.selection = new ArrayList<>(selection);
 		this.moveVectors = moveVectors;
 		actType = actionType;
 	}
 
 	public UVMoveAction(final List<TVertex> selection, final TVertex moveVector, final VertexActionType actionType) {
-		this.selection = new ArrayList<TVertex>(selection);
+		this.selection = new ArrayList<>(selection);
 		this.moveVector = moveVector;
 		actType = actionType;
 	}
@@ -34,11 +34,11 @@ public class UVMoveAction implements UndoAction {
 	}
 
 	public void storeSelection(final List<TVertex> selection) {
-		this.selection = new ArrayList<TVertex>(selection);
+		this.selection = new ArrayList<>(selection);
 	}
 
 	public void createEmptyMoveVectors() {
-		moveVectors = new ArrayList<TVertex>();
+		moveVectors = new ArrayList<>();
 		for (int i = 0; i < selection.size(); i++) {
 			moveVectors.add(new TVertex(0, 0));
 		}
@@ -58,12 +58,11 @@ public class UVMoveAction implements UndoAction {
 				ver.y += vect.y;
 			}
 		} else {
-			for (int i = 0; i < selection.size(); i++) {
-				final TVertex ver = selection.get(i);
-				final TVertex vect = moveVector;
-				ver.x += vect.x;
-				ver.y += vect.y;
-			}
+            for (final TVertex ver : selection) {
+                final TVertex vect = moveVector;
+                ver.x += vect.x;
+                ver.y += vect.y;
+            }
 		}
 	}
 
@@ -77,12 +76,11 @@ public class UVMoveAction implements UndoAction {
 				ver.y -= vect.y;
 			}
 		} else {
-			for (int i = 0; i < selection.size(); i++) {
-				final TVertex ver = selection.get(i);
-				final TVertex vect = moveVector;
-				ver.x -= vect.x;
-				ver.y -= vect.y;
-			}
+            for (final TVertex ver : selection) {
+                final TVertex vect = moveVector;
+                ver.x -= vect.x;
+                ver.y -= vect.y;
+            }
 		}
 	}
 

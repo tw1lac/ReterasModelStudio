@@ -41,7 +41,7 @@ public class WarcraftIIICASC implements AutoCloseable {
 		 */
 		public List<String> enumerateFiles() throws IOException {
 			final List<PathResult> pathResults = vfs.getAllFiles();
-			final ArrayList<String> filePathStrings = new ArrayList<String>(pathResults.size());
+			final ArrayList<String> filePathStrings = new ArrayList<>(pathResults.size());
 
 			for (final PathResult pathResult : pathResults) {
 				filePathStrings.add(pathResult.getPath());
@@ -142,16 +142,6 @@ public class WarcraftIIICASC implements AutoCloseable {
 	private final int activeInfoRecord;
 
 	/**
-	 * Warcraft III build configuration.
-	 */
-	private final ConfigurationFile buildConfiguration;
-
-	/**
-	 * Warcraft III CASC data folder path.
-	 */
-	private final Path dataPath;
-
-	/**
 	 * Warcraft III local storage.
 	 */
 	private final Storage localStorage;
@@ -214,13 +204,19 @@ public class WarcraftIIICASC implements AutoCloseable {
 		final String buildKey = buildInfo.getField(activeInfoRecord, buildKeyFieldIndex);
 
 		// resolve data folder
-		dataPath = installFolder.resolve(WC3_DATA_FOLDER_NAME);
+		/**
+		 * Warcraft III CASC data folder path.
+		 */
+		Path dataPath = installFolder.resolve(WC3_DATA_FOLDER_NAME);
 		if (!Files.isDirectory(dataPath)) {
 			throw new MalformedCASCStructureException("data folder is missing");
 		}
 
 		// resolve build configuration file
-		buildConfiguration = ConfigurationFile.lookupConfigurationFile(dataPath, buildKey);
+		/**
+		 * Warcraft III build configuration.
+		 */
+		ConfigurationFile buildConfiguration = ConfigurationFile.lookupConfigurationFile(dataPath, buildKey);
 
 		// mounting local storage
 		localStorage = new Storage(dataPath, false, useMemoryMapping);

@@ -147,13 +147,12 @@ public abstract class IdObject extends AbstractAnimatedNode implements Named {
 		final ArrayList<IdObject> children = childMap.get(this);
 		final ArrayList<IdObject> allChildren = new ArrayList<>();
 		if (children != null) {
-			for (int i = 0; i < children.size(); i++) {
-				final IdObject child = children.get(i);
-				if (!allChildren.contains(child)) {
-					allChildren.add(child);
-					allChildren.addAll(child.getAllChildren(childMap));
-				}
-			}
+            for (final IdObject child : children) {
+                if (!allChildren.contains(child)) {
+                    allChildren.add(child);
+                    allChildren.addAll(child.getAllChildren(childMap));
+                }
+            }
 		}
 
 		return allChildren;

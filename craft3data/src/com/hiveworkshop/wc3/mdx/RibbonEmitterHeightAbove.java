@@ -30,9 +30,9 @@ public class RibbonEmitterHeightAbove {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < scalingTrack.length; i++) {
-			scalingTrack[i].save(out);
-		}
+        for (ScalingTrack track : scalingTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class RibbonEmitterHeightAbove {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < scalingTrack.length; i++) {
-			a += scalingTrack[i].getSize();
-		}
+        for (ScalingTrack track : scalingTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}

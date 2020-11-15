@@ -41,18 +41,14 @@ public class UnitOutlinePanel extends JPanel {
 			throw new RuntimeException(e);
 		}
 
-		final Timer timer = new Timer(200, new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					snapshot.setXangle(xAngle += 45);
-					bufferedImage = snapshot.getBufferedImage();
-				} catch (final Exception e1) {
-					e1.printStackTrace();
-				}
-				repaint();
+		final Timer timer = new Timer(200, e -> {
+			try {
+				snapshot.setXangle(xAngle += 45);
+				bufferedImage = snapshot.getBufferedImage();
+			} catch (final Exception e1) {
+				e1.printStackTrace();
 			}
+			repaint();
 		});
 		timer.start();
 	}

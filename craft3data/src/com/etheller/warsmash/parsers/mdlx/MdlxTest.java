@@ -17,15 +17,11 @@ public class MdlxTest {
 
 				model.saveMdl(mdlStream);
 			}
-		}
-		catch (final FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (final IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-		System.out.println("Created MDL, now reparsing to MDX");
+        System.out.println("Created MDL, now reparsing to MDX");
 
 		try (FileInputStream stream = new FileInputStream(
 				new File("C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Models\\Test\\MyOutAutomated.mdl"))) {
@@ -36,15 +32,11 @@ public class MdlxTest {
 
 				model.saveMdx(mdlStream);
 			}
-		}
-		catch (final FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (final IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-		try (FileInputStream stream = new FileInputStream(
+        try (FileInputStream stream = new FileInputStream(
 				new File("C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Models\\Test\\MyOutAutomatedMDX.mdx"))) {
 			final MdlxModel model = new MdlxModel(stream);
 			try (FileOutputStream mdlStream = new FileOutputStream(new File(
@@ -52,13 +44,9 @@ public class MdlxTest {
 
 				model.saveMdl(mdlStream);
 			}
-		}
-		catch (final FileNotFoundException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
+    }
 
 }

@@ -30,9 +30,9 @@ public class CornEmissionRate {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < emissionRateTrack.length; i++) {
-			emissionRateTrack[i].save(out);
-		}
+        for (EmissionRateTrack rateTrack : emissionRateTrack) {
+            rateTrack.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CornEmissionRate {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < emissionRateTrack.length; i++) {
-			a += emissionRateTrack[i].getSize();
-		}
+        for (EmissionRateTrack rateTrack : emissionRateTrack) {
+            a += rateTrack.getSize();
+        }
 
 		return a;
 	}

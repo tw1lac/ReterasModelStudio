@@ -172,26 +172,18 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 		addMouseWheelListener(this);
 
 		if (programPreferences != null) {
-			programPreferences.addChangeListener(new ProgramPreferencesChangeListener() {
-				@Override
-				public void preferencesChanged() {
-					setBackground(programPreferences.getPerspectiveBackgroundColor() == null ? new Color(80, 80, 80)
-							: programPreferences.getPerspectiveBackgroundColor());
-					loadBackgroundColors();
-				}
+			programPreferences.addChangeListener(() -> {
+				setBackground(programPreferences.getPerspectiveBackgroundColor() == null ? new Color(80, 80, 80)
+						: programPreferences.getPerspectiveBackgroundColor());
+				loadBackgroundColors();
 			});
 		}
 		loadBackgroundColors();
-		paintTimer = new Timer(16, new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				repaint();
-				if (!isShowing()) {
-					paintTimer.stop();
-				}
+		paintTimer = new Timer(16, e -> {
+			repaint();
+			if (!isShowing()) {
+				paintTimer.stop();
 			}
-
 		});
 		paintTimer.start();
 	}

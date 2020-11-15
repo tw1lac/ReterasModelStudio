@@ -38,12 +38,7 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 		super(selectionManager);
 		this.model = model;
 		this.structureChangeListener = structureChangeListener;
-		this.vertexSelectionHelper = new VertexSelectionHelper() {
-			@Override
-			public void selectVertices(final Collection<Vertex> vertices) {
-				selectByVertices(vertices);
-			}
-		};
+		this.vertexSelectionHelper = this::selectByVertices;
 	}
 
 	@Override
@@ -59,9 +54,9 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 
 	@Override
 	public UndoAction remap(final byte xDim, final byte yDim, final UVPanel.UnwrapDirection unwrapDirection) {
-		final ArrayList<TVertex> tVertices = new ArrayList<TVertex>();
-		final ArrayList<TVertex> newValueHolders = new ArrayList<TVertex>();
-		final ArrayList<TVertex> oldValueHolders = new ArrayList<TVertex>();
+		final ArrayList<TVertex> tVertices = new ArrayList<>();
+		final ArrayList<TVertex> newValueHolders = new ArrayList<>();
+		final ArrayList<TVertex> oldValueHolders = new ArrayList<>();
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double maxX = -Double.MAX_VALUE;

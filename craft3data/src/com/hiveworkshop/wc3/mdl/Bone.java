@@ -147,9 +147,9 @@ public class Bone extends IdObject {
 		if (parentId != -1) {
 			writer.println("\tParent " + parentId + ",\t// \"" + getParent().getName() + "\"");
 		}
-		for (int i = 0; i < flags.size(); i++) {
-			writer.println("\t" + flags.get(i) + ",");
-		}
+        for (String flag : flags) {
+            writer.println("\t" + flag + ",");
+        }
 		if (multiGeoId) {
 			writer.println("\tGeosetId Multiple,");
 		} else if (geosetId != -1) {
@@ -170,9 +170,9 @@ public class Bone extends IdObject {
 		// // writer.println("\tGeosetId Multiple,");
 		// writer.println("\tGeosetAnimId None,");
 		// }
-		for (int i = 0; i < animFlags.size(); i++) {
-			animFlags.get(i).printTo(writer, 1);
-		}
+        for (AnimFlag animFlag : animFlags) {
+            animFlag.printTo(writer, 1);
+        }
 		writer.println("}");
 	}
 
@@ -226,10 +226,9 @@ public class Bone extends IdObject {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
-			flag.flipOver(axis);
-		}
+        for (final AnimFlag flag : animFlags) {
+            flag.flipOver(axis);
+        }
 	}
 
 	@Override

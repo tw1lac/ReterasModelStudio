@@ -24,14 +24,13 @@ import com.hiveworkshop.wc3.units.Element;
 public class GoodSLKEdit extends JPanel {
 	private DataTable dataTable;
 	private final JFileChooser jfc = new JFileChooser();
-	private final JTable table;
 	private final DefaultTableModel defaultTableModel;
 
 	public GoodSLKEdit() {
 		jfc.setFileFilter(new FileNameExtensionFilter("SLK Files of Warcraft", "slk"));
 		setLayout(new BorderLayout());
 		defaultTableModel = new DefaultTableModel();
-		table = new JTable(defaultTableModel);
+		JTable table = new JTable(defaultTableModel);
 		add(new JScrollPane(table), BorderLayout.CENTER);
 	}
 
@@ -52,32 +51,28 @@ public class GoodSLKEdit extends JPanel {
 		final JMenu fileMenu = new JMenu("File");
 		final JMenuItem openMenuItem = new JMenuItem("Open");
 
-		openMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final int openDialog = jfc.showOpenDialog(GoodSLKEdit.this);
-				if (openDialog == JFileChooser.APPROVE_OPTION) {
-					final File file = jfc.getSelectedFile();
-					if (file != null) {
-						dataTable = new DataTable();
-						dataTable.readSLK(file);
-						final Set<String> keySet = dataTable.keySet();
-						final String firstItem = keySet.iterator().next();
-						final Element firstElement = dataTable.get(firstItem);
-						final Set<String> titlekeys = firstElement.keySet();
-						final String[] headers = titlekeys.toArray(new String[titlekeys.size()]);
-						final Object[][] values = new Object[keySet.size()][headers.length + 1];
-						int index = 0;
-						for (final String element : keySet) {
-							values[index][0] = element;
-							for (int i = 0; i < headers.length; i++) {
-								values[index][i + 1] = dataTable.get(element).getField(headers[i]);
-							}
-							index++;
+		openMenuItem.addActionListener(e -> {
+			final int openDialog = jfc.showOpenDialog(GoodSLKEdit.this);
+			if (openDialog == JFileChooser.APPROVE_OPTION) {
+				final File file = jfc.getSelectedFile();
+				if (file != null) {
+					dataTable = new DataTable();
+					dataTable.readSLK(file);
+					final Set<String> keySet = dataTable.keySet();
+					final String firstItem = keySet.iterator().next();
+					final Element firstElement = dataTable.get(firstItem);
+					final Set<String> titlekeys = firstElement.keySet();
+					final String[] headers = titlekeys.toArray(new String[titlekeys.size()]);
+					final Object[][] values = new Object[keySet.size()][headers.length + 1];
+					int index = 0;
+					for (final String element : keySet) {
+						values[index][0] = element;
+						for (int i = 0; i < headers.length; i++) {
+							values[index][i + 1] = dataTable.get(element).getField(headers[i]);
 						}
-						defaultTableModel.setDataVector(values, headers);
+						index++;
 					}
+					defaultTableModel.setDataVector(values, headers);
 				}
 			}
 		});

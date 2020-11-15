@@ -13,7 +13,7 @@ public class UVLayer
     ArrayList<TVertex> tverts;
     public UVLayer()
     {
-        tverts = new ArrayList<TVertex>();
+        tverts = new ArrayList<>();
     }
     public void addTVertex(TVertex v)
     {

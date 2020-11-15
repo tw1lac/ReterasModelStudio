@@ -32,8 +32,7 @@ import com.hiveworkshop.wc3.user.WindowsRegistry;
 public class Cascket implements Codebase {
 	private final Map<String, PathResult> pathToResult = new HashMap<>();
 	private final String[] prefixes;
-	private WarcraftIIICASC warcraftIIICASC;
-	private FileSystem rootFileSystem;
+    private FileSystem rootFileSystem;
 	private List<String> listFile;
 	private Map<String, String> fileAliases;
 
@@ -73,7 +72,7 @@ public class Cascket implements Codebase {
 		// final var localIndexFile = Paths.get("C:\\Program Files (x86)\\StarCraft
 		// II\\SC2Data\\data\\0000000139.idx");
 		try {
-			warcraftIIICASC = new WarcraftIIICASC(Paths.get(warcraft3InstallPath), true);
+            WarcraftIIICASC warcraftIIICASC = new WarcraftIIICASC(Paths.get(warcraft3InstallPath), true);
 			rootFileSystem = warcraftIIICASC.getRootFileSystem();
 			listFile = rootFileSystem.enumerateFiles();
 			final String locale = predictLocalization();

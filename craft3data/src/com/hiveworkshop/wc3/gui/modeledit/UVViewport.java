@@ -59,7 +59,6 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 	private final UVViewportModelRenderer viewportModelRenderer;
 	private final ModelView modelView;
 	private final ViewportActivity activityListener;
-	private final CoordDisplayListener coordDisplayListener;
 	private final CursorManager cursorManager;
 	private Point lastMouseMotion = new Point(0, 0);
 	private TVertexEditor editor;
@@ -70,7 +69,6 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 		this.modelView = modelView;
 		this.programPreferences = programPreferences;
 		this.activityListener = viewportActivity;
-		this.coordDisplayListener = coordDisplayListener;
 		this.editor = editor;
 		// Dimension 1 and Dimension 2, these specify which dimensions to
 		// display.
@@ -96,12 +94,7 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 		this.parent = parent;
 
 		viewportModelRenderer = new UVViewportModelRenderer();
-		this.cursorManager = new CursorManager() {
-			@Override
-			public void setCursor(final Cursor cursor) {
-				UVViewport.this.setCursor(cursor);
-			}
-		};
+		this.cursorManager = UVViewport.this::setCursor;
 	}
 
 	public void init() {
@@ -189,7 +182,7 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 			g.drawLine(0, (int) cameraOrigin.y, getWidth(), (int) cameraOrigin.y);
 			g.drawLine((int) cameraOrigin.x, 0, (int) cameraOrigin.x, getHeight());
 		}
-		for (int i = 0; i < backgrounds.size(); i++) {
+		for (Image background : backgrounds) {
 			if (parent.wrapImage.isSelected()) {
 				final double geomMinX = geomX(0);
 				final double geomMinY = geomY(0);
@@ -201,12 +194,12 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 				final int maxY = (int) Math.ceil(geomMaxY);
 				for (int y = minY; y < maxY; y++) {
 					for (int x = minX; x < maxX; x++) {
-						g.drawImage(backgrounds.get(i), (int) convertX(x), (int) convertY(y),
+						g.drawImage(background, (int) convertX(x), (int) convertY(y),
 								(int) (convertX(x + 1) - convertX(x)), (int) (convertY(y + 1) - convertY(y)), null);
 					}
 				}
 			} else {
-				g.drawImage(backgrounds.get(i), (int) convertX(0), (int) convertY(0), (int) (convertX(1) - convertX(0)),
+				g.drawImage(background, (int) convertX(0), (int) convertY(0), (int) (convertX(1) - convertX(0)),
 						(int) (convertY(1) - convertY(0)), null);
 			}
 		}

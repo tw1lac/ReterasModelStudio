@@ -4,122 +4,37 @@ import com.etheller.warsmash.util.Descriptor;
 
 public interface MdlxBlockDescriptor<E> extends Descriptor<E> {
 
-	MdlxBlockDescriptor<Attachment> ATTACHMENT = new MdlxBlockDescriptor<Attachment>() {
-		@Override
-		public Attachment create() {
-			return new Attachment();
-		}
-	};
+	MdlxBlockDescriptor<Attachment> ATTACHMENT = Attachment::new;
 
-	MdlxBlockDescriptor<Bone> BONE = new MdlxBlockDescriptor<Bone>() {
-		@Override
-		public Bone create() {
-			return new Bone();
-		}
-	};
+	MdlxBlockDescriptor<Bone> BONE = Bone::new;
 
-	MdlxBlockDescriptor<Camera> CAMERA = new MdlxBlockDescriptor<Camera>() {
-		@Override
-		public Camera create() {
-			return new Camera();
-		}
-	};
+	MdlxBlockDescriptor<Camera> CAMERA = Camera::new;
 
-	MdlxBlockDescriptor<CollisionShape> COLLISION_SHAPE = new MdlxBlockDescriptor<CollisionShape>() {
-		@Override
-		public CollisionShape create() {
-			return new CollisionShape();
-		}
-	};
+	MdlxBlockDescriptor<CollisionShape> COLLISION_SHAPE = CollisionShape::new;
 
-	MdlxBlockDescriptor<EventObject> EVENT_OBJECT = new MdlxBlockDescriptor<EventObject>() {
-		@Override
-		public EventObject create() {
-			return new EventObject();
-		}
-	};
+	MdlxBlockDescriptor<EventObject> EVENT_OBJECT = EventObject::new;
 
-	MdlxBlockDescriptor<Geoset> GEOSET = new MdlxBlockDescriptor<Geoset>() {
-		@Override
-		public Geoset create() {
-			return new Geoset();
-		}
-	};
+	MdlxBlockDescriptor<Geoset> GEOSET = Geoset::new;
 
-	MdlxBlockDescriptor<GeosetAnimation> GEOSET_ANIMATION = new MdlxBlockDescriptor<GeosetAnimation>() {
-		@Override
-		public GeosetAnimation create() {
-			return new GeosetAnimation();
-		}
-	};
+	MdlxBlockDescriptor<GeosetAnimation> GEOSET_ANIMATION = GeosetAnimation::new;
 
-	MdlxBlockDescriptor<Helper> HELPER = new MdlxBlockDescriptor<Helper>() {
-		@Override
-		public Helper create() {
-			return new Helper();
-		}
-	};
+	MdlxBlockDescriptor<Helper> HELPER = Helper::new;
 
-	MdlxBlockDescriptor<Light> LIGHT = new MdlxBlockDescriptor<Light>() {
-		@Override
-		public Light create() {
-			return new Light();
-		}
-	};
+	MdlxBlockDescriptor<Light> LIGHT = Light::new;
 
-	MdlxBlockDescriptor<Layer> LAYER = new MdlxBlockDescriptor<Layer>() {
-		@Override
-		public Layer create() {
-			return new Layer();
-		}
-	};
+	MdlxBlockDescriptor<Layer> LAYER = Layer::new;
 
-	MdlxBlockDescriptor<Material> MATERIAL = new MdlxBlockDescriptor<Material>() {
-		@Override
-		public Material create() {
-			return new Material();
-		}
-	};
+	MdlxBlockDescriptor<Material> MATERIAL = Material::new;
 
-	MdlxBlockDescriptor<ParticleEmitter> PARTICLE_EMITTER = new MdlxBlockDescriptor<ParticleEmitter>() {
-		@Override
-		public ParticleEmitter create() {
-			return new ParticleEmitter();
-		}
-	};
+	MdlxBlockDescriptor<ParticleEmitter> PARTICLE_EMITTER = ParticleEmitter::new;
 
-	MdlxBlockDescriptor<ParticleEmitter2> PARTICLE_EMITTER2 = new MdlxBlockDescriptor<ParticleEmitter2>() {
-		@Override
-		public ParticleEmitter2 create() {
-			return new ParticleEmitter2();
-		}
-	};
+	MdlxBlockDescriptor<ParticleEmitter2> PARTICLE_EMITTER2 = ParticleEmitter2::new;
 
-	MdlxBlockDescriptor<RibbonEmitter> RIBBON_EMITTER = new MdlxBlockDescriptor<RibbonEmitter>() {
-		@Override
-		public RibbonEmitter create() {
-			return new RibbonEmitter();
-		}
-	};
+	MdlxBlockDescriptor<RibbonEmitter> RIBBON_EMITTER = RibbonEmitter::new;
 
-	MdlxBlockDescriptor<Sequence> SEQUENCE = new MdlxBlockDescriptor<Sequence>() {
-		@Override
-		public Sequence create() {
-			return new Sequence();
-		}
-	};
+	MdlxBlockDescriptor<Sequence> SEQUENCE = Sequence::new;
 
-	MdlxBlockDescriptor<Texture> TEXTURE = new MdlxBlockDescriptor<Texture>() {
-		@Override
-		public Texture create() {
-			return new Texture();
-		}
-	};
+	MdlxBlockDescriptor<Texture> TEXTURE = Texture::new;
 
-	MdlxBlockDescriptor<TextureAnimation> TEXTURE_ANIMATION = new MdlxBlockDescriptor<TextureAnimation>() {
-		@Override
-		public TextureAnimation create() {
-			return new TextureAnimation();
-		}
-	};
+	MdlxBlockDescriptor<TextureAnimation> TEXTURE_ANIMATION = TextureAnimation::new;
 }

@@ -640,17 +640,11 @@ public class MainPanel extends JPanel implements ActionListener {
 			final RTFEditorKit rtfk = new RTFEditorKit();
 			try {
 				rtfk.read(MainPanel.class.getResourceAsStream("credits.rtf"), panel, 0);
-			} catch (final MalformedURLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final BadLocationException e1) {
+			} catch (final BadLocationException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			epane.setDocument(panel);
+            epane.setDocument(panel);
 			epane.setEditable(false);
 			final JFrame frame = new JFrame("About");
 			frame.setContentPane(new JScrollPane(epane));
@@ -664,17 +658,11 @@ public class MainPanel extends JPanel implements ActionListener {
 			final RTFEditorKit rtfk = new RTFEditorKit();
 			try {
 				rtfk.read(MainPanel.class.getResourceAsStream("instr.rtf"), panel, 0);
-			} catch (final MalformedURLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final BadLocationException e1) {
+			} catch (final BadLocationException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			epane.setDocument(panel);
+            epane.setDocument(panel);
 			epane.setEditable(false);
 			final JFrame frame = new JFrame("Instructions");
 			frame.setContentPane(new JScrollPane(epane));
@@ -688,17 +676,11 @@ public class MainPanel extends JPanel implements ActionListener {
 			final RTFEditorKit rtfk = new RTFEditorKit();
 			try {
 				rtfk.read(MainPanel.class.getResourceAsStream("credits.rtf"), panel, 0);
-			} catch (final MalformedURLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (final BadLocationException e1) {
+			} catch (final BadLocationException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			epane.setDocument(panel);
+            epane.setDocument(panel);
 			epane.setEditable(false);
 			final JFrame frame = new JFrame("About MatrixEater");
 			frame.setContentPane(new JScrollPane(epane));

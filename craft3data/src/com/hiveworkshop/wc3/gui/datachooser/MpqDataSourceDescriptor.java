@@ -27,12 +27,10 @@ public class MpqDataSourceDescriptor implements DataSourceDescriptor {
 			SeekableByteChannel sbc;
 			sbc = Files.newByteChannel(Paths.get(mpqFilePath), EnumSet.of(StandardOpenOption.READ));
 			return new MpqDataSource(new MPQArchive(sbc), sbc);
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		} catch (final MPQException e) {
+		} catch (final IOException | MPQException e) {
 			throw new RuntimeException(e);
 		}
-	}
+    }
 
 	@Override
 	public String getDisplayName() {

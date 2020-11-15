@@ -24,7 +24,7 @@ public class ObjectEditorModelingFrame extends JFrame {
 		super("Object Editor - Model Selection");
 		try {
 			List<BufferedImage> images = ICODecoder.read(ObjectEditorFrame.class.getResourceAsStream("worldedit.ico"));
-			List<BufferedImage> finalImages = new ArrayList<BufferedImage>();
+			List<BufferedImage> finalImages = new ArrayList<>();
 			BufferedImage lastImage = null;
 			for( BufferedImage image: images ) {
 				if( lastImage != null && image.getWidth() != lastImage.getWidth() ) {
@@ -69,16 +69,10 @@ public class ObjectEditorModelingFrame extends JFrame {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
+		} catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException e) {
 			e.printStackTrace();
 		}
-		
+
 		ObjectEditorModelingFrame frame = new ObjectEditorModelingFrame();
 		frame.setVisible(true);
 		frame.panel.loadHotkeys();

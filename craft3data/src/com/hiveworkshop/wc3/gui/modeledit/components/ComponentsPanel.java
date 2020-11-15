@@ -41,8 +41,7 @@ public class ComponentsPanel extends JPanel implements ModelComponentBrowserTree
 	private static final String BITMAP = "BITMAP";
 	private static final String MATERIAL = "MATERIAL";
 	private final CardLayout cardLayout;
-	private final JPanel blankPanel;
-	private final ComponentHeaderPanel headerPanel;
+    private final ComponentHeaderPanel headerPanel;
 	private final ComponentCommentPanel commentPanel;
 	private final ComponentAnimationPanel animationPanel;
 	private final ComponentGlobalSequencePanel globalSeqPanel;
@@ -53,7 +52,7 @@ public class ComponentsPanel extends JPanel implements ModelComponentBrowserTree
 	public ComponentsPanel(final TextureExporter textureExporter) {
 		cardLayout = new CardLayout();
 		setLayout(cardLayout);
-		blankPanel = new JPanel();
+        JPanel blankPanel = new JPanel();
 		blankPanel.add(new JLabel("Select a model component to get started..."));
 		add(blankPanel, BLANK);
 		headerPanel = new ComponentHeaderPanel();

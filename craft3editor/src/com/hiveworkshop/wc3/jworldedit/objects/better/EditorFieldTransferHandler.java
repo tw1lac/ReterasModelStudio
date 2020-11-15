@@ -81,14 +81,11 @@ public class EditorFieldTransferHandler extends TransferHandler {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (BlizzardDataOutputStream blizzardStream = new BlizzardDataOutputStream(outputStream)) {
 			selectedUnitsAsChangeset.save(blizzardStream, false);
-		} catch (final FileNotFoundException e) {
-			System.out.println("failed to copy");
-			e.printStackTrace();
 		} catch (final IOException e) {
 			System.out.println("failed to copy");
 			e.printStackTrace();
 		}
-		final byte[] byteArray = outputStream.toByteArray();
+        final byte[] byteArray = outputStream.toByteArray();
 		return new Transferable() {
 			DataFlavor[] flavors = { dataFlavor };
 

@@ -30,9 +30,9 @@ public class HelperChunk {
 		int nrOfHelpers = helper.length;
 		out.writeNByteString("HELP", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < helper.length; i++) {
-			helper[i].save(out);
-		}
+        for (Helper value : helper) {
+            value.save(out);
+        }
 
 	}
 
@@ -40,9 +40,9 @@ public class HelperChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < helper.length; i++) {
-			a += helper[i].getSize();
-		}
+        for (Helper value : helper) {
+            a += value.getSize();
+        }
 
 		return a;
 	}

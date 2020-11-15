@@ -22,36 +22,31 @@ public class ObjectDataTableModel implements TableModel {
 	private final List<EditableOnscreenObjectField> fields;
 	private final Set<TableModelListener> tableModelListeners;
 	private boolean displayAsRawData;
-	private final ObjectData metaData;
 	private final Runnable runOnIsCustomUnitStateChange;
 
 	public ObjectDataTableModel(final MutableGameObject gameObject, final ObjectData metaData,
 			final EditorFieldBuilder editorFieldBuilder, final boolean displayAsRawData,
 			final Runnable runOnIsCustomUnitStateChange) {
 		this.gameObject = gameObject;
-		this.metaData = metaData;
 		this.displayAsRawData = displayAsRawData;
 		this.runOnIsCustomUnitStateChange = runOnIsCustomUnitStateChange;
 		this.tableModelListeners = new LinkedHashSet<>();
 		if (gameObject != null) {
 			this.fields = editorFieldBuilder.buildFields(metaData, gameObject);
-			Collections.sort(this.fields, new Comparator<EditableOnscreenObjectField>() {
-				@Override
-				public int compare(final EditableOnscreenObjectField o1, final EditableOnscreenObjectField o2) {
-					final int o1Level = o1.getLevel();
-					final int o2Level = o2.getLevel();
-					if (o1.isShowingLevelDisplay() && !o2.isShowingLevelDisplay()) {
-						return 1;
-					}
-					if (!o1.isShowingLevelDisplay() && o2.isShowingLevelDisplay()) {
-						return -1;
-					}
-					final int sortNameComparison = o1.getSortName(gameObject).compareTo(o2.getSortName(gameObject));
-					if (sortNameComparison != 0) {
-						return sortNameComparison;
-					}
-					return Integer.compare(o1Level, o2Level);
+			this.fields.sort((o1, o2) -> {
+				final int o1Level = o1.getLevel();
+				final int o2Level = o2.getLevel();
+				if (o1.isShowingLevelDisplay() && !o2.isShowingLevelDisplay()) {
+					return 1;
 				}
+				if (!o1.isShowingLevelDisplay() && o2.isShowingLevelDisplay()) {
+					return -1;
+				}
+				final int sortNameComparison = o1.getSortName(gameObject).compareTo(o2.getSortName(gameObject));
+				if (sortNameComparison != 0) {
+					return sortNameComparison;
+				}
+				return Integer.compare(o1Level, o2Level);
 			});
 		} else {
 			this.fields = new ArrayList<>();

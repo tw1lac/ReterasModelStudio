@@ -21,10 +21,7 @@ public class ComponentMaterialLayersPanel extends JPanel {
 	public static final String[] REFORGED_LAYER_DEFINITIONS = { "Diffuse", "Normal", "ORM", "Emissive", "Team Color",
 			"Reflections" };
 	private static final Color HIGHLIGHT_BUTTON_BACKGROUND_COLOR = new Color(100, 118, 135);
-	private Material material;
-	private UndoActionListener undoActionListener;
-	private ModelStructureChangeListener modelStructureChangeListener;
-	private final JButton addLayerButton;
+    private final JButton addLayerButton;
 	private final List<ComponentLayerPanel> cachedLayerPanels = new ArrayList<>();
 	private final List<JLabel> cachedLayerLabels = new ArrayList<>();
 	private final List<JButton> cachedLayerDeleteButtons = new ArrayList<>();
@@ -41,10 +38,7 @@ public class ComponentMaterialLayersPanel extends JPanel {
 			final UndoActionListener undoActionListener,
 			final ModelStructureChangeListener modelStructureChangeListener) {
 		System.out.println("Reloading ComponentMaterialLayersPanel");
-		this.material = material;
-		this.undoActionListener = undoActionListener;
-		this.modelStructureChangeListener = modelStructureChangeListener;
-		final boolean hdShader = Material.SHADER_HD_DEFAULT_UNIT.equals(material.getShaderString());
+        final boolean hdShader = Material.SHADER_HD_DEFAULT_UNIT.equals(material.getShaderString());
 
 		if (currentlyDisplayedLayerCount != material.getLayers().size()) {
 			removeAll();

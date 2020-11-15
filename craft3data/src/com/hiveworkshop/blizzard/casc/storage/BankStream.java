@@ -16,7 +16,6 @@ import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
  * assembled using higher level logic into a continuous file.
  */
 public class BankStream {
-	private final StorageContainer container;
 	private final BLTEContent[] content;
 	private final ByteBuffer streamBuffer;
 	private int bank = 0;
@@ -35,7 +34,7 @@ public class BankStream {
 	 */
 	public BankStream(final ByteBuffer storageBuffer, final Key encodingKey) throws IOException {
 		ByteBuffer streamBuffer = storageBuffer.slice();
-		container = new StorageContainer(streamBuffer);
+		StorageContainer container = new StorageContainer(streamBuffer);
 		if ((encodingKey != null) && !container.getKey().equals(encodingKey)) {
 			throw new MalformedCASCStructureException("container encoding key mismatch");
 		}

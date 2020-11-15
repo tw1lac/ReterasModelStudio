@@ -30,9 +30,9 @@ public class CornAlpha {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < alphaTrack.length; i++) {
-			alphaTrack[i].save(out);
-		}
+        for (AlphaTrack track : alphaTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CornAlpha {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < alphaTrack.length; i++) {
-			a += alphaTrack[i].getSize();
-		}
+        for (AlphaTrack track : alphaTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}

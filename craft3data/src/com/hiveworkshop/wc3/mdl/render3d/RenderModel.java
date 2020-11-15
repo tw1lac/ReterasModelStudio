@@ -137,13 +137,7 @@ public final class RenderModel {
 			particleEmitters2.add(new RenderParticleEmitter2(particleEmitter,
 					renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
 		}
-		particleEmitters2.sort(new Comparator<RenderParticleEmitter2>() {
-			@Override
-			public int compare(final RenderParticleEmitter2 o1, final RenderParticleEmitter2 o2) {
-				return Integer.compare(o1.getPriorityPlane(), o2.getPriorityPlane());
-			}
-
-		});
+		particleEmitters2.sort((o1, o2) -> Integer.compare(o1.getPriorityPlane(), o2.getPriorityPlane()));
 		for (final RenderParticleEmitter2 particleEmitter : particleEmitters2) {
 			final RenderParticleEmitter2View emitterView = new RenderParticleEmitter2View(this, particleEmitter);
 			particleEmitterViews2.add(emitterView);

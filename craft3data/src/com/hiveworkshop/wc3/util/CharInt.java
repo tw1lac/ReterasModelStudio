@@ -37,13 +37,11 @@ public final class CharInt {
      * @return four character string representing the integer.
      */
     public static String toString(final int id) {
-        final StringBuffer result = new StringBuffer(4);
-        
-        result.append((char) ((id >> 24) & 0xFF));
-        result.append((char) ((id >> 16) & 0xFF));
-        result.append((char) ((id >> 8) & 0xFF));
-        result.append((char) ((id >> 0) & 0xFF));
-        
-        return result.toString();
+
+        String result = String.valueOf((char) ((id >> 24) & 0xFF)) +
+                (char) ((id >> 16) & 0xFF) +
+                (char) ((id >> 8) & 0xFF) +
+                (char) ((id >> 0) & 0xFF);
+        return result;
     }
 }

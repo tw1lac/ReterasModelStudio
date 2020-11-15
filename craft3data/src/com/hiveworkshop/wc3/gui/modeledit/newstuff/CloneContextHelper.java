@@ -46,15 +46,14 @@ public class CloneContextHelper {
 		final ArrayList<IdObject> newBones = new ArrayList<>();
 		final ArrayList<GeosetVertex> newVertices = new ArrayList<>();
 		final ArrayList<Triangle> newTriangles = new ArrayList<>();
-		for (int i = 0; i < sourceNonPivots.size(); i++) {
-			final Vertex vert = sourceNonPivots.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				newVertices.add(new GeosetVertex(gv));
-			} else {
-				newVertices.add(null);
-			}
-		}
+        for (final Vertex vert : sourceNonPivots) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                newVertices.add(new GeosetVertex(gv));
+            } else {
+                newVertices.add(null);
+            }
+        }
 		for (final IdObject b : model.getEditableIdObjects()) {
 			if (sourcePivots.contains(b.getPivotPoint()) && !selBones.contains(b)) {
 				selBones.add(b);

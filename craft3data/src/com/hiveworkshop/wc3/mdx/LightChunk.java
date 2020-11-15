@@ -33,9 +33,9 @@ public class LightChunk {
 		final int nrOfLights = light.length;
 		out.writeNByteString("LITE", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < light.length; i++) {
-			light[i].save(out);
-		}
+        for (Light value : light) {
+            value.save(out);
+        }
 
 	}
 
@@ -43,9 +43,9 @@ public class LightChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < light.length; i++) {
-			a += light[i].getSize();
-		}
+        for (Light value : light) {
+            a += value.getSize();
+        }
 
 		return a;
 	}
@@ -205,7 +205,7 @@ public class LightChunk {
 						lightVisibility.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -222,7 +222,7 @@ public class LightChunk {
 						lightColor.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.color = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -239,7 +239,7 @@ public class LightChunk {
 						lightIntensity.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.intensity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -256,7 +256,7 @@ public class LightChunk {
 						lightAmbientIntensity.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.ambientIntensity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -273,7 +273,7 @@ public class LightChunk {
 						lightAmbientColor.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.ambientColor = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -290,7 +290,7 @@ public class LightChunk {
 						lightAttenuationStart.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.attenuationStart = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -307,7 +307,7 @@ public class LightChunk {
 						lightAttenuationEnd.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.attenuationEnd = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();

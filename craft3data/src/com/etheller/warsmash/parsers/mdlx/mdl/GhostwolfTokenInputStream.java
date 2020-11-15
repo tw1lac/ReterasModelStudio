@@ -8,15 +8,13 @@ import com.etheller.warsmash.parsers.mdlx.MdlTokenInputStream;
 public class GhostwolfTokenInputStream implements MdlTokenInputStream {
 	private final ByteBuffer buffer;
 	private int index;
-	private final int ident;
-	private final int fractionDigits;
 
-	public GhostwolfTokenInputStream(final ByteBuffer buffer) {
+    public GhostwolfTokenInputStream(final ByteBuffer buffer) {
 		this.buffer = buffer;
 		this.index = 0;
-		this.ident = 0; // Used for writing blocks nicely.
-		this.fractionDigits = 6; // The number of fraction digits when writing floats.
-	}
+        int ident = 0; // Used for writing blocks nicely.
+        int fractionDigits = 6; // The number of fraction digits when writing floats.
+    }
 
 	@Override
 	public String read() {

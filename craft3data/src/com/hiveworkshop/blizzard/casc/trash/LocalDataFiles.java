@@ -28,7 +28,7 @@ public class LocalDataFiles implements Closeable {
 
 	private static final byte[] BLTE_MIME = new byte[] { 'B', 'L', 'T', 'E' };
 
-	private final HashMap<Integer, FileChannel> dataFiles = new HashMap<Integer, FileChannel>();
+	private final HashMap<Integer, FileChannel> dataFiles = new HashMap<>();
 
 	public LocalDataFiles(final Path dataPath) throws IOException {
 		mountDataFiles(dataPath);

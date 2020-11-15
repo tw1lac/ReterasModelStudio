@@ -376,10 +376,9 @@ public class ParticleEmitterPopcorn extends IdObject implements VisibilitySource
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
-			flag.flipOver(axis);
-		}
+        for (final AnimFlag flag : animFlags) {
+            flag.flipOver(axis);
+        }
 	}
 
 	@Override

@@ -166,19 +166,18 @@ public class CollisionShape extends IdObject {
 		if (extents != null) {
 			extents.printTo(writer, 1);
 		}
-		for (int i = 0; i < animFlags.size(); i++) {
-			animFlags.get(i).printTo(writer, 1);
-		}
+        for (AnimFlag animFlag : animFlags) {
+            animFlag.printTo(writer, 1);
+        }
 		writer.println("}");
 	}
 
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
-			flag.flipOver(axis);
-		}
+        for (final AnimFlag flag : animFlags) {
+            flag.flipOver(axis);
+        }
 	}
 
 	@Override

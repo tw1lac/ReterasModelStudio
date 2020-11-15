@@ -32,9 +32,9 @@ public class MaterialChunk {
 		final int nrOfMaterials = material.length;
 		out.writeNByteString("MTLS", 4);
 		out.writeInt(getSize(version) - 8);// ChunkSize
-		for (int i = 0; i < material.length; i++) {
-			material[i].save(out, version);
-		}
+        for (Material value : material) {
+            value.save(out, version);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class MaterialChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < material.length; i++) {
-			a += material[i].getSize(version);
-		}
+        for (Material value : material) {
+            a += value.getSize(version);
+        }
 
 		return a;
 	}

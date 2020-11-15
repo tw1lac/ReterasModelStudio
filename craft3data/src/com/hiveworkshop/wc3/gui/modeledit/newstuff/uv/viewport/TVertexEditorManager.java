@@ -28,8 +28,7 @@ public final class TVertexEditorManager {
 	private final TVertexEditorChangeListener modelEditorChangeListener;
 	private SelectionView selectionView;
 	private final SelectionListener selectionListener;
-	private final RenderModel renderModel;
-	private NodeAnimationSelectionManager nodeAnimationSelectionManager;
+    private NodeAnimationSelectionManager nodeAnimationSelectionManager;
 	private final ModelStructureChangeListener structureChangeListener;
 	public static boolean MOVE_LINKED;
 
@@ -41,8 +40,7 @@ public final class TVertexEditorManager {
 		this.modelEditorChangeListener = modelEditorChangeListener;
 		this.programPreferences = programPreferences;
 		this.selectionListener = selectionListener;
-		this.renderModel = renderModel;
-		this.structureChangeListener = structureChangeListener;
+        this.structureChangeListener = structureChangeListener;
 		viewportSelectionHandler = new TVertexViewportSelectionHandlerImpl(modeButtonGroup, null);
 		setSelectionItemType(TVertexSelectionItemTypes.VERTEX);
 	}

@@ -31,9 +31,9 @@ public class SoundEmitterChunk {
 		int nrOfSoundEmitters = soundEmitter.length;
 		out.writeNByteString(key, 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < soundEmitter.length; i++) {
-			soundEmitter[i].save(out);
-		}
+        for (SoundEmitter emitter : soundEmitter) {
+            emitter.save(out);
+        }
 
 	}
 
@@ -41,9 +41,9 @@ public class SoundEmitterChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < soundEmitter.length; i++) {
-			a += soundEmitter[i].getSize();
-		}
+        for (SoundEmitter emitter : soundEmitter) {
+            a += emitter.getSize();
+        }
 
 		return a;
 	}

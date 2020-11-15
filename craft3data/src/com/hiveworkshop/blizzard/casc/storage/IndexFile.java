@@ -20,11 +20,7 @@ public class IndexFile {
 
 	private int bucketIndex;
 
-	private int fileSizeLength;
-
-	private int dataOffsetLength;
-
-	private int encodingKeyLength;
+    private int encodingKeyLength;
 
 	private int dataFileSizeBits;
 
@@ -52,7 +48,9 @@ public class IndexFile {
 
 		headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-		try {
+        int dataOffsetLength;
+        int fileSizeLength;
+        try {
 			if (headerBuffer.getShort() != 7) {
 				// possibly malformed
 			}

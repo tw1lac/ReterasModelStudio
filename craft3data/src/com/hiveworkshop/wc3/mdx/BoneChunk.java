@@ -30,9 +30,9 @@ public class BoneChunk {
 		int nrOfBones = bone.length;
 		out.writeNByteString("BONE", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < bone.length; i++) {
-			bone[i].save(out);
-		}
+        for (Bone value : bone) {
+            value.save(out);
+        }
 
 	}
 
@@ -40,9 +40,9 @@ public class BoneChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < bone.length; i++) {
-			a += bone[i].getSize();
-		}
+        for (Bone value : bone) {
+            a += value.getSize();
+        }
 
 		return a;
 	}

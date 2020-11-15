@@ -10,11 +10,8 @@ import java.util.*;
 public final class SplitForUVAction<T> implements UndoAction {
 
 	private List<Triangle> trianglesMovedToSeparateGeo;
-	private final List<Geoset> geosetsModified;
-	private final EditableModel model;
-	private final Collection<Triangle> trisToSeparate;
-	private final ModelStructureChangeListener modelStructureChangeListener;
-	private final SelectionManager<T> selectionManager;
+    private final Collection<Triangle> trisToSeparate;
+    private final SelectionManager<T> selectionManager;
 	private final Collection<T> selection;
 	private final Collection<Vertex> newVerticesToSelect;
 	private final VertexSelectionHelper vertexSelectionHelper;
@@ -23,11 +20,9 @@ public final class SplitForUVAction<T> implements UndoAction {
                             final ModelStructureChangeListener modelStructureChangeListener, final SelectionManager<T> selectionManager,
                             final VertexSelectionHelper vertexSelectionHelper) {
 		this.trisToSeparate = trisToSeparate;
-		this.model = model;
-		this.modelStructureChangeListener = modelStructureChangeListener;
-		this.selectionManager = selectionManager;
+        this.selectionManager = selectionManager;
 		this.vertexSelectionHelper = vertexSelectionHelper;
-		this.geosetsModified = new ArrayList<>();
+        List<Geoset> geosetsModified = new ArrayList<>();
 		this.newVerticesToSelect = new ArrayList<>();
 		final Set<GeosetVertex> verticesInTheTriangles = new HashSet<>();
 		final Set<Geoset> geosetsToCopy = new HashSet<>();

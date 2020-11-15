@@ -49,14 +49,11 @@ public class TestMain3 {
 				tempProduct.getParentFile().mkdirs();
 				Files.copy(newInputStream, tempProduct.toPath());
 			}
-		} catch (final MPQException e) {
-//			ExceptionPopup.display("Warcraft installation archive reading error occurred. Check your MPQs.\n" + mpq, e);
-			e.printStackTrace();
-		} catch (final IOException e) {
+		} catch (final MPQException | IOException e) {
 //			ExceptionPopup.display("Warcraft installation archive reading error occurred. Check your MPQs.\n" + mpq, e);
 			e.printStackTrace();
 		}
-	}
+    }
 
 	private static final class MpqGuy {
 		private final MPQArchive archive;

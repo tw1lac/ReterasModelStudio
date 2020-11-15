@@ -37,11 +37,9 @@ public class AnimatedViewportModelRenderer implements ModelRenderer {
 	private Graphics2D graphics;
 	private ProgramPreferences programPreferences;
 	private final GeosetRendererImpl geosetRenderer;
-	private final int vertexSize;
-	private byte xDimension;
+    private byte xDimension;
 	private byte yDimension;
-	private ViewportView viewportView;
-	private CoordinateSystem coordinateSystem;
+    private CoordinateSystem coordinateSystem;
 	private final ResettableAnimatedIdObjectRenderer idObjectRenderer;
 	// TODO Now that I added modelView to this class, why does
 	// RenderByViewModelRenderer exist???
@@ -49,8 +47,7 @@ public class AnimatedViewportModelRenderer implements ModelRenderer {
 	private RenderModel renderModel;
 
 	public AnimatedViewportModelRenderer(final int vertexSize) {
-		this.vertexSize = vertexSize;
-		geosetRenderer = new GeosetRendererImpl();
+        geosetRenderer = new GeosetRendererImpl();
 		idObjectRenderer = new ResettableAnimatedIdObjectRenderer(vertexSize);
 	}
 
@@ -61,8 +58,7 @@ public class AnimatedViewportModelRenderer implements ModelRenderer {
 		this.programPreferences = programPreferences;
 		this.xDimension = xDimension;
 		this.yDimension = yDimension;
-		this.viewportView = viewportView;
-		this.coordinateSystem = coordinateSystem;
+        this.coordinateSystem = coordinateSystem;
 		this.modelView = modelView;
 		this.renderModel = renderModel;
 		idObjectRenderer.reset(coordinateSystem, graphics, programPreferences.getLightsColor(),

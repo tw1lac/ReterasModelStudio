@@ -65,7 +65,6 @@ import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 
 public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> {
-	private final ProgramPreferences programPreferences;
 	private final GenericSelectorVisitor genericSelectorVisitor;
 	private final SelectionAtPointTester selectionAtPointTester;
 	private final ModelView model;
@@ -77,7 +76,6 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 			final ModelStructureChangeListener structureChangeListener) {
 		super(selectionManager);
 		this.model = model;
-		this.programPreferences = programPreferences;
 		this.structureChangeListener = structureChangeListener;
 		this.genericSelectorVisitor = new GenericSelectorVisitor();
 		this.selectionAtPointTester = new SelectionAtPointTester();
@@ -308,20 +306,9 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 				}
 			});
 		}
-		final Runnable truncateSelectionRunnable = new Runnable() {
+		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(possibleVerticesToTruncate);
 
-			@Override
-			public void run() {
-				selectionManager.removeSelection(possibleVerticesToTruncate);
-			}
-		};
-
-		final Runnable unTruncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.setSelection(previousSelection);
-			}
-		};
+		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
 		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
 				unTruncateSelectionRunnable, refreshGUIRunnable);
 	}

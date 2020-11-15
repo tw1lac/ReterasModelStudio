@@ -56,11 +56,7 @@ public class ModelPanel implements ActionListener, MouseListener {
 	private PerspDisplayPanel perspArea;
 	private EditableModel model;
 	private File file;
-	private final ProgramPreferences prefs;
-	private final UndoHandler undoHandler;
-	private final ToolbarButtonGroup<SelectionItemTypes> selectionItemTypeNotifier;
 	private final ModelEditorViewportActivityManager viewportActivityManager;
-	private final ModelEditorChangeNotifier modelEditorChangeNotifier;
 	private final ModelEditorManager modelEditorManager;
 	private final ModelViewManager modelView;
 	private final UndoManager undoManager;
@@ -97,12 +93,9 @@ public class ModelPanel implements ActionListener, MouseListener {
 			final ViewportListener viewportListener, final Icon icon, final boolean specialBLPModel,
 			final TextureExporter textureExporter) {
 		this.parent = parent;
-		this.prefs = prefs;
-		this.undoHandler = undoHandler;
-		this.selectionItemTypeNotifier = notifier;
 		this.icon = icon;
 		viewportActivityManager = new ModelEditorViewportActivityManager(new DoNothingActivity());
-		modelEditorChangeNotifier = new ModelEditorChangeNotifier();
+		ModelEditorChangeNotifier modelEditorChangeNotifier = new ModelEditorChangeNotifier();
 		modelEditorChangeNotifier.subscribe(viewportActivityManager);
 		modelView = new ModelViewManager(input);
 		undoManager = new UndoManagerImpl(undoHandler);
@@ -117,12 +110,7 @@ public class ModelPanel implements ActionListener, MouseListener {
 		modelComponentBrowserTree = new ModelComponentBrowserTree(modelView, undoManager, modelEditorManager,
 				modelStructureChangeListener);
 
-		selectionItemTypeNotifier.addToolbarButtonListener(new ToolbarButtonListener<SelectionItemTypes>() {
-			@Override
-			public void typeChanged(final SelectionItemTypes newType) {
-				modelEditorManager.setSelectionItemType(newType);
-			}
-		});
+		notifier.addToolbarButtonListener(modelEditorManager::setSelectionItemType);
 		// Produce the front display panel
 		// file = input;
 		// model = MDL.read(file);

@@ -147,22 +147,12 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		this.undoHandler = undoHandler;
 		this.renderModel = renderModel;
 		this.viewportListener = viewportListener;
-		this.cursorManager = new CursorManager() {
-			@Override
-			public void setCursor(final Cursor cursor) {
-				Viewport.this.setCursor(cursor);
-			}
-		};
+		this.cursorManager = Viewport.this::setCursor;
 		setupCopyPaste(viewportTransferHandler);
 		// Viewport border
 		setBorder(BorderFactory.createBevelBorder(1));
 		setupViewportBackground(programPreferences);
-		programPreferences.addChangeListener(new ProgramPreferencesChangeListener() {
-			@Override
-			public void preferencesChanged() {
-				setupViewportBackground(programPreferences);
-			}
-		});
+		programPreferences.addChangeListener(() -> setupViewportBackground(programPreferences));
 		setMinimumSize(new Dimension(200, 200));
 		add(Box.createHorizontalStrut(200));
 		add(Box.createVerticalStrut(200));
@@ -220,13 +210,10 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		facingVector = new Vertex(0, 0, 0);
 		final byte unusedXYZ = CoordinateSystem.Util.getUnusedXYZ(this);
 		facingVector.setCoord(unusedXYZ, unusedXYZ == 0 ? 1 : -1);
-		paintTimer = new Timer(16, new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				repaint();
-				if (!isShowing()) {
-					paintTimer.stop();
-				}
+		paintTimer = new Timer(16, e -> {
+			repaint();
+			if (!isShowing()) {
+				paintTimer.stop();
 			}
 		});
 		paintTimer.start();
@@ -723,12 +710,9 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		for (final JSpinner spinner : centerSpinners) {
 			spinner.setEnabled(false);
 		}
-		customOrigin.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				for (final JSpinner spinner : centerSpinners) {
-					spinner.setEnabled(customOrigin.isSelected());
-				}
+		customOrigin.addActionListener(e -> {
+			for (final JSpinner spinner : centerSpinners) {
+				spinner.setEnabled(customOrigin.isSelected());
 			}
 		});
 

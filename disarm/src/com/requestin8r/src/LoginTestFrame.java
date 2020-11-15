@@ -17,21 +17,12 @@ public class LoginTestFrame extends JFrame {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
+		} catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		LoginTestFrame frame = new LoginTestFrame();
+
+        LoginTestFrame frame = new LoginTestFrame();
 		frame.setVisible(true);
 	}
 

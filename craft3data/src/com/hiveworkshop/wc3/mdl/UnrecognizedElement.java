@@ -11,7 +11,7 @@ public class UnrecognizedElement
     private ArrayList<String> m_lines;
     public UnrecognizedElement()
     {
-        m_lines = new ArrayList<String>();
+        m_lines = new ArrayList<>();
     }
     public int size()
     {

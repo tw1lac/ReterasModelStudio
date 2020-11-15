@@ -33,9 +33,9 @@ public class ParticleEmitter2Chunk {
 		final int nrOfParticleEmitters2 = particleEmitter2.length;
 		out.writeNByteString("PRE2", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < particleEmitter2.length; i++) {
-			particleEmitter2[i].save(out);
-		}
+        for (ParticleEmitter2 emitter2 : particleEmitter2) {
+            emitter2.save(out);
+        }
 
 	}
 
@@ -43,9 +43,9 @@ public class ParticleEmitter2Chunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < particleEmitter2.length; i++) {
-			a += particleEmitter2[i].getSize();
-		}
+        for (ParticleEmitter2 emitter2 : particleEmitter2) {
+            a += emitter2.getSize();
+        }
 
 		return a;
 	}
@@ -414,7 +414,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Visibility.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -431,7 +431,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Variation.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.variation = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -448,7 +448,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Gravity.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.gravity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -466,7 +466,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2EmissionRate.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.emissionRate = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -483,7 +483,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Latitude.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -500,7 +500,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Length.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.length = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -517,7 +517,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Width.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.width = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -534,7 +534,7 @@ public class ParticleEmitter2Chunk {
 						particleEmitter2Speed.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();

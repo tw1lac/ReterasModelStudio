@@ -69,18 +69,13 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		super(selectionManager);
 		this.model = model;
 		this.structureChangeListener = structureChangeListener;
-		this.vertexSelectionHelper = new VertexSelectionHelper() {
-			@Override
-			public void selectVertices(final Collection<Vertex> vertices) {
-				selectByVertices(vertices);
-			}
-		};
+		this.vertexSelectionHelper = this::selectByVertices;
 	}
 
 	@Override
 	public UndoAction setMatrix(final Collection<Bone> bones) {
 		final Matrix mx = new Matrix();
-		mx.setBones(new ArrayList<Bone>());
+		mx.setBones(new ArrayList<>());
 		for (final Bone bone : bones) {
 			mx.add(bone);
 		}
@@ -204,7 +199,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 				}
 			}
 		}
-		selectByVertices(new ArrayList<Vertex>());
+		selectByVertices(new ArrayList<>());
 		if (remGeosets.size() <= 0) {
 			final DeleteAction temp = new DeleteAction(selection, deletedTris, vertexSelectionHelper);
 			return temp;
@@ -272,23 +267,22 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		final List<Vertex> selection = new ArrayList<>(selectionManager.getSelectedVertices());
 		final ArrayList<GeosetVertex> copies = new ArrayList<>();
 		final ArrayList<Triangle> selTris = new ArrayList<>();
-		for (int i = 0; i < selection.size(); i++) {
-			final Vertex vert = selection.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				copies.add(new GeosetVertex(gv));
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                copies.add(new GeosetVertex(gv));
 
-				for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
-					final Triangle temptr = gv.getTriangles().get(ti);
-					if (!selTris.contains(temptr)) {
-						selTris.add(temptr);
-					}
-				}
-			} else {
-				copies.add(null);
-				// System.out.println("GeosetVertex " + i + " was not found.");
-			}
-		}
+                for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
+                    final Triangle temptr = gv.getTriangles().get(ti);
+                    if (!selTris.contains(temptr)) {
+                        selTris.add(temptr);
+                    }
+                }
+            } else {
+                copies.add(null);
+                // System.out.println("GeosetVertex " + i + " was not found.");
+            }
+        }
 		for (final Triangle tri : selTris) {
 			if (!selection.contains(tri.get(0)) || !selection.contains(tri.get(1)) || !selection.contains(tri.get(2))) {
 				for (int i = 0; i < 3; i++) {
@@ -448,19 +442,18 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 			}
 		}
 		int probs = 0;
-		for (int k = 0; k < selection.size(); k++) {
-			final Vertex vert = selection.get(k);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				for (final Triangle t : gv.getTriangles()) {
-					// System.out.println("SHOULD be one: " +
-					// Collections.frequency(gv.getTriangles(), t));
-					if (!t.containsRef(gv)) {
-						probs++;
-					}
-				}
-			}
-		}
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                for (final Triangle t : gv.getTriangles()) {
+                    // System.out.println("SHOULD be one: " +
+                    // Collections.frequency(gv.getTriangles(), t));
+                    if (!t.containsRef(gv)) {
+                        probs++;
+                    }
+                }
+            }
+        }
 		// System.out.println("Extrude finished with " + probs + " inexplicable
 		// errors.");
 		final ExtrudeAction tempe = new ExtrudeAction(); // TODO better code
@@ -482,24 +475,23 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		final ArrayList<Triangle> edges = new ArrayList<>();
 		final ArrayList<Triangle> brokenFaces = new ArrayList<>();
 
-		for (int i = 0; i < selection.size(); i++) {
-			final Vertex vert = selection.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				// copies.add(new GeosetVertex(gv));
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                // copies.add(new GeosetVertex(gv));
 
-				// selTris.addAll(gv.getTriangles());
-				for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
-					final Triangle temptr = gv.getTriangles().get(ti);
-					if (!selTris.contains(temptr)) {
-						selTris.add(temptr);
-					}
-				}
-			} else {
-				// copies.add(null);
-				// System.out.println("GeosetVertex " + i + " was not found.");
-			}
-		}
+                // selTris.addAll(gv.getTriangles());
+                for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
+                    final Triangle temptr = gv.getTriangles().get(ti);
+                    if (!selTris.contains(temptr)) {
+                        selTris.add(temptr);
+                    }
+                }
+            } else {
+                // copies.add(null);
+                // System.out.println("GeosetVertex " + i + " was not found.");
+            }
+        }
 		System.out.println(selection.size() + " verteces cloned into " + copies.size() + " more.");
 		final ArrayList<GeosetVertex> copiedGroup = new ArrayList<>();
 		for (final Triangle tri : selTris) {
@@ -621,15 +613,14 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		final ArrayList<IdObject> newBones = new ArrayList<>();
 		final ArrayList<GeosetVertex> newVertices = new ArrayList<>();
 		final ArrayList<Triangle> newTriangles = new ArrayList<>();
-		for (int i = 0; i < source.size(); i++) {
-			final Vertex vert = source.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				newVertices.add(new GeosetVertex(gv));
-			} else {
-				newVertices.add(null);
-			}
-		}
+        for (final Vertex vert : source) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                newVertices.add(new GeosetVertex(gv));
+            } else {
+                newVertices.add(null);
+            }
+        }
 		for (final IdObject b : model.getEditableIdObjects()) {
 			if (source.contains(b.getPivotPoint()) && !selBones.contains(b)) {
 				selBones.add(b);

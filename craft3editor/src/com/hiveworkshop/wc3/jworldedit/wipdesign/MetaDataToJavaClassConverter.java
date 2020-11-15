@@ -18,10 +18,8 @@ import com.hiveworkshop.wc3.units.ObjectData;
 import com.hiveworkshop.wc3.units.StandardObjectData;
 
 public class MetaDataToJavaClassConverter {
-	private final ObjectData metaData;
 
 	public MetaDataToJavaClassConverter(final ObjectData metaData) {
-		this.metaData = metaData;
 	}
 
 	public void printJavaClass(final PrintStream out) {
@@ -63,14 +61,8 @@ public class MetaDataToJavaClassConverter {
 				unitMetaFields.add(metaField);
 			}
 		}
-		Collections.sort(unitMetaFields, new Comparator<Element>() {
-			@Override
-			public int compare(final Element a, final Element b) {
-				return WEString.getString(a.getField("displayName"))
-						.compareTo(WEString.getString(b.getField("displayName")));
-			}
-
-		});
+		unitMetaFields.sort((a, b) -> WEString.getString(a.getField("displayName"))
+				.compareTo(WEString.getString(b.getField("displayName"))));
 		System.out.println("------TYPES ENUMERATED------");
 		for (final String type : types) {
 			if (!typeToJava.containsKey(type)) {
@@ -101,7 +93,7 @@ public class MetaDataToJavaClassConverter {
 				displayName = displayName.replace('-', '_');
 				displayName = displayName.replace('(', '_');
 				displayName = displayName.replace(")", "");
-				final StringBuffer finalDisplayName = new StringBuffer();
+				final StringBuilder finalDisplayName = new StringBuilder();
 				for (final String s : displayName.split("\\s+")) {
 					finalDisplayName.append(Character.toUpperCase(s.charAt(0)) + s.substring(1));
 				}
@@ -149,7 +141,7 @@ public class MetaDataToJavaClassConverter {
 				displayName = displayName.replace('-', '_');
 				displayName = displayName.replace('(', '_');
 				displayName = displayName.replace(")", "");
-				final StringBuffer finalDisplayName = new StringBuffer();
+				final StringBuilder finalDisplayName = new StringBuilder();
 				for (final String s : displayName.split("\\s+")) {
 					finalDisplayName.append(Character.toUpperCase(s.charAt(0)) + s.substring(1));
 				}

@@ -32,9 +32,9 @@ public class SequenceChunk {
 		final int nrOfSequences = sequence.length;
 		out.writeNByteString("SEQS", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < sequence.length; i++) {
-			sequence[i].save(out);
-		}
+        for (Sequence value : sequence) {
+            value.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class SequenceChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < sequence.length; i++) {
-			a += sequence[i].getSize();
-		}
+        for (Sequence value : sequence) {
+            a += value.getSize();
+        }
 
 		return a;
 	}

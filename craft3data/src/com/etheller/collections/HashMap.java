@@ -215,19 +215,19 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 				@Override
 				public void forEach(final CollectionView.ForEach<? super VALUE> forEach) {
 					final int expectedModCount = modCount;
-					for (int i = 0; i < table.length; i++) {
-						Node<KEY, VALUE> node = table[i];
-						while (node != null) {
-							if (modCount != expectedModCount) {
-								throw new ConcurrentModificationException();
-							}
-							if (!forEach.onEntry(node.getValue())) {
-								return;
-							}
+                    for (Node<KEY, VALUE> keyvalueNode : table) {
+                        Node<KEY, VALUE> node = keyvalueNode;
+                        while (node != null) {
+                            if (modCount != expectedModCount) {
+                                throw new ConcurrentModificationException();
+                            }
+                            if (!forEach.onEntry(node.getValue())) {
+                                return;
+                            }
 
-							node = node.getNext();
-						}
-					}
+                            node = node.getNext();
+                        }
+                    }
 					if (modCount != expectedModCount) {
 						throw new ConcurrentModificationException();
 					}
@@ -241,19 +241,19 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 	@Override
 	public void forEach(final MapView.ForEach<? super KEY, ? super VALUE> forEach) {
 		final int expectedModCount = modCount;
-		for (int i = 0; i < table.length; i++) {
-			Node<KEY, VALUE> node = table[i];
-			while (node != null) {
-				if (modCount != expectedModCount) {
-					throw new ConcurrentModificationException();
-				}
-				if (!forEach.onEntry(node.getKey(), node.getValue())) {
-					return;
-				}
+        for (Node<KEY, VALUE> keyvalueNode : table) {
+            Node<KEY, VALUE> node = keyvalueNode;
+            while (node != null) {
+                if (modCount != expectedModCount) {
+                    throw new ConcurrentModificationException();
+                }
+                if (!forEach.onEntry(node.getKey(), node.getValue())) {
+                    return;
+                }
 
-				node = node.getNext();
-			}
-		}
+                node = node.getNext();
+            }
+        }
 		if (modCount != expectedModCount) {
 			throw new ConcurrentModificationException();
 		}
@@ -274,19 +274,19 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 		@Override
 		public void forEach(final ForEach<? super MapView.Entry<KEY, VALUE>> forEach) {
 			final int expectedModCount = modCount;
-			for (int i = 0; i < table.length; i++) {
-				Node<KEY, VALUE> node = table[i];
-				while (node != null) {
-					if (modCount != expectedModCount) {
-						throw new ConcurrentModificationException();
-					}
-					if (!forEach.onEntry(node)) {
-						return;
-					}
+            for (Node<KEY, VALUE> keyvalueNode : table) {
+                Node<KEY, VALUE> node = keyvalueNode;
+                while (node != null) {
+                    if (modCount != expectedModCount) {
+                        throw new ConcurrentModificationException();
+                    }
+                    if (!forEach.onEntry(node)) {
+                        return;
+                    }
 
-					node = node.getNext();
-				}
-			}
+                    node = node.getNext();
+                }
+            }
 			if (modCount != expectedModCount) {
 				throw new ConcurrentModificationException();
 			}
@@ -327,19 +327,19 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 		@Override
 		public void forEach(final ForEach<? super KEY> forEach) {
 			final int expectedModCount = modCount;
-			for (int i = 0; i < table.length; i++) {
-				Node<KEY, VALUE> node = table[i];
-				while (node != null) {
-					if (modCount != expectedModCount) {
-						throw new ConcurrentModificationException();
-					}
-					if (!forEach.onEntry(node.getKey())) {
-						return;
-					}
+            for (Node<KEY, VALUE> keyvalueNode : table) {
+                Node<KEY, VALUE> node = keyvalueNode;
+                while (node != null) {
+                    if (modCount != expectedModCount) {
+                        throw new ConcurrentModificationException();
+                    }
+                    if (!forEach.onEntry(node.getKey())) {
+                        return;
+                    }
 
-					node = node.getNext();
-				}
-			}
+                    node = node.getNext();
+                }
+            }
 			if (modCount != expectedModCount) {
 				throw new ConcurrentModificationException();
 			}

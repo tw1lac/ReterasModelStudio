@@ -35,17 +35,7 @@ public class TVFSDecoder {
 	 */
 	private static final int VALUE_PATH_STRING_LENGTH = 0xFF;
 
-	private byte version = 0;
-	private int flags = 0;
 	private int encodingKeySize = 0;
-	private int patchKeySize = 0;
-	private int pathOffset = 0;
-	private int pathSize = 0;
-	private int fileReferenceOffset = 0;
-	private int fileReferenceSize = 0;
-	private int cascReferenceOffset = 0;
-	private int cascReferenceSize = 0;
-	private int maximumPathDepth = 0;
 
 	private int contentsOffsetSize = 0;
 	private ByteBuffer pathBuffer = null;
@@ -69,7 +59,7 @@ public class TVFSDecoder {
 	}
 
 	private List<PathNode> decodeContainer(final ByteBuffer pathBuffer) throws MalformedCASCStructureException {
-		final ArrayList<PathNode> nodes = new ArrayList<PathNode>();
+		final ArrayList<PathNode> nodes = new ArrayList<>();
 
 		while (pathBuffer.hasRemaining()) {
 			final PathNode node = decodeNode(pathBuffer);
@@ -80,7 +70,7 @@ public class TVFSDecoder {
 	}
 
 	private PathNode decodeNode(final ByteBuffer pathBuffer) throws MalformedCASCStructureException {
-		final ArrayList<byte[]> pathFragments = new ArrayList<byte[]>();
+		final ArrayList<byte[]> pathFragments = new ArrayList<>();
 
 		PathNode node;
 		try {
@@ -186,6 +176,16 @@ public class TVFSDecoder {
 		localBuffer.limit(localBuffer.capacity());
 		localBuffer.position(IDENTIFIER.remaining());
 
+		int maximumPathDepth = 0;
+		int cascReferenceSize = 0;
+		int cascReferenceOffset = 0;
+		int fileReferenceSize = 0;
+		int fileReferenceOffset = 0;
+		int pathSize = 0;
+		int pathOffset = 0;
+		int patchKeySize = 0;
+		int flags = 0;
+		byte version = 0;
 		try {
 			version = localBuffer.get();
 			if (version != 1) {

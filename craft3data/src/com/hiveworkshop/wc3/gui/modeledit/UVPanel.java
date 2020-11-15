@@ -107,7 +107,6 @@ public class UVPanel extends JPanel
 	private final JButton up, down, left, right, plusZoom, minusZoom;
 	private final JTextField[] mouseCoordDisplay = new JTextField[2];
 	private final TVertexEditorViewportActivityManager viewportActivityManager;
-	private final TVertexEditorChangeNotifier modelEditorChangeNotifier;
 	private final TVertexEditorManager modelEditorManager;
 
 	int selectionType = 0;
@@ -188,15 +187,7 @@ public class UVPanel extends JPanel
 
 	private JToolBar toolbar;
 
-	private final int uvLayerIndex = 0;
-
-	private TVertexToolbarActionButtonType selectAndMoveDescriptor;
-
 	private final ProgramPreferences prefs;
-
-	private TVertexToolbarActionButtonType selectAndRotateDescriptor;
-
-	private TVertexToolbarActionButtonType selectAndScaleDescriptor;
 
 	private TVertexEditorActivityDescriptor currentActivity;
 
@@ -213,7 +204,7 @@ public class UVPanel extends JPanel
 		add(createJToolBar());
 
 		viewportActivityManager = new TVertexEditorViewportActivityManager(new DoNothingTVertexActivity());
-		modelEditorChangeNotifier = new TVertexEditorChangeNotifier();
+		TVertexEditorChangeNotifier modelEditorChangeNotifier = new TVertexEditorChangeNotifier();
 		modelEditorChangeNotifier.subscribe(viewportActivityManager);
 		modelEditorManager = new TVertexEditorManager(dispMDL.getModelViewManager(), prefs, selectionModeGroup,
 				modelEditorChangeNotifier, viewportActivityManager, dispMDL.getEditorRenderModel(),
@@ -483,11 +474,11 @@ public class UVPanel extends JPanel
 		toolbar.addSeparator();
 		selectionItemTypeGroup = new ToolbarButtonGroup<>(toolbar, TVertexSelectionItemTypes.values());
 		toolbar.addSeparator();
-		selectAndMoveDescriptor = new TVertexToolbarActionButtonType(
+		TVertexToolbarActionButtonType selectAndMoveDescriptor = new TVertexToolbarActionButtonType(
 				ViewportIconUtils.loadImageIcon("icons/actions/move2.png"), "Select and Move") {
 			@Override
 			public TVertexEditorViewportActivity createActivity(final TVertexEditorManager modelEditorManager,
-					final ModelView modelView, final UndoActionListener undoActionListener) {
+																final ModelView modelView, final UndoActionListener undoActionListener) {
 				actionType = ModelEditorActionType.TRANSLATION;
 				return new TVertexEditorMultiManipulatorActivity(
 						new MoverWidgetTVertexEditorManipulatorBuilder(modelEditorManager.getModelEditor(),
@@ -495,11 +486,11 @@ public class UVPanel extends JPanel
 						undoActionListener, modelEditorManager.getSelectionView());
 			}
 		};
-		selectAndRotateDescriptor = new TVertexToolbarActionButtonType(
+		TVertexToolbarActionButtonType selectAndRotateDescriptor = new TVertexToolbarActionButtonType(
 				ViewportIconUtils.loadImageIcon("icons/actions/rotate.png"), "Select and Rotate") {
 			@Override
 			public TVertexEditorViewportActivity createActivity(final TVertexEditorManager modelEditorManager,
-					final ModelView modelView, final UndoActionListener undoActionListener) {
+																final ModelView modelView, final UndoActionListener undoActionListener) {
 				actionType = ModelEditorActionType.ROTATION;
 				return new TVertexEditorMultiManipulatorActivity(
 						new RotatorWidgetTVertexEditorManipulatorBuilder(modelEditorManager.getModelEditor(),
@@ -507,11 +498,11 @@ public class UVPanel extends JPanel
 						undoActionListener, modelEditorManager.getSelectionView());
 			}
 		};
-		selectAndScaleDescriptor = new TVertexToolbarActionButtonType(
+		TVertexToolbarActionButtonType selectAndScaleDescriptor = new TVertexToolbarActionButtonType(
 				ViewportIconUtils.loadImageIcon("icons/actions/scale.png"), "Select and Scale") {
 			@Override
 			public TVertexEditorViewportActivity createActivity(final TVertexEditorManager modelEditorManager,
-					final ModelView modelView, final UndoActionListener undoActionListener) {
+																final ModelView modelView, final UndoActionListener undoActionListener) {
 				actionType = ModelEditorActionType.SCALING;
 				return new TVertexEditorMultiManipulatorActivity(
 						new ScaleWidgetTVertexEditorManipulatorBuilder(modelEditorManager.getModelEditor(),
@@ -520,7 +511,7 @@ public class UVPanel extends JPanel
 			}
 		};
 		actionTypeGroup = new ToolbarButtonGroup<>(toolbar, new TVertexToolbarActionButtonType[] {
-				selectAndMoveDescriptor, selectAndRotateDescriptor, selectAndScaleDescriptor });
+				selectAndMoveDescriptor, selectAndRotateDescriptor, selectAndScaleDescriptor});
 		currentActivity = actionTypeGroup.getActiveButtonType();
 		toolbar.addSeparator();
 		snapButton = toolbar.add(new AbstractAction("Snap", ViewportIconUtils.loadImageIcon("icons/actions/snap.png")) {
@@ -1065,6 +1056,7 @@ public class UVPanel extends JPanel
 	 * @return uvLayerIndex
 	 */
 	public int currentLayer() {
+		int uvLayerIndex = 0;
 		return uvLayerIndex;
 	}
 

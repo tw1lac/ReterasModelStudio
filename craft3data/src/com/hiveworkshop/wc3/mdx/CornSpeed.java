@@ -30,9 +30,9 @@ public class CornSpeed {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < speedTrack.length; i++) {
-			speedTrack[i].save(out);
-		}
+        for (SpeedTrack track : speedTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CornSpeed {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < speedTrack.length; i++) {
-			a += speedTrack[i].getSize();
-		}
+        for (SpeedTrack track : speedTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}

@@ -5,8 +5,7 @@ import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.TimelineContainer;
 
 public class SetKeyframeAction implements UndoAction {
-	private final TimelineContainer node;
-	private final AnimFlag timeline;
+    private final AnimFlag timeline;
 	private final int trackTime;
 	private final Object keyframeValue;
 	private final Object keyframeInTan;
@@ -20,8 +19,7 @@ public class SetKeyframeAction implements UndoAction {
 			final Object keyframeValue, final Object keyframeInTan, final Object keyframeOutTan,
 			final Object keyframeOldValue, final Object keyframeOldInTan, final Object keyframeOldOutTan,
 			final Runnable structureChangeListener) {
-		this.node = node;
-		this.timeline = timeline;
+        this.timeline = timeline;
 		this.trackTime = trackTime;
 		this.keyframeValue = keyframeValue;
 		this.keyframeInTan = keyframeInTan;

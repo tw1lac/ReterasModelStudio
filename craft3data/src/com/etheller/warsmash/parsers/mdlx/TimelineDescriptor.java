@@ -8,31 +8,11 @@ import com.etheller.warsmash.parsers.mdlx.timeline.UInt32Timeline;
 public interface TimelineDescriptor {
 	Timeline createTimeline();
 
-	TimelineDescriptor UINT32_TIMELINE = new TimelineDescriptor() {
-		@Override
-		public Timeline createTimeline() {
-			return new UInt32Timeline();
-		}
-	};
+	TimelineDescriptor UINT32_TIMELINE = UInt32Timeline::new;
 
-	TimelineDescriptor FLOAT_TIMELINE = new TimelineDescriptor() {
-		@Override
-		public Timeline createTimeline() {
-			return new FloatTimeline();
-		}
-	};
+	TimelineDescriptor FLOAT_TIMELINE = FloatTimeline::new;
 
-	TimelineDescriptor VECTOR3_TIMELINE = new TimelineDescriptor() {
-		@Override
-		public Timeline createTimeline() {
-			return new FloatArrayTimeline(3);
-		}
-	};
+	TimelineDescriptor VECTOR3_TIMELINE = () -> new FloatArrayTimeline(3);
 
-	TimelineDescriptor VECTOR4_TIMELINE = new TimelineDescriptor() {
-		@Override
-		public Timeline createTimeline() {
-			return new FloatArrayTimeline(4);
-		}
-	};
+	TimelineDescriptor VECTOR4_TIMELINE = () -> new FloatArrayTimeline(4);
 }

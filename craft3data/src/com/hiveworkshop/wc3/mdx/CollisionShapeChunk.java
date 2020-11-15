@@ -32,9 +32,9 @@ public class CollisionShapeChunk {
 		final int nrOfCollisionShapes = collisionShape.length;
 		out.writeNByteString("CLID", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < collisionShape.length; i++) {
-			collisionShape[i].save(out);
-		}
+        for (CollisionShape shape : collisionShape) {
+            shape.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CollisionShapeChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < collisionShape.length; i++) {
-			a += collisionShape[i].getSize();
-		}
+        for (CollisionShape shape : collisionShape) {
+            a += shape.getSize();
+        }
 
 		return a;
 	}

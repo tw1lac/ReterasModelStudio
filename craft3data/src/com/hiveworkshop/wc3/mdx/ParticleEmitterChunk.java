@@ -32,9 +32,9 @@ public class ParticleEmitterChunk {
 		final int nrOfParticleEmitters = particleEmitter.length;
 		out.writeNByteString("PREM", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < particleEmitter.length; i++) {
-			particleEmitter[i].save(out);
-		}
+        for (ParticleEmitter emitter : particleEmitter) {
+            emitter.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class ParticleEmitterChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < particleEmitter.length; i++) {
-			a += particleEmitter[i].getSize();
-		}
+        for (ParticleEmitter emitter : particleEmitter) {
+            a += emitter.getSize();
+        }
 
 		return a;
 	}
@@ -211,7 +211,7 @@ public class ParticleEmitterChunk {
 						particleEmitterVisibility.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -228,7 +228,7 @@ public class ParticleEmitterChunk {
 						particleEmitterEmissionRate.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.emissionRate = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -245,7 +245,7 @@ public class ParticleEmitterChunk {
 						particleEmitterGravity.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.gravity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -262,7 +262,7 @@ public class ParticleEmitterChunk {
 						particleEmitterLongitude.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.longitude = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -279,7 +279,7 @@ public class ParticleEmitterChunk {
 						particleEmitterLatitude.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.latitude = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -296,7 +296,7 @@ public class ParticleEmitterChunk {
 						particleEmitterLifeSpan.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.lifeSpan = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -315,7 +315,7 @@ public class ParticleEmitterChunk {
 						particleEmitterSpeed.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();

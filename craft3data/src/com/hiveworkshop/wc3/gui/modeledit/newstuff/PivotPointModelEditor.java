@@ -621,18 +621,8 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 				}
 			});
 		}
-		final Runnable truncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.removeSelection(possibleVerticesToTruncate);
-			}
-		};
-		final Runnable unTruncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.setSelection(previousSelection);
-			}
-		};
+		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(possibleVerticesToTruncate);
+		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
 		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
 				unTruncateSelectionRunnable, refreshGUIRunnable);
 	}
@@ -843,7 +833,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 				clonedCameras.add(camera);
 			}
 		}
-		return new CopiedModelData(new ArrayList<Geoset>(), clonedNodes, clonedCameras);
+		return new CopiedModelData(new ArrayList<>(), clonedNodes, clonedCameras);
 	}
 
 	@Override

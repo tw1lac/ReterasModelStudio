@@ -8,20 +8,16 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class TechshaperPanel extends JPanel {
-	private final JButton newButton;
-	private final JButton drawRequirementLine;
-	private final JButton drawUpgradeLine;
-	private final TechtreePanel techtreePanel;
 
-	public TechshaperPanel() {
+    public TechshaperPanel() {
 		setBackground(new Color(7,7,7));
-		newButton = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/new.png")));
-		add( newButton );
-		drawRequirementLine = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/drawOrange.png")));
-		add( drawRequirementLine );
-		drawUpgradeLine = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/drawBlue.png")));
-		add( drawUpgradeLine );
-		techtreePanel = new TechtreePanel(13, 13);
+        JButton newButton = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/new.png")));
+		add(newButton);
+        JButton drawRequirementLine = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/drawOrange.png")));
+		add(drawRequirementLine);
+        JButton drawUpgradeLine = new JButton(new ImageIcon(TechshaperPanel.class.getResource("res/drawBlue.png")));
+		add(drawUpgradeLine);
+        TechtreePanel techtreePanel = new TechtreePanel(13, 13);
 		add(techtreePanel);
 		final GroupLayout layout = new GroupLayout(this);
 		layout.setHorizontalGroup(layout.createParallelGroup()

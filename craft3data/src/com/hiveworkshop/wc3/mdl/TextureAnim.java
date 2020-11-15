@@ -72,7 +72,7 @@ public class TextureAnim {
 
 	public static ArrayList<TextureAnim> readAll(final BufferedReader mdl) {
 		String line = "";
-		final ArrayList<TextureAnim> outputs = new ArrayList<TextureAnim>();
+		final ArrayList<TextureAnim> outputs = new ArrayList<>();
 		MDLReader.mark(mdl);
 		if ((line = MDLReader.nextLine(mdl)).contains("TextureAnims")) {
 			MDLReader.mark(mdl);

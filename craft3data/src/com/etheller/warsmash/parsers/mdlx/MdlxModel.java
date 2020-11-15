@@ -65,7 +65,7 @@ public class MdlxModel {
 	private String animationFile = "";
 	private final Extent extent = new Extent();
 	private long blendTime = 0;
-	private final List<Sequence> sequences = new ArrayList<Sequence>();
+	private final List<Sequence> sequences = new ArrayList<>();
 	private final List<Long /* UInt32 */> globalSequences = new ArrayList<>();
 	private final List<Material> materials = new ArrayList<>();
 	private final List<Texture> textures = new ArrayList<>();

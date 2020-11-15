@@ -23,21 +23,12 @@ public class MainFrame extends JFrame {
 	public static void main(final String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (final ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final UnsupportedLookAndFeelException e) {
+		} catch (final ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		final MainFrame frame = new MainFrame();
+        final MainFrame frame = new MainFrame();
 		frame.setVisible(true);
 	}
 

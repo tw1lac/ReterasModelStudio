@@ -103,9 +103,7 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
 		}
 		try {
 			return containsAll(c);
-		} catch (final ClassCastException unused) {
-			return false;
-		} catch (final NullPointerException unused) {
+		} catch (final ClassCastException | NullPointerException unused) {
 			return false;
 		}
 	}
@@ -130,9 +128,7 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
 	@Override
 	public int hashCode() {
 		int h = 0;
-		final Iterator<E> i = iterator();
-		while (i.hasNext()) {
-			final E obj = i.next();
+		for (E obj : this) {
 			if (obj != null) {
 				h += obj.hashCode();
 			}
@@ -186,9 +182,9 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
 		boolean modified = false;
 
 		if (size() > c.size()) {
-			for (final Iterator<E> i = c.iterator(); i.hasNext();) {
-				modified |= remove(i.next());
-			}
+            for (E e : c) {
+                modified |= remove(e);
+            }
 		} else {
 			for (final Iterator<E> i = iterator(); i.hasNext();) {
 				if (c.contains(i.next())) {

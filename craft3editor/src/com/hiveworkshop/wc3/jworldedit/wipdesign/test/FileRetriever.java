@@ -56,10 +56,8 @@ public class FileRetriever {
 					}
 				}
 			}
-		} catch (final IOException e1) {
+		} catch (final IOException | MPQException e1) {
 			throw new RuntimeException(e1);
-		} catch (final MPQException e) {
-			throw new RuntimeException(e);
 		}
-	}
+    }
 }

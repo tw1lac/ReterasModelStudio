@@ -111,9 +111,9 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 			writer.println("\tParent " + parentId + ",\t// \"" + getParent().getName() + "\"");
 		}
 
-		for (int i = 0; i < pAnimFlags.size(); i++) {
-			pAnimFlags.get(i).printTo(writer, 1);
-		}
+        for (AnimFlag pAnimFlag : pAnimFlags) {
+            pAnimFlag.printTo(writer, 1);
+        }
 		writer.println("}");
 	}
 
@@ -204,10 +204,9 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
-			flag.flipOver(axis);
-		}
+        for (final AnimFlag flag : animFlags) {
+            flag.flipOver(axis);
+        }
 	}
 
 	@Override

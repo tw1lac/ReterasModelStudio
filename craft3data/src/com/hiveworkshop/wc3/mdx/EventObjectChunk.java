@@ -31,9 +31,9 @@ public class EventObjectChunk {
 		int nrOfEventObjects = eventObject.length;
 		out.writeNByteString("EVTS", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < eventObject.length; i++) {
-			eventObject[i].save(out);
-		}
+        for (EventObject object : eventObject) {
+            object.save(out);
+        }
 
 	}
 
@@ -41,9 +41,9 @@ public class EventObjectChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < eventObject.length; i++) {
-			a += eventObject[i].getSize();
-		}
+        for (EventObject object : eventObject) {
+            a += object.getSize();
+        }
 
 		return a;
 	}

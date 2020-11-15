@@ -17,7 +17,7 @@ public class Animation implements BasicTimeBoundProvider {
 	private String name = "";
 	private int intervalStart = 0;
 	private int intervalEnd = -1;
-	private ArrayList<String> tags = new ArrayList<String>();// These are strings tags, i.e.
+	private ArrayList<String> tags = new ArrayList<>();// These are strings tags, i.e.
 	// "MoveSpeed X," "Rarity X,"
 	// "NonLooping," etc.
 	private ExtLog extents;
@@ -121,7 +121,7 @@ public class Animation implements BasicTimeBoundProvider {
 		this.name = other.name;
 		intervalStart = other.intervalStart;
 		intervalEnd = other.intervalEnd;
-		tags = new ArrayList<String>(other.tags);
+		tags = new ArrayList<>(other.tags);
 		extents = new ExtLog(other.extents);
 	}
 
@@ -348,8 +348,8 @@ public class Animation implements BasicTimeBoundProvider {
 		if ((intervalEnd - intervalStart) > 0) {
 			writer.println(tabs + "\tInterval { " + intervalStart + ", " + intervalEnd + " },");
 		}
-		for (int i = 0; i < tags.size(); i++) {
-			writer.println(tabs + "\t" + tags.get(i) + ",");
+		for (String tag : tags) {
+			writer.println(tabs + "\t" + tag + ",");
 		}
 		if (extents != null) {
 			extents.printTo(writer, tabHeight + 1);

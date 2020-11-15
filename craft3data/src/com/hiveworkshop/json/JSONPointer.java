@@ -63,7 +63,7 @@ public class JSONPointer {
     public static class Builder {
 
         // Segments for the eventual JSONPointer string
-        private final List<String> refTokens = new ArrayList<String>();
+        private final List<String> refTokens = new ArrayList<>();
 
         /**
          * Creates a {@code JSONPointer} instance using the tokens previously set using the
@@ -157,7 +157,7 @@ public class JSONPointer {
         } else {
             throw new IllegalArgumentException("a JSON pointer should start with '/' or '#/'");
         }
-        this.refTokens = new ArrayList<String>();
+        this.refTokens = new ArrayList<>();
         int slashIdx = -1;
         int prevSlashIdx = 0;
         do {
@@ -183,7 +183,7 @@ public class JSONPointer {
     }
 
     public JSONPointer(List<String> refTokens) {
-        this.refTokens = new ArrayList<String>(refTokens);
+        this.refTokens = new ArrayList<>(refTokens);
     }
 
     private String unescape(String token) {
@@ -234,7 +234,7 @@ public class JSONPointer {
             JSONArray currentArr = (JSONArray) current;
             if (index >= currentArr.length()) {
                 throw new JSONPointerException(format("index %s is out of bounds - the array has %d elements", indexToken,
-                        Integer.valueOf(currentArr.length())));
+                        currentArr.length()));
             }
             try {
 				return currentArr.get(index);

@@ -87,7 +87,7 @@ public class DeleteNodesAction implements UndoAction {
 		}
 		changeListener.nodesRemoved(objects);
 		changeListener.camerasRemoved(deletedCameras);
-		vertexSelectionHelper.selectVertices(new ArrayList<Vertex>());
+		vertexSelectionHelper.selectVertices(new ArrayList<>());
 	}
 
 	@Override

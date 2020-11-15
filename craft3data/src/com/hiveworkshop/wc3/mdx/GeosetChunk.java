@@ -36,9 +36,9 @@ public class GeosetChunk {
 		final int nrOfGeosets = geoset.length;
 		out.writeNByteString("GEOS", 4);
 		out.writeInt(getSize(version) - 8);// ChunkSize
-		for (int i = 0; i < geoset.length; i++) {
-			geoset[i].save(out, version);
-		}
+        for (Geoset value : geoset) {
+            value.save(out, version);
+        }
 
 	}
 
@@ -46,9 +46,9 @@ public class GeosetChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < geoset.length; i++) {
-			a += geoset[i].getSize(version);
-		}
+        for (Geoset value : geoset) {
+            a += value.getSize(version);
+        }
 
 		return a;
 	}
@@ -234,9 +234,9 @@ public class GeosetChunk {
 			}
 			MdxUtils.saveFloatArray(out, maximumExtent);
 			out.writeInt(nrOfExtents);
-			for (int i = 0; i < extent.length; i++) {
-				extent[i].save(out);
-			}
+            for (Extent value : extent) {
+                value.save(out);
+            }
 
 			if (ModelUtils.isTangentAndSkinSupported(version) && (this.tangents.length > 0)) {
 				out.writeNByteString("TANG", 4);
@@ -297,9 +297,9 @@ public class GeosetChunk {
 			a += 12;
 			a += 12;
 			a += 4;
-			for (int i = 0; i < extent.length; i++) {
-				a += extent[i].getSize();
-			}
+            for (Extent value : extent) {
+                a += value.getSize();
+            }
 			a += 4;
 			a += 4;
 
@@ -321,11 +321,11 @@ public class GeosetChunk {
 				}
 			}
 
-			for (int i = 0; i < vertexTexturePositions.length; i++) {
-				a += 4;
-				a += 4;
-				a += 4 * vertexTexturePositions[i].length;
-			}
+            for (float[] vertexTexturePosition : vertexTexturePositions) {
+                a += 4;
+                a += 4;
+                a += 4 * vertexTexturePosition.length;
+            }
 
 			return a;
 		}

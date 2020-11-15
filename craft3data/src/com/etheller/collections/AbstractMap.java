@@ -535,9 +535,7 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 		}
 
 		try {
-			final Iterator<Entry<K, V>> i = entrySet().iterator();
-			while (i.hasNext()) {
-				final Entry<K, V> e = i.next();
+			for (Entry<K, V> e : entrySet()) {
 				final K key = e.getKey();
 				final V value = e.getValue();
 				if (value == null) {
@@ -550,9 +548,7 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 					}
 				}
 			}
-		} catch (final ClassCastException unused) {
-			return false;
-		} catch (final NullPointerException unused) {
+		} catch (final ClassCastException | NullPointerException unused) {
 			return false;
 		}
 
@@ -579,9 +575,8 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 	@Override
 	public int hashCode() {
 		int h = 0;
-		final Iterator<Entry<K, V>> i = entrySet().iterator();
-		while (i.hasNext()) {
-			h += i.next().hashCode();
+		for (Entry<K, V> kvEntry : entrySet()) {
+			h += kvEntry.hashCode();
 		}
 		return h;
 	}

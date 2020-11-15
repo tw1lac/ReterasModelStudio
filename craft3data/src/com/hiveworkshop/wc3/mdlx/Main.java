@@ -44,11 +44,9 @@ public class Main {
 			final BlizzardDataOutputStream out2 = new BlizzardDataOutputStream(new File("PackHorse_MXfied.mdx"));
 			packHorseMdx.save(out2);
 			out2.close();
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-	}
+    }
 
 }

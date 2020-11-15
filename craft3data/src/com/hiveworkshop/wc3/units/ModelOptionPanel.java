@@ -1093,40 +1093,34 @@ public class ModelOptionPanel extends JPanel {
 		modelBox = new JComboBox<>(groupModels.get(0));
 		filePathField = new JTextField();
 		filePathField.setMaximumSize(new Dimension(20000, 25));
-		groupBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				modelBox.setModel(groupModels.get(groupBox.getSelectedIndex()));
-				modelBox.setSelectedIndex(0);
-			}
+		groupBox.addActionListener(e -> {
+			modelBox.setModel(groupModels.get(groupBox.getSelectedIndex()));
+			modelBox.setSelectedIndex(0);
 		});
-		modelBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				EditableModel toLoad = blank;
-				ModelView modelDisp;
-				try {
-					String filepath = ((Model) modelBox.getSelectedItem()).filepath;
-					filePathField.setText(filepath);
-					cachedIconPath = ((Model) modelBox.getSelectedItem()).cachedIcon;
-					if (filepath.endsWith(".mdl")) {
-						filepath = filepath.replace(".mdl", ".mdx");
-					} else if (!filepath.endsWith(".mdx")) {
-						filepath = filepath.concat(".mdx");
-					}
-					final InputStream modelStream = MpqCodebase.get().getResourceAsStream(filepath);
-					final MdxModel model = MdxUtils.loadModel(new BlizzardDataInputStream(modelStream));
-					toLoad = model.toMDL();// MDL.read(modelStream);
-					modelDisp = new ModelViewManager(toLoad);
-				} catch (final Exception exc) {
-					exc.printStackTrace();
-					// bad model!
-					modelDisp = blankDisp;
+		modelBox.addActionListener(e -> {
+			EditableModel toLoad = blank;
+			ModelView modelDisp;
+			try {
+				String filepath = ((Model) modelBox.getSelectedItem()).filepath;
+				filePathField.setText(filepath);
+				cachedIconPath = ((Model) modelBox.getSelectedItem()).cachedIcon;
+				if (filepath.endsWith(".mdl")) {
+					filepath = filepath.replace(".mdl", ".mdx");
+				} else if (!filepath.endsWith(".mdx")) {
+					filepath = filepath.concat(".mdx");
 				}
-
-				viewer.setModel(modelDisp);
-				viewer.setTitle(toLoad.getName());
+				final InputStream modelStream = MpqCodebase.get().getResourceAsStream(filepath);
+				final MdxModel model = MdxUtils.loadModel(new BlizzardDataInputStream(modelStream));
+				toLoad = model.toMDL();// MDL.read(modelStream);
+				modelDisp = new ModelViewManager(toLoad);
+			} catch (final Exception exc) {
+				exc.printStackTrace();
+				// bad model!
+				modelDisp = blankDisp;
 			}
+
+			viewer.setModel(modelDisp);
+			viewer.setTitle(toLoad.getName());
 		});
 		filePathField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override

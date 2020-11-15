@@ -36,9 +36,9 @@ public class TextureAnimationChunk {
 		int nrOfTextureAnimations = textureAnimation.length;
 		out.writeNByteString("TXAN", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < textureAnimation.length; i++) {
-			textureAnimation[i].save(out);
-		}
+        for (TextureAnimation animation : textureAnimation) {
+            animation.save(out);
+        }
 
 	}
 
@@ -46,9 +46,9 @@ public class TextureAnimationChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < textureAnimation.length; i++) {
-			a += textureAnimation[i].getSize();
-		}
+        for (TextureAnimation animation : textureAnimation) {
+            a += animation.getSize();
+        }
 
 		return a;
 	}
@@ -120,7 +120,7 @@ public class TextureAnimationChunk {
 						textureTranslation.translationTrack[i] = mdxEntry;
 						AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.translation = ((Vertex)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if( hasTans ) {
 							mdxEntry.inTan = ((Vertex)mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex)mdlEntry.outTan).toFloatArray();
@@ -137,7 +137,7 @@ public class TextureAnimationChunk {
 						textureScaling.translationTrack[i] = mdxEntry;
 						AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.scaling = ((Vertex)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if( hasTans ) {
 							mdxEntry.inTan = ((Vertex)mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex)mdlEntry.outTan).toFloatArray();
@@ -154,7 +154,7 @@ public class TextureAnimationChunk {
 						textureRotation.translationTrack[i] = mdxEntry;
 						AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.rotation = ((QuaternionRotation)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if( hasTans ) {
 							mdxEntry.inTan = ((QuaternionRotation)mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((QuaternionRotation)mdlEntry.outTan).toFloatArray();

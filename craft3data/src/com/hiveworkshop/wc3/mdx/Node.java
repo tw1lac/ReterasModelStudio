@@ -136,7 +136,7 @@ public class Node {
 					geosetTranslation.translationTrack[i] = mdxEntry;
 					final AnimFlag.Entry mdlEntry = af.getEntry(i);
 					mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time.intValue();
+					mdxEntry.time = mdlEntry.time;
 					if (hasTans) {
 						mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 						mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -153,7 +153,7 @@ public class Node {
 					geosetScaling.scalingTrack[i] = mdxEntry;
 					final AnimFlag.Entry mdlEntry = af.getEntry(i);
 					mdxEntry.scaling = ((Vertex) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time.intValue();
+					mdxEntry.time = mdlEntry.time;
 					if (hasTans) {
 						mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 						mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -170,7 +170,7 @@ public class Node {
 					geosetRotation.rotationTrack[i] = mdxEntry;
 					final AnimFlag.Entry mdlEntry = af.getEntry(i);
 					mdxEntry.rotation = ((QuaternionRotation) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time.intValue();
+					mdxEntry.time = mdlEntry.time;
 					if (hasTans) {
 						mdxEntry.inTan = ((QuaternionRotation) mdlEntry.inTan).toFloatArray();
 						mdxEntry.outTan = ((QuaternionRotation) mdlEntry.outTan).toFloatArray();

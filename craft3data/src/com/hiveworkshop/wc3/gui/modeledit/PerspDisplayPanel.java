@@ -32,7 +32,6 @@ import net.infonode.docking.View;
  * @version (a version number or a date)
  */
 public class PerspDisplayPanel extends JPanel implements ActionListener {
-	private final ModelView dispMDL;
 	private PerspectiveViewport vp;
 	private JPanel vpp;
 	private String title;
@@ -56,7 +55,6 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		setViewport(dispMDL);
 		getViewport().setMinimumSize(new Dimension(200, 200));
 		this.title = title;
-		this.dispMDL = dispMDL;
 
 		Dimension dim = new Dimension(20, 20);
 		plusZoom = createAndAddIconButton(dim, GlobalIcons.PLUS);

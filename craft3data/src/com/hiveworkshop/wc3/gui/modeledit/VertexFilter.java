@@ -5,10 +5,5 @@ import com.hiveworkshop.wc3.mdl.Vertex;
 public interface VertexFilter<TYPE extends Vertex> {
 	boolean isAccepted(TYPE vertex);
 
-	VertexFilter<Vertex> IDENTITY = new VertexFilter<Vertex>() {
-		@Override
-		public boolean isAccepted(final Vertex vertex) {
-			return true;
-		}
-	};
+	VertexFilter<Vertex> IDENTITY = vertex -> true;
 }

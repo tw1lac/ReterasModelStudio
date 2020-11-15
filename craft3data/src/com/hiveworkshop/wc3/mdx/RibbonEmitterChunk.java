@@ -34,9 +34,9 @@ public class RibbonEmitterChunk {
 		final int nrOfRibbonEmitters = ribbonEmitter.length;
 		out.writeNByteString("RIBB", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < ribbonEmitter.length; i++) {
-			ribbonEmitter[i].save(out);
-		}
+        for (RibbonEmitter emitter : ribbonEmitter) {
+            emitter.save(out);
+        }
 
 	}
 
@@ -44,9 +44,9 @@ public class RibbonEmitterChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < ribbonEmitter.length; i++) {
-			a += ribbonEmitter[i].getSize();
-		}
+        for (RibbonEmitter emitter : ribbonEmitter) {
+            a += emitter.getSize();
+        }
 
 		return a;
 	}
@@ -218,7 +218,7 @@ public class RibbonEmitterChunk {
 						ribbonEmitterVisibility.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -235,7 +235,7 @@ public class RibbonEmitterChunk {
 						ribbonEmitterHeightAbove.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.heightAbove = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -252,7 +252,7 @@ public class RibbonEmitterChunk {
 						ribbonEmitterHeightBelow.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.heightBelow = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -269,7 +269,7 @@ public class RibbonEmitterChunk {
 						ribbonEmitterAlpha.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -287,7 +287,7 @@ public class RibbonEmitterChunk {
 						ribbonEmitterTextureSlot.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.textureSlot = ((Number) mdlEntry.value).intValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).intValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).intValue();
@@ -311,7 +311,7 @@ public class RibbonEmitterChunk {
 						// mdxEntry.color[2] = blue;
 						// ========== RGB for some reason, mdl is BGR
 						// ==============
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();

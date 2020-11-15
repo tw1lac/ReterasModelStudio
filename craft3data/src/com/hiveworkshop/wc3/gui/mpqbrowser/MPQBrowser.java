@@ -98,12 +98,7 @@ public final class MPQBrowser extends JPanel {
 		filters.add(otherFilter);
 		for (final Filter filter : filters) {
 			filtersMenu.add(filter.getFilterCheckBoxItem());
-			filter.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(final ActionEvent e) {
-					refreshTree();
-				}
-			});
+			filter.addActionListener(e -> refreshTree());
 			for (final String ext : filter.extensions) {
 				extensionToFilter.put(ext, filter);
 			}
@@ -111,25 +106,19 @@ public final class MPQBrowser extends JPanel {
 		filtersMenu.addSeparator();
 		final JMenuItem allItem = new JMenuItem("All");
 		filtersMenu.add(allItem);
-		allItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				for (final Filter filter : filters) {
-					filter.getFilterCheckBoxItem().setSelected(true);
-				}
-				refreshTree();
+		allItem.addActionListener(e -> {
+			for (final Filter filter : filters) {
+				filter.getFilterCheckBoxItem().setSelected(true);
 			}
+			refreshTree();
 		});
 		final JMenuItem noneItem = new JMenuItem("None");
 		filtersMenu.add(noneItem);
-		noneItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				for (final Filter filter : filters) {
-					filter.getFilterCheckBoxItem().setSelected(false);
-				}
-				refreshTree();
+		noneItem.addActionListener(e -> {
+			for (final Filter filter : filters) {
+				filter.getFilterCheckBoxItem().setSelected(false);
 			}
+			refreshTree();
 		});
 		final MPQTreeNode root = createMPQTree(mpqCodebase);
 		treeModel = new DefaultTreeModel(root);
@@ -189,68 +178,52 @@ public final class MPQBrowser extends JPanel {
 
 		final JPopupMenu contextMenu = new JPopupMenu();
 		final JMenuItem openItem = new JMenuItem("Open");
-		openItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				fileOpenCallback
-						.run(((MPQTreeNode) mouseAdapterExtension.getClickedPath().getLastPathComponent()).getPath());
-			}
-		});
+		openItem.addActionListener(e -> fileOpenCallback
+				.run(((MPQTreeNode) mouseAdapterExtension.getClickedPath().getLastPathComponent()).getPath()));
 		final JMenuItem extractItem = new JMenuItem("Export");
-		extractItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final MPQTreeNode clickedNode = ((MPQTreeNode) mouseAdapterExtension.getClickedPath()
-						.getLastPathComponent());
-				exportFileChooser.setSelectedFile(
-						new File(exportFileChooser.getCurrentDirectory() + "/" + clickedNode.getSubPathName()));
-				if (exportFileChooser.showSaveDialog(MPQBrowser.this) == JFileChooser.APPROVE_OPTION) {
-					final File selectedFile = exportFileChooser.getSelectedFile();
-					if (selectedFile != null) {
-						if (selectedFile.exists()) {
-							if (JOptionPane.showConfirmDialog(MPQBrowser.this,
-									"File \"" + selectedFile.getName() + "\" already exists. Overwrite anyway?",
-									"Export File", JOptionPane.WARNING_MESSAGE,
-									JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-							} else {
-								selectedFile.delete();
-							}
+		extractItem.addActionListener(e -> {
+			final MPQTreeNode clickedNode = ((MPQTreeNode) mouseAdapterExtension.getClickedPath()
+					.getLastPathComponent());
+			exportFileChooser.setSelectedFile(
+					new File(exportFileChooser.getCurrentDirectory() + "/" + clickedNode.getSubPathName()));
+			if (exportFileChooser.showSaveDialog(MPQBrowser.this) == JFileChooser.APPROVE_OPTION) {
+				final File selectedFile = exportFileChooser.getSelectedFile();
+				if (selectedFile != null) {
+					if (selectedFile.exists()) {
+						if (JOptionPane.showConfirmDialog(MPQBrowser.this,
+								"File \"" + selectedFile.getName() + "\" already exists. Overwrite anyway?",
+								"Export File", JOptionPane.WARNING_MESSAGE,
+								JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
 						} else {
-							try {
-								Files.copy(mpqCodebase.getResourceAsStream(clickedNode.getPath()),
-										selectedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-							} catch (final IOException e1) {
-								ExceptionPopup.display(e1);
-								e1.printStackTrace();
-							}
+							selectedFile.delete();
+						}
+					} else {
+						try {
+							Files.copy(mpqCodebase.getResourceAsStream(clickedNode.getPath()),
+									selectedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						} catch (final IOException e1) {
+							ExceptionPopup.display(e1);
+							e1.printStackTrace();
 						}
 					}
 				}
 			}
 		});
 		final JMenuItem copyPathToClipboardItem = new JMenuItem("Copy Path to Clipboard");
-		copyPathToClipboardItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final MPQTreeNode clickedNode = ((MPQTreeNode) mouseAdapterExtension.getClickedPath()
-						.getLastPathComponent());
-				final StringSelection selection = new StringSelection(clickedNode.getPath());
-				final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(selection, selection);
-			}
+		copyPathToClipboardItem.addActionListener(e -> {
+			final MPQTreeNode clickedNode = ((MPQTreeNode) mouseAdapterExtension.getClickedPath()
+					.getLastPathComponent());
+			final StringSelection selection = new StringSelection(clickedNode.getPath());
+			final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(selection, selection);
 		});
 		contextMenu.add(openItem);
 		contextMenu.add(extractItem);
 		contextMenu.addSeparator();
 		contextMenu.add(copyPathToClipboardItem);
 		final JMenuItem useAsTextureItem = new JMenuItem("Use as Texture");
-		useAsTextureItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				useAsTextureCallback
-						.run(((MPQTreeNode) mouseAdapterExtension.getClickedPath().getLastPathComponent()).getPath());
-			}
-		});
+		useAsTextureItem.addActionListener(e -> useAsTextureCallback
+				.run(((MPQTreeNode) mouseAdapterExtension.getClickedPath().getLastPathComponent()).getPath()));
 		contextMenu.add(useAsTextureItem);
 		mouseAdapterExtension = new MouseAdapterExtension(contextMenu);
 		tree.addMouseListener(mouseAdapterExtension);

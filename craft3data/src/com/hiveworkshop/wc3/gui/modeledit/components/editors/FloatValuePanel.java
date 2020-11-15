@@ -48,7 +48,7 @@ public class FloatValuePanel extends JPanel {
 		staticSpinner.setMinimumSize(standinGuiSpinner.getMinimumSize());
 		add(staticSpinner, "wrap");
 		add(dynamicButton);
-		interpTypeBox = new JComboBox<InterpolationType>(InterpolationType.values());
+		interpTypeBox = new JComboBox<>(InterpolationType.values());
 		add(interpTypeBox, "wrap");
 
 		floatTrackTableModel = new FloatTrackTableModel(null);
@@ -69,13 +69,10 @@ public class FloatValuePanel extends JPanel {
 			}
 		});
 		add(keyframeTable, "span 2, wrap, grow");
-		final ChangeListener l = new ChangeListener() {
-			@Override
-			public void stateChanged(final ChangeEvent e) {
-				staticSpinner.setEnabled(staticButton.isSelected());
-				interpTypeBox.setEnabled(dynamicButton.isSelected());
-				keyframeTable.setVisible(dynamicButton.isSelected());
-			}
+		final ChangeListener l = e -> {
+			staticSpinner.setEnabled(staticButton.isSelected());
+			interpTypeBox.setEnabled(dynamicButton.isSelected());
+			keyframeTable.setVisible(dynamicButton.isSelected());
 		};
 		staticButton.addChangeListener(l);
 		dynamicButton.addChangeListener(l);
@@ -87,7 +84,7 @@ public class FloatValuePanel extends JPanel {
 		} else {
 			dynamicButton.setSelected(true);
 		}
-		staticSpinner.reloadNewValue(Double.valueOf(value));
+		staticSpinner.reloadNewValue((double) value);
 		floatTrackTableModel.setTrack(valueTrack);
 	}
 }

@@ -27,17 +27,16 @@ public final class FlipNormalsAction implements UndoAction {
 	}
 
 	private void doFlip() {
-		for (int i = 0; i < selection.size(); i++) {
-			final Vertex vert = selection.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				final Normal normal = gv.getNormal();
-				if (normal != null) {
-					// why is this nullable?
-					normal.inverse();
-				}
-			}
-		}
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                final Normal normal = gv.getNormal();
+                if (normal != null) {
+                    // why is this nullable?
+                    normal.inverse();
+                }
+            }
+        }
 	}
 
 	@Override

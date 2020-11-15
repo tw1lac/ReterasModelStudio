@@ -12,7 +12,7 @@ public enum TVertexUtils {
 
 	public static Collection<? extends TVertex> getTVertices(final Collection<? extends Vertex> vertexSelection,
 			final int uvLayerIndex) {
-		final ArrayList<TVertex> tVertices = new ArrayList<TVertex>();
+		final ArrayList<TVertex> tVertices = new ArrayList<>();
 		for (final Vertex vertex : vertexSelection) {
 			if (vertex instanceof GeosetVertex) {
 				final GeosetVertex geosetVertex = (GeosetVertex) vertex;

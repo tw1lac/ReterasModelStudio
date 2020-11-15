@@ -32,7 +32,6 @@ import net.infonode.docking.View;
  */
 public class DisplayPanel extends JPanel implements ActionListener {
 	private Viewport vp;
-	private final String title;
 	private final JButton up, down, left, right, plusZoom, minusZoom;
 	private final ViewportActivity activityListener;
 	private final ModelEditorChangeNotifier modelEditorChangeNotifier;
@@ -58,7 +57,6 @@ public class DisplayPanel extends JPanel implements ActionListener {
 		setOpaque(true);
 		setViewport(a, b, modelView, preferences, undoListener, coordDisplayListener, undoHandler, modelEditor,
 				viewportTransferHandler, renderModel);
-		this.title = title;
 
 		Dimension dim = new Dimension(20, 20);
 		plusZoom = createAndAddIconButton(dim, GlobalIcons.PLUS);

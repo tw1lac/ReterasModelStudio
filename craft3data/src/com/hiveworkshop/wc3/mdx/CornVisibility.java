@@ -30,9 +30,9 @@ public class CornVisibility {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < visibilityTrack.length; i++) {
-			visibilityTrack[i].save(out);
-		}
+        for (VisibilityTrack track : visibilityTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CornVisibility {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < visibilityTrack.length; i++) {
-			a += visibilityTrack[i].getSize();
-		}
+        for (VisibilityTrack track : visibilityTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}

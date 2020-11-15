@@ -30,20 +30,17 @@ public final class VertexGroupSelectionManager extends AbstractSelectionManager<
 
 	public VertexGroupSelectionManager() {
 		cachedVertexListManager = new GeosetVertexSelectionManager();
-		addSelectionListener(new SelectionListener() {
-			@Override
-			public void onSelectionChanged(final SelectionView newSelection) {
-				final List<GeosetVertex> verticesSelected = new ArrayList<>();
-				for (final VertexGroupBundle bundle : getSelection()) {
-					for (final GeosetVertex geosetVertex : bundle.getGeoset().getVertices()) {
-						if (geosetVertex.getVertexGroup() == bundle.getVertexGroupId()) {
-							verticesSelected.add(geosetVertex);
-						}
-					}
-				}
-				cachedVertexListManager.setSelection(verticesSelected);
-			}
-		});
+		addSelectionListener(newSelection -> {
+            final List<GeosetVertex> verticesSelected = new ArrayList<>();
+            for (final VertexGroupBundle bundle : getSelection()) {
+                for (final GeosetVertex geosetVertex : bundle.getGeoset().getVertices()) {
+                    if (geosetVertex.getVertexGroup() == bundle.getVertexGroupId()) {
+                        verticesSelected.add(geosetVertex);
+                    }
+                }
+            }
+            cachedVertexListManager.setSelection(verticesSelected);
+        });
 	}
 
 	@Override

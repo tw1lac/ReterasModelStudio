@@ -27,20 +27,16 @@ import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 public final class ResettableAnimatedIdObjectParentLinkRenderer implements IdObjectVisitor {
 	private CoordinateSystem coordinateSystem;
 	private Graphics2D graphics;
-	private final int vertexSize;
-	private NodeIconPalette nodeIconPalette;
-	private RenderModel renderModel;
+    private RenderModel renderModel;
 
 	public ResettableAnimatedIdObjectParentLinkRenderer(final int vertexSize) {
-		this.vertexSize = vertexSize;
-	}
+    }
 
 	public ResettableAnimatedIdObjectParentLinkRenderer reset(final CoordinateSystem coordinateSystem,
 			final Graphics2D graphics, final NodeIconPalette nodeIconPalette, final RenderModel renderModel) {
 		this.coordinateSystem = coordinateSystem;
 		this.graphics = graphics;
-		this.nodeIconPalette = nodeIconPalette;
-		this.renderModel = renderModel;
+        this.renderModel = renderModel;
 		return this;
 	}
 

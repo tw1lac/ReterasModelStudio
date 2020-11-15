@@ -42,9 +42,9 @@ public class TextureChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < texture.length; i++) {
-			a += texture[i].getSize();
-		}
+        for (Texture value : texture) {
+            a += value.getSize();
+        }
 
 		return a;
 	}

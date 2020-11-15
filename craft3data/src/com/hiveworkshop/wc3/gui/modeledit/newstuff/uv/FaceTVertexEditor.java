@@ -31,13 +31,11 @@ import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 public class FaceTVertexEditor extends AbstractTVertexEditor<Triangle> {
-	private final ProgramPreferences programPreferences;
 
 	public FaceTVertexEditor(final ModelView model, final ProgramPreferences programPreferences,
 			final SelectionManager<Triangle> selectionManager,
 			final ModelStructureChangeListener structureChangeListener) {
 		super(selectionManager, model, structureChangeListener);
-		this.programPreferences = programPreferences;
 	}
 
 	@Override
@@ -175,18 +173,8 @@ public class FaceTVertexEditor extends AbstractTVertexEditor<Triangle> {
 				}
 			});
 		}
-		final Runnable truncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.removeSelection(possibleTrianglesToTruncate);
-			}
-		};
-		final Runnable unTruncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.setSelection(previousSelection);
-			}
-		};
+		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(possibleTrianglesToTruncate);
+		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
 		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
 				unTruncateSelectionRunnable, refreshGUIRunnable);
 	}

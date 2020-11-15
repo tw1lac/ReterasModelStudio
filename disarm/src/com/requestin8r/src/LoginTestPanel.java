@@ -17,8 +17,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 public class LoginTestPanel extends JPanel {
-	private final JTextField txtUsername;
-	private final JPasswordField pwdPassword;
 
 	/**
 	 * Create the panel.
@@ -26,17 +24,14 @@ public class LoginTestPanel extends JPanel {
 	public LoginTestPanel() {
 
 		final JButton btnLogin = new JButton("Login");
-		btnLogin.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-			}
-		});
+		btnLogin.addActionListener(arg0 -> {
+        });
 
-		txtUsername = new JTextField();
+		JTextField txtUsername = new JTextField();
 		txtUsername.setText("Username");
 		txtUsername.setColumns(10);
 
-		pwdPassword = new JPasswordField();
+		JPasswordField pwdPassword = new JPasswordField();
 		pwdPassword.setText("Password");
 
 		final JButton btnNewUser = new JButton("New User");

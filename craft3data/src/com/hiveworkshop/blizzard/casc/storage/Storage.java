@@ -87,11 +87,6 @@ public class Storage implements AutoCloseable {
 	private final IndexFile[] indicies = new IndexFile[INDEX_COUNT];
 
 	/**
-	 * Index file versions loaded. Possibly useful for debugging.
-	 */
-	private final long[] idxVersions = new long[INDEX_COUNT];
-
-	/**
 	 * Used to track closed status of the store.
 	 */
 	private boolean closed = false;
@@ -115,7 +110,7 @@ public class Storage implements AutoCloseable {
 		folder = dataFolder.resolve(DATA_FOLDER_NAME);
 		this.useMemoryMapping = useMemoryMapping;
 
-		final ArrayList<Path> indexFiles = new ArrayList<Path>(INDEX_COUNT * INDEX_COPIES);
+		final ArrayList<Path> indexFiles = new ArrayList<>(INDEX_COUNT * INDEX_COPIES);
 		try (final DirectoryStream<Path> indexFileIterator = Files.newDirectoryStream(folder,
 				"*." + INDEX_FILE_EXTENSION)) {
 			for (final Path indexFile : indexFileIterator) {
@@ -129,7 +124,7 @@ public class Storage implements AutoCloseable {
 			private long version;
 		}
 
-		final HashMap<Integer, ArrayList<IndexFileNameMeta>> metaMap = new HashMap<Integer, ArrayList<IndexFileNameMeta>>(
+		final HashMap<Integer, ArrayList<IndexFileNameMeta>> metaMap = new HashMap<>(
 				INDEX_COUNT);
 
 		for (final Path indexFile : indexFiles) {
@@ -162,9 +157,13 @@ public class Storage implements AutoCloseable {
 				throw new MalformedCASCStructureException("storage index file missing");
 			}
 
-			Collections.sort(bucketList, bucketOrder);
+			bucketList.sort(bucketOrder);
 
 			final IndexFileNameMeta fileMeta = bucketList.get(0);
+			/**
+			 * Index file versions loaded. Possibly useful for debugging.
+			 */
+			long[] idxVersions = new long[INDEX_COUNT];
 			idxVersions[index] = fileMeta.version;
 			indicies[index] = new IndexFile(loadFileFully(fileMeta.filePath));
 		}

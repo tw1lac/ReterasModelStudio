@@ -109,17 +109,16 @@ public class ExtrudeAction implements UndoAction {
 		// t.m_geoRef.addTriangle(t);
 		// }
 		int probs = 0;
-		for (int k = 0; k < selection.size(); k++) {
-			final Vertex vert = selection.get(k);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				for (final Triangle t : gv.getTriangles()) {
-					if (!t.containsRef(gv)) {
-						probs++;
-					}
-				}
-			}
-		}
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                for (final Triangle t : gv.getTriangles()) {
+                    if (!t.containsRef(gv)) {
+                        probs++;
+                    }
+                }
+            }
+        }
 	}
 
 	@Override
@@ -190,17 +189,16 @@ public class ExtrudeAction implements UndoAction {
 		// }
 		// }
 		int probs = 0;
-		for (int k = 0; k < selection.size(); k++) {
-			final Vertex vert = selection.get(k);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
-				for (final Triangle t : gv.getTriangles()) {
-					if (!t.containsRef(gv)) {
-						probs++;
-					}
-				}
-			}
-		}
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
+                for (final Triangle t : gv.getTriangles()) {
+                    if (!t.containsRef(gv)) {
+                        probs++;
+                    }
+                }
+            }
+        }
 	}
 
 	@Override

@@ -15,15 +15,12 @@ public final class Graphics2DToTVertexModelElementRendererAdapter implements TVe
 	private final Point recyclePointA = new Point(), recyclePointB = new Point(), recyclePointC = new Point();
 	private final int[] recycleXCoords = new int[3];
 	private final int[] recycleYCoords = new int[3];
-	private final ProgramPreferences programPreferences;
-	private final int vertexSize;
-	private final ResettableIdObjectRenderer idObjectRenderer;
+    private final int vertexSize;
 
-	public Graphics2DToTVertexModelElementRendererAdapter(final int vertexSize,
+    public Graphics2DToTVertexModelElementRendererAdapter(final int vertexSize,
 			final ProgramPreferences programPreferences) {
 		this.vertexSize = vertexSize;
-		this.programPreferences = programPreferences;
-		this.idObjectRenderer = new ResettableIdObjectRenderer(vertexSize);
+        ResettableIdObjectRenderer idObjectRenderer = new ResettableIdObjectRenderer(vertexSize);
 	}
 
 	public Graphics2DToTVertexModelElementRendererAdapter reset(final Graphics2D graphics,

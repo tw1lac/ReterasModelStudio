@@ -140,7 +140,7 @@ public class MdxModel {
 			globalSequenceChunk = new GlobalSequenceChunk();
 			globalSequenceChunk.globalSequences = new int[mdl.getGlobalSeqs().size()];
 			for (int i = 0; i < mdl.getGlobalSeqs().size(); i++) {
-				globalSequenceChunk.globalSequences[i] = mdl.getGlobalSeq(i).intValue();
+				globalSequenceChunk.globalSequences[i] = mdl.getGlobalSeq(i);
 			}
 		}
 		if (mdl.getMaterials().size() > 0) {

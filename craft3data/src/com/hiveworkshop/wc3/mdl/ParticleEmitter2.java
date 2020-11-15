@@ -516,9 +516,9 @@ public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySourc
 			writer.println("\t" + loneDoubleNames[i] + " " + MDLReader.doubleToString(loneDoubleData[i]) + ",");
 		}
 		writer.println("\tSegmentColor {");
-		for (int i = 0; i < segmentColor.length; i++) {
-			writer.println("\t\tColor " + segmentColor[i].toString() + ",");
-		}
+        for (Vertex vertex : segmentColor) {
+            writer.println("\t\tColor " + vertex.toString() + ",");
+        }
 		writer.println("\t},");
 		for (int i = 0; i < vertexData.length; i++) {
 			writer.println("\t" + vertexDataNames[i] + " " + vertexData[i].toStringLessSpace() + ",");
@@ -549,9 +549,9 @@ public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySourc
 				pAnimFlags.remove(i);
 			}
 		}
-		for (int i = 0; i < unknownFlags.size(); i++) {
-			writer.println("\t" + unknownFlags.get(i) + ",");
-		}
+        for (String unknownFlag : unknownFlags) {
+            writer.println("\t" + unknownFlag + ",");
+        }
 		writer.println("}");
 	}
 
@@ -602,10 +602,9 @@ public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySourc
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
-			flag.flipOver(axis);
-		}
+        for (final AnimFlag flag : animFlags) {
+            flag.flipOver(axis);
+        }
 	}
 
 	public double getSpeed() {

@@ -11,19 +11,12 @@ import com.hiveworkshop.blizzard.casc.nio.LittleHashBlockProcessor;
 import com.hiveworkshop.lang.Hex;
 
 public class LocalIndexFile {
-	private byte bucketIndex;
 
-	private byte entryFileSizeLength;
-
-	private byte entryDataOffsetLength;
-
-	private byte entryKeyLength;
+    private byte entryKeyLength;
 
 	private byte dataFileSizeBits;
 
-	private long dataSizeMaximum;
-
-	private final ArrayList<IndexEntry> entries = new ArrayList<>();
+    private final ArrayList<IndexEntry> entries = new ArrayList<>();
 
 	public static int getIndexNumber(final byte[] key, final int keyLength) {
 		int accumulator = 0;
@@ -53,15 +46,15 @@ public class LocalIndexFile {
 		if (encodedFileBuffer.getShort() != 7) {
 			// possibly malformed
 		}
-		bucketIndex = encodedFileBuffer.get();
+        byte bucketIndex = encodedFileBuffer.get();
 		if (encodedFileBuffer.get() != 0) {
 			// possibly malformed
 		}
-		entryFileSizeLength = encodedFileBuffer.get();
-		entryDataOffsetLength = encodedFileBuffer.get();
+        byte entryFileSizeLength = encodedFileBuffer.get();
+        byte entryDataOffsetLength = encodedFileBuffer.get();
 		entryKeyLength = encodedFileBuffer.get();
 		dataFileSizeBits = encodedFileBuffer.get();
-		dataSizeMaximum = encodedFileBuffer.getLong();
+        long dataSizeMaximum = encodedFileBuffer.getLong();
 
 		encodedFileBuffer.limit(fileLength);
 		final int entriesAlignmentMask = (1 << 4) - 1;

@@ -19,8 +19,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	private final ModelEditor modelEditor;
 	private Double mouseEnd;
 	private final ProgramPreferences programPreferences;
-	private final CoordinateSystem coordinateSystem;
-	private GenericMoveAction addPlane;
+    private GenericMoveAction addPlane;
 	private final Vertex facingVector;
 	private final int numberOfWidthSegments;
 	private final int numberOfHeightSegments;
@@ -30,8 +29,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 			final Vertex facingVector) {
 		this.modelEditor = modelEditor;
 		this.programPreferences = programPreferences;
-		this.coordinateSystem = coordinateSystem;
-		this.numberOfWidthSegments = numberOfWidthSegments;
+        this.numberOfWidthSegments = numberOfWidthSegments;
 		this.numberOfHeightSegments = numberOfHeightSegments;
 		this.facingVector = facingVector;
 	}

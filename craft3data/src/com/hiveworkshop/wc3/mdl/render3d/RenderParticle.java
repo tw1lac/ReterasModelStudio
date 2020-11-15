@@ -16,7 +16,6 @@ public class RenderParticle {
     private float gravity;
     private RenderParticleEmitterView emitterView;
     private final InternalInstance internalInstance;
-    private RenderNode node;
     private double health;
     private static Quaternion rotationZHeap = new Quaternion();
     private static Quaternion rotationYHeap = new Quaternion();
@@ -44,7 +43,6 @@ public class RenderParticle {
         double speed = emitterView.getSpeed();
 
         this.emitterView = emitterView;
-        this.node = renderNode;
         this.health = lifeSpan;
         this.gravity = (float) (gravity * scale.z);
 

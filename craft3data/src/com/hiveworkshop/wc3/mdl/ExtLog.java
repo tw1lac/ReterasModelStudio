@@ -72,25 +72,25 @@ public class ExtLog {
 	public static ExtLog parseText(final String[] line) {
 		if (line[0].contains("Extent") || line[0].contains("BoundsRadius")) {
 			final ExtLog extLog = new ExtLog();
-			for (int i = 0; i < line.length; i++) {
-				if (line[i].contains("MinimumExtent")) {
-					extLog.setMinExt(Vertex.parseText(line[i].split("MinimumExtent ")[1]));
-				} else if (line[i].contains("MaximumExtent")) {
-					extLog.setMinExt(Vertex.parseText(line[i].split("MaximumExtent ")[1]));
-				} else if (line[i].contains("BoundsRadius")) {
-					String s = line[i].split("BoundsRadius ")[1];
-					s = s.substring(0, s.length() - 1);
-					try {
-						extLog.setBounds(Double.parseDouble(s));
-					} catch (final NumberFormatException e) {
-						JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
-								"Error {" + s + "}: BoundsRadius could not be interpreted.");
-					}
-				} else {
-					JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
-							"Unable to parse ExtLog; unrecognized input: " + line[i]);
-				}
-			}
+            for (String value : line) {
+                if (value.contains("MinimumExtent")) {
+                    extLog.setMinExt(Vertex.parseText(value.split("MinimumExtent ")[1]));
+                } else if (value.contains("MaximumExtent")) {
+                    extLog.setMinExt(Vertex.parseText(value.split("MaximumExtent ")[1]));
+                } else if (value.contains("BoundsRadius")) {
+                    String s = value.split("BoundsRadius ")[1];
+                    s = s.substring(0, s.length() - 1);
+                    try {
+                        extLog.setBounds(Double.parseDouble(s));
+                    } catch (final NumberFormatException e) {
+                        JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
+                                "Error {" + s + "}: BoundsRadius could not be interpreted.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
+                            "Unable to parse ExtLog; unrecognized input: " + value);
+                }
+            }
 			return extLog;
 		} else {
 			JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),

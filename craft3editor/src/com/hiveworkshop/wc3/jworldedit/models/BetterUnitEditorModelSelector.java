@@ -55,12 +55,10 @@ public class BetterUnitEditorModelSelector extends JSplitPane implements TreeSel
 	DefaultTableModel tableModel;
 	DefaultMutableTreeNode defaultSelection = null;
 	JScrollPane treePane;
-	private final MutableObjectData unitData;
 	private final UnitEditorTree tree;
 
 	public BetterUnitEditorModelSelector(final MutableObjectData unitData,
 			final UnitEditorSettings unitEditorSettings) {
-		this.unitData = unitData;
 		tree = new UnitEditorTree(unitData, new UnitTabTreeBrowserBuilder(), unitEditorSettings,
 				WorldEditorDataType.UNITS);
 
@@ -108,14 +106,11 @@ public class BetterUnitEditorModelSelector extends JSplitPane implements TreeSel
 				modelDisp = new ModelViewManager(mdl);
 				modelPanel.setViewport(modelDisp);
 				modelPanel.setTitle(currentUnit.getName());
-			} catch (final FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (final IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// loadFile(MPQHandler.get().getGameFile(filepath), true);
+            // loadFile(MPQHandler.get().getGameFile(filepath), true);
 			// modelMenu.getAccessibleContext().setAccessibleDescription("Allows
 			// the user to control which parts of the model are displayed for
 			// editing.");
@@ -187,11 +182,11 @@ public class BetterUnitEditorModelSelector extends JSplitPane implements TreeSel
 		void sort() {
 			final Comparator<WarcraftObject> unitComp = new UnitComparator();
 
-			Collections.sort(units, unitComp);
-			Collections.sort(heroes, unitComp);
-			Collections.sort(buildings, unitComp);
-			Collections.sort(buildingsUprooted, unitComp);
-			Collections.sort(special, unitComp);
+			units.sort(unitComp);
+			heroes.sort(unitComp);
+			buildings.sort(unitComp);
+			buildingsUprooted.sort(unitComp);
+			special.sort(unitComp);
 		}
 	}
 

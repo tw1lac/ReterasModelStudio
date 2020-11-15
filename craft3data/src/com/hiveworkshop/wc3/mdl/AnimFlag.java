@@ -184,7 +184,7 @@ public class AnimFlag {
 
 	// begin constructors from ogre-lord's API:
 	private static Double box(final float f) {
-		return new Double(f);
+		return (double) f;
 	}
 
 	public AnimFlag(final MaterialTextureId source) {
@@ -1664,7 +1664,7 @@ public class AnimFlag {
 				switch (typeid) {
 				case 0: // Alpha
 					// A single double is used to store alpha data
-					target.add(new Double(MDLReader.readDouble(line[i])));
+					target.add(MDLReader.readDouble(line[i]));
 					break;
 				case 1: // Scaling
 					// A vertex is used to store scaling data
@@ -1684,23 +1684,23 @@ public class AnimFlag {
 				switch (typeid) {
 				case 0: // Alpha
 					// A single double is used to store alpha data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line[i])));
-					aflg.values.add(new Double(MDLReader.readDouble(line[i])));
+					aflg.times.add(MDLReader.readBeforeColon(line[i]));
+					aflg.values.add(MDLReader.readDouble(line[i]));
 					break;
 				case 1: // Scaling
 					// A vertex is used to store scaling data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line[i])));
+					aflg.times.add(MDLReader.readBeforeColon(line[i]));
 					aflg.values.add(Vertex.parseText(line[i]));
 					break;
 				case 2: // Rotation
 					// A quaternion set of four values is used to store rotation
 					// data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line[i])));
+					aflg.times.add(MDLReader.readBeforeColon(line[i]));
 					aflg.values.add(QuaternionRotation.parseText(line[i]));
 					break;
 				case 3: // Translation
 					// A vertex is used to store translation data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line[i])));
+					aflg.times.add(MDLReader.readBeforeColon(line[i]));
 					aflg.values.add(Vertex.parseText(line[i]));
 					break;
 				}
@@ -1766,7 +1766,7 @@ public class AnimFlag {
 				switch (typeid) {
 				case 0: // Alpha
 					// A single double is used to store alpha data
-					target.add(new Double(MDLReader.readDouble(line)));
+					target.add(MDLReader.readDouble(line));
 					break;
 				case 1: // Scaling
 					// A vertex is used to store scaling data
@@ -1779,7 +1779,7 @@ public class AnimFlag {
 						target.add(QuaternionRotation.parseText(line));
 					} catch (final Exception e) {
 						// typeid = 0;//Yay! random bad model.
-						target.add(new Double(MDLReader.readDouble(line)));
+						target.add(MDLReader.readDouble(line));
 					}
 					break;
 				case 3: // Translation
@@ -1792,19 +1792,19 @@ public class AnimFlag {
 					break;
 				case 5: // Alpha
 					// A single double is used to store alpha data
-					target.add(new Integer(MDLReader.readInt(line)));
+					target.add(MDLReader.readInt(line));
 					break;
 				}
 			} else if (line.contains(":")) {
 				switch (typeid) {
 				case 0: // Alpha
 					// A single double is used to store alpha data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
-					aflg.values.add(new Double(MDLReader.readDouble(line)));
+					aflg.times.add(MDLReader.readBeforeColon(line));
+					aflg.values.add(MDLReader.readDouble(line));
 					break;
 				case 1: // Scaling
 					// A vertex is used to store scaling data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
+					aflg.times.add(MDLReader.readBeforeColon(line));
 					aflg.values.add(Vertex.parseText(line));
 					break;
 				case 2: // Rotation
@@ -1812,30 +1812,30 @@ public class AnimFlag {
 					// data
 					try {
 
-						aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
+						aflg.times.add(MDLReader.readBeforeColon(line));
 						aflg.values.add(QuaternionRotation.parseText(line));
 					} catch (final Exception e) {
 						// JOptionPane.showMessageDialog(null,e.getStackTrace());
 						// typeid = 0;
 						// aflg.times.add(new
 						// Integer(MDLReader.readBeforeColon(line)));
-						aflg.values.add(new Double(MDLReader.readDouble(line)));
+						aflg.values.add(MDLReader.readDouble(line));
 					}
 					break;
 				case 3: // Translation
 					// A vertex is used to store translation data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
+					aflg.times.add(MDLReader.readBeforeColon(line));
 					aflg.values.add(Vertex.parseText(line));
 					break;
 				case 4: // Color
 					// A vertex is used to store translation data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
+					aflg.times.add(MDLReader.readBeforeColon(line));
 					aflg.values.add(Vertex.parseText(line));
 					break;
 				case 5: // Visibility
 					// A vertex is used to store translation data
-					aflg.times.add(new Integer(MDLReader.readBeforeColon(line)));
-					aflg.values.add(new Integer(MDLReader.readInt(line)));
+					aflg.times.add(MDLReader.readBeforeColon(line));
+					aflg.values.add(MDLReader.readInt(line));
 					break;
 				}
 			} else if (line.contains("GlobalSeqId")) {
@@ -1869,7 +1869,7 @@ public class AnimFlag {
 		if (o.getClass() == double.class) {
 			return MDLReader.doubleToString((Double) o);
 		} else if (o.getClass() == Double.class) {
-			return MDLReader.doubleToString(((Double) o).doubleValue());
+			return MDLReader.doubleToString((Double) o);
 		} else {
 			return o.toString();
 		}
@@ -1937,76 +1937,76 @@ public class AnimFlag {
 			}
 		} else if (typeid == 3) {
 			// Translation
-			for (int k = 0; k < values.size(); k++) {
-				final Vertex trans = (Vertex) values.get(k);
+			for (Object value : values) {
+				final Vertex trans = (Vertex) value;
 				// trans.setCoord(axis,-trans.getCoord(axis));
 				switch (axis) {
-				// case 0:
-				// trans.setCoord((byte)2,-trans.getCoord((byte)2));
-				// break;
-				// case 1:
-				// trans.setCoord((byte)0,-trans.getCoord((byte)0));
-				// break;
-				// case 2:
-				// trans.setCoord((byte)1,-trans.getCoord((byte)1));
-				// break;
-				case 0:
-					trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
-					break;
-				case 1:
-					trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
-					break;
-				case 2:
-					trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
-					break;
+					// case 0:
+					// trans.setCoord((byte)2,-trans.getCoord((byte)2));
+					// break;
+					// case 1:
+					// trans.setCoord((byte)0,-trans.getCoord((byte)0));
+					// break;
+					// case 2:
+					// trans.setCoord((byte)1,-trans.getCoord((byte)1));
+					// break;
+					case 0:
+						trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
+						break;
+					case 1:
+						trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
+						break;
+					case 2:
+						trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
+						break;
 				}
 			}
-			for (int k = 0; k < inTans.size(); k++) {
-				final Vertex trans = (Vertex) inTans.get(k);
+			for (Object inTan : inTans) {
+				final Vertex trans = (Vertex) inTan;
 				// trans.setCoord(axis,-trans.getCoord(axis));
 				switch (axis) {
-				// case 0:
-				// trans.setCoord((byte)2,-trans.getCoord((byte)2));
-				// break;
-				// case 1:
-				// trans.setCoord((byte)0,-trans.getCoord((byte)0));
-				// break;
-				// case 2:
-				// trans.setCoord((byte)1,-trans.getCoord((byte)1));
-				// break;
-				case 0:
-					trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
-					break;
-				case 1:
-					trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
-					break;
-				case 2:
-					trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
-					break;
+					// case 0:
+					// trans.setCoord((byte)2,-trans.getCoord((byte)2));
+					// break;
+					// case 1:
+					// trans.setCoord((byte)0,-trans.getCoord((byte)0));
+					// break;
+					// case 2:
+					// trans.setCoord((byte)1,-trans.getCoord((byte)1));
+					// break;
+					case 0:
+						trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
+						break;
+					case 1:
+						trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
+						break;
+					case 2:
+						trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
+						break;
 				}
 			}
-			for (int k = 0; k < outTans.size(); k++) {
-				final Vertex trans = (Vertex) outTans.get(k);
+			for (Object outTan : outTans) {
+				final Vertex trans = (Vertex) outTan;
 				// trans.setCoord(axis,-trans.getCoord(axis));
 				switch (axis) {
-				// case 0:
-				// trans.setCoord((byte)2,-trans.getCoord((byte)2));
-				// break;
-				// case 1:
-				// trans.setCoord((byte)0,-trans.getCoord((byte)0));
-				// break;
-				// case 2:
-				// trans.setCoord((byte)1,-trans.getCoord((byte)1));
-				// break;
-				case 0:
-					trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
-					break;
-				case 1:
-					trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
-					break;
-				case 2:
-					trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
-					break;
+					// case 0:
+					// trans.setCoord((byte)2,-trans.getCoord((byte)2));
+					// break;
+					// case 1:
+					// trans.setCoord((byte)0,-trans.getCoord((byte)0));
+					// break;
+					// case 2:
+					// trans.setCoord((byte)1,-trans.getCoord((byte)1));
+					// break;
+					case 0:
+						trans.setCoord((byte) 0, -trans.getCoord((byte) 0));
+						break;
+					case 1:
+						trans.setCoord((byte) 1, -trans.getCoord((byte) 1));
+						break;
+					case 2:
+						trans.setCoord((byte) 2, -trans.getCoord((byte) 2));
+						break;
 				}
 			}
 		}
@@ -2111,13 +2111,13 @@ public class AnimFlag {
 
 					if (btimes.contains(currentTime)) {
 						final Double partVal = bvalues.get(btimes.indexOf(currentTime));
-						if (partVal.doubleValue() > currentVal.doubleValue()) {
+						if (partVal > currentVal) {
 							if (mostVisible == null) {
 								mostVisible = partner;
 							} else if (mostVisible == this) {
 								return null;
 							}
-						} else if (partVal.doubleValue() < currentVal.doubleValue()) {
+						} else if (partVal < currentVal) {
 							if (mostVisible == null) {
 								mostVisible = this;
 							} else if (mostVisible == partner) {
@@ -2128,7 +2128,7 @@ public class AnimFlag {
 						}
 						// btimes.remove(currentTime);
 						// bvalues.remove(partVal);
-					} else if (currentVal.doubleValue() < 1) {
+					} else if (currentVal < 1) {
 						if (mostVisible == null) {
 							mostVisible = partner;
 						} else if (mostVisible == this) {
@@ -2145,20 +2145,20 @@ public class AnimFlag {
 
 					if (atimes.contains(currentTime)) {
 						final Double partVal = avalues.get(atimes.indexOf(currentTime));
-						if (partVal.doubleValue() > currentVal.doubleValue()) {
+						if (partVal > currentVal) {
 							if (mostVisible == null) {
 								mostVisible = this;
 							} else if (mostVisible == partner) {
 								return null;
 							}
-						} else if (partVal.doubleValue() < currentVal.doubleValue()) {
+						} else if (partVal < currentVal) {
 							if (mostVisible == null) {
 								mostVisible = partner;
 							} else if (mostVisible == this) {
 								return null;
 							}
 						}
-					} else if (currentVal.doubleValue() < 1) {
+					} else if (currentVal < 1) {
 						if (mostVisible == null) {
 							mostVisible = this;
 						} else if (mostVisible == partner) {
@@ -2215,7 +2215,7 @@ public class AnimFlag {
 			final boolean tans = tans();
 			for (int index = times.size() - 1; index >= 0; index--) {
 				final Integer inte = times.get(index);
-				final int i = inte.intValue();
+				final int i = inte;
 				// int index = times.indexOf(inte);
 				if ((i >= anim.getStart()) && (i <= anim.getEnd())) {
 					// If this "i" is a part of the anim being removed
@@ -2271,12 +2271,12 @@ public class AnimFlag {
 			}
 		}
 		for (final Integer inte : source.times) {
-			final int i = inte.intValue();
+			final int i = inte;
 			final int index = source.times.indexOf(inte);
 			if ((i >= sourceStart) && (i <= sourceEnd)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - sourceStart) / (double) (sourceEnd - sourceStart);
-				times.add(new Integer((int) (newStart + (ratio * (newEnd - newStart)))));
+				times.add((int) (newStart + (ratio * (newEnd - newStart))));
 				values.add(cloneValue(source.values.get(index)));
 				if (tans) {
 					inTans.add(cloneValue(source.inTans.get(index)));
@@ -2298,11 +2298,11 @@ public class AnimFlag {
 		for (int z = 0; z < times.size(); z++)// Integer inte: times )
 		{
 			final Integer inte = times.get(z);
-			final int i = inte.intValue();
+			final int i = inte;
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
-				times.set(z, new Integer((int) (newStart + (ratio * (newEnd - newStart)))));
+				times.set(z, (int) (newStart + (ratio * (newEnd - newStart))));
 			}
 		}
 		// }
@@ -2342,10 +2342,10 @@ public class AnimFlag {
 		final Integer pivot = times.get(low + ((high - low) / 2));
 
 		while (i <= j) {
-			while (times.get(i).intValue() < pivot.intValue()) {
+			while (times.get(i) < pivot) {
 				i++;
 			}
-			while (times.get(j).intValue() > pivot.intValue()) {
+			while (times.get(j) > pivot) {
 				j--;
 			}
 			if (i <= j) {

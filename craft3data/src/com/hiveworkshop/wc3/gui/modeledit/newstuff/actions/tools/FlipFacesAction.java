@@ -28,22 +28,21 @@ public final class FlipFacesAction implements UndoAction {
 
 	private void doFlip() {
 		final ArrayList<Triangle> selTris = new ArrayList<>();
-		for (int i = 0; i < selection.size(); i++) {
-			final Vertex vert = selection.get(i);
-			if (vert.getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) vert;
+        for (final Vertex vert : selection) {
+            if (vert.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) vert;
 
-				for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
-					final Triangle temptr = gv.getTriangles().get(ti);
-					if (!selTris.contains(temptr)) {
-						selTris.add(temptr);
-					}
-				}
-				if (gv.getNormal() != null) {
-					gv.getNormal().inverse();
-				}
-			}
-		}
+                for (int ti = 0; ti < gv.getTriangles().size(); ti++) {
+                    final Triangle temptr = gv.getTriangles().get(ti);
+                    if (!selTris.contains(temptr)) {
+                        selTris.add(temptr);
+                    }
+                }
+                if (gv.getNormal() != null) {
+                    gv.getNormal().inverse();
+                }
+            }
+        }
 
 		for (int i = selTris.size() - 1; i >= 0; i--) {
 			boolean goodTri = true;

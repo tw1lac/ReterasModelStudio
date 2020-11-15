@@ -28,9 +28,9 @@ public class LayerChunk {
 		final int nrOfLayers = layer.length;
 		out.writeNByteString("LAYS", 4);
 		out.writeInt(nrOfLayers);
-		for (int i = 0; i < layer.length; i++) {
-			layer[i].save(out, version);
-		}
+        for (Layer value : layer) {
+            value.save(out, version);
+        }
 
 	}
 
@@ -38,9 +38,9 @@ public class LayerChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < layer.length; i++) {
-			a += layer[i].getSize(version);
-		}
+        for (Layer value : layer) {
+            a += value.getSize(version);
+        }
 
 		return a;
 	}
@@ -233,7 +233,7 @@ public class LayerChunk {
 						materialAlpha.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -251,7 +251,7 @@ public class LayerChunk {
 						materialEmissions.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.emission = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -269,7 +269,7 @@ public class LayerChunk {
 						materialTextureId.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.textureId = ((Number) mdlEntry.value).intValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).intValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).intValue();
@@ -293,7 +293,7 @@ public class LayerChunk {
 						// mdxEntry.color[2] = blue;
 						// ========== RGB for some reason, mdl is BGR
 						// ==============
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -311,7 +311,7 @@ public class LayerChunk {
 						materialFresnelOpacity.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.fresnelOpacity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -329,7 +329,7 @@ public class LayerChunk {
 						materialFresnelTeamColor.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.fresnelTeamColor = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();

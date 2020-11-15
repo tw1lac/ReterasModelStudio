@@ -210,8 +210,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		comparator = m.comparator();
 		try {
 			buildFromSorted(m.size(), m.entrySet().iterator(), null, null);
-		} catch (final java.io.IOException cannotHappen) {
-		} catch (final ClassNotFoundException cannotHappen) {
+		} catch (final IOException | ClassNotFoundException cannotHappen) {
 		}
 	}
 
@@ -345,8 +344,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 				++modCount;
 				try {
 					buildFromSorted(mapSize, map.entrySet().iterator(), null, null);
-				} catch (final java.io.IOException cannotHappen) {
-				} catch (final ClassNotFoundException cannotHappen) {
+				} catch (final IOException | ClassNotFoundException cannotHappen) {
 				}
 				return;
 			}
@@ -690,8 +688,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		// Initialize clone with our mappings
 		try {
 			clone.buildFromSorted(size, entrySet().iterator(), null, null);
-		} catch (final java.io.IOException cannotHappen) {
-		} catch (final ClassNotFoundException cannotHappen) {
+		} catch (final IOException | ClassNotFoundException cannotHappen) {
 		}
 
 		return clone;
@@ -1797,10 +1794,8 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 				if (size == -1 || sizeModCount != m.modCount) {
 					sizeModCount = m.modCount;
 					size = 0;
-					final Iterator i = iterator();
-					while (i.hasNext()) {
+					for (Entry<KWERTY, SECONDONE> kwertysecondoneEntry : this) {
 						size++;
-						i.next();
 					}
 				}
 				return size;
@@ -2264,10 +2259,11 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	 */
 	private class SubMap extends AbstractMap<K, V> implements SortedMap<K, V>, java.io.Serializable {
 		private static final long serialVersionUID = -6520786458950516097L;
-		private final boolean fromStart = false, toEnd = false;
 		private K fromKey, toKey;
 
 		private Object readResolve() {
+			boolean toEnd = false;
+			boolean fromStart = false;
 			return new AscendingSubMap(TreeMap.this, fromStart, fromKey, true, toEnd, toKey, false);
 		}
 
@@ -2728,11 +2724,10 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		s.writeInt(size);
 
 		// Write out keys and values (alternating)
-		for (final Iterator<Map.Entry<K, V>> i = entrySet().iterator(); i.hasNext();) {
-			final Map.Entry<K, V> e = i.next();
-			s.writeObject(e.getKey());
-			s.writeObject(e.getValue());
-		}
+        for (final Map.Entry<K, V> e : entrySet()) {
+            s.writeObject(e.getKey());
+            s.writeObject(e.getValue());
+        }
 	}
 
 	/**
@@ -2759,8 +2754,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	void addAllForTreeSet(final SortedSet<? extends K> set, final V defaultVal) {
 		try {
 			buildFromSorted(set.size(), set.iterator(), null, defaultVal);
-		} catch (final java.io.IOException cannotHappen) {
-		} catch (final ClassNotFoundException cannotHappen) {
+		} catch (final IOException | ClassNotFoundException cannotHappen) {
 		}
 	}
 
@@ -2822,8 +2816,8 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	 *            the level at which nodes should be red. Must be equal to
 	 *            computeRedLevel for tree of this size.
 	 */
-	private final Entry<K, V> buildFromSorted(final int level, final int lo, final int hi, final int redLevel,
-			final Iterator it, final java.io.ObjectInputStream str, final V defaultVal)
+	private Entry<K, V> buildFromSorted(final int level, final int lo, final int hi, final int redLevel,
+										final Iterator it, final java.io.ObjectInputStream str, final V defaultVal)
 			throws java.io.IOException, ClassNotFoundException {
 		/*
 		 * Strategy: The root is the middlemost element. To get to it, we have

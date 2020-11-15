@@ -16,20 +16,14 @@ import com.hiveworkshop.wc3.jworldedit.triggers.gui.TriggerTreeNode;
 import com.hiveworkshop.wc3.jworldedit.triggers.impl.TriggerEnvironment;
 
 public class TriggerTreeCellEditor extends DefaultTreeCellEditor {
-	private final WorldEditorSettings settings;
-	private final Color defaultBackgroundSelectionColor = null;
-	private final WorldEditArt worldEditArt;
-	private JTree tree;
-	private final TriggerEnvironment triggerEnvironment;
+    private final Color defaultBackgroundSelectionColor = null;
+    private JTree tree;
 
-	public TriggerTreeCellEditor(final JTree tree, final DefaultTreeCellRenderer renderer,
+    public TriggerTreeCellEditor(final JTree tree, final DefaultTreeCellRenderer renderer,
 			final WorldEditorSettings settings, final WorldEditArt worldEditArt,
 			final TriggerEnvironment triggerEnvironment) {
 		super(tree, renderer, new TriggerTreeCellSubEditor(triggerEnvironment));
-		this.settings = settings;
-		this.worldEditArt = worldEditArt;
-		this.triggerEnvironment = triggerEnvironment;
-	}
+    }
 
 	@Override
 	public Component getTreeCellEditorComponent(final JTree tree, final Object value, final boolean isSelected,

@@ -32,9 +32,9 @@ public class RecalculateNormalsAction implements UndoAction {
 
 	@Override
 	public void redo() {
-		for (int i = 0; i < selection.size(); i++) {
-			selection.get(i).getNormal().setTo(selection.get(i).createNormal());
-		}
+        for (GeosetVertex geosetVertex : selection) {
+            geosetVertex.getNormal().setTo(geosetVertex.createNormal());
+        }
 	}
 
 	@Override

@@ -34,9 +34,9 @@ public class GeosetAnimationChunk {
 		final int nrOfGeosetAnimations = geosetAnimation.length;
 		out.writeNByteString("GEOA", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < geosetAnimation.length; i++) {
-			geosetAnimation[i].save(out);
-		}
+        for (GeosetAnimation animation : geosetAnimation) {
+            animation.save(out);
+        }
 
 	}
 
@@ -44,9 +44,9 @@ public class GeosetAnimationChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < geosetAnimation.length; i++) {
-			a += geosetAnimation[i].getSize();
-		}
+        for (GeosetAnimation animation : geosetAnimation) {
+            a += animation.getSize();
+        }
 
 		return a;
 	}
@@ -133,7 +133,7 @@ public class GeosetAnimationChunk {
 						geosetAlpha.scalingTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -158,7 +158,7 @@ public class GeosetAnimationChunk {
 						// mdxEntry.color[2] = blue;
 						// ========== RGB for some reason, mdl is BGR
 						// ==============
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();

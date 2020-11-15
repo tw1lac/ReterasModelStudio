@@ -113,7 +113,7 @@ public final class ArrayList<TYPE> implements List<TYPE> {
 		return oldValue;
 	}
 
-	private final void ensureCapacity(final int minCapacity) {
+	private void ensureCapacity(final int minCapacity) {
 		modCount++;
 		if (minCapacity >= elementData.length) {
 			int newCapacity = (elementData.length * 3) / 2 + 1;

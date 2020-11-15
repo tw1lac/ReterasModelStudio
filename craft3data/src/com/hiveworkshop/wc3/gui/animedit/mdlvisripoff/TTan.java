@@ -31,8 +31,8 @@ public class TTan {
 		if (tang.inTan == null) {
 			switch (count) {
 			case 1:
-				tang.inTan = Double.valueOf(0);
-				tang.outTan = Double.valueOf(0);
+				tang.inTan = (double) 0;
+				tang.outTan = (double) 0;
 				break;
 			case 3:
 				tang.inTan = new Vertex(0, 0, 0);

@@ -18,13 +18,13 @@ public class MoveAction implements UndoAction {
 	private VertexActionType actType = VertexActionType.UNKNOWN;
 
 	public MoveAction(final List<Vertex> selection, final List<Vertex> moveVectors, final VertexActionType actionType) {
-		this.selection = new ArrayList<Vertex>(selection);
+		this.selection = new ArrayList<>(selection);
 		this.moveVectors = moveVectors;
 		actType = actionType;
 	}
 
 	public MoveAction(final List<Vertex> selection, final Vertex moveVector, final VertexActionType actionType) {
-		this.selection = new ArrayList<Vertex>(selection);
+		this.selection = new ArrayList<>(selection);
 		this.moveVector = moveVector;
 		actType = actionType;
 	}
@@ -34,11 +34,11 @@ public class MoveAction implements UndoAction {
 	}
 
 	public void storeSelection(final List<Vertex> selection) {
-		this.selection = new ArrayList<Vertex>(selection);
+		this.selection = new ArrayList<>(selection);
 	}
 
 	public void createEmptyMoveVectors() {
-		moveVectors = new ArrayList<Vertex>();
+		moveVectors = new ArrayList<>();
 		for (int i = 0; i < selection.size(); i++) {
 			moveVectors.add(new Vertex(0, 0, 0));
 		}
@@ -59,13 +59,12 @@ public class MoveAction implements UndoAction {
 				ver.z += vect.z;
 			}
 		} else {
-			for (int i = 0; i < selection.size(); i++) {
-				final Vertex ver = selection.get(i);
-				final Vertex vect = moveVector;
-				ver.x += vect.x;
-				ver.y += vect.y;
-				ver.z += vect.z;
-			}
+            for (final Vertex ver : selection) {
+                final Vertex vect = moveVector;
+                ver.x += vect.x;
+                ver.y += vect.y;
+                ver.z += vect.z;
+            }
 		}
 	}
 
@@ -80,13 +79,12 @@ public class MoveAction implements UndoAction {
 				ver.z -= vect.z;
 			}
 		} else {
-			for (int i = 0; i < selection.size(); i++) {
-				final Vertex ver = selection.get(i);
-				final Vertex vect = moveVector;
-				ver.x -= vect.x;
-				ver.y -= vect.y;
-				ver.z -= vect.z;
-			}
+            for (final Vertex ver : selection) {
+                final Vertex vect = moveVector;
+                ver.x -= vect.x;
+                ver.y -= vect.y;
+                ver.z -= vect.z;
+            }
 		}
 	}
 

@@ -17,8 +17,7 @@ public final class AdvancedCloneAction implements UndoAction {
 	private final ModelStructureChangeListener modelStructureChangeListener;
 	private final VertexSelectionHelper vertexSelectionHelper;
 
-	private final List<IdObject> selBones;
-	private final List<GeosetVertex> newVertices;
+    private final List<GeosetVertex> newVertices;
 	private final List<Triangle> newTriangles;
 	private final List<IdObject> newBones;
 
@@ -39,8 +38,7 @@ public final class AdvancedCloneAction implements UndoAction {
 		this.modelStructureChangeListener = modelStructureChangeListener;
 		this.vertexSelectionHelper = vertexSelectionHelper;
 		this.pivotSelectionHelper = pivotSelectionHelper;
-		this.selBones = selBones;
-		this.newVertices = newVertices;
+        this.newVertices = newVertices;
 		this.newTriangles = newTriangles;
 		this.newBones = newBones;
 		this.newSelection = newSelection;

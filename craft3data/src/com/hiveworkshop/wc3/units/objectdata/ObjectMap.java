@@ -79,12 +79,9 @@ public final class ObjectMap implements Iterable<Entry<War3ID, ObjectDataChangeE
 	@Override
 	public ObjectMap clone() {
 		final ObjectMap clone = new ObjectMap();
-		forEach(new ForEach<War3ID, ObjectDataChangeEntry>() {
-			@Override
-			public boolean onEntry(final War3ID key, final ObjectDataChangeEntry value) {
-				clone.put(key, value);
-				return true;
-			}
+		forEach((key, value) -> {
+			clone.put(key, value);
+			return true;
 		});
 		return clone;
 	}

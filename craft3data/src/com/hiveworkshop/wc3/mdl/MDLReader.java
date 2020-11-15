@@ -98,9 +98,9 @@ public class MDLReader {
 		String[] ex = line.split(" ");
 		String out = "";
 		ex = ex[0].split("\t");
-		for (int i = 0; i < ex.length; i++) {
-			if (ex[i].length() > 1) {
-				out = ex[i];
+		for (String s : ex) {
+			if (s.length() > 1) {
+				out = s;
 				break;
 			}
 		}
@@ -110,7 +110,7 @@ public class MDLReader {
 	public static String[] breakElement(final String[] input, final int lineIndex) {
 		// This would pull a layer out of a Material, for example
 		int i = lineIndex;
-		final ArrayList<String> output = new ArrayList<String>();
+		final ArrayList<String> output = new ArrayList<>();
 		int dataHeight = 0;
 		final String[] temp = null;
 		dataHeight += occurrencesIn("{", input[i]);
@@ -171,7 +171,7 @@ public class MDLReader {
 		}
 		System.out.println((occurrencesIn("yo", "yo mana so low yo dun know it you dog you")));
 		System.out.println((new Double(5.3)).toString());
-		final ArrayList<IdObject> testList = new ArrayList<IdObject>();
+		final ArrayList<IdObject> testList = new ArrayList<>();
 		testList.add(new Helper(5));
 //         testList.add(new IdObject());
 		System.out.println(Bone.class.isAssignableFrom((testList.get(0).getClass())));

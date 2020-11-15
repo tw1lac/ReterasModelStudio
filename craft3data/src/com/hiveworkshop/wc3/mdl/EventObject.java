@@ -71,7 +71,7 @@ public class EventObject extends IdObject {
 			hasGlobalSeq = true;
 		}
 		for (final int val : mdxSource.tracks.tracks) {
-			eventTrack.add(new Integer(val));
+			eventTrack.add(val);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class EventObject extends IdObject {
 								"Error while parsing event object: More than one Global Sequence Id is present in the same object!");
 					}
 				} else if (!line.contains("{") && !line.contains("}")) {
-					e.eventTrack.add(new Integer(MDLReader.readInt(line)));
+					e.eventTrack.add(MDLReader.readInt(line));
 				}
 				MDLReader.mark(mdl);
 				line = MDLReader.nextLine(mdl);
@@ -170,8 +170,8 @@ public class EventObject extends IdObject {
 			if (hasGlobalSeq) {
 				writer.println("\t\tGlobalSeqId " + globalSeqId + ",");
 			}
-			for (int i = 0; i < eventTrack.size(); i++) {
-				writer.println("\t\t" + eventTrack.get(i).toString() + ",");
+			for (Integer integer : eventTrack) {
+				writer.println("\t\t" + integer.toString() + ",");
 			}
 		}
 		writer.println("\t}");
@@ -200,7 +200,7 @@ public class EventObject extends IdObject {
 		// Timescales a part of the AnimFlag from section "start" to "end" into
 		// the new time "newStart" to "newEnd"
 		for (int index = eventTrack.size() - 1; index >= 0; index--) {
-			final int i = eventTrack.get(index).intValue();
+			final int i = eventTrack.get(index);
 			if ((i >= anim.getStart()) && (i <= anim.getEnd())) {
 				// If this "i" is a part of the anim being removed
 				eventTrack.remove(index);
@@ -214,11 +214,11 @@ public class EventObject extends IdObject {
 		// Timescales a part of the AnimFlag from section "start" to "end" into
 		// the new time "newStart" to "newEnd"
 		for (final Integer inte : eventTrack) {
-			final int i = inte.intValue();
+			final int i = inte;
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
-				eventTrack.set(eventTrack.indexOf(inte), new Integer((int) (newStart + (ratio * (newEnd - newStart)))));
+				eventTrack.set(eventTrack.indexOf(inte), (int) (newStart + (ratio * (newEnd - newStart))));
 			}
 		}
 
@@ -232,11 +232,11 @@ public class EventObject extends IdObject {
 		// Timescales a part of the AnimFlag from section "start" to "end" into
 		// the new time "newStart" to "newEnd"
 		for (final Integer inte : source.eventTrack) {
-			final int i = inte.intValue();
+			final int i = inte;
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
-				eventTrack.add(new Integer((int) (newStart + (ratio * (newEnd - newStart)))));
+				eventTrack.add((int) (newStart + (ratio * (newEnd - newStart))));
 			}
 		}
 
@@ -262,10 +262,10 @@ public class EventObject extends IdObject {
 		final Integer pivot = eventTrack.get(low + ((high - low) / 2));
 
 		while (i <= j) {
-			while (eventTrack.get(i).intValue() < pivot.intValue()) {
+			while (eventTrack.get(i) < pivot) {
 				i++;
 			}
-			while (eventTrack.get(j).intValue() > pivot.intValue()) {
+			while (eventTrack.get(j) > pivot) {
 				j--;
 			}
 			if (i <= j) {
@@ -294,8 +294,7 @@ public class EventObject extends IdObject {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag flag = animFlags.get(i);
+		for (final AnimFlag flag : animFlags) {
 			flag.flipOver(axis);
 		}
 	}

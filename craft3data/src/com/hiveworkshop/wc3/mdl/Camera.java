@@ -135,24 +135,24 @@ public class Camera implements Named {
 		// -- uses the parent (java Object reference) of idObject superclass
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		writer.println("\tPosition " + Position.toString() + ",");
-		for (int i = 0; i < animFlags.size(); i++) {
-			if (animFlags.get(i).getName().equals("Translation")) {
-				animFlags.get(i).printTo(writer, 1);
-			}
-		}
-		for (int i = 0; i < animFlags.size(); i++) {
-			if (animFlags.get(i).getName().equals("Rotation")) {
-				animFlags.get(i).printTo(writer, 1);
-			}
-		}
+        for (AnimFlag flag : animFlags) {
+            if (flag.getName().equals("Translation")) {
+                flag.printTo(writer, 1);
+            }
+        }
+        for (AnimFlag animFlag : animFlags) {
+            if (animFlag.getName().equals("Rotation")) {
+                animFlag.printTo(writer, 1);
+            }
+        }
 		writer.println("\tFieldOfView " + MDLReader.doubleToString(FieldOfView) + ",");
 		writer.println("\tFarClip " + MDLReader.doubleToString(FarClip) + ",");
 		writer.println("\tNearClip " + MDLReader.doubleToString(NearClip) + ",");
 		writer.println("\tTarget {");
 		writer.println("\t\tPosition " + targetPosition.toString() + ",");
-		for (int i = 0; i < targetAnimFlags.size(); i++) {
-			targetAnimFlags.get(i).printTo(writer, 2);
-		}
+        for (AnimFlag targetAnimFlag : targetAnimFlags) {
+            targetAnimFlag.printTo(writer, 2);
+        }
 		writer.println("\t}");
 		writer.println("}");
 	}

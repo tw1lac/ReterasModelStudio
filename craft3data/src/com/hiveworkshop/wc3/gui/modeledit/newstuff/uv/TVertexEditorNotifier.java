@@ -27,11 +27,9 @@ import com.hiveworkshop.wc3.mdl.TVertex;
 import com.hiveworkshop.wc3.mdl.Vertex;
 
 public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> implements TVertexEditor {
-	private CloneContextHelper cloneContextHelper;
 
-	public void setCloneContextHelper(final CloneContextHelper cloneContextHelper) {
-		this.cloneContextHelper = cloneContextHelper;
-	}
+    public void setCloneContextHelper(final CloneContextHelper cloneContextHelper) {
+    }
 
 	@Override
 	public UndoAction setSelectedRegion(final Rectangle2D region, final CoordinateSystem coordinateSystem) {

@@ -427,7 +427,7 @@ public final class VirtualFileSystem {
 	 *                     decoding path fragments into a path string.
 	 */
 	public List<PathResult> getAllFiles() throws IOException {
-		final ArrayList<PathResult> pathStringList = new ArrayList<PathResult>();
+		final ArrayList<PathResult> pathStringList = new ArrayList<>();
 
 		final int rootCount = tvfsRoot.getRootNodeCount();
 		for (int rootIndex = 0; rootIndex < rootCount; rootIndex += 1) {

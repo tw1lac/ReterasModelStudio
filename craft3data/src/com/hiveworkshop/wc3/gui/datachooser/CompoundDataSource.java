@@ -107,12 +107,10 @@ public class CompoundDataSource implements DataSource {
 		for (final DataSource dataSource : this.mpqList) {
 			try {
 				dataSource.close();
-			} catch (final NullPointerException e) {
-				e.printStackTrace();
-			} catch (final IOException e) {
+			} catch (final NullPointerException | IOException e) {
 				e.printStackTrace();
 			}
-		}
+        }
 		this.cache.clear();
 		this.mpqList.clear();
 		if (dataSourceDescriptors != null) {

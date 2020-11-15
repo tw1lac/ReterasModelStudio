@@ -32,8 +32,6 @@ public abstract class Hex {
 	 */
 	public static final String HEX_PREFIX = "0x";
 
-	private static int NIBBLE_MASK = 0b1111;
-
 	public static byte decodeNibble(final int codePoint) {
 		if (codePoint > CHAR_VALUES.length) {
 			return NO_VALUE;
@@ -70,13 +68,14 @@ public abstract class Hex {
 	}
 
 	public static void stringBufferAppendHex(final StringBuilder builder, final byte hex) {
+		int NIBBLE_MASK = 0b1111;
 		builder.append(HEX_DIGITS[(hex >> 4) & NIBBLE_MASK]);
 		builder.append(HEX_DIGITS[hex & NIBBLE_MASK]);
 	}
 
 	public static void stringBufferAppendHex(final StringBuilder builder, final byte[] hex) {
-		for (int i = 0; i < hex.length; i += 1) {
-			stringBufferAppendHex(builder, hex[i]);
-		}
+        for (byte b : hex) {
+            stringBufferAppendHex(builder, b);
+        }
 	}
 }

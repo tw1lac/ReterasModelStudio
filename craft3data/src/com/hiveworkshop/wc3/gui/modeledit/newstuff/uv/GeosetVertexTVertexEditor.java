@@ -202,20 +202,9 @@ public class GeosetVertexTVertexEditor extends AbstractTVertexEditor<GeosetVerte
 				}
 			});
 		}
-		final Runnable truncateSelectionRunnable = new Runnable() {
+		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(possibleVerticesToTruncate);
 
-			@Override
-			public void run() {
-				selectionManager.removeSelection(possibleVerticesToTruncate);
-			}
-		};
-
-		final Runnable unTruncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.setSelection(previousSelection);
-			}
-		};
+		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
 		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
 				unTruncateSelectionRunnable, refreshGUIRunnable);
 	}

@@ -31,29 +31,29 @@ public class DeleteAction implements UndoAction {
 
 	@Override
 	public void redo() {
-		for (int i = 0; i < deleted.size(); i++) {
-			if (deleted.get(i).getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) deleted.get(i);
-				gv.getGeoset().remove(gv);
-			}
-		}
+        for (Vertex value : deleted) {
+            if (value.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) value;
+                gv.getGeoset().remove(gv);
+            }
+        }
 		for (final Triangle t : deletedTris) {
 			t.getGeoset().removeTriangle(t);
 			for (final GeosetVertex vertex : t.getAll()) {
 				vertex.getTriangles().remove(t);
 			}
 		}
-		vertexSelectionHelper.selectVertices(new ArrayList<Vertex>());
+		vertexSelectionHelper.selectVertices(new ArrayList<>());
 	}
 
 	@Override
 	public void undo() {
-		for (int i = 0; i < deleted.size(); i++) {
-			if (deleted.get(i).getClass() == GeosetVertex.class) {
-				final GeosetVertex gv = (GeosetVertex) deleted.get(i);
-				gv.getGeoset().addVertex(gv);
-			}
-		}
+        for (Vertex value : deleted) {
+            if (value.getClass() == GeosetVertex.class) {
+                final GeosetVertex gv = (GeosetVertex) value;
+                gv.getGeoset().addVertex(gv);
+            }
+        }
 		for (final Triangle t : deletedTris) {
 			t.getGeoset().addTriangle(t);
 			for (final GeosetVertex vertex : t.getAll()) {

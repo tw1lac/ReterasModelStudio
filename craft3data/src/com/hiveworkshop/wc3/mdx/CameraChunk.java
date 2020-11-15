@@ -33,9 +33,9 @@ public class CameraChunk {
 		final int nrOfCameras = camera.length;
 		out.writeNByteString("CAMS", 4);
 		out.writeInt(getSize() - 8);// ChunkSize
-		for (int i = 0; i < camera.length; i++) {
-			camera[i].save(out);
-		}
+        for (Camera value : camera) {
+            value.save(out);
+        }
 
 	}
 
@@ -43,9 +43,9 @@ public class CameraChunk {
 		int a = 0;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < camera.length; i++) {
-			a += camera[i].getSize();
-		}
+        for (Camera value : camera) {
+            a += value.getSize();
+        }
 
 		return a;
 	}
@@ -161,7 +161,7 @@ public class CameraChunk {
 						cameraPositionTranslation.translationTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
@@ -178,7 +178,7 @@ public class CameraChunk {
 						cameraRotation.translationTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.rotation = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
 							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
@@ -202,7 +202,7 @@ public class CameraChunk {
 						cameraTargetTranslation.translationTrack[i] = mdxEntry;
 						final AnimFlag.Entry mdlEntry = af.getEntry(i);
 						mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time.intValue();
+						mdxEntry.time = mdlEntry.time;
 						if (hasTans) {
 							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
 							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();

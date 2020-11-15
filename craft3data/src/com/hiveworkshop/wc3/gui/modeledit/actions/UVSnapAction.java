@@ -19,7 +19,7 @@ public class UVSnapAction implements UndoAction {
 
 	public UVSnapAction(final Collection<? extends TVertex> selection, final List<TVertex> oldSelLocs,
 			final TVertex snapPoint) {
-		this.selection = new ArrayList<TVertex>(selection);
+		this.selection = new ArrayList<>(selection);
 		this.oldSelLocs = oldSelLocs;
 		this.snapPoint = new TVertex(snapPoint);
 	}
@@ -33,9 +33,9 @@ public class UVSnapAction implements UndoAction {
 
 	@Override
 	public void redo() {
-		for (int i = 0; i < selection.size(); i++) {
-			selection.get(i).setTo(snapPoint);
-		}
+        for (TVertex tVertex : selection) {
+            tVertex.setTo(snapPoint);
+        }
 	}
 
 	@Override

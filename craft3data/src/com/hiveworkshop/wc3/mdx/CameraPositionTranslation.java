@@ -30,9 +30,9 @@ public class CameraPositionTranslation {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < translationTrack.length; i++) {
-			translationTrack[i].save(out);
-		}
+        for (TranslationTrack track : translationTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CameraPositionTranslation {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < translationTrack.length; i++) {
-			a += translationTrack[i].getSize();
-		}
+        for (TranslationTrack track : translationTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}

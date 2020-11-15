@@ -74,8 +74,6 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 	private JButton copyButton;
 	private final JTabbedPane tabbedPane;
 
-	private MutableObjectData unitData;
-
 	private final JFileChooser jFileChooser;
 
 	public ObjectEditorPanel() {
@@ -119,20 +117,17 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 
 		add(toolBar, BorderLayout.BEFORE_FIRST_LINE);
 		add(tabbedPane, BorderLayout.CENTER);
-		tabbedPane.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(final ChangeEvent e) {
-				final UnitEditorPanel selectedEditorPanel = (UnitEditorPanel) tabbedPane.getSelectedComponent();
-				final EditorTabCustomToolbarButtonData editorTabCustomToolbarButtonData = selectedEditorPanel
-						.getEditorTabCustomToolbarButtonData();
-				createNewButton.setIcon(getIcon(worldEditorData, editorTabCustomToolbarButtonData.getIconKey()));
-				createNewButton.setToolTipText(
-						WEString.getString(editorTabCustomToolbarButtonData.getNewCustomObject()).replace("&", ""));
-				copyButton.setToolTipText(
-						WEString.getString(editorTabCustomToolbarButtonData.getCopyObject()).replace("&", ""));
-				pasteButton.setToolTipText(
-						WEString.getString(editorTabCustomToolbarButtonData.getPasteObject()).replace("&", ""));
-			}
+		tabbedPane.addChangeListener(e -> {
+			final UnitEditorPanel selectedEditorPanel = (UnitEditorPanel) tabbedPane.getSelectedComponent();
+			final EditorTabCustomToolbarButtonData editorTabCustomToolbarButtonData = selectedEditorPanel
+					.getEditorTabCustomToolbarButtonData();
+			createNewButton.setIcon(getIcon(worldEditorData, editorTabCustomToolbarButtonData.getIconKey()));
+			createNewButton.setToolTipText(
+					WEString.getString(editorTabCustomToolbarButtonData.getNewCustomObject()).replace("&", ""));
+			copyButton.setToolTipText(
+					WEString.getString(editorTabCustomToolbarButtonData.getCopyObject()).replace("&", ""));
+			pasteButton.setToolTipText(
+					WEString.getString(editorTabCustomToolbarButtonData.getPasteObject()).replace("&", ""));
 		});
 		jFileChooser = new JFileChooser(new File(System.getProperty("user.home") + "/Documents/Warcraft III/Maps"));
 	}
@@ -142,20 +137,10 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		makeButton(worldEditorData, toolBar, "newMap", "ToolBarIcon_New", "WESTRING_TOOLBAR_NEW");
 		final JButton openButton = makeButton(worldEditorData, toolBar, "openMap", "ToolBarIcon_Open",
 				"WESTRING_TOOLBAR_OPEN");
-		openButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				openSpecificTabData();
-			}
-		});
+		openButton.addActionListener(e -> openSpecificTabData());
 		final JButton saveButton = makeButton(worldEditorData, toolBar, "saveMap", "ToolBarIcon_Save",
 				"WESTRING_TOOLBAR_SAVE");
-		saveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				saveSpecificTabData();
-			}
-		});
+		saveButton.addActionListener(e -> saveSpecificTabData());
 		toolBar.add(Box.createHorizontalStrut(8));
 		final TransferActionListener transferActionListener = new TransferActionListener();
 		copyButton = makeButton(worldEditorData, toolBar, "copy", "ToolBarIcon_Copy", "WESTRING_MENU_OE_UNIT_COPY");
@@ -167,12 +152,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		toolBar.add(Box.createHorizontalStrut(8));
 		createNewButton = makeButton(worldEditorData, toolBar, "createNew", "ToolBarIcon_OE_NewUnit",
 				"WESTRING_MENU_OE_UNIT_NEW");
-		createNewButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final UnitEditorPanel selectedEditorPanel = (UnitEditorPanel) tabbedPane.getSelectedComponent();
-				selectedEditorPanel.runCustomUnitPopup();
-			}
+		createNewButton.addActionListener(e -> {
+			final UnitEditorPanel selectedEditorPanel = (UnitEditorPanel) tabbedPane.getSelectedComponent();
+			selectedEditorPanel.runCustomUnitPopup();
 		});
 		toolBar.add(Box.createHorizontalStrut(8));
 		makeButton(worldEditorData, toolBar, "terrainEditor", "ToolBarIcon_Module_Terrain",
@@ -209,12 +191,7 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		toolBar.add(Box.createHorizontalStrut(8));
 		makeButton(worldEditorData, toolBar, "testMap",
 				new ImageIcon(IconUtils.worldEditStyleIcon(getIcon(worldEditorData, "ToolBarIcon_TestMap").getImage())),
-				"WESTRING_TOOLBAR_TESTMAP").addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(final ActionEvent e) {
-						ObjectEditorFrame.main(new String[] {});
-					}
-				});
+				"WESTRING_TOOLBAR_TESTMAP").addActionListener(e -> ObjectEditorFrame.main(new String[] {}));
 
 		return toolBar;
 	}
@@ -270,7 +247,7 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		unitData = new MutableObjectData(WorldEditorDataType.UNITS, StandardObjectData.getStandardUnits(),
+		MutableObjectData unitData = new MutableObjectData(WorldEditorDataType.UNITS, StandardObjectData.getStandardUnits(),
 				standardUnitMeta, unitDataChangeset);
 
 		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(unitData, standardUnitMeta, new UnitFieldBuilder(),
@@ -301,11 +278,8 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				standardUnitMeta, new ItemFieldBuilder(), new ItemTabTreeBrowserBuilder(), WorldEditorDataType.ITEM,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_ITEM_NEW", "ToolBarIcon_OE_NewItem",
 						"WESTRING_MENU_OE_ITEM_COPY", "WESTRING_MENU_OE_ITEM_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-					}
+				() -> {
+					// TODO Auto-generated method stub
 				});
 		return unitEditorPanel;
 	}
@@ -332,12 +306,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				new DestructableTabTreeBrowserBuilder(), WorldEditorDataType.DESTRUCTIBLES,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_DEST_NEW", "ToolBarIcon_OE_NewDest",
 						"WESTRING_MENU_OE_DEST_COPY", "WESTRING_MENU_OE_DEST_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-					}
 				});
 		return unitEditorPanel;
 	}
@@ -362,12 +333,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				standardUnitMeta, new DoodadFieldBuilder(), new DoodadTabTreeBrowserBuilder(),
 				WorldEditorDataType.DOODADS, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_DOOD_NEW",
 						"ToolBarIcon_OE_NewDood", "WESTRING_MENU_OE_DOOD_COPY", "WESTRING_MENU_OE_DOOD_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-					}
 				});
 		return unitEditorPanel;
 	}
@@ -392,12 +360,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				standardUnitMeta, new AbilityFieldBuilder(), new AbilityTabTreeBrowserBuilder(),
 				WorldEditorDataType.ABILITIES, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_ABIL_NEW",
 						"ToolBarIcon_OE_NewAbil", "WESTRING_MENU_OE_ABIL_COPY", "WESTRING_MENU_OE_ABIL_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-					}
 				});
 		return unitEditorPanel;
 	}
@@ -424,12 +389,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				new BuffTabTreeBrowserBuilder(), WorldEditorDataType.BUFFS_EFFECTS,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_BUFF_NEW", "ToolBarIcon_OE_NewBuff",
 						"WESTRING_MENU_OE_BUFF_COPY", "WESTRING_MENU_OE_BUFF_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-					}
 				});
 		return unitEditorPanel;
 	}
@@ -455,12 +417,9 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				standardMeta, new UpgradesFieldBuilder(standardUpgradeEffectMeta), new UpgradeTabTreeBrowserBuilder(),
 				WorldEditorDataType.UPGRADES, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_UPGR_NEW",
 						"ToolBarIcon_OE_NewUpgr", "WESTRING_MENU_OE_UPGR_COPY", "WESTRING_MENU_OE_UPGR_PASTE"),
-				new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-					}
 				});
 		return unitEditorPanel;
 	}
@@ -498,8 +457,6 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 					try (BlizzardDataOutputStream outputStream = new BlizzardDataOutputStream(w3uFile)) {
 						unitEditorPanel.getUnitData().getEditorData().save(outputStream, false);
 					}
-				} catch (final FileNotFoundException e1) {
-					e1.printStackTrace();
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -560,8 +517,6 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 						unitEditorPanel.getUnitData().getEditorData().load(inputStream, null, false);
 						unitEditorPanel.reloadAllDataVerySlowly();
 					}
-				} catch (final FileNotFoundException e1) {
-					e1.printStackTrace();
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}

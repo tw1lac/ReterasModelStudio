@@ -433,7 +433,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 		textures = new ArrayList<>();
 		final AnimFlag txFlag = getFlag("TextureID");
 		for (int i = 0; i < txFlag.values.size(); i++) {
-			final int txId = ((Integer) txFlag.values.get(i)).intValue();
+			final int txId = (Integer) txFlag.values.get(i);
 			final Bitmap texture2 = mdlr.getTexture(txId);
 			textures.add(texture2);
 			ridiculouslyWrongTextureIDToTexture.put(txId, texture2);
@@ -447,7 +447,7 @@ public class Layer implements Named, VisibilitySource, LayerView {
 			final AnimFlag txFlag = getFlag("TextureID");
 			for (int i = 0; i < txFlag.values.size(); i++) {
 				final Bitmap textureFoundFromDirtyId = ridiculouslyWrongTextureIDToTexture
-						.get(((Integer) txFlag.values.get(i)).intValue());
+						.get((Integer) txFlag.values.get(i));
 				final int newerTextureId = mdlr.getTextureId(textureFoundFromDirtyId);
 				txFlag.values.set(i, newerTextureId);
 				ridiculouslyWrongTextureIDToTexture.put(newerTextureId, textureFoundFromDirtyId);

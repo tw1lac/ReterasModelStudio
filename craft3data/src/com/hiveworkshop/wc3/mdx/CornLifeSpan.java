@@ -30,9 +30,9 @@ public class CornLifeSpan {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < lifeSpanTrack.length; i++) {
-			lifeSpanTrack[i].save(out);
-		}
+        for (LifeSpanTrack spanTrack : lifeSpanTrack) {
+            spanTrack.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class CornLifeSpan {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < lifeSpanTrack.length; i++) {
-			a += lifeSpanTrack[i].getSize();
-		}
+        for (LifeSpanTrack spanTrack : lifeSpanTrack) {
+            a += spanTrack.getSize();
+        }
 
 		return a;
 	}

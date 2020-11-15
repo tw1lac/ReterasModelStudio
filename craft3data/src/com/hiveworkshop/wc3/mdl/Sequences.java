@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
  */
 public class Sequences {
 	public static ArrayList<Animation> read(final BufferedReader mdl) {
-		final ArrayList<Animation> seqs = new ArrayList<Animation>();
+		final ArrayList<Animation> seqs = new ArrayList<>();
 		String line = "";
 		line = MDLReader.nextLine(mdl);
 		if (!line.contains("Sequences") || line.contains("Global")) {

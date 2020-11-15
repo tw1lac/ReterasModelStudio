@@ -36,9 +36,9 @@ public class EventObject extends GenericObject {
 		ParseUtils.writeWar3ID(stream, KEVT);
 		ParseUtils.writeUInt32(stream, this.keyFrames.length);
 		stream.writeInt(this.globalSequenceId);
-		for (int i = 0; i < this.keyFrames.length; i++) {
-			ParseUtils.writeUInt32(stream, this.keyFrames[i]);
-		}
+        for (long keyFrame : this.keyFrames) {
+            ParseUtils.writeUInt32(stream, keyFrame);
+        }
 	}
 
 	@Override

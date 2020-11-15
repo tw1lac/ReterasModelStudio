@@ -74,13 +74,8 @@ public abstract class GenericObject extends AnimatedObject implements Chunk {
 
 	protected final Iterable<String> readMdlGeneric(final MdlTokenInputStream stream) {
 		this.name = stream.read();
-		return new Iterable<String>() {
-			@Override
-			public Iterator<String> iterator() {
-				return new WrappedMdlTokenIterator(GenericObject.this.readAnimatedBlock(stream), GenericObject.this,
-						stream);
-			}
-		};
+		return () -> new WrappedMdlTokenIterator(GenericObject.this.readAnimatedBlock(stream), GenericObject.this,
+                stream);
 	}
 
 	public void writeGenericHeader(final MdlTokenOutputStream stream) {

@@ -7,8 +7,7 @@ public abstract class RenderSharedGeometryEmitter<MODEL_OBJECT extends EmitterId
 	private static final int MAX_POWER_OF_TWO = 1 << 30;
 	private final int elementsPerEmit;
 	private float[] data;
-	private final ByteBuffer buffer;
-	protected InternalResource internalResource;
+    protected InternalResource internalResource;
 
 	public RenderSharedGeometryEmitter(final MODEL_OBJECT model_object, final int elementsPerEmit,
 			final InternalResource internalResource) {
@@ -16,7 +15,7 @@ public abstract class RenderSharedGeometryEmitter<MODEL_OBJECT extends EmitterId
 		this.elementsPerEmit = elementsPerEmit;
 		this.internalResource = internalResource;
 		this.data = new float[0];
-		this.buffer = ByteBuffer.allocate(0);
+        ByteBuffer buffer = ByteBuffer.allocate(0);
 	}
 
 	@Override

@@ -97,11 +97,9 @@ public class Huffman {
 			tail.next = list;
 		}
 	}
-		
-	private boolean adjustProbability;
-	
+
 	private Node nodes = null;
-	private TreeMap<Integer, Node> sorted2 = new TreeMap<Integer, Node>();
+	private TreeMap<Integer, Node> sorted2 = new TreeMap<>();
 	
 	private Node root = null;
 	private Node[] valueToNode = new Node[0x102];
@@ -280,8 +278,8 @@ public class Huffman {
 		setSource(in);
 		byte type = (byte) getBits(8);
 		buildTree(type);
-		
-		adjustProbability = type == 0;
+
+		boolean adjustProbability = type == 0;
 		
 		for(;;){
 			Node current = root;
@@ -292,14 +290,14 @@ public class Huffman {
 				int value = getBits(8);
 				current = addValueToTree(value);
 				incrementProbability(current);
-				if( !adjustProbability ) incrementProbability(current);
+				if( !adjustProbability) incrementProbability(current);
 			}else if( current.value == 0x100 ){
 				break;
 			}
 			
 			out.put((byte) current.value);
 			
-			if( adjustProbability ){
+			if(adjustProbability){
 				 incrementProbability(current);
 			}
 		}

@@ -34,20 +34,20 @@ public interface List<TYPE> extends ListView<TYPE>, Collection<TYPE> {
 			final Object[] a = list.toArray(new Object[0]);
 			Arrays.sort(a, (Comparator) c);
 			final ListIterator i = list.listIterator();
-			for (int j = 0; j < a.length; j++) {
-				i.next();
-				i.set(a[j]);
-			}
+            for (Object o : a) {
+                i.next();
+                i.set(o);
+            }
 		}
 
 		public static <T extends Comparable<T>> void sort(final List<T> list) {
 			final Comparable[] a = list.toArray(new Comparable[0]);
 			Arrays.sort(a);
 			final ListIterator i = list.listIterator();
-			for (int j = 0; j < a.length; j++) {
-				i.next();
-				i.set(a[j]);
-			}
+            for (Comparable comparable : a) {
+                i.next();
+                i.set(comparable);
+            }
 		}
 
 		private Util() {

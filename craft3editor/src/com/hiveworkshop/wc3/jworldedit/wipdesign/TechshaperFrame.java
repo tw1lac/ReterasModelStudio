@@ -10,12 +10,11 @@ import com.hiveworkshop.wc3.jworldedit.objects.ObjectEditorFrame;
 import com.jtattoo.plaf.smart.SmartLookAndFeel;
 
 public class TechshaperFrame extends JFrame {
-	private final TechshaperPanel techshaperPanel;
 
 	public TechshaperFrame() {
 		super("Techshaper v0.0.1");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		techshaperPanel = new TechshaperPanel();
+		TechshaperPanel techshaperPanel = new TechshaperPanel();
 		setContentPane(techshaperPanel);
 		pack();
 		setLocationRelativeTo(null);
@@ -59,16 +58,13 @@ public class TechshaperFrame extends JFrame {
 			ex.printStackTrace();
 		}
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				final TechshaperFrame frame = new TechshaperFrame();
-				frame.setVisible(true);
+		SwingUtilities.invokeLater(() -> {
+			final TechshaperFrame frame = new TechshaperFrame();
+			frame.setVisible(true);
 
-				final ObjectEditorFrame frame2 = new ObjectEditorFrame();
-				frame2.setVisible(true);
-				frame2.loadHotkeys();
-			}
+			final ObjectEditorFrame frame2 = new ObjectEditorFrame();
+			frame2.setVisible(true);
+			frame2.loadHotkeys();
 		});
 	}
 }

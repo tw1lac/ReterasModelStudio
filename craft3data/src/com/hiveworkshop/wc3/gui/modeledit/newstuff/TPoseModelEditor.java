@@ -439,18 +439,8 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 	protected UndoAction buildHideComponentAction(final ListView<? extends SelectableComponent> selectableComponents,
 			final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<IdObject> previousSelection = new ArrayList<>(selectionManager.getSelection());
-		final Runnable truncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.removeSelection(model.getModel().getIdObjects());
-			}
-		};
-		final Runnable unTruncateSelectionRunnable = new Runnable() {
-			@Override
-			public void run() {
-				selectionManager.setSelection(previousSelection);
-			}
-		};
+		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(model.getModel().getIdObjects());
+		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
 		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
 				unTruncateSelectionRunnable, refreshGUIRunnable);
 	}
@@ -666,7 +656,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 				clonedCameras.add(camera);
 			}
 		}
-		return new CopiedModelData(new ArrayList<Geoset>(), clonedNodes, clonedCameras);
+		return new CopiedModelData(new ArrayList<>(), clonedNodes, clonedCameras);
 	}
 
 	@Override

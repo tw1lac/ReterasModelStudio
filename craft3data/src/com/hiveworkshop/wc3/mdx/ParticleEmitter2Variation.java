@@ -31,9 +31,9 @@ public class ParticleEmitter2Variation {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < scalingTrack.length; i++) {
-			scalingTrack[i].save(out);
-		}
+        for (VariationTrack variationTrack : scalingTrack) {
+            variationTrack.save(out);
+        }
 
 	}
 
@@ -43,9 +43,9 @@ public class ParticleEmitter2Variation {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < scalingTrack.length; i++) {
-			a += scalingTrack[i].getSize();
-		}
+        for (VariationTrack variationTrack : scalingTrack) {
+            a += variationTrack.getSize();
+        }
 
 		return a;
 	}

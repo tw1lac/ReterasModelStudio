@@ -31,8 +31,7 @@ public class UVViewportModelRenderer implements MeshVisitor {
 	private Graphics2D graphics;
 	private ProgramPreferences programPreferences;
 	private final GeosetRendererImpl geosetRenderer;
-	private ViewportView viewportView;
-	private CoordinateSystem coordinateSystem;
+    private CoordinateSystem coordinateSystem;
 	// TODO Now that I added modelView to this class, why does
 	// RenderByViewModelRenderer exist???
 	private ModelView modelView;
@@ -46,8 +45,7 @@ public class UVViewportModelRenderer implements MeshVisitor {
 			final ViewportView viewportView, final CoordinateSystem coordinateSystem, final ModelView modelView) {
 		this.graphics = graphics;
 		this.programPreferences = programPreferences;
-		this.viewportView = viewportView;
-		this.coordinateSystem = coordinateSystem;
+        this.coordinateSystem = coordinateSystem;
 		this.modelView = modelView;
 		return this;
 	}

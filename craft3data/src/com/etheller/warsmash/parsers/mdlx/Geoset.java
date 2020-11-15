@@ -152,7 +152,7 @@ public class Geoset implements MdlxBlock, Chunk {
 				this.vertexGroups = new short[vertexGroups.size()];
 				int i = 0;
 				for (final Short vertexGroup : vertexGroups) {
-					this.vertexGroups[i++] = vertexGroup.shortValue();
+					this.vertexGroups[i++] = vertexGroup;
 				}
 			}
 				break;
@@ -196,12 +196,12 @@ public class Geoset implements MdlxBlock, Chunk {
 				this.matrixIndices = new long[indices.size()];
 				int i = 0;
 				for (final Integer index : indices) {
-					this.matrixIndices[i++] = index.intValue();
+					this.matrixIndices[i++] = index;
 				}
 				this.matrixGroups = new long[groups.size()];
 				i = 0;
 				for (final Integer group : groups) {
-					this.matrixGroups[i++] = group.intValue();
+					this.matrixGroups[i++] = group;
 				}
 			}
 				break;
@@ -261,16 +261,16 @@ public class Geoset implements MdlxBlock, Chunk {
 		}
 
 		stream.startBlock(MdlUtils.TOKEN_VERTEX_GROUP);
-		for (int i = 0; i < this.vertexGroups.length; i++) {
-			stream.writeLine(this.vertexGroups[i] + ",");
-		}
+        for (short vertexGroup : this.vertexGroups) {
+            stream.writeLine(vertexGroup + ",");
+        }
 		stream.endBlock();
 
 		// For now hardcoded for triangles, until I see a model with something
 		// different.
 		stream.startBlock(MdlUtils.TOKEN_FACES, 1, this.faces.length);
 		stream.startBlock(MdlUtils.TOKEN_TRIANGLES);
-		final StringBuffer facesBuffer = new StringBuffer();
+		final StringBuilder facesBuffer = new StringBuilder();
 		for (final int faceValue : this.faces) {
 			if (facesBuffer.length() > 0) {
 				facesBuffer.append(", ");

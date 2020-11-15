@@ -30,9 +30,9 @@ public class GeosetRotation {
 		out.writeInt(nrOfTracks);
 		out.writeInt(interpolationType);
 		out.writeInt(globalSequenceId);
-		for (int i = 0; i < rotationTrack.length; i++) {
-			rotationTrack[i].save(out);
-		}
+        for (RotationTrack track : rotationTrack) {
+            track.save(out);
+        }
 
 	}
 
@@ -42,9 +42,9 @@ public class GeosetRotation {
 		a += 4;
 		a += 4;
 		a += 4;
-		for (int i = 0; i < rotationTrack.length; i++) {
-			a += rotationTrack[i].getSize();
-		}
+        for (RotationTrack track : rotationTrack) {
+            a += track.getSize();
+        }
 
 		return a;
 	}
