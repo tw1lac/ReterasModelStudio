@@ -6,8 +6,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
 
 public class ComponentEditorJSpinner extends JSpinner {

@@ -27,7 +27,7 @@ public class GeosetAnimationChunk {
 			tempgeosetAnimation.load(in);
 			geosetAnimationCounter -= tempgeosetAnimation.getSize();
 		}
-		geosetAnimation = geosetAnimationList.toArray(new GeosetAnimation[geosetAnimationList.size()]);
+		geosetAnimation = geosetAnimationList.toArray(new GeosetAnimation[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

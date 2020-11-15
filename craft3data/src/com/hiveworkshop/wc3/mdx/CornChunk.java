@@ -26,7 +26,7 @@ public class CornChunk {
 			tempcorn.load(in);
 			lightCounter -= tempcorn.getSize();
 		}
-		corns = cornList.toArray(new ParticleEmitterPopcorn[cornList.size()]);
+		corns = cornList.toArray(new ParticleEmitterPopcorn[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

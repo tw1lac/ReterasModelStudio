@@ -3,10 +3,7 @@ package com.hiveworkshop.wc3.gui.modeledit.components;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -14,7 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileFilter;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.datachooser.DataSource;
@@ -27,7 +23,6 @@ import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
 import com.hiveworkshop.wc3.gui.modeledit.components.editors.ComponentEditorJSpinner;
 import com.hiveworkshop.wc3.gui.modeledit.components.editors.ComponentEditorTextField;
 import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter;
-import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter.TextureExporterClickListener;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.mdl.Bitmap;
 import com.hiveworkshop.wc3.mdl.EditableModel;

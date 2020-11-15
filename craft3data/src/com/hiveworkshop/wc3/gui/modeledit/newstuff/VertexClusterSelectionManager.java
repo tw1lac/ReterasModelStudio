@@ -11,8 +11,6 @@ import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.VertexClusterModelEditor.VertexGroupBundle;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
-import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionListener;
-import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.wc3.mdl.Geoset;
 import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.TVertex;

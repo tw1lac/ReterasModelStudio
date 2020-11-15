@@ -1,8 +1,6 @@
 package com.hiveworkshop.wc3.units;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

@@ -23,7 +23,7 @@ public class HelperChunk {
 			temphelper.load(in);
 			helperCounter -= temphelper.getSize();
 		}
-		helper = helperList.toArray(new Helper[helperList.size()]);
+		helper = helperList.toArray(new Helper[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

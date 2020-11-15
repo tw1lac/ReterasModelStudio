@@ -23,8 +23,7 @@ public class SoundEmitterChunk {
 			tempSoundEmitter.load(in);
 			soundEmitterCounter -= tempSoundEmitter.getSize();
 		}
-		soundEmitter = soundEmitterList.toArray(new SoundEmitter[soundEmitterList
-				.size()]);
+		soundEmitter = soundEmitterList.toArray(new SoundEmitter[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

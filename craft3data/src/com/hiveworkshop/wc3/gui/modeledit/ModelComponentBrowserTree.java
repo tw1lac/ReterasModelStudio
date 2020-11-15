@@ -5,12 +5,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -427,7 +426,7 @@ public final class ModelComponentBrowserTree extends JTree {
 
 		public boolean hasSameItem(final ChooseableDisplayElement<?> other) {
 			return (getClass() == other.getClass())
-					&& ((other.item == item) || ((item != null) && item.equals(other.item)));
+					&& (Objects.equals(item, other.item));
 		}
 
 		public ImageIcon getIcon(final boolean expanded) {

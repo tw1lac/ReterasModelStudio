@@ -29,7 +29,7 @@ public class TextureAnimationChunk {
 			textureAnimationCounter -= temptextureAnimation.getSize();
 		}
 		textureAnimation = textureAnimationList
-				.toArray(new TextureAnimation[textureAnimationList.size()]);
+				.toArray(new TextureAnimation[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

@@ -27,7 +27,7 @@ public class FaceEffectsChunk {
 			faceEffectList.add(faceEffect);
 			chunkSize -= 340;
 		}
-		faceEffects = faceEffectList.toArray(new FaceEffect[faceEffectList.size()]);
+		faceEffects = faceEffectList.toArray(new FaceEffect[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

@@ -3,6 +3,7 @@ package com.etheller.collections;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.Objects;
 
 public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 	private static final int MAXIMUM_CAPACITY = 1 << 30;
@@ -88,7 +89,7 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 	}
 
 	private static boolean matchingValues(final Object value, final Object nodeValue) {
-		return (nodeValue == value) || ((value != null) && value.equals(nodeValue));
+		return Objects.equals(value, nodeValue);
 	}
 
 	@Override
@@ -441,7 +442,7 @@ public final class HashMap<KEY, VALUE> implements Map<KEY, VALUE> {
 		}
 
 		public boolean matches(final int hash, final KEY key) {
-			return (hash == this.hash) && ((this.key == key) || ((this.key != null) && this.key.equals(key)));
+			return (hash == this.hash) && (Objects.equals(this.key, key));
 		}
 
 		public int getHash() {

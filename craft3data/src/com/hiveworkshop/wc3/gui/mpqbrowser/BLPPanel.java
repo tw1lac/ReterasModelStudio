@@ -2,8 +2,6 @@ package com.hiveworkshop.wc3.gui.mpqbrowser;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
 

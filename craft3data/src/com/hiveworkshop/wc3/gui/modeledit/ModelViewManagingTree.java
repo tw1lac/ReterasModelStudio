@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
@@ -259,7 +260,7 @@ public final class ModelViewManagingTree extends JCheckBoxTree {
 		protected abstract String getName(T item, ModelViewManager modelViewManager);
 
 		public boolean hasSameItem(final CheckableDisplayElement<?> other) {
-			return (other.item == item) || ((item != null) && item.equals(other.item));
+			return Objects.equals(item, other.item);
 		}
 	}
 

@@ -21,9 +21,9 @@ public final class CopiedModelData {
 
 	public CopiedModelData(final java.util.Collection<Geoset> geosets, final java.util.Collection<IdObject> idObjects,
 			final java.util.Collection<Camera> cameras) {
-		this.geosets = ListView.Util.of(geosets.toArray(new Geoset[geosets.size()]));
-		this.idObjects = ListView.Util.of(idObjects.toArray(new IdObject[idObjects.size()]));
-		this.cameras = ListView.Util.of(cameras.toArray(new Camera[cameras.size()]));
+		this.geosets = ListView.Util.of(geosets.toArray(new Geoset[0]));
+		this.idObjects = ListView.Util.of(idObjects.toArray(new IdObject[0]));
+		this.cameras = ListView.Util.of(cameras.toArray(new Camera[0]));
 	}
 
 	public ListView<Geoset> getGeosets() {

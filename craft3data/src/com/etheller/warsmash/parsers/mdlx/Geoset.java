@@ -246,7 +246,7 @@ public class Geoset implements MdlxBlock, Chunk {
 				throw new RuntimeException("Unknown token in Geoset: " + token);
 			}
 		}
-		this.sequenceExtents = sequenceExtents.toArray(new Extent[sequenceExtents.size()]);
+		this.sequenceExtents = sequenceExtents.toArray(new Extent[0]);
 	}
 
 	@Override

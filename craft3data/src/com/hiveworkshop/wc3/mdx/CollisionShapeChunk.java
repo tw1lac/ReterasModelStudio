@@ -25,7 +25,7 @@ public class CollisionShapeChunk {
 			tempcollisionShape.load(in);
 			collisionShapeCounter -= tempcollisionShape.getSize();
 		}
-		collisionShape = collisionShapeList.toArray(new CollisionShape[collisionShapeList.size()]);
+		collisionShape = collisionShapeList.toArray(new CollisionShape[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

@@ -100,13 +100,13 @@ public class JDoubleCheckBoxTree extends JTree {
 	// New method that returns only the checked paths (totally ignores original
 	// "selection" mechanism)
 	public TreeNode[] getCheckedPaths() {
-		return checkedPaths.toArray(new TreeNode[checkedPaths.size()]);
+		return checkedPaths.toArray(new TreeNode[0]);
 	}
 
 	// New method that returns only the checked paths (totally ignores original
 	// "selection" mechanism)
 	public TreeNode[] getCheckedPaths2() {
-		return checkedPaths2.toArray(new TreeNode[checkedPaths2.size()]);
+		return checkedPaths2.toArray(new TreeNode[0]);
 	}
 
 	// Returns true in case that the node is selected, has children but not all

@@ -26,7 +26,7 @@ public class ParticleEmitter2Chunk {
 			tempparticleEmitter2.load(in);
 			particleEmitter2Counter -= tempparticleEmitter2.getSize();
 		}
-		particleEmitter2 = particleEmitter2List.toArray(new ParticleEmitter2[particleEmitter2List.size()]);
+		particleEmitter2 = particleEmitter2List.toArray(new ParticleEmitter2[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

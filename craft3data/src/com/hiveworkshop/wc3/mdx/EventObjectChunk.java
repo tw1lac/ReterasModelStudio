@@ -23,8 +23,7 @@ public class EventObjectChunk {
 			tempeventObject.load(in);
 			eventObjectCounter -= tempeventObject.getSize();
 		}
-		eventObject = eventObjectList.toArray(new EventObject[eventObjectList
-				.size()]);
+		eventObject = eventObjectList.toArray(new EventObject[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

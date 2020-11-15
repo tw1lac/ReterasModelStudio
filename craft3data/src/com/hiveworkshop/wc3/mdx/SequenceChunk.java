@@ -25,7 +25,7 @@ public class SequenceChunk {
 			tempsequence.load(in);
 			sequenceCounter -= tempsequence.getSize();
 		}
-		sequence = sequenceList.toArray(new Sequence[sequenceList.size()]);
+		sequence = sequenceList.toArray(new Sequence[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

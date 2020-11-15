@@ -27,7 +27,7 @@ public class RibbonEmitterChunk {
 			tempribbonEmitter.load(in);
 			ribbonEmitterCounter -= tempribbonEmitter.getSize();
 		}
-		ribbonEmitter = ribbonEmitterList.toArray(new RibbonEmitter[ribbonEmitterList.size()]);
+		ribbonEmitter = ribbonEmitterList.toArray(new RibbonEmitter[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

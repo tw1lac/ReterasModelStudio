@@ -31,7 +31,6 @@ import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ModelEditorChangeNot
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionItemTypes;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
-import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonListener;
 import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationController;
 import com.hiveworkshop.wc3.gui.modelviewer.ControlledAnimationViewer;

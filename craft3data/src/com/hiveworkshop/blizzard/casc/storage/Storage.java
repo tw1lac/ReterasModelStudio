@@ -135,18 +135,12 @@ public class Storage implements AutoCloseable {
 			fileMeta.index = Integer.parseUnsignedInt(fileName.substring(0, 2), 16);
 			fileMeta.version = Long.parseUnsignedLong(fileName.substring(2, 10), 16);
 
-			ArrayList<IndexFileNameMeta> bucketList = metaMap.get(fileMeta.index);
-			if (bucketList == null) {
-				bucketList = new ArrayList<>();
-				metaMap.put(fileMeta.index, bucketList);
-			}
+			ArrayList<IndexFileNameMeta> bucketList = metaMap.computeIfAbsent(fileMeta.index, k -> new ArrayList<>());
 
 			bucketList.add(fileMeta);
 		}
 
-		Comparator<IndexFileNameMeta> bucketOrder = (left, right) -> {
-			return (int) (left.version - right.version);
-		};
+		Comparator<IndexFileNameMeta> bucketOrder = (left, right) -> (int) (left.version - right.version);
 		if (!useOld) {
 			bucketOrder = Collections.reverseOrder(bucketOrder);
 		}

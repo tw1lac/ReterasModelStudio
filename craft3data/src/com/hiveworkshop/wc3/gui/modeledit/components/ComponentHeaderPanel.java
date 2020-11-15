@@ -1,8 +1,6 @@
 package com.hiveworkshop.wc3.gui.modeledit.components;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.ParseException;
 
 import javax.swing.BorderFactory;

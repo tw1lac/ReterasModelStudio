@@ -20,12 +20,8 @@ public class VertexClusterDefinitions {
 		for (final Geoset geoset : model.getGeosets()) {
 			for (final GeosetVertex vertex : geoset.getVertices()) {
 				final HashableVector hashKey = new HashableVector(vertex);
-				List<GeosetVertex> verticesAtPoint = positionToVertices.get(hashKey);
-				if (verticesAtPoint == null) {
-					verticesAtPoint = new ArrayList<>();
-					positionToVertices.put(hashKey, verticesAtPoint);
-				}
-				verticesAtPoint.add(vertex);
+                List<GeosetVertex> verticesAtPoint = positionToVertices.computeIfAbsent(hashKey, k -> new ArrayList<>());
+                verticesAtPoint.add(vertex);
 			}
 		}
 		int clusterId = 0;

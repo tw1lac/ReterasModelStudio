@@ -2,7 +2,6 @@ package com.hiveworkshop.wc3.mdlx;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.hiveworkshop.wc3.mdl.EditableModel;

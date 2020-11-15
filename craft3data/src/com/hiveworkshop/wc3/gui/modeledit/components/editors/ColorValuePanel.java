@@ -8,7 +8,6 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.hiveworkshop.wc3.gui.modeledit.components.material.FloatTrackTableModel;

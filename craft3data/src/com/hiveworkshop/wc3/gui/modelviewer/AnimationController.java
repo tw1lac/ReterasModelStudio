@@ -2,10 +2,7 @@ package com.hiveworkshop.wc3.gui.modelviewer;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -19,8 +16,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationControllerListener.LoopType;

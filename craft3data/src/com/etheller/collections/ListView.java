@@ -1,6 +1,7 @@
 package com.etheller.collections;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public interface ListView<TYPE> extends CollectionView<TYPE> {
 	TYPE get(int index);
@@ -20,7 +21,7 @@ public interface ListView<TYPE> extends CollectionView<TYPE> {
 		public static <TYPE> int indexOf(final ListView<TYPE> list, final TYPE item) {
 			for (int i = 0; i < list.size(); i++) {
 				final TYPE listItem = list.get(i);
-				if (listItem == item || (listItem != null && listItem.equals(item))) {
+				if (Objects.equals(listItem, item)) {
 					return i;
 				}
 			}

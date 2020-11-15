@@ -2,8 +2,6 @@ package com.hiveworkshop.wc3.gui.modeledit.components;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;

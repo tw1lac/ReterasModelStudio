@@ -31,7 +31,6 @@ import com.hiveworkshop.wc3.gui.modeledit.Viewport;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorMultiManipulatorActivity;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorViewportActivity;
 import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
 import com.hiveworkshop.wc3.gui.modeledit.creator.activity.DrawBoxActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.creator.activity.DrawPlaneActivityDescriptor;
@@ -272,11 +271,7 @@ public class CreatorModelingPanel extends JPanel
 	}
 
 	private void putTypeToButton(final ActivityDescriptor type, final ModeButton button) {
-		List<ModeButton> buttons = typeToButtons.get(type);
-		if (buttons == null) {
-			buttons = new ArrayList<>();
-			typeToButtons.put(type, buttons);
-		}
+		List<ModeButton> buttons = typeToButtons.computeIfAbsent(type, k -> new ArrayList<>());
 		buttons.add(button);
 	}
 

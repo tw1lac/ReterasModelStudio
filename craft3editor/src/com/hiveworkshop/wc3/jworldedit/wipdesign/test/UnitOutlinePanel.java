@@ -3,8 +3,6 @@ package com.hiveworkshop.wc3.jworldedit.wipdesign.test;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;

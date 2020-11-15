@@ -26,7 +26,7 @@ public class CameraChunk {
 			tempcamera.load(in);
 			cameraCounter -= tempcamera.getSize();
 		}
-		camera = cameraList.toArray(new Camera[cameraList.size()]);
+		camera = cameraList.toArray(new Camera[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

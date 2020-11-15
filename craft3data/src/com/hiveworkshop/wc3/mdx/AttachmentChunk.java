@@ -25,7 +25,7 @@ public class AttachmentChunk {
 			tempattachment.load(in);
 			attachmentCounter -= tempattachment.getSize();
 		}
-		attachment = attachmentList.toArray(new Attachment[attachmentList.size()]);
+		attachment = attachmentList.toArray(new Attachment[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

@@ -1,10 +1,6 @@
 package com.hiveworkshop.wc3.mdl.render3d;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
@@ -137,7 +133,7 @@ public final class RenderModel {
 			particleEmitters2.add(new RenderParticleEmitter2(particleEmitter,
 					renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
 		}
-		particleEmitters2.sort((o1, o2) -> Integer.compare(o1.getPriorityPlane(), o2.getPriorityPlane()));
+		particleEmitters2.sort(Comparator.comparingInt(RenderParticleEmitter2::getPriorityPlane));
 		for (final RenderParticleEmitter2 particleEmitter : particleEmitters2) {
 			final RenderParticleEmitter2View emitterView = new RenderParticleEmitter2View(this, particleEmitter);
 			particleEmitterViews2.add(emitterView);

@@ -752,7 +752,7 @@ public class Geoset implements Named, VisibilitySource {
 				if (matrix.isEmpty()) {
 					final ArrayList<Bone> bones = mdlr.sortedIdObjects(Bone.class);
 					for (Bone bone : bones) {
-						final ArrayList<Bone> singleBoneList = new ArrayList<Bone>();
+						final ArrayList<Bone> singleBoneList = new ArrayList<>();
 						singleBoneList.add(bone);
 						final Matrix e = new Matrix(singleBoneList);
 						e.updateIds(mdlr);

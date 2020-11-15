@@ -25,7 +25,7 @@ public class TextureChunk {
 			temptexture.load(in);
 			textureCounter -= temptexture.getSize();
 		}
-		texture = textureList.toArray(new Texture[textureList.size()]);
+		texture = textureList.toArray(new Texture[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

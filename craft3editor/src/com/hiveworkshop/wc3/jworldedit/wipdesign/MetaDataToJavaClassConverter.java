@@ -1,14 +1,7 @@
 package com.hiveworkshop.wc3.jworldedit.wipdesign;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.hiveworkshop.wc3.jworldedit.wipdesign.units.meta.Category;
 import com.hiveworkshop.wc3.resources.WEString;
@@ -61,8 +54,7 @@ public class MetaDataToJavaClassConverter {
 				unitMetaFields.add(metaField);
 			}
 		}
-		unitMetaFields.sort((a, b) -> WEString.getString(a.getField("displayName"))
-				.compareTo(WEString.getString(b.getField("displayName"))));
+		unitMetaFields.sort(Comparator.comparing(a -> WEString.getString(a.getField("displayName"))));
 		System.out.println("------TYPES ENUMERATED------");
 		for (final String type : types) {
 			if (!typeToJava.containsKey(type)) {
@@ -95,7 +87,7 @@ public class MetaDataToJavaClassConverter {
 				displayName = displayName.replace(")", "");
 				final StringBuilder finalDisplayName = new StringBuilder();
 				for (final String s : displayName.split("\\s+")) {
-					finalDisplayName.append(Character.toUpperCase(s.charAt(0)) + s.substring(1));
+					finalDisplayName.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1));
 				}
 				final String type = metaField.getField("type");
 				System.out.println("\t@Rawcode(\"" + metaField.getId() + "\")");
@@ -143,7 +135,7 @@ public class MetaDataToJavaClassConverter {
 				displayName = displayName.replace(")", "");
 				final StringBuilder finalDisplayName = new StringBuilder();
 				for (final String s : displayName.split("\\s+")) {
-					finalDisplayName.append(Character.toUpperCase(s.charAt(0)) + s.substring(1));
+					finalDisplayName.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1));
 				}
 				final String type = metaField.getField("type");
 

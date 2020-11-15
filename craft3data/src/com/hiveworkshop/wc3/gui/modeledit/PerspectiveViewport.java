@@ -75,7 +75,6 @@ import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.GPUReadyTexture;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
-import com.hiveworkshop.wc3.gui.ProgramPreferencesChangeListener;
 import com.hiveworkshop.wc3.gui.animedit.BasicTimeBoundProvider;
 import com.hiveworkshop.wc3.gui.datachooser.DataSource;
 import com.hiveworkshop.wc3.gui.lwjgl.BetterAWTGLCanvas;

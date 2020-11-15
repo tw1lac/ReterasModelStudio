@@ -25,7 +25,7 @@ public class MaterialChunk {
 			tempmaterial.load(in, version);
 			materialCounter -= tempmaterial.getSize(version);
 		}
-		material = materialList.toArray(new Material[materialList.size()]);
+		material = materialList.toArray(new Material[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out, final int version) throws IOException {

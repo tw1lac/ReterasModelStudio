@@ -6,8 +6,6 @@ import static com.hiveworkshop.wc3.jworldedit.AbstractWorldEditorPanel.makeButto
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

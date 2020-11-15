@@ -26,11 +26,7 @@
 package com.etheller.collections;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * A Red-Black tree based {@link NavigableMap} implementation. The map is sorted
@@ -340,7 +336,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 		final int mapSize = map.size();
 		if (size == 0 && mapSize != 0 && map instanceof SortedMap) {
 			final Comparator c = ((SortedMap) map).comparator();
-			if (c == comparator || (c != null && c.equals(comparator))) {
+			if (Objects.equals(c, comparator)) {
 				++modCount;
 				try {
 					buildFromSorted(mapSize, map.entrySet().iterator(), null, null);
@@ -1431,7 +1427,7 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<K, 
 	 * copes with {@code null} o1 properly.
 	 */
 	static boolean valEquals(final Object o1, final Object o2) {
-		return (o1 == null ? o2 == null : o1.equals(o2));
+		return (Objects.equals(o1, o2));
 	}
 
 	/**

@@ -1,10 +1,8 @@
 package com.hiveworkshop.wc3.jworldedit.models;
 
 import java.awt.Dimension;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 

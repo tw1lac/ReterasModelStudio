@@ -26,7 +26,7 @@ public class LightChunk {
 			templight.load(in);
 			lightCounter -= templight.getSize();
 		}
-		light = lightList.toArray(new Light[lightList.size()]);
+		light = lightList.toArray(new Light[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out) throws IOException {

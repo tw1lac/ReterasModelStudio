@@ -1,6 +1,5 @@
 package com.hiveworkshop.wc3.gui.mpqbrowser;
 
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 

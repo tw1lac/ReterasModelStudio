@@ -58,7 +58,7 @@ public class ListFileFinder {
 								idsToCheck.add(War3ID.fromString(metaDataId));
 							}
 						}
-						check(usedFileList, mpq, unit, idsToCheck.toArray(new War3ID[idsToCheck.size()]));
+						check(usedFileList, mpq, unit, idsToCheck.toArray(new War3ID[0]));
 					}
 				}
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(

@@ -1,8 +1,6 @@
 package com.hiveworkshop.wc3.jworldedit;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Set;
 
@@ -62,7 +60,7 @@ public class GoodSLKEdit extends JPanel {
 					final String firstItem = keySet.iterator().next();
 					final Element firstElement = dataTable.get(firstItem);
 					final Set<String> titlekeys = firstElement.keySet();
-					final String[] headers = titlekeys.toArray(new String[titlekeys.size()]);
+					final String[] headers = titlekeys.toArray(new String[0]);
 					final Object[][] values = new Object[keySet.size()][headers.length + 1];
 					int index = 0;
 					for (final String element : keySet) {

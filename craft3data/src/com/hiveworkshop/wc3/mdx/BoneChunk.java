@@ -23,7 +23,7 @@ public class BoneChunk {
 			tempbone.load(in);
 			boneCounter -= tempbone.getSize();
 		}
-		bone = boneList.toArray(new Bone[boneList.size()]);
+		bone = boneList.toArray(new Bone[0]);
 	}
 
 	public void save(BlizzardDataOutputStream out) throws IOException {

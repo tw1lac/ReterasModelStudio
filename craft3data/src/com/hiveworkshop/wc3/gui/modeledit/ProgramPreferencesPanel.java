@@ -1,6 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -21,7 +20,6 @@ import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.datachooser.DataSourceChooserPanel;
 import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.util.ColorChooserIcon;
-import com.hiveworkshop.wc3.gui.util.ColorChooserIcon.ColorListener;
 
 import net.miginfocom.swing.MigLayout;
 

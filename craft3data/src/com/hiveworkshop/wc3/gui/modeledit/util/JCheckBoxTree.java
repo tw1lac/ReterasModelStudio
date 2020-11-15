@@ -97,7 +97,7 @@ public class JCheckBoxTree extends JTree {
 	// New method that returns only the checked paths (totally ignores original
 	// "selection" mechanism)
 	public TreeNode[] getCheckedPaths() {
-		return checkedPaths.toArray(new TreeNode[checkedPaths.size()]);
+		return checkedPaths.toArray(new TreeNode[0]);
 	}
 
 	// Returns true in case that the node is selected, has children but not all

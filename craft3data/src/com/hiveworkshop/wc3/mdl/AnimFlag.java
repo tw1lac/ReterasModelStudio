@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.JOptionPane;
 
@@ -162,10 +163,10 @@ public class AnimFlag {
 		final AnimFlag af = o;
 		does = title.equals(af.title);
 		does = hasGlobalSeq == af.hasGlobalSeq;
-		does = values.equals(af.values) && (globalSeq == null ? af.globalSeq == null : globalSeq.equals(af.globalSeq))
-				&& (tags == null ? af.tags == null : tags.equals(af.tags))
-				&& (inTans == null ? af.inTans == null : inTans.equals(af.inTans))
-				&& (outTans == null ? af.outTans == null : outTans.equals(af.outTans)) && (typeid == af.typeid);
+		does = values.equals(af.values) && (Objects.equals(globalSeq, af.globalSeq))
+				&& (Objects.equals(tags, af.tags))
+				&& (Objects.equals(inTans, af.inTans))
+				&& (Objects.equals(outTans, af.outTans)) && (typeid == af.typeid);
 		return does;
 	}
 

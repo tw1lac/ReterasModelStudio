@@ -29,7 +29,7 @@ public class GeosetChunk {
 			tempgeoset.load(in, version);
 			geosetCounter -= tempgeoset.getSize(version);
 		}
-		geoset = geosetList.toArray(new Geoset[geosetList.size()]);
+		geoset = geosetList.toArray(new Geoset[0]);
 	}
 
 	public void save(final BlizzardDataOutputStream out, final int version) throws IOException {
