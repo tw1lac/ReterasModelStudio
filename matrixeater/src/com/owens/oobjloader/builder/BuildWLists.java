@@ -332,8 +332,8 @@ public class BuildWLists implements BuilderInterface {
 			// cleared the currentGroups lists, just return.
 			return;
 		}
-		for (int loopi = 0; loopi < names.length; loopi++) {
-			final String group = names[loopi].trim();
+		for (String name : names) {
+			final String group = name.trim();
 			currentGroups.add(group);
 			if (null == groups.get(group)) {
 				groups.put(group, new ArrayList<Face>());
@@ -802,7 +802,6 @@ public class BuildWLists implements BuilderInterface {
 				if (name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".tga")
 						|| name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".bmp")) {
 					hasPNGs = true;
-					break;
 					break;
 				}
 			}

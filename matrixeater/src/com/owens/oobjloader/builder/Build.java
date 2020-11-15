@@ -336,8 +336,8 @@ public class Build implements BuilderInterface {
 			// cleared the currentGroups lists, just return.
 			return;
 		}
-		for (int loopi = 0; loopi < names.length; loopi++) {
-			final String group = names[loopi].trim();
+		for (String name : names) {
+			final String group = name.trim();
 			currentGroups.add(group);
 			if (null == groups.get(group)) {
 				groups.put(group, new ArrayList<Face>());
@@ -789,14 +789,12 @@ public class Build implements BuilderInterface {
 					if (Math.abs(gv.x) > sizeLimit || Math.abs(gv.y) > sizeLimit || Math.abs(gv.z) > sizeLimit) {
 						allLessThan2 = false;
 						break;
-						break;
 					}
 				}
 			}
 			for (final Vertex pivot : mdl.getPivots()) {
 				if (Math.abs(pivot.x) > sizeLimit || Math.abs(pivot.y) > sizeLimit || Math.abs(pivot.z) > sizeLimit) {
 					allLessThan2 = false;
-					break;
 					break;
 				}
 			}
@@ -990,12 +988,7 @@ public class Build implements BuilderInterface {
 			geo.addUVLayer(uvLayer);
 			final List<VertexKey> vertexKeys = new ArrayList<>();
 			vertexKeys.addAll(vertexKeysToIndices.keySet());
-			vertexKeys.sort(new Comparator<VertexKey>() {
-				@Override
-				public int compare(final VertexKey a, final VertexKey b) {
-					return vertexKeysToIndices.get(a).compareTo(vertexKeysToIndices.get(b));
-				}
-			});
+			vertexKeys.sort((a, b) -> vertexKeysToIndices.get(a).compareTo(vertexKeysToIndices.get(b)));
 			// for(VertexKey key: vertexKeysToIndices.keySet()) {
 			// vertexKeys.add(e)
 			// }

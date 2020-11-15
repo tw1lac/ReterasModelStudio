@@ -150,7 +150,6 @@ public class BlizzardDataInputStream
             if (result[i] != 0) {
                 isNull = false;
                 break;
-                break;
             }
         }
         if (isNull) {
