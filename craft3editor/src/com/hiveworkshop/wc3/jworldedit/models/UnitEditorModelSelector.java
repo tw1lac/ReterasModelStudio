@@ -307,7 +307,7 @@ public class UnitEditorModelSelector extends JSplitPane implements TreeSelection
 		}
 	}
 
-	class RaceData {
+	static class RaceData {
 		List<WarcraftObject> units = new ArrayList<>();
 		List<WarcraftObject> heroes = new ArrayList<>();
 		List<WarcraftObject> buildings = new ArrayList<>();

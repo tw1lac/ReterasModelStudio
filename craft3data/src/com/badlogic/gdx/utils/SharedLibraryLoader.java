@@ -318,8 +318,7 @@ public class SharedLibraryLoader {
 		return false;
 	}
 
-	private File extractFile(final String sourcePath, final String sourceCrc, final File extractedFile)
-			throws IOException {
+	private File extractFile(final String sourcePath, final String sourceCrc, final File extractedFile) {
 		String extractedCrc = null;
 		if (extractedFile.exists()) {
 			try {

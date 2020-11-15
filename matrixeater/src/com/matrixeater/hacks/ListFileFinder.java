@@ -100,7 +100,7 @@ public class ListFileFinder {
 					}
 				}
 			}
-		} catch (final MPQException | IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}

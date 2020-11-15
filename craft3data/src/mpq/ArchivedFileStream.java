@@ -30,7 +30,7 @@ public class ArchivedFileStream implements SeekableByteChannel{
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		from = null;
 		buffer = null;
 		open = false;
@@ -42,13 +42,12 @@ public class ArchivedFileStream implements SeekableByteChannel{
 	}
 
 	@Override
-	public long position() throws IOException {
+	public long position() {
 		return position;
 	}
 
 	@Override
-	public SeekableByteChannel position(long newPosition)
-			throws IOException {
+	public SeekableByteChannel position(long newPosition) {
 		// *** argument validation as described by SeekableByteChannel interface
 		if( newPosition < 0 ) throw new IllegalArgumentException("files cannot have a negative positon");
 		
@@ -115,17 +114,17 @@ public class ArchivedFileStream implements SeekableByteChannel{
 	}
 
 	@Override
-	public long size() throws IOException {
+	public long size() {
 		return file.fileSize;
 	}
 
 	@Override
-	public SeekableByteChannel truncate(long size) throws IOException {
+	public SeekableByteChannel truncate(long size) {
 		throw new NonWritableChannelException();
 	}
 
 	@Override
-	public int write(ByteBuffer src) throws IOException {
+	public int write(ByteBuffer src) {
 		throw new NonWritableChannelException();
 	}
 }

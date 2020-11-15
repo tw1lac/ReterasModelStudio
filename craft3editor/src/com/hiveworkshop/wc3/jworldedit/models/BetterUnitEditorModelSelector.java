@@ -170,7 +170,7 @@ public class BetterUnitEditorModelSelector extends JSplitPane implements TreeSel
 		}
 	}
 
-	class RaceData {
+	static class RaceData {
 		List<WarcraftObject> units = new ArrayList<>();
 		List<WarcraftObject> heroes = new ArrayList<>();
 		List<WarcraftObject> buildings = new ArrayList<>();

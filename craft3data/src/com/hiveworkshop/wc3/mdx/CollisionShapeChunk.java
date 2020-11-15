@@ -49,7 +49,7 @@ public class CollisionShapeChunk {
 		return a;
 	}
 
-	public class CollisionShape {
+	public static class CollisionShape {
 		public Node node = new Node();
 		public int type;
 		public float[] vertexs = new float[0];

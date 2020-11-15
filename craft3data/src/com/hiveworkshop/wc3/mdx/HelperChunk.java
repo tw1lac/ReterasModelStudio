@@ -47,7 +47,7 @@ public class HelperChunk {
 		return a;
 	}
 
-	public class Helper {
+	public static class Helper {
 		public Node node = new Node();
 
 		public void load(BlizzardDataInputStream in) throws IOException {

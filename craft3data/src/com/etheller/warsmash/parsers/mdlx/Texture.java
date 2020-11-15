@@ -37,7 +37,7 @@ public class Texture implements MdlxBlock {
 	}
 
 	@Override
-	public void readMdl(final MdlTokenInputStream stream) throws IOException {
+	public void readMdl(final MdlTokenInputStream stream) {
 		for (final String token : stream.readBlock()) {
 			switch (token) {
 			case MdlUtils.TOKEN_IMAGE:
@@ -59,7 +59,7 @@ public class Texture implements MdlxBlock {
 	}
 
 	@Override
-	public void writeMdl(final MdlTokenOutputStream stream) throws IOException {
+	public void writeMdl(final MdlTokenOutputStream stream) {
 		stream.startBlock(MdlUtils.TOKEN_BITMAP);
 		stream.writeStringAttrib(MdlUtils.TOKEN_IMAGE, this.path);
 

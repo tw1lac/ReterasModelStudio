@@ -53,7 +53,7 @@ public class GeosetChunk {
 		return a;
 	}
 
-	public class Geoset {
+	public static class Geoset {
 		private static final int LOD_PART_LEN_V900 = 80;
 
 		public float[] vertexPositions = new float[0];

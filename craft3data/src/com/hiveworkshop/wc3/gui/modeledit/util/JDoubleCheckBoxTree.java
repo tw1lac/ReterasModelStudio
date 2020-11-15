@@ -33,7 +33,7 @@ public class JDoubleCheckBoxTree extends JTree {
 	// Defining data structure that will enable to fast check-indicate the state
 	// of each node
 	// It totally replaces the "selection" mechanism of the JTree
-	private class CheckedNode {
+	private static class CheckedNode {
 		boolean isSelected1;
 		boolean isSelected2;
 		boolean hasChildren;
@@ -55,7 +55,7 @@ public class JDoubleCheckBoxTree extends JTree {
 	// event-handling mechanism
 	protected EventListenerList listenerList = new EventListenerList();
 
-	public class CheckChangeEvent extends EventObject {
+	public static class CheckChangeEvent extends EventObject {
 		private static final long serialVersionUID = -8100230309044193368L;
 		private final TreePath treePath;
 
@@ -208,7 +208,7 @@ public class JDoubleCheckBoxTree extends JTree {
 	// Overriding cell renderer by a class that ignores the original "selection"
 	// mechanism
 	// It decides how to show the nodes due to the checking-mechanism
-	private class CheckBoxCellRenderer extends JPanel implements TreeCellRenderer {
+	private static class CheckBoxCellRenderer extends JPanel implements TreeCellRenderer {
 		private static final long serialVersionUID = -7341833835878991719L;
 		JCheckBox checkBox;
 

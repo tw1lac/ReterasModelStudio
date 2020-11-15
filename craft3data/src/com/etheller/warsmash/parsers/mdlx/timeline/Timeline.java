@@ -79,7 +79,7 @@ public abstract class Timeline<TYPE> implements Chunk {
 		}
 	}
 
-	public void readMdl(final MdlTokenInputStream stream, final War3ID name) throws IOException {
+	public void readMdl(final MdlTokenInputStream stream, final War3ID name) {
 		this.name = name;
 
 		final int keyFrameCount = stream.readInt();
@@ -135,7 +135,7 @@ public abstract class Timeline<TYPE> implements Chunk {
 		stream.read(); // }
 	}
 
-	public void writeMdl(final MdlTokenOutputStream stream) throws IOException {
+	public void writeMdl(final MdlTokenOutputStream stream) {
 		final int tracksCount = this.frames.length;
 		stream.startBlock(AnimationMap.ID_TO_TAG.get(this.name).getMdlToken(), tracksCount);
 

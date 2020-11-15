@@ -47,7 +47,7 @@ public class SoundEmitterChunk {
 		return a;
 	}
 
-	public class SoundEmitter {
+	public static class SoundEmitter {
 		public Node node = new Node();
 		public Tracks tracks;
 

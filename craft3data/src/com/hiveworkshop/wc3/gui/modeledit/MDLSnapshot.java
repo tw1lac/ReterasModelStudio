@@ -98,7 +98,7 @@ public class MDLSnapshot {
 	private final ProgramPreferences programPreferences;
 
 	public MDLSnapshot(final ModelView dispMDL, final int width, final int height,
-			final ProgramPreferences programPreferences) throws LWJGLException {
+			final ProgramPreferences programPreferences) {
 		this.dispMDL = dispMDL;
 		this.width = width;
 		this.height = height;

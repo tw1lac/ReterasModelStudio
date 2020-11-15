@@ -20,13 +20,8 @@ public class AcqRangeEqualsAtkRange {
 
 	public static void main(final String[] args) {
 		final LoadedMPQ mpq;
-		try {
-			mpq = MpqCodebase.get()
-					.loadMPQ(Paths.get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/HeroAbilityJassTest.w3x"));
-		} catch (final MPQException | IOException e1) {
-			e1.printStackTrace();
-			return;
-		}
+		mpq = MpqCodebase.get()
+				.loadMPQ(Paths.get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/HeroAbilityJassTest.w3x"));
 		Warcraft3MapObjectData objectData;
 		try {
 			objectData = Warcraft3MapObjectData.load(true);

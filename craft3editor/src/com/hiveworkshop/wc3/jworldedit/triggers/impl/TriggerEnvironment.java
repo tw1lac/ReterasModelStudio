@@ -103,7 +103,7 @@ public final class TriggerEnvironment implements TriggerTreeController {
 		}
 	}
 
-	private final class DefaultTriggerNameFinder implements CollectionView.ForEach<Trigger> {
+	private static final class DefaultTriggerNameFinder implements CollectionView.ForEach<Trigger> {
 		private String name;
 		private boolean nameFound = false;
 

@@ -49,7 +49,7 @@ public class SequenceChunk {
 		return a;
 	}
 
-	public class Sequence {
+	public static class Sequence {
 		public String name = "";
 		public int intervalStart;
 		public int intervalEnd;

@@ -132,7 +132,7 @@ public class MdxModel {
 			sequenceChunk = new SequenceChunk();
 			sequenceChunk.sequence = new Sequence[mdl.getAnims().size()];
 			for (int i = 0; i < mdl.getAnims().size(); i++) {
-				final SequenceChunk.Sequence seq = sequenceChunk.new Sequence(mdl.getAnim(i));
+				final SequenceChunk.Sequence seq = new Sequence(mdl.getAnim(i));
 				sequenceChunk.sequence[i] = seq;
 			}
 		}
@@ -154,7 +154,7 @@ public class MdxModel {
 			textureChunk = new TextureChunk();
 			textureChunk.texture = new TextureChunk.Texture[mdl.getTextures().size()];
 			for (int i = 0; i < mdl.getTextures().size(); i++) {
-				textureChunk.texture[i] = textureChunk.new Texture(mdl.getTexture(i));
+				textureChunk.texture[i] = new TextureChunk.Texture(mdl.getTexture(i));
 			}
 		}
 		if (mdl.getTexAnims().size() > 0) {
@@ -170,7 +170,7 @@ public class MdxModel {
 			geosetChunk = new GeosetChunk();
 			geosetChunk.geoset = new GeosetChunk.Geoset[mdl.getGeosets().size()];
 			for (int i = 0; i < mdl.getGeosets().size(); i++) {
-				geosetChunk.geoset[i] = geosetChunk.new Geoset(mdl.getGeoset(i));
+				geosetChunk.geoset[i] = new GeosetChunk.Geoset(mdl.getGeoset(i));
 			}
 		}
 		if (mdl.getGeosetAnims().size() > 0) {
@@ -197,7 +197,7 @@ public class MdxModel {
 			final List<Bone> nodes = mdl.sortedIdObjects(Bone.class);
 			boneChunk.bone = new BoneChunk.Bone[nodes.size()];
 			for (int i = 0; i < nodes.size(); i++) {
-				boneChunk.bone[i] = boneChunk.new Bone(nodes.get(i));
+				boneChunk.bone[i] = new BoneChunk.Bone(nodes.get(i));
 			}
 		}
 		if (mdl.sortedIdObjects(Light.class).size() > 0) {
@@ -213,7 +213,7 @@ public class MdxModel {
 			final List<Helper> nodes = mdl.sortedIdObjects(Helper.class);
 			helperChunk.helper = new HelperChunk.Helper[nodes.size()];
 			for (int i = 0; i < nodes.size(); i++) {
-				helperChunk.helper[i] = helperChunk.new Helper(nodes.get(i));
+				helperChunk.helper[i] = new HelperChunk.Helper(nodes.get(i));
 			}
 		}
 		if (mdl.sortedIdObjects(Attachment.class).size() > 0) {
@@ -272,7 +272,7 @@ public class MdxModel {
 			final List<EventObject> nodes = mdl.sortedIdObjects(EventObject.class);
 			eventObjectChunk.eventObject = new EventObjectChunk.EventObject[nodes.size()];
 			for (int i = 0; i < nodes.size(); i++) {
-				eventObjectChunk.eventObject[i] = eventObjectChunk.new EventObject(nodes.get(i));
+				eventObjectChunk.eventObject[i] = new EventObjectChunk.EventObject(nodes.get(i));
 			}
 		}
 		if (mdl.getCameras().size() > 0) {
@@ -288,7 +288,7 @@ public class MdxModel {
 			final List<CollisionShape> nodes = mdl.sortedIdObjects(CollisionShape.class);
 			collisionShapeChunk.collisionShape = new CollisionShapeChunk.CollisionShape[nodes.size()];
 			for (int i = 0; i < nodes.size(); i++) {
-				collisionShapeChunk.collisionShape[i] = collisionShapeChunk.new CollisionShape(nodes.get(i));
+				collisionShapeChunk.collisionShape[i] = new CollisionShapeChunk.CollisionShape(nodes.get(i));
 			}
 		}
 		if (ModelUtils.isBindPoseSupported(versionChunk.version)) {

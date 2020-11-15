@@ -46,7 +46,7 @@ public class ParseEveryBtTModel {
 				}
 			}
 			System.err.println("parsed " + parsed + " successfully");
-		} catch (final MPQException | IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
     }

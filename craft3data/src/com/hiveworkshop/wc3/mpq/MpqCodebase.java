@@ -78,7 +78,7 @@ public class MpqCodebase implements Codebase, DataSource {
 	}
 
 	@Override
-	public ByteBuffer read(final String path) throws IOException {
+	public ByteBuffer read(final String path) {
 		try {
 			for (int i = mpqList.size() - 1; i >= 0; i--) {
 				final DataSource mpq = mpqList.get(i);
@@ -125,7 +125,7 @@ public class MpqCodebase implements Codebase, DataSource {
 		}
 	}
 
-	public LoadedMPQ loadMPQ(final Path path) throws IOException, MPQException {
+	public LoadedMPQ loadMPQ(final Path path) {
 		final DataSource mpqDataSource = new MpqDataSourceDescriptor(path.toString()).createDataSource();
 		mpqList.add(mpqDataSource);
 		return new LoadedMPQ() {

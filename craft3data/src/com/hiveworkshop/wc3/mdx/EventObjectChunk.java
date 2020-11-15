@@ -47,7 +47,7 @@ public class EventObjectChunk {
 		return a;
 	}
 
-	public class EventObject {
+	public static class EventObject {
 		public Node node = new Node();
 		public Tracks tracks;
 

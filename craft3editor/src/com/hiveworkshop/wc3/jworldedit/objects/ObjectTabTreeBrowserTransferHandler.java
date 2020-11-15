@@ -113,7 +113,7 @@ public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 				}
 
 				@Override
-				public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+				public Object getTransferData(final DataFlavor flavor) {
 					return byteArray;
 				}
 			};

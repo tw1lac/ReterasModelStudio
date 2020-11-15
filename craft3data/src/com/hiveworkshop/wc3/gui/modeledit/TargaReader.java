@@ -30,7 +30,7 @@ public class TargaReader {
              return btoi(buf[offset++]);
      }
 
-     public static BufferedImage decode(byte[] buf) throws IOException {
+     public static BufferedImage decode(byte[] buf) {
              offset = 0;
 
              // Reading header bytes

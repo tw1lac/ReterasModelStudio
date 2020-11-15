@@ -47,7 +47,7 @@ public class BoneChunk {
 		return a;
 	}
 
-	public class Bone {
+	public static class Bone {
 		public Node node = new Node();
 		public int geosetId;
 		public int geosetAnimationId;

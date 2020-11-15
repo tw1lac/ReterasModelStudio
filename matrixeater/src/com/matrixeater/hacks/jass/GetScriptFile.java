@@ -11,13 +11,8 @@ import java.nio.file.Paths;
 public class GetScriptFile {
     public static void main(String[] args) {
         final MpqCodebase.LoadedMPQ mpq;
-        try {
-            mpq = MpqCodebase.get().loadMPQ(Paths
-                    .get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/FromTemplarAndHitari/NWU S3 B14.w3x"));
-        } catch (final MPQException | IOException e1) {
-            e1.printStackTrace();
-            return;
-        }
+        mpq = MpqCodebase.get().loadMPQ(Paths
+                .get("C:/Users/micro/OneDrive/Documents/Warcraft III/Maps/FromTemplarAndHitari/NWU S3 B14.w3x"));
         try {
             InputStream resourceAsStream = MpqCodebase.get().getResourceAsStream("scripts\\war3map.j");
             int thingRead;

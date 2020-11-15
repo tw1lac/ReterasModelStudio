@@ -73,7 +73,7 @@ public class CompoundDataSource implements DataSource {
 	}
 
 	@Override
-	public ByteBuffer read(final String path) throws IOException {
+	public ByteBuffer read(final String path) {
 		try {
 			for (int i = this.mpqList.size() - 1; i >= 0; i--) {
 				final DataSource mpq = this.mpqList.get(i);

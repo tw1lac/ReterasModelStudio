@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Map {
-	class HeroType {
+	static class HeroType {
 		String name;
 
 		public HeroType(final String name) {

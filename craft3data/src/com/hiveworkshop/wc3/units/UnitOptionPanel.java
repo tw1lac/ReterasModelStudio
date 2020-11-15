@@ -239,7 +239,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 		return "neutrals";
 	}
 
-	class RaceData {
+	static class RaceData {
 		List<GameObject> units = new ArrayList<>();
 		List<GameObject> heroes = new ArrayList<>();
 		List<GameObject> buildings = new ArrayList<>();
@@ -379,7 +379,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 						depth = 0;
 						newUberTip.append("<br>");
 					}
-					newUberTip.append("").append(c);
+					newUberTip.append(c);
 					depth++;
 				}
 			}

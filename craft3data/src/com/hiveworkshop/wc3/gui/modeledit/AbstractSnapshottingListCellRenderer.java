@@ -20,12 +20,8 @@ public abstract class AbstractSnapshottingListCellRenderer<TYPE> extends Default
 
 	public AbstractSnapshottingListCellRenderer(final ModelView modelDisplay) {
 		matrixFilter = createFilter();
-		try {
-			modelSnapshot = new MDLSnapshot(modelDisplay, 64, 64, null);
-			modelSnapshot.zoomToFit();
-		} catch (final LWJGLException e) {
-			throw new RuntimeException(e);
-		}
+		modelSnapshot = new MDLSnapshot(modelDisplay, 64, 64, null);
+		modelSnapshot.zoomToFit();
 	}
 
 	protected abstract ResettableVertexFilter<TYPE> createFilter();

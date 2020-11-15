@@ -880,7 +880,7 @@ public class MainPanel extends JPanel
 		rootWindow = new RootWindow(viewMap);
 		rootWindow.addListener(new DockingWindowListener() {
 			@Override
-			public void windowUndocking(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowUndocking(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -907,7 +907,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowRestoring(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowRestoring(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -919,7 +919,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowMinimizing(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowMinimizing(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -927,7 +927,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowMaximizing(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowMaximizing(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -939,7 +939,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowDocking(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowDocking(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -947,7 +947,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowClosing(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowClosing(final DockingWindow arg0) {
 			}
 
 			@Override
@@ -991,7 +991,7 @@ public class MainPanel extends JPanel
 		rootWindow.addListener(new DockingWindowListener() {
 
 			@Override
-			public void windowUndocking(final DockingWindow removedWindow) throws OperationAbortedException {
+			public void windowUndocking(final DockingWindow removedWindow) {
 				if (OLDMODE) {
 					if (removedWindow instanceof View) {
 						final View view = (View) removedWindow;
@@ -1017,7 +1017,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowRestoring(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowRestoring(final DockingWindow arg0) {
 				// TODO Auto-generated method stub
 
 			}
@@ -1058,7 +1058,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowMinimizing(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowMinimizing(final DockingWindow arg0) {
 				// TODO Auto-generated method stub
 
 			}
@@ -1070,7 +1070,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowMaximizing(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowMaximizing(final DockingWindow arg0) {
 				// TODO Auto-generated method stub
 
 			}
@@ -1088,7 +1088,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowDocking(final DockingWindow arg0) throws OperationAbortedException {
+			public void windowDocking(final DockingWindow arg0) {
 				// TODO Auto-generated method stub
 
 			}
@@ -1100,7 +1100,7 @@ public class MainPanel extends JPanel
 			}
 
 			@Override
-			public void windowClosing(final DockingWindow closingWindow) throws OperationAbortedException {
+			public void windowClosing(final DockingWindow closingWindow) {
 				if (OLDMODE) {
 					if (closingWindow.getWindowParent() instanceof TabWindow) {
 						if (closingWindow instanceof View) {
@@ -2570,58 +2570,74 @@ public class MainPanel extends JPanel
 		animationMenu.setMnemonic(KeyEvent.VK_A);
 		addMenu.add(animationMenu);
 
-		riseFallBirth = new JMenuItem("Rising/Falling Birth/Death");
-		riseFallBirth.setMnemonic(KeyEvent.VK_R);
-		riseFallBirth.addActionListener(this);
-		animationMenu.add(riseFallBirth);
+		String itemText = "Rising/Falling Birth/Death";
+		int keyEvent = KeyEvent.VK_R;
+		JMenuItem menuItem1;
+		JMenuItem menuItem;
+		menuItem = createMenuItem(itemText, keyEvent, animationMenu);
+
+		menuItem1 = menuItem;
+
+		riseFallBirth = createMenuItem("Rising/Falling Birth/Death", KeyEvent.VK_R, animationMenu);
+//		riseFallBirth = new JMenuItem("Rising/Falling Birth/Death");
+//		riseFallBirth.setMnemonic(KeyEvent.VK_R);
+//		riseFallBirth.addActionListener(this);
+//		animationMenu.add(riseFallBirth);
 
 		singleAnimationMenu = new JMenu("Single");
 		singleAnimationMenu.setMnemonic(KeyEvent.VK_S);
 		animationMenu.add(singleAnimationMenu);
 
-		animFromFile = new JMenuItem("From File");
-		animFromFile.setMnemonic(KeyEvent.VK_F);
-		animFromFile.addActionListener(this);
-		singleAnimationMenu.add(animFromFile);
+		animFromFile = createMenuItem("From File", KeyEvent.VK_F, singleAnimationMenu);
+//		animFromFile = new JMenuItem("From File");
+//		animFromFile.setMnemonic(KeyEvent.VK_F);
+//		animFromFile.addActionListener(this);
+//		singleAnimationMenu.add(animFromFile);
 
-		animFromUnit = new JMenuItem("From Unit");
-		animFromUnit.setMnemonic(KeyEvent.VK_U);
-		animFromUnit.addActionListener(this);
-		singleAnimationMenu.add(animFromUnit);
+		animFromUnit = createMenuItem("From Unit", KeyEvent.VK_U, singleAnimationMenu);
+//		animFromUnit = new JMenuItem("From Unit");
+//		animFromUnit.setMnemonic(KeyEvent.VK_U);
+//		animFromUnit.addActionListener(this);
+//		singleAnimationMenu.add(animFromUnit);
 
-		animFromModel = new JMenuItem("From Model");
-		animFromModel.setMnemonic(KeyEvent.VK_M);
-		animFromModel.addActionListener(this);
-		singleAnimationMenu.add(animFromModel);
+		animFromModel = createMenuItem("From Model", KeyEvent.VK_M, singleAnimationMenu);
+//		animFromModel = new JMenuItem("From Model");
+//		animFromModel.setMnemonic(KeyEvent.VK_M);
+//		animFromModel.addActionListener(this);
+//		singleAnimationMenu.add(animFromModel);
 
-		animFromObject = new JMenuItem("From Object");
-		animFromObject.setMnemonic(KeyEvent.VK_O);
-		animFromObject.addActionListener(this);
-		singleAnimationMenu.add(animFromObject);
+		animFromObject = createMenuItem("From Object", KeyEvent.VK_O, singleAnimationMenu);
+//		animFromObject = new JMenuItem("From Object");
+//		animFromObject.setMnemonic(KeyEvent.VK_O);
+//		animFromObject.addActionListener(this);
+//		singleAnimationMenu.add(animFromObject);
 
 		scriptsMenu = new JMenu("Scripts");
 		scriptsMenu.setMnemonic(KeyEvent.VK_A);
 		scriptsMenu.getAccessibleContext().setAccessibleDescription("Allows the user to execute model edit scripts.");
 		menuBar.add(scriptsMenu);
 
-		importButtonS = new JMenuItem("Oinkerwinkle-Style AnimTransfer");
+		importButtonS = createMenuItem("Oinkerwinkle-Style AnimTransfer", KeyEvent.VK_P, scriptsMenu);
+//		importButtonS = new JMenuItem("Oinkerwinkle-Style AnimTransfer");
 		importButtonS.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
-		importButtonS.setMnemonic(KeyEvent.VK_P);
-		importButtonS.addActionListener(this);
-		// importButtonS.setEnabled(false);
-		scriptsMenu.add(importButtonS);
+//		importButtonS.setMnemonic(KeyEvent.VK_P);
+//		importButtonS.addActionListener(this);
+//		// importButtonS.setEnabled(false);
+//		scriptsMenu.add(importButtonS);
 
-		mergeGeoset = new JMenuItem("Oinkerwinkle-Style Merge Geoset");
+		mergeGeoset = createMenuItem("Oinkerwinkle-Style Merge Geoset", KeyEvent.VK_M, scriptsMenu);
+//		mergeGeoset = new JMenuItem("Oinkerwinkle-Style Merge Geoset");
 		mergeGeoset.setAccelerator(KeyStroke.getKeyStroke("control M"));
-		mergeGeoset.setMnemonic(KeyEvent.VK_M);
-		mergeGeoset.addActionListener(this);
-		scriptsMenu.add(mergeGeoset);
+//		mergeGeoset.setMnemonic(KeyEvent.VK_M);
+//		mergeGeoset.addActionListener(this);
+//		scriptsMenu.add(mergeGeoset);
 
-		nullmodelButton = new JMenuItem("Edit/delete model components");
+		nullmodelButton = createMenuItem("Edit/delete model components", KeyEvent.VK_E, scriptsMenu);
+//		nullmodelButton = new JMenuItem("Edit/delete model components");
 		nullmodelButton.setAccelerator(KeyStroke.getKeyStroke("control E"));
-		nullmodelButton.setMnemonic(KeyEvent.VK_E);
-		nullmodelButton.addActionListener(this);
-		scriptsMenu.add(nullmodelButton);
+//		nullmodelButton.setMnemonic(KeyEvent.VK_E);
+//		nullmodelButton.addActionListener(this);
+//		scriptsMenu.add(nullmodelButton);
 
 		JMenuItem exportAnimatedToStaticMesh = new JMenuItem("Export Animated to Static Mesh");
 		exportAnimatedToStaticMesh.setMnemonic(KeyEvent.VK_E);
@@ -2850,35 +2866,42 @@ public class MainPanel extends JPanel
 		});
 		scriptsMenu.add(combineAnims);
 
-		scaleAnimations = new JMenuItem("Change Animation Lengths by Scaling");
-		scaleAnimations.setMnemonic(KeyEvent.VK_A);
-		scaleAnimations.addActionListener(this);
-		scriptsMenu.add(scaleAnimations);
+		createMenuItem(itemText, keyEvent, animationMenu);
+		scaleAnimations = createMenuItem("Change Animation Lengths by Scaling", KeyEvent.VK_A, scriptsMenu);
+//		scaleAnimations = new JMenuItem("Change Animation Lengths by Scaling");
+//		scaleAnimations.setMnemonic(KeyEvent.VK_A);
+//		scaleAnimations.addActionListener(this);
+//		scriptsMenu.add(scaleAnimations);
 
-		final JMenuItem version800Toggle = new JMenuItem("Assign FormatVersion 800");
-		version800Toggle.setMnemonic(KeyEvent.VK_A);
-		version800Toggle.addActionListener(e -> currentMDL().setFormatVersion(800));
-		scriptsMenu.add(version800Toggle);
+		final JMenuItem version800Toggle = createMenuItem("Assign FormatVersion 800", KeyEvent.VK_A, scriptsMenu, e -> currentMDL().setFormatVersion(800));;
+//		final JMenuItem version800Toggle = new JMenuItem("Assign FormatVersion 800");
+//		version800Toggle.setMnemonic(KeyEvent.VK_A);
+//		version800Toggle.addActionListener(e -> currentMDL().setFormatVersion(800));
+//		scriptsMenu.add(version800Toggle);
 
-		final JMenuItem version1000Toggle = new JMenuItem("Assign FormatVersion 1000");
-		version1000Toggle.setMnemonic(KeyEvent.VK_A);
-		version1000Toggle.addActionListener(e -> currentMDL().setFormatVersion(1000));
-		scriptsMenu.add(version1000Toggle);
+		final JMenuItem version1000Toggle = createMenuItem("Assign FormatVersion 1000", KeyEvent.VK_A, scriptsMenu, e -> currentMDL().setFormatVersion(1000));
+//		final JMenuItem version1000Toggle = new JMenuItem("Assign FormatVersion 1000");
+//		version1000Toggle.setMnemonic(KeyEvent.VK_A);
+//		version1000Toggle.addActionListener(e -> currentMDL().setFormatVersion(1000));
+//		scriptsMenu.add(version1000Toggle);
 
-		final JMenuItem makeItHDItem = new JMenuItem("SD -> HD (highly experimental, requires 900 or 1000)");
-		makeItHDItem.setMnemonic(KeyEvent.VK_A);
-		makeItHDItem.addActionListener(e -> EditableModel.makeItHD(currentMDL()));
-		scriptsMenu.add(makeItHDItem);
+		final JMenuItem makeItHDItem = createMenuItem("SD -> HD (highly experimental, requires 900 or 1000)", KeyEvent.VK_A, scriptsMenu, e -> EditableModel.makeItHD(currentMDL()));
+//		final JMenuItem makeItHDItem = new JMenuItem("SD -> HD (highly experimental, requires 900 or 1000)");
+//		makeItHDItem.setMnemonic(KeyEvent.VK_A);
+//		makeItHDItem.addActionListener(e -> EditableModel.makeItHD(currentMDL()));
+//		scriptsMenu.add(makeItHDItem);
 
-		final JMenuItem version800EditingToggle = new JMenuItem("HD -> SD (highly experimental, becomes 800)");
-		version800EditingToggle.setMnemonic(KeyEvent.VK_A);
-		version800EditingToggle.addActionListener(e -> EditableModel.convertToV800(1, currentMDL()));
-		scriptsMenu.add(version800EditingToggle);
+		final JMenuItem version800EditingToggle = createMenuItem("HD -> SD (highly experimental, becomes 800)", KeyEvent.VK_A, scriptsMenu, e -> EditableModel.convertToV800(1, currentMDL()));
+//		final JMenuItem version800EditingToggle = new JMenuItem("HD -> SD (highly experimental, becomes 800)");
+//		version800EditingToggle.setMnemonic(KeyEvent.VK_A);
+//		version800EditingToggle.addActionListener(e -> EditableModel.convertToV800(1, currentMDL()));
+//		scriptsMenu.add(version800EditingToggle);
 
-		final JMenuItem recalculateTangents = new JMenuItem("Recalculate Tangents (requires 900 or 1000)");
-		recalculateTangents.setMnemonic(KeyEvent.VK_A);
-		recalculateTangents.addActionListener(e -> EditableModel.recalculateTangents(currentMDL(), MainPanel.this));
-		scriptsMenu.add(recalculateTangents);
+		final JMenuItem recalculateTangents = createMenuItem("Recalculate Tangents (requires 900 or 1000)", KeyEvent.VK_A, scriptsMenu, e -> EditableModel.recalculateTangents(currentMDL(), MainPanel.this));
+//		final JMenuItem recalculateTangents = new JMenuItem("Recalculate Tangents (requires 900 or 1000)");
+//		recalculateTangents.setMnemonic(KeyEvent.VK_A);
+//		recalculateTangents.addActionListener(e -> EditableModel.recalculateTangents(currentMDL(), MainPanel.this));
+//		scriptsMenu.add(recalculateTangents);
 
 		final JMenuItem jokebutton = new JMenuItem("Load Retera Land");
 		jokebutton.setMnemonic(KeyEvent.VK_A);
@@ -2954,33 +2977,40 @@ public class MainPanel extends JPanel
 
 		recentMenu.add(new JSeparator());
 
-		clearRecent = new JMenuItem("Clear");
-		clearRecent.setMnemonic(KeyEvent.VK_C);
-		clearRecent.addActionListener(this);
-		recentMenu.add(clearRecent);
+//		createMenuItem(itemText, keyEvent, animationMenu);
+
+
+		clearRecent = createMenuItem("Clear", KeyEvent.VK_C, recentMenu);
+//		clearRecent = new JMenuItem("Clear");
+//		clearRecent.setMnemonic(KeyEvent.VK_C);
+//		clearRecent.addActionListener(this);
+//		recentMenu.add(clearRecent);
 
 		updateRecent();
 
-		changelogButton = new JMenuItem("Changelog");
-		changelogButton.setMnemonic(KeyEvent.VK_A);
-		changelogButton.addActionListener(this);
-		aboutMenu.add(changelogButton);
+		changelogButton = createMenuItem("Changelog", KeyEvent.VK_A, aboutMenu);
+//		changelogButton = new JMenuItem("Changelog");
+//		changelogButton.setMnemonic(KeyEvent.VK_A);
+//		changelogButton.addActionListener(this);
+//		aboutMenu.add(changelogButton);
 
-		creditsButton = new JMenuItem("About");
-		creditsButton.setMnemonic(KeyEvent.VK_A);
-		creditsButton.addActionListener(this);
-		aboutMenu.add(creditsButton);
+		creditsButton = createMenuItem("About", KeyEvent.VK_A, aboutMenu);
+//		creditsButton = new JMenuItem("About");
+//		creditsButton.setMnemonic(KeyEvent.VK_A);
+//		creditsButton.addActionListener(this);
+//		aboutMenu.add(creditsButton);
 
 		showMatrices = new JMenuItem("View Selected \"Matrices\"");
 		// showMatrices.setMnemonic(KeyEvent.VK_V);
 		showMatrices.addActionListener(viewMatricesAction);
 		toolsMenu.add(showMatrices);
 
-		insideOut = new JMenuItem("Flip all selected faces");
-		insideOut.setMnemonic(KeyEvent.VK_I);
-		insideOut.addActionListener(insideOutAction);
+		insideOut = createMenuItem("Flip all selected faces", KeyEvent.VK_I, toolsMenu, insideOutAction);
+//		insideOut = new JMenuItem("Flip all selected faces");
+//		insideOut.setMnemonic(KeyEvent.VK_I);
+//		insideOut.addActionListener(insideOutAction);
 		insideOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK));
-		toolsMenu.add(insideOut);
+//		toolsMenu.add(insideOut);
 
 		insideOutNormals = new JMenuItem("Flip all selected normals");
 		insideOutNormals.addActionListener(insideOutNormalsAction);
@@ -2988,10 +3018,11 @@ public class MainPanel extends JPanel
 
 		toolsMenu.add(new JSeparator());
 
-		editUVs = new JMenuItem("Edit UV Mapping");
-		editUVs.setMnemonic(KeyEvent.VK_U);
-		editUVs.addActionListener(this);
-		toolsMenu.add(editUVs);
+		editUVs = createMenuItem("Edit UV Mapping", KeyEvent.VK_U, toolsMenu);
+//		editUVs = new JMenuItem("Edit UV Mapping");
+//		editUVs.setMnemonic(KeyEvent.VK_U);
+//		editUVs.addActionListener(this);
+//		toolsMenu.add(editUVs);
 
 		editTextures = new JMenuItem("Edit Textures");
 		editTextures.setMnemonic(KeyEvent.VK_T);
@@ -3510,6 +3541,19 @@ public class MainPanel extends JPanel
 			menuBar.getMenu(i).getPopupMenu().setLightWeightPopupEnabled(false);
 		}
 		return menuBar;
+	}
+
+	private JMenuItem createMenuItem(String itemText, int keyEvent, JMenu menu) {
+		return createMenuItem(itemText, keyEvent, menu, this);
+	}
+
+	private JMenuItem createMenuItem(String itemText, int keyEvent, JMenu menu, ActionListener actionListener) {
+		JMenuItem menuItem;
+		menuItem = new JMenuItem(itemText);
+		menuItem.setMnemonic(keyEvent);
+		menuItem.addActionListener(actionListener);
+		menu.add(menuItem);
+		return menuItem;
 	}
 
 	private void createTeamColorMenuItems() {

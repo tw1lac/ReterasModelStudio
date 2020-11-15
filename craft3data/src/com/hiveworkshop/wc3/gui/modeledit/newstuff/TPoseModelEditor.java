@@ -542,7 +542,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 		}
 	}
 
-	private final class GenericSelectorVisitor implements IdObjectVisitor {
+	private static final class GenericSelectorVisitor implements IdObjectVisitor {
 		private List<IdObject> selectedItems;
 		private Rectangle2D area;
 		private CoordinateSystem coordinateSystem;

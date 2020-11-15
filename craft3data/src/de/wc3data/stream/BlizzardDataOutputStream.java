@@ -17,7 +17,7 @@ public class BlizzardDataOutputStream extends BufferedOutputStream {
 		super(new FileOutputStream(file, append));
 	}
 
-	public BlizzardDataOutputStream(final OutputStream outputStream) throws FileNotFoundException {
+	public BlizzardDataOutputStream(final OutputStream outputStream) {
 		super(outputStream);
 	}
 

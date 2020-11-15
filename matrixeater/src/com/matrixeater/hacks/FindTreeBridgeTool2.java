@@ -130,7 +130,7 @@ public class FindTreeBridgeTool2 {
 
 					mapMPQ.unload();
 					dropCache();
-				} catch (final MPQException | IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
             }

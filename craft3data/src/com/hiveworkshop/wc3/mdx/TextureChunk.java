@@ -49,7 +49,7 @@ public class TextureChunk {
 		return a;
 	}
 
-	public class Texture {
+	public static class Texture {
 		public int replaceableId;
 		public String fileName = "";
 		public int unknownNull;
