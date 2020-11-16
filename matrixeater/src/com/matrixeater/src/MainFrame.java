@@ -138,7 +138,7 @@ public class MainFrame extends JFrame {
                     panel.init();
                     if (!startupModelPaths.isEmpty()) {
                         for (final String path : startupModelPaths) {
-                            panel.openFile(new File(path));
+                            FileUtils.openFile(panel, new File(path));
                         }
                     }
                 } catch (final Throwable th) {

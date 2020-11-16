@@ -19,7 +19,6 @@ import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionItemTypes;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarActionButtonType;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
-import com.hiveworkshop.wc3.gui.modeledit.util.TextureExporter;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
 import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportIconUtils;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
@@ -50,7 +49,6 @@ import com.hiveworkshop.wc3.units.objectdata.War3ID;
 import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
-import com.hiveworkshop.wc3.util.IconUtils;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import com.hiveworkshop.wc3.util.ModelUtils.Mesh;
 import com.matrixeater.imp.AnimationTransfer;
@@ -77,10 +75,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.*;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
@@ -152,8 +148,7 @@ public class MainPanel extends JPanel
 	boolean cheatShift = false;
 	boolean cheatAlt = false;
 	final SaveProfile profile = SaveProfile.get();
-	final ProgramPreferences prefs = profile.getPreferences();// new
-														// ProgramPreferences();
+	final ProgramPreferences prefs = profile.getPreferences();
 
 	JToolBar toolbar;
 
@@ -167,35 +162,37 @@ public class MainPanel extends JPanel
 
 	final WarcraftDataSourceChangeNotifier directoryChangeNotifier = new WarcraftDataSourceChangeNotifier();
 
-	public boolean showNormals() {
-		return showNormals.isSelected();
-	}
+//	public boolean showNormals() {
+//		return showNormals.isSelected();
+//	}
+//
+//	public boolean showVMControls() {
+//		return showVertexModifyControls.isSelected();
+//	}
+//
+//	public boolean textureModels() {
+//		return textureModels.isSelected();
+//	}
 
-	public boolean showVMControls() {
-		return showVertexModifyControls.isSelected();
-	}
-
-	public boolean textureModels() {
-		return textureModels.isSelected();
-	}
-
-	public int viewMode() {
-		if (wireframe.isSelected()) {
-			return 0;
-		} else if (solid.isSelected()) {
-			return 1;
-		}
-		return -1;
-	}
+//	public int viewMode() {
+//		if (wireframe.isSelected()) {
+//			return 0;
+//		} else if (solid.isSelected()) {
+//			return 1;
+//		}
+//		return -1;
+//	}
 
 	final JMenuItem contextClose;
 	final JMenuItem contextCloseAll;
 	final JMenuItem contextCloseOthers;
 	int contextClickedTab = 0;
 	final JPopupMenu contextMenu;
+
 	final AbstractAction undoAction = new UndoActionImplementation("Undo", this);
 	final AbstractAction redoAction = new RedoActionImplementation("Redo", this);
 	final ClonedNodeNamePicker namePicker = new ClonedNodeNamePickerImplementation(this);
+
 	final AbstractAction cloneAction = new AbstractAction("CloneSelection") {
 		@Override
 		public void actionPerformed(final ActionEvent e) {
@@ -759,10 +756,11 @@ public class MainPanel extends JPanel
 					new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)), panel)));
 		}
 	};
+
 	private ToolbarButtonGroup<SelectionItemTypes> selectionItemTypeGroup;
 	private ToolbarButtonGroup<SelectionMode> selectionModeGroup;
 	private ToolbarButtonGroup<ToolbarActionButtonType> actionTypeGroup;
-	private final ModelStructureChangeListener modelStructureChangeListener;
+	final ModelStructureChangeListener modelStructureChangeListener;
 	private final ViewportTransferHandler viewportTransferHandler;
 	private final RootWindow rootWindow;
 	private final View viewportControllerWindowView;
@@ -790,7 +788,7 @@ public class MainPanel extends JPanel
 			mouseCoordDisplay[i].setMinimumSize(new Dimension(50, 15));
 			mouseCoordDisplay[i].setEditable(false);
 		}
-		modelStructureChangeListener = new ModelStructureChangeListenerImplementation(() -> currentModelPanel().getModel());
+		modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> currentModelPanel().getModel());
 		animatedRenderEnvironment = new TimeEnvironmentImpl();
 		BLPPanel blpPanel = new BLPPanel(null);
 		timeSliderPanel = new TimeSliderPanel(animatedRenderEnvironment, modelStructureChangeListener, prefs);
@@ -1331,7 +1329,7 @@ public class MainPanel extends JPanel
 	private View createMPQBrowser(final ImageIcon imageIcon) {
 		final MPQBrowser mpqBrowser = new MPQBrowser(MpqCodebase.get(), filepath -> {
 			if (filepath.toLowerCase().endsWith(".mdx")) {
-				loadFile(MpqCodebase.get().getFile(filepath), true);
+				FileUtils.loadFile(this, MpqCodebase.get().getFile(filepath), true);
 			} else if (filepath.toLowerCase().endsWith(".blp")) {
 				loadBLPPathAsModel(filepath);
 			} else if (filepath.toLowerCase().endsWith(".png")) {
@@ -1437,13 +1435,13 @@ public class MainPanel extends JPanel
 		creatorPanel.changeActivity(newType);
 	}
 
-	private static final Quaternion IDENTITY = new Quaternion();
-	private final TimeEnvironmentImpl animatedRenderEnvironment;
+	static final Quaternion IDENTITY = new Quaternion();
+	final TimeEnvironmentImpl animatedRenderEnvironment;
 	private JButton snapButton;
 	private final CoordDisplayListener coordDisplayListener;
 	protected ModelEditorActionType actionType;
 	private JMenu teamColorMenu;
-	private CreatorModelingPanel creatorPanel;
+	CreatorModelingPanel creatorPanel;
 
 	public void refreshAnimationModeState() {
 		if (animationModeState) {
@@ -1491,7 +1489,7 @@ public class MainPanel extends JPanel
 		creatorPanel.setAnimationModeState(animationModeState);
 	}
 
-	private void reloadGeosetManagers(final ModelPanel display) {
+	void reloadGeosetManagers(final ModelPanel display) {
 		geoControl.repaint();
 		display.getModelViewManagingTree().reloadFromModelView();
 		geoControl.setViewportView(display.getModelViewManagingTree());
@@ -1505,19 +1503,18 @@ public class MainPanel extends JPanel
 				display.getPerspArea().getViewport());
 	}
 
-	private void reloadComponentBrowser(final ModelPanel display) {
+	void reloadComponentBrowser(final ModelPanel display) {
 		geoControlModelData.repaint();
 		display.getModelComponentBrowserTree().reloadFromModelView();
 		geoControlModelData.setViewportView(display.getModelComponentBrowserTree());
 	}
 
-	public void reloadGUI() {
-		refreshUndo();
-		refreshController();
-		refreshAnimationModeState();
-		reloadGeosetManagers(currentModelPanel());
-
-	}
+//	public void reloadGUI() {
+//		refreshUndo();
+//		refreshController();
+//		refreshAnimationModeState();
+//		reloadGeosetManagers(currentModelPanel());
+//	}
 
 	/**
 	 * Right now this is a plug to the statics to load unit data. However, it's a
@@ -1565,68 +1562,18 @@ public class MainPanel extends JPanel
 	public JToolBar createJToolBar() {
 		toolbar = new JToolBar(JToolBar.HORIZONTAL);
 		toolbar.setFloatable(false);
-		toolbar.add(new AbstractAction("New", ViewportIconUtils.loadImageIcon("icons/actions/new.png")) {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					newModel();
-				} catch (final Exception exc) {
-					exc.printStackTrace();
-					ExceptionPopup.display(exc);
-				}
-			}
-		});
-		toolbar.add(new AbstractAction("Open", ViewportIconUtils.loadImageIcon("icons/actions/open.png")) {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					onClickOpen();
-				} catch (final Exception exc) {
-					exc.printStackTrace();
-					ExceptionPopup.display(exc);
-				}
-			}
-		});
-		toolbar.add(new AbstractAction("Save", ViewportIconUtils.loadImageIcon("icons/actions/save.png")) {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					onClickSave();
-				} catch (final Exception exc) {
-					exc.printStackTrace();
-					ExceptionPopup.display(exc);
-				}
-			}
-		});
+
+		addToolbarIcon("New", "new.png", this::newModel);
+
+		addToolbarIcon("Open", "open.png", this::onClickOpen);
+
+		addToolbarIcon("Save", "save.png", this::onClickSave);
+
 		toolbar.addSeparator();
-		toolbar.add(new AbstractAction("Undo", ViewportIconUtils.loadImageIcon("icons/actions/undo.png")) {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					currentModelPanel().getUndoManager().undo();
-				} catch (final NoSuchElementException exc) {
-					JOptionPane.showMessageDialog(MainPanel.this, "Nothing to undo!");
-				} catch (final Exception exc) {
-					ExceptionPopup.display(exc);
-					// exc.printStackTrace();
-				}
-				repaint();
-			}
-		});
-		toolbar.add(new AbstractAction("Redo", ViewportIconUtils.loadImageIcon("icons/actions/redo.png")) {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					currentModelPanel().getUndoManager().redo();
-				} catch (final NoSuchElementException exc) {
-					JOptionPane.showMessageDialog(MainPanel.this, "Nothing to redo!");
-				} catch (final Exception exc) {
-					ExceptionPopup.display(exc);
-					// exc.printStackTrace();
-				}
-				repaint();
-			}
-		});
+
+		addToolbarIcon("Undo", "undo.png", undoAction);
+		addToolbarIcon("Redo", "redo.png", redoAction);
+
 		toolbar.addSeparator();
 		selectionModeGroup = new ToolbarButtonGroup<>(toolbar, SelectionMode.values());
 		toolbar.addSeparator();
@@ -1716,24 +1663,31 @@ public class MainPanel extends JPanel
 
 		return toolbar;
 	}
+	private void addToolbarIcon(String hooverText, String icon, AbstractAction action) {
+		JButton button = new JButton(ViewportIconUtils.loadImageIcon("icons/actions/" + icon));
+		button.setToolTipText(hooverText);
+		button.addActionListener(action);
+		toolbar.add(button);
+	}
+
+	private void addToolbarIcon(String name, String icon, Runnable function) {
+		toolbar.add(new AbstractAction(name, ViewportIconUtils.loadImageIcon("icons/actions/" + icon)) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				try {
+					function.run();
+				} catch (final Exception exc) {
+					exc.printStackTrace();
+					ExceptionPopup.display(exc);
+				}
+			}
+		});
+	}
 
 	public void init() {
 		final JRootPane root = getRootPane();
-		// JPanel root = this;
 		linkActions(root);
-
 		updateUIFromProgramPreferences();
-		// if( wireframe.isSelected() ){
-		// prefs.setViewMode(0);
-		// }
-		// else if( solid.isSelected() ){
-		// prefs.setViewMode(1);
-		// }
-		// else {
-		// prefs.setViewMode(-1);
-		// }
-
-		// defaultModelStartupHack();
 	}
 
 	private void linkActions(final JComponent root) {
@@ -2313,183 +2267,7 @@ public class MainPanel extends JPanel
 
 		addParticle = createMenuMenu("Particle", KeyEvent.VK_P, addMenu);
 
-		final File stockFolder = new File("matrixeater/stock/particles");
-		final File[] stockFiles = stockFolder.listFiles((dir, name) -> name.endsWith(".mdx"));
-		for (final File file : stockFiles) {
-				final String basicName = file.getName().split("\\.")[0];
-				final File pngImage = new File(file.getParent() + File.separatorChar + basicName + ".png");
-				if (pngImage.exists()) {
-					try {
-						final Image image = ImageIO.read(pngImage);
-						final JMenuItem particleItem = new JMenuItem(basicName,
-								new ImageIcon(image.getScaledInstance(28, 28, Image.SCALE_DEFAULT)));
-						particleItem.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(final ActionEvent e) {
-								final ParticleEmitter2 particle = EditableModel.read(file)
-										.sortedIdObjects(ParticleEmitter2.class).get(0);
-
-								final JPanel particlePanel = new JPanel();
-								final List<IdObject> idObjects = new ArrayList<>(currentMDL().getIdObjects());
-								final Bone nullBone = new Bone("No parent");
-								idObjects.add(0, nullBone);
-								final JComboBox<IdObject> parent = new JComboBox<>(idObjects.toArray(new IdObject[0]));
-								parent.setRenderer(new BasicComboBoxRenderer() {
-									@Override
-									public Component getListCellRendererComponent(final JList list, final Object value,
-																				  final int index, final boolean isSelected, final boolean cellHasFocus) {
-										final IdObject idObject = (IdObject) value;
-										if (idObject == nullBone) {
-											return super.getListCellRendererComponent(list, "No parent", index, isSelected,
-													cellHasFocus);
-										}
-										return super.getListCellRendererComponent(list,
-												value.getClass().getSimpleName() + " \"" + idObject.getName() + "\"", index,
-												isSelected, cellHasFocus);
-									}
-								});
-								final JLabel parentLabel = new JLabel("Parent:");
-								final JLabel imageLabel = new JLabel(
-										new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-								final JLabel titleLabel = new JLabel("Add " + basicName);
-								titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-
-								final JLabel nameLabel = new JLabel("Particle Name:");
-								final JTextField nameField = new JTextField("MyBlizParticle");
-
-								final JLabel xLabel = new JLabel("Z:");
-								final JSpinner xSpinner = new JSpinner(
-										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-
-								final JLabel yLabel = new JLabel("X:");
-								final JSpinner ySpinner = new JSpinner(
-										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-
-								final JLabel zLabel = new JLabel("Y:");
-								final JSpinner zSpinner = new JSpinner(
-										new SpinnerNumberModel(0.0, -100000.00, 100000.0, 0.0001));
-								parent.addActionListener(e12 -> {
-									final IdObject choice = parent.getItemAt(parent.getSelectedIndex());
-									xSpinner.setValue(choice.getPivotPoint().x);
-									ySpinner.setValue(choice.getPivotPoint().y);
-									zSpinner.setValue(choice.getPivotPoint().z);
-								});
-
-								final JPanel animPanel = new JPanel();
-								final List<Animation> anims = currentMDL().getAnims();
-								animPanel.setLayout(new GridLayout(anims.size() + 1, 1));
-								final JCheckBox[] checkBoxes = new JCheckBox[anims.size()];
-								int animIndex = 0;
-								for (final Animation anim : anims) {
-									animPanel.add(checkBoxes[animIndex] = new JCheckBox(anim.getName()));
-									checkBoxes[animIndex].setSelected(true);
-									animIndex++;
-								}
-								final JButton chooseAnimations = new JButton("Choose when to show!");
-								chooseAnimations.addActionListener(e13 -> JOptionPane.showMessageDialog(particlePanel, animPanel));
-								final JButton[] colorButtons = new JButton[3];
-								final Color[] colors = new Color[colorButtons.length];
-								for (int i = 0; i < colorButtons.length; i++) {
-									final Vertex colorValues = particle.getSegmentColor(i);
-									final Color color = new Color((int) (colorValues.z * 255), (int) (colorValues.y * 255),
-											(int) (colorValues.x * 255));
-
-									final JButton button = new JButton("Color " + (i + 1),
-											new ImageIcon(IconUtils.createBlank(color, 32, 32)));
-									colors[i] = color;
-									final int index = i;
-									button.addActionListener(e14 -> {
-										final Color colorChoice = JColorChooser.showDialog(MainPanel.this,
-												"Chooser Color", colors[index]);
-										if (colorChoice != null) {
-											colors[index] = colorChoice;
-											button.setIcon(new ImageIcon(IconUtils.createBlank(colors[index], 32, 32)));
-										}
-									});
-									colorButtons[i] = button;
-								}
-
-								final GroupLayout layout = new GroupLayout(particlePanel);
-
-								layout.setHorizontalGroup(
-										layout.createSequentialGroup().addComponent(imageLabel).addGap(8)
-												.addGroup(layout.createParallelGroup(Alignment.CENTER)
-														.addComponent(titleLabel)
-														.addGroup(layout.createSequentialGroup().addComponent(nameLabel)
-																.addGap(4).addComponent(nameField))
-														.addGroup(layout.createSequentialGroup().addComponent(parentLabel)
-																.addGap(4).addComponent(parent))
-														.addComponent(chooseAnimations)
-														.addGroup(layout.createSequentialGroup().addComponent(xLabel)
-																.addComponent(xSpinner).addGap(4).addComponent(yLabel)
-																.addComponent(ySpinner).addGap(4).addComponent(zLabel)
-																.addComponent(zSpinner))
-														.addGroup(
-																layout.createSequentialGroup().addComponent(colorButtons[0])
-																		.addGap(4).addComponent(colorButtons[1]).addGap(4)
-																		.addComponent(colorButtons[2]))));
-								layout.setVerticalGroup(
-										layout.createParallelGroup(Alignment.CENTER).addComponent(imageLabel)
-												.addGroup(
-														layout.createSequentialGroup().addComponent(titleLabel)
-																.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																		.addComponent(nameLabel).addComponent(nameField))
-																.addGap(4)
-																.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																		.addComponent(parentLabel).addComponent(parent))
-																.addGap(4).addComponent(chooseAnimations).addGap(4)
-																.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																		.addComponent(xLabel).addComponent(xSpinner)
-																		.addComponent(yLabel).addComponent(ySpinner)
-																		.addComponent(zLabel).addComponent(zSpinner))
-																.addGap(4)
-																.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																		.addComponent(colorButtons[0])
-																		.addComponent(colorButtons[1])
-																		.addComponent(colorButtons[2]))));
-								particlePanel.setLayout(layout);
-								final int x = JOptionPane.showConfirmDialog(MainPanel.this, particlePanel,
-										"Add " + basicName, JOptionPane.OK_CANCEL_OPTION);
-								if (x == JOptionPane.OK_OPTION) {
-									// do stuff
-									particle.setPivotPoint(new Vertex(((Number) xSpinner.getValue()).doubleValue(),
-											((Number) ySpinner.getValue()).doubleValue(),
-											((Number) zSpinner.getValue()).doubleValue()));
-									for (int i = 0; i < colors.length; i++) {
-										particle.setSegmentColor(i, new Vertex(colors[i].getBlue() / 255.00,
-												colors[i].getGreen() / 255.00, colors[i].getRed() / 255.00));
-									}
-									final IdObject parentChoice = parent.getItemAt(parent.getSelectedIndex());
-									if (parentChoice == nullBone) {
-										particle.setParent(null);
-									} else {
-										particle.setParent(parentChoice);
-									}
-									AnimFlag oldFlag = particle.getVisibilityFlag();
-									if (oldFlag == null) {
-										oldFlag = new AnimFlag("Visibility");
-									}
-									final AnimFlag visFlag = AnimFlag.buildEmptyFrom(oldFlag);
-									animIndex = 0;
-									for (final Animation anim : anims) {
-										if (!checkBoxes[animIndex].isSelected()) {
-											visFlag.addEntry(anim.getStart(), 0);
-										}
-										animIndex++;
-									}
-									particle.setVisibilityFlag(visFlag);
-									particle.setName(nameField.getText());
-									currentMDL().add(particle);
-									modelStructureChangeListener.nodesAdded(Collections.<IdObject>singletonList(particle));
-								}
-							}
-						});
-						addParticle.add(particleItem);
-					} catch (final IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
+		FileUtils.fetchIncludedParticles(this);
 
 		animationMenu = createMenuMenu("Animation", KeyEvent.VK_A, addMenu);
 
@@ -2943,8 +2721,6 @@ public class MainPanel extends JPanel
 
 		open = createMenuItem("Open", KeyEvent.VK_O, fileMenu, KeyStroke.getKeyStroke("control O"));
 
-//		fileMenu.add(recentMenu);
-
 		fetch = createMenuMenu("Open Internal", KeyEvent.VK_F, fileMenu);
 
 		fetchUnit = createMenuItem("Unit", KeyEvent.VK_U, fetch, KeyStroke.getKeyStroke("control U"));
@@ -3001,7 +2777,7 @@ public class MainPanel extends JPanel
 						setCurrentModel(null);
 					}
 					final File fileToRevert = modelPanel.getModel().getFile();
-					loadFile(fileToRevert);
+					FileUtils.loadFile(this, fileToRevert);
 				}
 			}
 		});
@@ -3408,7 +3184,7 @@ public class MainPanel extends JPanel
 					toolsMenu.getAccessibleContext().setAccessibleDescription(
 							"Allows the user to control which parts of the model are displayed for editing.");
 					toolsMenu.setEnabled(true);
-					importFile(currentFile);
+					FileUtils.importFile(this, currentFile);
 				}
 
 				fc.setSelectedFile(null);
@@ -3464,7 +3240,7 @@ public class MainPanel extends JPanel
 				final EditableModel current = currentMDL();
 				if (filepath != null) {
 					final File animationSource = MpqCodebase.get().getFile(filepath);
-					importFile(animationSource);
+					FileUtils.importFile(this, animationSource);
 				}
 				refreshController();
 			} else if (e.getSource() == importGameModel) {
@@ -3476,7 +3252,7 @@ public class MainPanel extends JPanel
 				final EditableModel current = currentMDL();
 				if (filepath != null) {
 					final File animationSource = MpqCodebase.get().getFile(filepath);
-					importFile(animationSource);
+					FileUtils.importFile(this, animationSource);
 				}
 				refreshController();
 			} else if (e.getSource() == importGameObject) {
@@ -3488,7 +3264,7 @@ public class MainPanel extends JPanel
 				final EditableModel current = currentMDL();
 				if (filepath != null) {
 					final File animationSource = MpqCodebase.get().getFile(filepath);
-					importFile(animationSource);
+					FileUtils.importFile(this, animationSource);
 				}
 				refreshController();
 			} else if (e.getSource() == importFromWorkspace) {
@@ -3501,7 +3277,7 @@ public class MainPanel extends JPanel
 						"Choose a workspace item to import data from:", "Import from Workspace",
 						JOptionPane.OK_CANCEL_OPTION, null, optionNames.toArray(), optionNames.get(0));
 				if (choice != null) {
-					importFile(EditableModel.deepClone(choice, choice.getHeaderName()));
+					FileUtils.importFile(this, EditableModel.deepClone(choice, choice.getHeaderName()));
 				}
 				refreshController();
 			} else if (e.getSource() == importButtonS) {
@@ -3584,7 +3360,7 @@ public class MainPanel extends JPanel
 					updateRecent();
 				}
 			} else if (e.getSource() == nullmodelButton) {
-				nullmodelFile();
+				FileUtils.nullModelFile(this);
 				refreshController();
 			} else if ((e.getSource() == save) && (currentMDL() != null) && (currentMDL().getFile() != null)) {
 				onClickSave();
@@ -4091,51 +3867,10 @@ public class MainPanel extends JPanel
 		final int returnValue = fc.showOpenDialog(this);
 
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			openFile(fc.getSelectedFile());
+			FileUtils.openFile(this, fc.getSelectedFile());
 		}
 
 		fc.setSelectedFile(null);
-
-		// //Special thanks to the JWSFileChooserDemo from oracle's Java
-		// tutorials, from which many ideas were borrowed for the following
-		// FileOpenService fos = null;
-		// FileContents fileContents = null;
-		//
-		// try
-		// {
-		// fos =
-		// (FileOpenService)ServiceManager.lookup("javax.jnlp.FileOpenService");
-		// }
-		// catch (UnavailableServiceException exc )
-		// {
-		//
-		// }
-		//
-		// if( fos != null )
-		// {
-		// try
-		// {
-		// fileContents = fos.openFileDialog(null, null);
-		// }
-		// catch (Exception exc )
-		// {
-		// JOptionPane.showMessageDialog(this,"Opening command failed:
-		// "+exc.getLocalizedMessage());
-		// }
-		// }
-		//
-		// if( fileContents != null)
-		// {
-		// try
-		// {
-		// fileContents.getName();
-		// }
-		// catch (IOException exc)
-		// {
-		// JOptionPane.showMessageDialog(this,"Problem opening file:
-		// "+exc.getLocalizedMessage());
-		// }
-		// }
 	}
 
 	private void newModel() {
@@ -4157,6 +3892,7 @@ public class MainPanel extends JPanel
 
 		final int userDialogResult = JOptionPane.showConfirmDialog(this, newModelPanel, "New Model",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		// TODO Duplicated code!
 		if (userDialogResult == JOptionPane.OK_OPTION) {
 			final EditableModel mdl = new EditableModel(newModelNameField.getText());
 			if (createBoxButton.isSelected()) {
@@ -4180,35 +3916,37 @@ public class MainPanel extends JPanel
 				ModelUtils.createGroundPlane(mdl, new Vertex(64, 64, 0), new Vertex(-64, -64, 0),
 						((Number) spinner.getValue()).intValue());
 			}
-			final ModelPanel temp = new ModelPanel(this, mdl, prefs, MainPanel.this, selectionItemTypeGroup,
-					selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-					activeViewportWatcher, GlobalIcons.MDL_ICON, false, textureExporter);
+			final ModelPanel temp = createModelPanel(mdl, GlobalIcons.MDL_ICON, false);
 			loadModel(true, true, temp);
 		}
 
 	}
 
+	private ModelPanel createModelPanel(EditableModel model, ImageIcon icon, boolean specialBLPModel) {
+		return new ModelPanel(this, model, prefs, MainPanel.this, selectionItemTypeGroup,
+				selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
+				activeViewportWatcher, icon, specialBLPModel, textureExporter);
+	}
+
 	private GameObject fetchUnit() {
 		final GameObject choice = UnitOptionPane.show(this);
 		if (choice != null) {
+			String filepath = choice.getField("file");
 
+			try {
+				filepath = convertPathToMDX(filepath);
+				// modelDisp = new MDLDisplay(toLoad, null);
+			} catch (final Exception exc) {
+				exc.printStackTrace();
+				// bad model!
+				JOptionPane.showMessageDialog(MainFrame.frame, "The chosen model could not be used.", "Program Error",
+						JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+			return choice;
 		} else {
 			return null;
 		}
-
-		String filepath = choice.getField("file");
-
-		try {
-			filepath = convertPathToMDX(filepath);
-			// modelDisp = new MDLDisplay(toLoad, null);
-		} catch (final Exception exc) {
-			exc.printStackTrace();
-			// bad model!
-			JOptionPane.showMessageDialog(MainFrame.frame, "The chosen model could not be used.", "Program Error",
-					JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		return choice;
 	}
 
 	private String convertPathToMDX(String filepath) {
@@ -4227,20 +3965,19 @@ public class MainPanel extends JPanel
 		}
 		String filepath = model.getFilepath();
 		if (filepath != null) {
-
+			try {
+				filepath = convertPathToMDX(filepath);
+			} catch (final Exception exc) {
+				exc.printStackTrace();
+				// bad model!
+				JOptionPane.showMessageDialog(MainFrame.frame, "The chosen model could not be used.", "Program Error",
+						JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+			return model;
 		} else {
 			return null;
 		}
-		try {
-			filepath = convertPathToMDX(filepath);
-		} catch (final Exception exc) {
-			exc.printStackTrace();
-			// bad model!
-			JOptionPane.showMessageDialog(MainFrame.frame, "The chosen model could not be used.", "Program Error",
-					JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		return model;
 	}
 
 	private MutableGameObject fetchObject() {
@@ -4315,196 +4052,8 @@ public class MainPanel extends JPanel
 		}
 	}
 
-	private interface ModelReference {
+	interface ModelReference {
 		EditableModel getModel();
-	}
-
-	private final class ModelStructureChangeListenerImplementation implements ModelStructureChangeListener {
-		private final ModelReference modelReference;
-
-		public ModelStructureChangeListenerImplementation(final ModelReference modelReference) {
-			this.modelReference = modelReference;
-		}
-
-		public ModelStructureChangeListenerImplementation(final EditableModel model) {
-			this.modelReference = () -> model;
-		}
-
-		@Override
-		public void nodesRemoved(final List<IdObject> nodes) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final IdObject geoset : nodes) {
-					display.getModelViewManager().makeIdObjectNotVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-			}
-		}
-
-		@Override
-		public void nodesAdded(final List<IdObject> nodes) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final IdObject geoset : nodes) {
-					display.getModelViewManager().makeIdObjectVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-				display.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, IDENTITY, IDENTITY,
-						IDENTITY, display.getPerspArea().getViewport());
-				display.getAnimationViewer().reload();
-			}
-		}
-
-		@Override
-		public void geosetsRemoved(final List<Geoset> geosets) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final Geoset geoset : geosets) {
-					display.getModelViewManager().makeGeosetNotEditable(geoset);
-					display.getModelViewManager().makeGeosetNotVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-			}
-		}
-
-		@Override
-		public void geosetsAdded(final List<Geoset> geosets) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final Geoset geoset : geosets) {
-					display.getModelViewManager().makeGeosetEditable(geoset);
-					// display.getModelViewManager().makeGeosetVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-			}
-		}
-
-		@Override
-		public void camerasAdded(final List<Camera> cameras) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final Camera camera : cameras) {
-					display.getModelViewManager().makeCameraVisible(camera);
-					// display.getModelViewManager().makeGeosetVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-			}
-		}
-
-		@Override
-		public void camerasRemoved(final List<Camera> cameras) {
-			// Tell program to set visibility after import
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				// display.setBeenSaved(false); // we edited the model
-				// TODO notify been saved system, wherever that moves to
-				for (final Camera camera : cameras) {
-					display.getModelViewManager().makeCameraNotVisible(camera);
-					// display.getModelViewManager().makeGeosetVisible(geoset);
-				}
-				reloadGeosetManagers(display);
-			}
-		}
-
-		@Override
-		public void timelineAdded(final TimelineContainer node, final AnimFlag timeline) {
-
-		}
-
-		@Override
-		public void keyframeAdded(final TimelineContainer node, final AnimFlag timeline, final int trackTime) {
-			timeSliderPanel.revalidateKeyframeDisplay();
-		}
-
-		@Override
-		public void timelineRemoved(final TimelineContainer node, final AnimFlag timeline) {
-
-		}
-
-		@Override
-		public void keyframeRemoved(final TimelineContainer node, final AnimFlag timeline, final int trackTime) {
-			timeSliderPanel.revalidateKeyframeDisplay();
-		}
-
-		@Override
-		public void animationsAdded(final List<Animation> animation) {
-			currentModelPanel().getAnimationViewer().reload();
-			currentModelPanel().getAnimationController().reload();
-			creatorPanel.reloadAnimationList();
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
-
-		@Override
-		public void animationsRemoved(final List<Animation> animation) {
-			currentModelPanel().getAnimationViewer().reload();
-			currentModelPanel().getAnimationController().reload();
-			creatorPanel.reloadAnimationList();
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
-
-		@Override
-		public void texturesChanged() {
-			final ModelPanel modelPanel = currentModelPanel();
-			if (modelPanel != null) {
-				modelPanel.getAnimationViewer().reloadAllTextures();
-				modelPanel.getPerspArea().reloadAllTextures();
-			}
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
-
-		@Override
-		public void headerChanged() {
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
-
-		@Override
-		public void animationParamsChanged(final Animation animation) {
-			currentModelPanel().getAnimationViewer().reload();
-			currentModelPanel().getAnimationController().reload();
-			creatorPanel.reloadAnimationList();
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
-
-		@Override
-		public void globalSequenceLengthChanged(final int index, final Integer newLength) {
-			currentModelPanel().getAnimationViewer().reload();
-			currentModelPanel().getAnimationController().reload();
-			creatorPanel.reloadAnimationList();
-			final ModelPanel display = displayFor(modelReference.getModel());
-			if (display != null) {
-				reloadComponentBrowser(display);
-			}
-		}
 	}
 
 	private static final class RepaintingModelStateListener implements ModelViewStateListener {
@@ -4609,7 +4158,7 @@ public class MainPanel extends JPanel
 					toolsMenu.setEnabled(true);
 					SaveProfile.get().addRecent(currentFile.getPath());
 					updateRecent();
-					loadFile(currentFile);
+					FileUtils.loadFile(this, currentFile);
 				});
 				recentMenu.add(item, recentMenu.getItemCount() - 2);
 			}
@@ -4655,6 +4204,7 @@ public class MainPanel extends JPanel
 		return output;
 	}
 
+	//TODO move this!
 	public void loadFile(final File f, final boolean temporary, final boolean selectNewTab, final ImageIcon icon) {
 		if (f.getPath().toLowerCase().endsWith("blp")) {
 			loadBLPPathAsModel(f.getName(), f.getParentFile());
@@ -4669,9 +4219,7 @@ public class MainPanel extends JPanel
 			try (BlizzardDataInputStream in = new BlizzardDataInputStream(new FileInputStream(f))) {
 				final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
 				model.setFileRef(f);
-				temp = new ModelPanel(this, model, prefs, MainPanel.this, selectionItemTypeGroup, selectionModeGroup,
-						modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-						activeViewportWatcher, icon, false, textureExporter);
+				temp = createModelPanel(model, icon, false);
 			} catch (final IOException e) {
 				e.printStackTrace();
 				ExceptionPopup.display(e);
@@ -4684,17 +4232,13 @@ public class MainPanel extends JPanel
 			final Build builder = new Build();
 			try {
 				final Parse obj = new Parse(builder, f.getPath());
-				temp = new ModelPanel(this, builder.createMDL(), prefs, MainPanel.this, selectionItemTypeGroup,
-						selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-						activeViewportWatcher, icon, false, textureExporter);
+				temp = createModelPanel(builder.createMDL(), icon, false);
 			} catch (final IOException e) {
 				ExceptionPopup.display(e);
 				e.printStackTrace();
 			}
 		} else {
-			temp = new ModelPanel(this, EditableModel.read(f), prefs, MainPanel.this, selectionItemTypeGroup,
-					selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-					activeViewportWatcher, icon, false, textureExporter);
+			temp = createModelPanel(EditableModel.read(f), icon, false);
 			temp.setFile(f);
 		}
 		loadModel(temporary, selectNewTab, temp);
@@ -4706,9 +4250,7 @@ public class MainPanel extends JPanel
 		try (BlizzardDataInputStream in = new BlizzardDataInputStream(f)) {
 			final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
 			model.setFileRef(null);
-			temp = new ModelPanel(this, model, prefs, MainPanel.this, selectionItemTypeGroup, selectionModeGroup,
-					modelStructureChangeListener, coordDisplayListener, viewportTransferHandler, activeViewportWatcher,
-					icon, false, textureExporter);
+			temp = createModelPanel(model, icon, false);
 		} catch (final IOException e) {
 			e.printStackTrace();
 			ExceptionPopup.display(e);
@@ -4745,31 +4287,14 @@ public class MainPanel extends JPanel
 		final int displayHeight = (int) (aspectRatio < 1 ? 128 : 128 / aspectRatio);
 
 		final int groundOffset = aspectRatio > 1 ? (128 - displayHeight) / 2 : 0;
-		final GeosetVertex upperLeft = new GeosetVertex(0, displayWidth / 2, displayHeight + groundOffset,
-				new Normal(0, 0, 1));
-		final TVertex upperLeftTVert = new TVertex(1, 0);
-		upperLeft.addTVertex(upperLeftTVert);
-		newGeoset.add(upperLeft);
-		upperLeft.setGeoset(newGeoset);
 
-		final GeosetVertex upperRight = new GeosetVertex(0, -displayWidth / 2, displayHeight + groundOffset,
-				new Normal(0, 0, 1));
-		newGeoset.add(upperRight);
-		final TVertex upperRightTVert = new TVertex(0, 0);
-		upperRight.addTVertex(upperRightTVert);
-		upperRight.setGeoset(newGeoset);
+		final GeosetVertex upperLeft = addGeosetAndTVerticies(newGeoset, 0, displayWidth, displayHeight + groundOffset, 1, 0);
 
-		final GeosetVertex lowerLeft = new GeosetVertex(0, displayWidth / 2, groundOffset, new Normal(0, 0, 1));
-		newGeoset.add(lowerLeft);
-		final TVertex lowerLeftTVert = new TVertex(1, 1);
-		lowerLeft.addTVertex(lowerLeftTVert);
-		lowerLeft.setGeoset(newGeoset);
+		final GeosetVertex upperRight = addGeosetAndTVerticies(newGeoset, 0, -displayWidth, displayHeight + groundOffset, 0, 0);
 
-		final GeosetVertex lowerRight = new GeosetVertex(0, -displayWidth / 2, groundOffset, new Normal(0, 0, 1));
-		newGeoset.add(lowerRight);
-		final TVertex lowerRightTVert = new TVertex(0, 1);
-		lowerRight.addTVertex(lowerRightTVert);
-		lowerRight.setGeoset(newGeoset);
+		final GeosetVertex lowerLeft = addGeosetAndTVerticies(newGeoset, 0, displayWidth, groundOffset, 1, 1);
+
+		final GeosetVertex lowerRight = addGeosetAndTVerticies(newGeoset, 0, -displayWidth, groundOffset, 0, 1);
 
 		newGeoset.add(new Triangle(upperLeft, upperRight, lowerLeft));
 		newGeoset.add(new Triangle(upperRight, lowerRight, lowerLeft));
@@ -4778,9 +4303,16 @@ public class MainPanel extends JPanel
 		blankTextureModel.doSavePreps();
 
 		loadModel(workingDirectory == null, true,
-				new ModelPanel(MainPanel.this, blankTextureModel, prefs, MainPanel.this, selectionItemTypeGroup,
-						selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-						activeViewportWatcher, GlobalIcons.ORANGE_ICON, true, textureExporter));
+				createModelPanel(blankTextureModel, GlobalIcons.ORANGE_ICON, true));
+	}
+
+	private GeosetVertex addGeosetAndTVerticies(Geoset newGeoset, int vX, int vY, int vZ, int tX, int tY) {
+		final GeosetVertex vertex = new GeosetVertex(vX, (double)vY / 2, vZ, new Normal(0, 0, 1));
+		final TVertex tVert = new TVertex(tX, tY);
+		vertex.addTVertex(tVert);
+		newGeoset.add(vertex);
+		vertex.setGeoset(newGeoset);
+		return vertex;
 	}
 
 	public void loadModel(final boolean temporary, final boolean selectNewTab, final ModelPanel temp) {
@@ -4913,209 +4445,49 @@ public class MainPanel extends JPanel
 		timeSliderPanel.revalidateKeyframeDisplay();
 	}
 
-	public void loadFile(final File f, final boolean temporary) {
-		loadFile(f, temporary, true, MDLIcon);
-	}
-
-	public void loadFile(final File f) {
-		loadFile(f, false);
-	}
-
-	public void openFile(final File f) {
-		currentFile = f;
-		profile.setPath(currentFile.getParent());
-		// frontArea.clearGeosets();
-		// sideArea.clearGeosets();
-		// botArea.clearGeosets();
-		toolsMenu.getAccessibleContext().setAccessibleDescription(
-				"Allows the user to control which parts of the model are displayed for editing.");
-		toolsMenu.setEnabled(true);
-		SaveProfile.get().addRecent(currentFile.getPath());
-		updateRecent();
-		loadFile(currentFile);
-	}
-
-	public void importFile(final File f) {
-		final EditableModel currentModel = currentMDL();
-		if (currentModel != null) {
-			importFile(EditableModel.read(f));
-		}
-	}
-
-	public void importFile(final EditableModel model) {
-		final EditableModel currentModel = currentMDL();
-		if (currentModel != null) {
-			importPanel = new ImportPanel(currentModel, model);
-			importPanel.setCallback(new ModelStructureChangeListenerImplementation(new ModelReference() {
-				private final EditableModel model = currentMDL();
-
-				@Override
-				public EditableModel getModel() {
-					return model;
-				}
-			}));
-
-		}
-	}
-
-	public String incName(final String name) {
-		String output = name;
-
-		int depth = 1;
-		boolean continueLoop = true;
-		while (continueLoop) {
-			char c = '0';
-			try {
-				c = output.charAt(output.length() - depth);
-			} catch (final IndexOutOfBoundsException e) {
-				// c remains '0'
-				continueLoop = false;
-			}
-			for (char n = '0'; (n < '9') && continueLoop; n++) {
-				// JOptionPane.showMessageDialog(null,"checking "+c+" against
-				// "+n);
-				if (c == n) {
-					char x = c;
-					x++;
-					output = output.substring(0, output.length() - depth) + x
-							+ output.substring((output.length() - depth) + 1);
-					continueLoop = false;
-				}
-			}
-			if (c == '9') {
-				output = output.substring(0, output.length() - depth) + 0
-						+ output.substring((output.length() - depth) + 1);
-			} else if (continueLoop) {
-				output = output.substring(0, (output.length() - depth) + 1) + 1
-						+ output.substring((output.length() - depth) + 1);
-				continueLoop = false;
-			}
-			depth++;
-		}
-		if (output == null) {
-			output = "name error";
-		} else if (output.equals(name)) {
-			output = output + "_edit";
-		}
-
-		return output;
-	}
-
-	public void nullmodelFile() {
-		final EditableModel currentMDL = currentMDL();
-		if (currentMDL != null) {
-			final EditableModel newModel = new EditableModel();
-			newModel.copyHeaders(currentMDL);
-			if (newModel.getFileRef() == null) {
-				newModel.setFileRef(
-						new File(System.getProperty("java.io.tmpdir") + "MatrixEaterExtract/matrixeater_anonymousMDL",
-								"" + (int) (Math.random() * Integer.MAX_VALUE) + ".mdl"));
-			}
-			while (newModel.getFile().exists()) {
-				newModel.setFileRef(
-						new File(currentMDL.getFile().getParent() + "/" + incName(newModel.getName()) + ".mdl"));
-			}
-			importPanel = new ImportPanel(newModel, EditableModel.deepClone(currentMDL, "CurrentModel"));
-
-			final Thread watcher = new Thread(() -> {
-				while (importPanel.getParentFrame().isVisible()
-						&& (!importPanel.importStarted() || importPanel.importEnded())) {
-					try {
-						Thread.sleep(1);
-					} catch (final Exception e) {
-						ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
-					}
-				}
-				// if( !importPanel.getParentFrame().isVisible() &&
-				// !importPanel.importEnded() )
-				// JOptionPane.showMessageDialog(null,"bad voodoo
-				// "+importPanel.importSuccessful());
-				// else
-				// JOptionPane.showMessageDialog(null,"good voodoo
-				// "+importPanel.importSuccessful());
-				// if( importPanel.importSuccessful() )
-				// {
-				// newModel.saveFile();
-				// loadFile(newModel.getFile());
-				// }
-
-				if (importPanel.importStarted()) {
-					while (!importPanel.importEnded()) {
-						try {
-							Thread.sleep(1);
-						} catch (final Exception e) {
-							ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
-						}
-					}
-
-					if (importPanel.importSuccessful()) {
-						newModel.saveFile();
-						loadFile(newModel.getFile());
-					}
-				}
-			});
-			watcher.start();
-		}
-	}
-
-	public void parseTriangles(final String input, final Geoset g) {
-		// Loading triangles to a geoset requires verteces to be loaded first
-		final String[] s = input.split(",");
-		s[0] = s[0].substring(4);
-		final int s_size = countContainsString(input, ",");
-		s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
-		for (int t = 0; t < (s_size - 1); t += 3)// s[t+3].equals("")||
-		{
-			for (int i = 0; i < 3; i++) {
-				s[t + i] = s[t + i].substring(1);
-			}
-			try {
-				g.addTriangle(new Triangle(Integer.parseInt(s[t]), Integer.parseInt(s[t + 1]),
-						Integer.parseInt(s[t + 2]), g));
-			} catch (final NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "Error: Unable to interpret information in Triangles: " + s[t]
-						+ ", " + s[t + 1] + ", or " + s[t + 2]);
-			}
-		}
-		// try
-		// {
-		// g.addTriangle(new Triangle(g.getVertex( Integer.parseInt(s[t])
-		// ),g.getVertex( Integer.parseInt(s[t+1])),g.getVertex(
-		// Integer.parseInt(s[t+2])),g) );
-		// }
-		// catch (NumberFormatException e)
-		// {
-		// JOptionPane.showMessageDialog(this,"Error: Unable to interpret
-		// information in Triangles.");
-		// }
-	}
-
-	public boolean doesContainString(final String a, final String b)// see if a
-																	// contains
-																	// b
-	{
-		final int l = a.length();
-		for (int i = 0; i < l; i++) {
-			if (a.startsWith(b, i)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public int countContainsString(final String a, final String b)// see if a
-																	// contains
-																	// b
-	{
-		final int l = a.length();
-		int x = 0;
-		for (int i = 0; i < l; i++) {
-			if (a.startsWith(b, i)) {
-				x++;
-			}
-		}
-		return x;
-	}
+	//	public void parseTriangles(final String input, final Geoset g) {
+//		// Loading triangles to a geoset requires verteces to be loaded first
+//		final String[] s = input.split(",");
+//		s[0] = s[0].substring(4);
+//		final int s_size = countContainsString(input, ",");
+//		s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
+//		for (int t = 0; t < (s_size - 1); t += 3)// s[t+3].equals("")||
+//		{
+//			for (int i = 0; i < 3; i++) {
+//				s[t + i] = s[t + i].substring(1);
+//			}
+//			try {
+//				g.addTriangle(new Triangle(Integer.parseInt(s[t]), Integer.parseInt(s[t + 1]),
+//						Integer.parseInt(s[t + 2]), g));
+//			} catch (final NumberFormatException e) {
+//				JOptionPane.showMessageDialog(this, "Error: Unable to interpret information in Triangles: " + s[t]
+//						+ ", " + s[t + 1] + ", or " + s[t + 2]);
+//			}
+//		}
+//		// try
+//		// {
+//		// g.addTriangle(new Triangle(g.getVertex( Integer.parseInt(s[t])
+//		// ),g.getVertex( Integer.parseInt(s[t+1])),g.getVertex(
+//		// Integer.parseInt(s[t+2])),g) );
+//		// }
+//		// catch (NumberFormatException e)
+//		// {
+//		// JOptionPane.showMessageDialog(this,"Error: Unable to interpret
+//		// information in Triangles.");
+//		// }
+//	}
+//
+//	public int countContainsString(final String a, final String b)// see if a contains b
+//	{
+//		final int l = a.length();
+//		int x = 0;
+//		for (int i = 0; i < l; i++) {
+//			if (a.startsWith(b, i)) {
+//				x++;
+//			}
+//		}
+//		return x;
+//	}
 
 	@Override
 	public void refreshUndo() {
@@ -5290,77 +4662,7 @@ public class MainPanel extends JPanel
 		mpanel.repaintSelfAndRelatedChildren();
 	}
 
-	private final TextureExporterImpl textureExporter = new TextureExporterImpl();
-
-	public final class TextureExporterImpl implements TextureExporter {
-		public JFileChooser getFileChooser() {
-			return exportTextureDialog;
-		}
-
-		@Override
-		public void showOpenDialog(final String suggestedName, final TextureExporterClickListener fileHandler,
-				final Component parent) {
-			if (exportTextureDialog.getCurrentDirectory() == null) {
-				final EditableModel current = currentMDL();
-				if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-					fc.setCurrentDirectory(current.getFile().getParentFile());
-				} else if (profile.getPath() != null) {
-					fc.setCurrentDirectory(new File(profile.getPath()));
-				}
-			}
-			if (exportTextureDialog.getCurrentDirectory() == null) {
-				exportTextureDialog.setSelectedFile(
-						new File(exportTextureDialog.getCurrentDirectory() + File.separator + suggestedName));
-			}
-			final int showOpenDialog = exportTextureDialog.showOpenDialog(parent);
-			if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
-				final File file = exportTextureDialog.getSelectedFile();
-				if (file != null) {
-					fileHandler.onClickOK(file, exportTextureDialog.getFileFilter());
-				} else {
-					JOptionPane.showMessageDialog(parent, "No import file was specified");
-				}
-			}
-		}
-
-		@Override
-		public void exportTexture(final String suggestedName, final TextureExporterClickListener fileHandler,
-				final Component parent) {
-
-			if (exportTextureDialog.getCurrentDirectory() == null) {
-				final EditableModel current = currentMDL();
-				if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-					fc.setCurrentDirectory(current.getFile().getParentFile());
-				} else if (profile.getPath() != null) {
-					fc.setCurrentDirectory(new File(profile.getPath()));
-				}
-			}
-			if (exportTextureDialog.getCurrentDirectory() == null) {
-				exportTextureDialog.setSelectedFile(
-						new File(exportTextureDialog.getCurrentDirectory() + File.separator + suggestedName));
-			}
-
-			final int x = exportTextureDialog.showSaveDialog(parent);
-			if (x == JFileChooser.APPROVE_OPTION) {
-				final File file = exportTextureDialog.getSelectedFile();
-				if (file != null) {
-					try {
-						if (file.getName().lastIndexOf('.') >= 0) {
-							fileHandler.onClickOK(file, exportTextureDialog.getFileFilter());
-						} else {
-							JOptionPane.showMessageDialog(parent, "No file type was specified");
-						}
-					} catch (final Exception e2) {
-						ExceptionPopup.display(e2);
-						e2.printStackTrace();
-					}
-				} else {
-					JOptionPane.showMessageDialog(parent, "No output file was specified");
-				}
-			}
-		}
-
-	}
+	private final TextureExporterImpl textureExporter = new TextureExporterImpl(this);
 
 	@Override
 	public void save(final EditableModel model) {
