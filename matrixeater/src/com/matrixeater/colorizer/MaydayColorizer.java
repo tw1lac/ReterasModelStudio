@@ -1,30 +1,12 @@
 package com.matrixeater.colorizer;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.LabelView;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
+import javax.swing.*;
+import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaydayColorizer extends JPanel {
 	private Color leftColor = Color.RED;
@@ -113,44 +95,16 @@ public class MaydayColorizer extends JPanel {
 		inputScroll.setMinimumSize(new Dimension(1, 1));
 		editorPaneScroll.setMinimumSize(new Dimension(1, 1));
 		layout.setHorizontalGroup(layout.createParallelGroup().addComponent(label).addComponent(inputScroll)
-
-//				.addGroup(layout.createSequentialGroup()
-//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//								.addComponent(leftColorDisplay).addComponent(applyLeftColor))
-//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER, true)
-//								.addComponent(gradientDisplay).addComponent(applyGradient))
-//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//								.addComponent(rightColorDisplay).addComponent(applyRightColor))
-//						.addComponent(gradientDisplay).addComponent(rightColorDisplay)
-//
-//				)
-
-//				.addGroup(layout.createSequentialGroup().addComponent(valueLink).addComponent(newLine)
-
-//				)
-
-				.addGroup(layout.createSequentialGroup().addComponent(leftColorDisplay).addComponent(gradientDisplay)
-						.addComponent(rightColorDisplay))
-				.addGroup(layout.createSequentialGroup().addComponent(applyLeftColor).addComponent(applyGradient)
-						.addComponent(applyRightColor)
-
-				).addGroup(layout.createSequentialGroup().addComponent(valueLink).addComponent(newLine)
-
-				)
-
+				.addGroup(layout.createSequentialGroup().addComponent(leftColorDisplay).addComponent(gradientDisplay).addComponent(rightColorDisplay))
+				.addGroup(layout.createSequentialGroup().addComponent(applyLeftColor).addComponent(applyGradient).addComponent(applyRightColor))
+				.addGroup(layout.createSequentialGroup().addComponent(valueLink).addComponent(newLine))
 				.addComponent(editorPaneScroll)
 
 		);
 		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(label).addComponent(inputScroll)
-				.addGroup(layout.createParallelGroup().addComponent(leftColorDisplay).addComponent(gradientDisplay)
-						.addComponent(rightColorDisplay))
-				.addGroup(layout.createParallelGroup().addComponent(applyLeftColor).addComponent(applyGradient)
-						.addComponent(applyRightColor)
-
-				).addGroup(layout.createParallelGroup().addComponent(valueLink).addComponent(newLine)
-
-				)
-
+				.addGroup(layout.createParallelGroup().addComponent(leftColorDisplay).addComponent(gradientDisplay).addComponent(rightColorDisplay))
+				.addGroup(layout.createParallelGroup().addComponent(applyLeftColor).addComponent(applyGradient).addComponent(applyRightColor))
+				.addGroup(layout.createParallelGroup().addComponent(valueLink).addComponent(newLine))
 				.addComponent(editorPaneScroll)
 
 		);
@@ -259,42 +213,29 @@ public class MaydayColorizer extends JPanel {
 		try {
 			final StringBuilder resultingText = new StringBuilder();
 			final String selectedText = inputTextArea.getText(selectionStart, selectionEnd - selectionStart);
-			final int r1 = leftColor.getRed();
-			final int g1 = leftColor.getGreen();
-			final int b1 = leftColor.getBlue();
-			final int a1 = leftColor.getAlpha();
-			final int r2 = rightColor.getRed();
-			final int g2 = rightColor.getGreen();
-			final int b2 = rightColor.getBlue();
-			final int a2 = rightColor.getAlpha();
 			final int length = Math.max(1, selectedText.length());
-			final int drm = r2 - r1;
-			final int dr = drm / length;
-			final int dgm = g2 - g1;
-			final int dg = dgm / length;
-			final int dbm = b2 - b1;
-			final int db = dbm / length;
-			final int dam = a2 - a1;
-			final int da = dam / length;
-			for (int i = 0; i < length; i++) {
+
+			final int r1 = leftColor.getRed();
+			final int r2 = rightColor.getRed();
+			List<Integer> reds = getColorIntegers(length, r1, r2);
+
+			final int g1 = leftColor.getGreen();
+			final int g2 = rightColor.getGreen();
+			List<Integer> greens = getColorIntegers(length, g1, g2);
+
+			final int b1 = leftColor.getBlue();
+			final int b2 = rightColor.getBlue();
+			List<Integer> blues = getColorIntegers(length, b1, b2);
+
+			final int a1 = leftColor.getAlpha();
+			final int a2 = rightColor.getAlpha();
+			List<Integer> alphas = getColorIntegers(length, a1, a2);
+
+
+			for(int i = 0; i<length; i++){
 				final char character = selectedText.charAt(i);
-				int r = r1 + (dr * i);
-				if (Math.abs(r - r1) > Math.abs(drm)) {
-					r = r2;
-				}
-				int g = g1 + (dg * i);
-				if (Math.abs(g - g1) > Math.abs(dgm)) {
-					g = g2;
-				}
-				int b = b1 + (db * i);
-				if (Math.abs(b - b1) > Math.abs(dbm)) {
-					b = b2;
-				}
-				int a = a1 + (da * i);
-				if (Math.abs(a - a1) > Math.abs(dam)) {
-					a = a2;
-				}
-				StringBuilder hexString = new StringBuilder(Integer.toHexString(new Color(r, g, b, a).getRGB()));
+				int color = new Color(reds.get(i), greens.get(i), blues.get(i), alphas.get(i)).getRGB();
+				StringBuilder hexString = new StringBuilder(Integer.toHexString(color));
 				while (hexString.length() < 8) {
 					hexString.insert(0, "0");
 				}
@@ -303,15 +244,32 @@ public class MaydayColorizer extends JPanel {
 				resultingText.append(character);
 				resultingText.append("|r");
 			}
-			final String resultingGeneratedText = inputTextArea.getText(0, selectionStart) + resultingText.toString()
+			final String resultingGeneratedText = inputTextArea.getText(0, selectionStart)
+					+ resultingText.toString()
 					+ inputTextArea.getText(selectionEnd, inputTextArea.getText().length() - selectionEnd);
 			inputTextArea.setText(resultingGeneratedText);
+
 			final String fixForEditorPane = fixForEditorPane(resultingGeneratedText);
 			editorPane.setText(fixForEditorPane);
 
 		} catch (final BadLocationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private List<Integer> getColorIntegers(int length, int c1, int c2) {
+		final int dcm = c2 - c1;
+		final int dc = dcm / length;
+
+		List<Integer> color = new ArrayList<>();
+		for (int i = 0; i < length; i++) {
+			int c = c1 + (dc * i);
+			if (Math.abs(c - c1) > Math.abs(dcm)) {
+				c = c2;
+			}
+			color.add(c);
+		}
+		return color;
 	}
 
 	public static void main(final String[] args) {

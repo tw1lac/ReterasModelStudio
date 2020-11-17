@@ -12,10 +12,6 @@ public class VertexTexture {
 
     @Override
 	public String toString() {
-        if (null == this) {
-            return "null";
-        } else {
-            return u + "," + v;
-        }
+        return u + "," + v;
     }
 }

@@ -1,30 +1,21 @@
 package com.owens.oobjloader.builder;
 
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.modeledit.TargaReader;
+import com.hiveworkshop.wc3.mdl.*;
+import com.owens.oobjloader.parser.BuilderInterface;
+import de.wc3data.image.BlpFile;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.gui.modeledit.TargaReader;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Normal;
-import com.hiveworkshop.wc3.mdl.TVertex;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.UVLayer;
-import com.hiveworkshop.wc3.mdl.Vertex;
 // This code was written by myself, Sean R. Owens, sean at guild dot net,
 // and is released to the public domain. Share and enjoy. Since some
 // people argue that it is impossible to release software to the public
@@ -33,9 +24,6 @@ import com.hiveworkshop.wc3.mdl.Vertex;
 // license.  (I generally don't care so I'll almost certainly say yes.)
 // In addition this code may also be used under the "unlicense" described
 // at http://unlicense.org/ .  See the file UNLICENSE in the repo.
-import com.owens.oobjloader.parser.BuilderInterface;
-
-import de.wc3data.image.BlpFile;
 
 public class Build implements BuilderInterface {
 
@@ -126,8 +114,7 @@ public class Build implements BuilderInterface {
 		// @TODO: add better error checking - make sure values is not empty and
 		// that it is a multiple of 3
 		while (loopi < vertexIndices.length) {
-			// > v is the vertex reference number for a point element. Each
-			// point
+			// > v is the vertex reference number for a point element. Each point
 			// > element requires one vertex. Positive values indicate absolute
 			// > vertex numbers. Negative values indicate relative vertex
 			// numbers.
@@ -159,8 +146,7 @@ public class Build implements BuilderInterface {
 			if (vertexIndex != EMPTY_VERTEX_VALUE) {
 				if (vertexIndex < 0) {
 					// Note that we can use negative references to denote
-					// vertices in manner relative to the current point in the
-					// file, i.e.
+					// vertices in manner relative to the current point in the file, i.e.
 					// rather than "the 5th vertice in the file" we can say "the
 					// 5th vertice before now"
 					vertexIndex = vertexIndex + verticesT.size();
@@ -181,8 +167,7 @@ public class Build implements BuilderInterface {
 			if (vertexIndex != EMPTY_VERTEX_VALUE) {
 				if (vertexIndex < 0) {
 					// Note that we can use negative references to denote
-					// vertices in manner relative to the current point in the
-					// file, i.e.
+					// vertices in manner relative to the current point in the file, i.e.
 					// rather than "the 5th vertice in the file" we can say "the
 					// 5th vertice before now"
 					vertexIndex = vertexIndex + verticesN.size();
@@ -464,24 +449,19 @@ public class Build implements BuilderInterface {
 
 	@Override
 	public void setXYZ(final int type, final float x, final float y, final float z) {
-		ReflectivityTransmiss rt = currentMaterialBeingParsed.ka;
-		if (type == MTL_KD) {
-			rt = currentMaterialBeingParsed.kd;
-		} else if (type == MTL_KS) {
-			rt = currentMaterialBeingParsed.ks;
-		} else if (type == MTL_TF) {
-			rt = currentMaterialBeingParsed.tf;
-		}
-
-		rt.rx = x;
-		rt.gy = y;
-		rt.bz = z;
+		ReflectivityTransmiss rt = getReflectivityTransmiss(type, x, y, z);
 		rt.isXYZ = true;
 		rt.isRGB = false;
 	}
 
 	@Override
 	public void setRGB(final int type, final float r, final float g, final float b) {
+		ReflectivityTransmiss rt = getReflectivityTransmiss(type, r, g, b);
+		rt.isRGB = true;
+		rt.isXYZ = false;
+	}
+
+	private ReflectivityTransmiss getReflectivityTransmiss(int type, float r, float g, float b) {
 		ReflectivityTransmiss rt = currentMaterialBeingParsed.ka;
 		if (type == MTL_KD) {
 			rt = currentMaterialBeingParsed.kd;
@@ -494,8 +474,7 @@ public class Build implements BuilderInterface {
 		rt.rx = r;
 		rt.gy = g;
 		rt.bz = b;
-		rt.isRGB = true;
-		rt.isXYZ = false;
+		return rt;
 	}
 
 	@Override
@@ -556,23 +535,19 @@ public class Build implements BuilderInterface {
 	@Override
 	public void doneParsingMaterial() {
 		// if we finish a .mtl file, and then we parse another mtllib (.mtl)
-		// file AND that other
-		// file is malformed, and missing the newmtl line, then any statements
-		// would quietly
-		// overwrite whatever is being pointed to by currentMaterialBeingParsed.
-		// Hence we set
-		// it to null now. (Now any such malformed .mtl file will cause an
-		// exception but that's
-		// better than quiet bugs.) This method ( doneParsingMaterial() ) is
-		// called by Parse when
+		// file AND that other file is malformed, and missing the newmtl line,
+		// then any statements would quietly overwrite whatever is being
+		// pointed to by currentMaterialBeingParsed.
+		// Hence we set it to null now. (Now any such malformed .mtl file
+		// will cause an exception but that's better than quiet bugs.)
+		// This method ( doneParsingMaterial() ) is called by Parse when
 		// it finished parsing a .mtl file.
 		//
 		// @TODO: We can make this not throw an exception if we simply add a
 		// check for a null
 		// currentMaterialBeingParsed at the start of each material setter
-		// method in Build... but that
-		// still assumes we'll always have a newmtl line FIRST THING for each
-		// material, to create the
+		// method in Build... but that  still assumes we'll always have a
+		// newmtl line FIRST THING for each material, to create the
 		// currentMaterialBeingParsed object. Is that a reasonable assumption?
 		currentMaterialBeingParsed = null;
 	}
@@ -730,8 +705,7 @@ public class Build implements BuilderInterface {
 			}
 			final Set<Face> processedFaces = new HashSet<>();
 			for (final Map.Entry<String, ArrayList<Face>> entry : groups.entrySet()) {
-				// we want to split group by material
-				// for each material, we have
+				// we want to split group by material for each material, we have
 				// - list of vertices
 				// - geoset
 				final Map<Material, Subgroup> materialToSubgroup = new HashMap<>();
@@ -744,14 +718,12 @@ public class Build implements BuilderInterface {
 				}
 				convertMesh(mdl, processedFaces, entry.getKey(), materialToSubgroup, faceList);
 			}
-			// ==================== second run for "face" global
-			// ============================
+			// ==================== second run for "face" global ============================
 
 			final Map<Material, Subgroup> materialToSubgroup = new HashMap<>();
 			convertMesh(mdl, processedFaces, objectName, materialToSubgroup, faces);
 
-			// ===================== end second run
-			// =========================================
+			// ===================== end second run  =========================================
 			if (loadbar.isVisible()) {
 				loadbar.setPercent(0f);
 				loadbar.setText("Collapsing MatrixEater MDL representation");
@@ -1066,13 +1038,11 @@ public class Build implements BuilderInterface {
 		case 6:
 			transparent = true;
 			break;
-		// 6. Transparency: Refraction on, Reflection: Fresnel off and Ray trace
-		// on
+		// 6. Transparency: Refraction on, Reflection: Fresnel off and Ray trace on
 		case 7:
 			transparent = true;
 			break;
-		// 7. Transparency: Refraction on, Reflection: Fresnel on and Ray trace
-		// on
+		// 7. Transparency: Refraction on, Reflection: Fresnel on and Ray trace on
 		case 8:
 			break;
 		// 8. Reflection on and Ray trace off
@@ -1124,17 +1094,8 @@ public class Build implements BuilderInterface {
 			}
 			final ReflectivityTransmiss color = max;
 			if (color != null) {
-				geo.forceGetGeosetAnim().setStaticColor(new Vertex(color.bz, color.gy, color.rx));// pretty
-																									// sure
-																									// geoset
-																									// anim
-																									// is
-																									// BGR
-																									// off
-																									// the
-																									// top
-																									// my
-																									// head
+				geo.forceGetGeosetAnim().setStaticColor(new Vertex(color.bz, color.gy, color.rx));
+				// pretty sure geoset anim is BGR off the top my head
 			}
 		}
 		return mdlMaterial;

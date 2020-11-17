@@ -14,10 +14,6 @@ public class VertexGeometric {
 
     @Override
 	public String toString() {
-        if (null == this) {
-            return "null";
-        } else {
-            return x + "," + y + "," + z;
-        }
+        return x + "," + y + "," + z;
     }
 }

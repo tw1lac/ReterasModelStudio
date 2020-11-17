@@ -1,29 +1,5 @@
 package com.matrixeater.blpconv;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
@@ -35,10 +11,19 @@ import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
 import com.hiveworkshop.wc3.mdx.MdxUtils;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.matrixeater.src.EditorDisplayManager;
-
 import de.wc3data.image.BlpFile;
 import de.wc3data.image.TgaFile;
 import de.wc3data.stream.BlizzardDataInputStream;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class BlpConverterPanel extends JPanel {
 	private final JLabel preview;
@@ -91,7 +76,13 @@ public class BlpConverterPanel extends JPanel {
 			}
 		});
 
-		loadFile.addActionListener(e -> {
+		loadFile.addActionListener(loadFileAction(blpFilter, tgaFilter));
+		saveFile.addActionListener(saveFileAction(blpFilter, tgaFilter));
+
+	}
+
+	private ActionListener loadFileAction(FileNameExtensionFilter blpFilter, FileNameExtensionFilter tgaFilter) {
+		return e -> {
 			try {
 				final int result = fileChooser.showOpenDialog(BlpConverterPanel.this);
 				if (result == JFileChooser.APPROVE_OPTION) {
@@ -123,8 +114,11 @@ public class BlpConverterPanel extends JPanel {
 			} catch (final Exception exc) {
 				ExceptionPopup.display(exc);
 			}
-		});
-		saveFile.addActionListener(e -> {
+		};
+	}
+
+	private ActionListener saveFileAction(FileNameExtensionFilter blpFilter, FileNameExtensionFilter tgaFilter) {
+		return e -> {
 			try {
 				final int result = fileChooser.showSaveDialog(BlpConverterPanel.this);
 				if (result == JFileChooser.APPROVE_OPTION) {
@@ -175,8 +169,7 @@ public class BlpConverterPanel extends JPanel {
 				exc.printStackTrace();
 				ExceptionPopup.display(exc);
 			}
-		});
-
+		};
 	}
 
 	public void setCurrentImage(final BufferedImage currentImage) {
