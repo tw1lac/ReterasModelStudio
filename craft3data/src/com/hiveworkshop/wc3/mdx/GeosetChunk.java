@@ -1,17 +1,16 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.wc3.mdl.ExtLog;
 import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.Matrix;
 import com.hiveworkshop.wc3.mdl.Triangle;
 import com.hiveworkshop.wc3.util.ModelUtils;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeosetChunk {
 	public Geoset[] geoset = new Geoset[0];
@@ -21,7 +20,7 @@ public class GeosetChunk {
 	public void load(final BlizzardDataInputStream in, final int version) throws IOException {
 		MdxUtils.checkId(in, "GEOS");
 		final int chunkSize = in.readInt();
-		final List<Geoset> geosetList = new ArrayList();
+		final List<Geoset> geosetList = new ArrayList<>();
 		int geosetCounter = chunkSize;
 		while (geosetCounter > 0) {
 			final Geoset tempgeoset = new Geoset();

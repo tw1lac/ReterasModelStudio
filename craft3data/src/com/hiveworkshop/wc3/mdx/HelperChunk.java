@@ -1,11 +1,11 @@
 package com.hiveworkshop.wc3.mdx;
 
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class HelperChunk {
 	public Helper[] helper = new Helper[0];
@@ -15,7 +15,7 @@ public class HelperChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "HELP");
 		int chunkSize = in.readInt();
-		List<Helper> helperList = new ArrayList();
+		List<Helper> helperList = new ArrayList<>();
 		int helperCounter = chunkSize;
 		while (helperCounter > 0) {
 			Helper temphelper = new Helper();

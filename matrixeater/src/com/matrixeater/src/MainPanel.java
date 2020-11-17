@@ -1164,78 +1164,18 @@ public class MainPanel extends JPanel
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
         viewportTransferHandler = new ViewportTransferHandler();
         coordDisplayListener = MainPanel.this::setMouseCoordDisplay;
-        openAnimationViewerAction = new OpenViewAction(rootWindow, "Animation Preview", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return previewView;
-            }
-        });
-        openAnimationControllerAction = new OpenViewAction(rootWindow, "Animation Controller", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return animationControllerView;
-            }
-        });
-        openModelingTabAction = new OpenViewAction(rootWindow, "Modeling", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return creatorView;
-            }
-        });
-        openPerspectiveAction = new OpenViewAction(rootWindow, "Perspective", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return perspectiveView;
-            }
-        });
-        openOutlinerAction = new OpenViewAction(rootWindow, "Outliner", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return viewportControllerWindowView;
-            }
-        });
-        openSideAction = new OpenViewAction(rootWindow, "Side", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return leftView;
-            }
-        });
-        openTimeSliderAction = new OpenViewAction(rootWindow, "Footer", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return timeSliderView;
-            }
-        });
-        openFrontAction = new OpenViewAction(rootWindow, "Front", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return frontView;
-            }
-        });
-        openBottomAction = new OpenViewAction(rootWindow, "Bottom", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return bottomView;
-            }
-        });
-        openToolsAction = new OpenViewAction(rootWindow, "Tools", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return toolView;
-            }
-        });
-        openModelDataContentsViewAction = new OpenViewAction(rootWindow, "Model", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return modelDataView;
-            }
-        });
-        hackerViewAction = new OpenViewAction(rootWindow, "Matrix Eater Script", new OpenViewGetter() {
-            @Override
-            public View getView() {
-                return hackerView;
-            }
-        });
+        openAnimationViewerAction = new OpenViewAction(rootWindow, "Animation Preview", () -> previewView);
+        openAnimationControllerAction = new OpenViewAction(rootWindow, "Animation Controller", () -> animationControllerView);
+        openModelingTabAction = new OpenViewAction(rootWindow, "Modeling", () -> creatorView);
+        openPerspectiveAction = new OpenViewAction(rootWindow, "Perspective", () -> perspectiveView);
+        openOutlinerAction = new OpenViewAction(rootWindow, "Outliner", () -> viewportControllerWindowView);
+        openSideAction = new OpenViewAction(rootWindow, "Side", () -> leftView);
+        openTimeSliderAction = new OpenViewAction(rootWindow, "Footer", () -> timeSliderView);
+        openFrontAction = new OpenViewAction(rootWindow, "Front", () -> frontView);
+        openBottomAction = new OpenViewAction(rootWindow, "Bottom", () -> bottomView);
+        openToolsAction = new OpenViewAction(rootWindow, "Tools", () -> toolView);
+        openModelDataContentsViewAction = new OpenViewAction(rootWindow, "Model", () -> modelDataView);
+        hackerViewAction = new OpenViewAction(rootWindow, "Matrix Eater Script", () -> hackerView);
     }
 
     TabWindow createMainLayout() {

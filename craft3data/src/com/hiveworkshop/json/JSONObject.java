@@ -1,6 +1,19 @@
 package com.hiveworkshop.json;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /*
  Copyright (c) 2002 JSON.org
@@ -25,27 +38,6 @@ import java.io.Closeable;
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its external
@@ -1136,7 +1128,7 @@ public class JSONObject {
             if(Double.isNaN(d)) {
                 return defaultValue;
             }
-            return new BigDecimal(((Number) val).doubleValue());
+            return BigDecimal.valueOf(((Number) val).doubleValue());
         }
         if (val instanceof Long || val instanceof Integer
                 || val instanceof Short || val instanceof Byte){

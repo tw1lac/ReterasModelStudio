@@ -1,12 +1,20 @@
 package com.hiveworkshop.wc3.gui.datachooser;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
+import com.hiveworkshop.blizzard.casc.io.WarcraftIIICASC;
+import com.hiveworkshop.blizzard.casc.io.WarcraftIIICASC.FileSystem;
+import com.hiveworkshop.nio.ByteBufferInputStream;
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.user.WindowsRegistry;
+import com.jtattoo.plaf.acryl.AcrylLookAndFeel;
+import com.jtattoo.plaf.aluminium.AluminiumLookAndFeel;
+import com.jtattoo.plaf.hifi.HiFiLookAndFeel;
+import com.jtattoo.plaf.noire.NoireLookAndFeel;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -17,51 +25,8 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import com.hiveworkshop.blizzard.casc.io.WarcraftIIICASC;
-import com.hiveworkshop.blizzard.casc.io.WarcraftIIICASC.FileSystem;
-import com.hiveworkshop.nio.ByteBufferInputStream;
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.user.WindowsRegistry;
-import com.jtattoo.plaf.acryl.AcrylLookAndFeel;
-import com.jtattoo.plaf.aluminium.AluminiumLookAndFeel;
-import com.jtattoo.plaf.hifi.HiFiLookAndFeel;
-import com.jtattoo.plaf.noire.NoireLookAndFeel;
+import java.util.*;
 
 public class DataSourceChooserPanel extends JPanel {
 	private static final ImageIcon CASCIcon;
@@ -708,8 +673,7 @@ public class DataSourceChooserPanel extends JPanel {
 			}
 		}
 		try {
-			final WarcraftIIICASC tempCascReader = new WarcraftIIICASC(installPathPath, true);
-			try {
+			try (WarcraftIIICASC tempCascReader = new WarcraftIIICASC(installPathPath, true)) {
 				final String tags = tempCascReader.getBuildInfo().getField(tempCascReader.getActiveRecordIndex(),
 						"Tags");
 				final String[] splitTags = tags.split("\\?");
@@ -791,29 +755,29 @@ public class DataSourceChooserPanel extends JPanel {
 						final JRadioButton radioButton = new JRadioButton(localeOptionString);
 						boolean bad = false;
 						switch (patchFormat) {
-						case PATCH130: {
-							final String filePathToTest = localeOptionString.toLowerCase()
-									+ "-war3local.mpq\\units\\campaignunitstrings.txt";
-							if (!tempCascReader.getRootFileSystem().isFile(filePathToTest)
-									|| !tempCascReader.getRootFileSystem().isFileAvailable(filePathToTest)) {
-								radioButton.setForeground(Color.RED.darker());
-								bad = true;
+							case PATCH130: {
+								final String filePathToTest = localeOptionString.toLowerCase()
+										+ "-war3local.mpq\\units\\campaignunitstrings.txt";
+								if (!tempCascReader.getRootFileSystem().isFile(filePathToTest)
+										|| !tempCascReader.getRootFileSystem().isFileAvailable(filePathToTest)) {
+									radioButton.setForeground(Color.RED.darker());
+									bad = true;
+								}
+								break;
 							}
-							break;
-						}
-						case PATCH132:
-						case PATCH131: {
-							final String filePathToTest = "war3.w3mod\\_locales\\" + localeOptionString.toLowerCase()
-									+ ".w3mod\\units\\campaignunitstrings.txt";
-							if (!tempCascReader.getRootFileSystem().isFile(filePathToTest)
-									|| !tempCascReader.getRootFileSystem().isFileAvailable(filePathToTest)) {
-								radioButton.setForeground(Color.RED.darker());
-								bad = true;
+							case PATCH132:
+							case PATCH131: {
+								final String filePathToTest = "war3.w3mod\\_locales\\" + localeOptionString.toLowerCase()
+										+ ".w3mod\\units\\campaignunitstrings.txt";
+								if (!tempCascReader.getRootFileSystem().isFile(filePathToTest)
+										|| !tempCascReader.getRootFileSystem().isFileAvailable(filePathToTest)) {
+									radioButton.setForeground(Color.RED.darker());
+									bad = true;
+								}
+								break;
 							}
-							break;
-						}
-						default:
-							break;
+							default:
+								break;
 						}
 						userChooseLocalePanel.add(radioButton);
 						buttonGroup.add(radioButton);
@@ -825,7 +789,7 @@ public class DataSourceChooserPanel extends JPanel {
 					}
 					final int confirmationResult = allowPopup
 							? JOptionPane.showConfirmDialog(DataSourceChooserPanel.this, userChooseLocalePanel,
-									"Choose Locale", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE)
+							"Choose Locale", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE)
 							: JOptionPane.OK_OPTION;
 					JRadioButton selectedButton = null;
 					for (final JRadioButton button : buttons) {
@@ -846,46 +810,44 @@ public class DataSourceChooserPanel extends JPanel {
 				final String lowerLocale = locale.toLowerCase();
 				final List<String> defaultPrefixes;
 				switch (patchFormat) {
-				case PATCH130: {
-					System.out.println("Detected Patch 1.30");
-					// We used to have this, maybe some people still do?
-					final String[] prefixes = { "war3.mpq", "deprecated.mpq", lowerLocale + "-war3local.mpq" };
-					defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
-					break;
-				}
-				case PATCH131: {
-					System.out.println("Detected Patch 1.31");
-					// This is what I have right now
-					final String[] prefixes = { "war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
-							"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod" };
-					defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
-					break;
-				}
-				case PATCH132: {
-					System.out.println("Detected Patch 1.32+");
-					// This is what I have right now
-					final String[] prefixes = { "war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
-							"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod", "war3.w3mod\\_hd.w3mod",
-							"war3.w3mod\\_hd.w3mod\\_locales\\" + lowerLocale + ".w3mod" };
-					defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
-					break;
-				}
-				default:
-				case UNKNOWN_FUTURE_PATCH:
-					// Reforged?????? It's probably going to break my code
-					final String[] prefixes = { "war3.w3mod", "war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
-							"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod" };
-					JOptionPane.showMessageDialog(DataSourceChooserPanel.this,
-							"The Warcraft III Installation you have selected seems to be too new, or is not a supported version. The suggested prefix list from Patch 1.31 will be used.\nThis will probably fail, and you will need more advanced configuration.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
-					break;
+					case PATCH130: {
+						System.out.println("Detected Patch 1.30");
+						// We used to have this, maybe some people still do?
+						final String[] prefixes = {"war3.mpq", "deprecated.mpq", lowerLocale + "-war3local.mpq"};
+						defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
+						break;
+					}
+					case PATCH131: {
+						System.out.println("Detected Patch 1.31");
+						// This is what I have right now
+						final String[] prefixes = {"war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
+								"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod"};
+						defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
+						break;
+					}
+					case PATCH132: {
+						System.out.println("Detected Patch 1.32+");
+						// This is what I have right now
+						final String[] prefixes = {"war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
+								"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod", "war3.w3mod\\_hd.w3mod",
+								"war3.w3mod\\_hd.w3mod\\_locales\\" + lowerLocale + ".w3mod"};
+						defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
+						break;
+					}
+					default:
+					case UNKNOWN_FUTURE_PATCH:
+						// Reforged?????? It's probably going to break my code
+						final String[] prefixes = {"war3.w3mod", "war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
+								"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod"};
+						JOptionPane.showMessageDialog(DataSourceChooserPanel.this,
+								"The Warcraft III Installation you have selected seems to be too new, or is not a supported version. The suggested prefix list from Patch 1.31 will be used.\nThis will probably fail, and you will need more advanced configuration.",
+								"Error", JOptionPane.ERROR_MESSAGE);
+						defaultPrefixes = new ArrayList<>(Arrays.asList(prefixes));
+						break;
 				}
 				for (final String prefix : defaultPrefixes) {
 					dataSourceDesc.addPrefix(prefix);
 				}
-			} finally {
-				tempCascReader.close();
 			}
 		} catch (final Exception e1) {
 			ExceptionPopup.display(e1);

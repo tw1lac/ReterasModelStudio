@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-
 import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.IdObject;
 import com.hiveworkshop.wc3.mdl.QuaternionRotation;
 import com.hiveworkshop.wc3.mdl.Vertex;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
 
 public class Node {
 	public static final boolean LOG_DISCARDED_FLAGS = false;
@@ -125,61 +124,69 @@ public class Node {
 			}
 		}
 		for (final AnimFlag af : mdlNode.getAnimFlags()) {
-			if (af.getName().equals("Translation")) {
-				geosetTranslation = new GeosetTranslation();
-				geosetTranslation.globalSequenceId = af.getGlobalSeqId();
-				geosetTranslation.interpolationType = af.getInterpType();
-				geosetTranslation.translationTrack = new GeosetTranslation.TranslationTrack[af.size()];
-				final boolean hasTans = af.tans();
-				for (int i = 0; i < af.size(); i++) {
-					final GeosetTranslation.TranslationTrack mdxEntry = geosetTranslation.new TranslationTrack();
-					geosetTranslation.translationTrack[i] = mdxEntry;
-					final AnimFlag.Entry mdlEntry = af.getEntry(i);
-					mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time;
-					if (hasTans) {
-						mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
-						mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+			switch (af.getName()) {
+				case "Translation": {
+					geosetTranslation = new GeosetTranslation();
+					geosetTranslation.globalSequenceId = af.getGlobalSeqId();
+					geosetTranslation.interpolationType = af.getInterpType();
+					geosetTranslation.translationTrack = new GeosetTranslation.TranslationTrack[af.size()];
+					final boolean hasTans = af.tans();
+					for (int i = 0; i < af.size(); i++) {
+						final GeosetTranslation.TranslationTrack mdxEntry = geosetTranslation.new TranslationTrack();
+						geosetTranslation.translationTrack[i] = mdxEntry;
+						final AnimFlag.Entry mdlEntry = af.getEntry(i);
+						mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
+						mdxEntry.time = mdlEntry.time;
+						if (hasTans) {
+							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+						}
 					}
+					break;
 				}
-			} else if (af.getName().equals("Scaling")) {
-				geosetScaling = new GeosetScaling();
-				geosetScaling.globalSequenceId = af.getGlobalSeqId();
-				geosetScaling.interpolationType = af.getInterpType();
-				geosetScaling.scalingTrack = new GeosetScaling.ScalingTrack[af.size()];
-				final boolean hasTans = af.tans();
-				for (int i = 0; i < af.size(); i++) {
-					final GeosetScaling.ScalingTrack mdxEntry = geosetScaling.new ScalingTrack();
-					geosetScaling.scalingTrack[i] = mdxEntry;
-					final AnimFlag.Entry mdlEntry = af.getEntry(i);
-					mdxEntry.scaling = ((Vertex) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time;
-					if (hasTans) {
-						mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
-						mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+				case "Scaling": {
+					geosetScaling = new GeosetScaling();
+					geosetScaling.globalSequenceId = af.getGlobalSeqId();
+					geosetScaling.interpolationType = af.getInterpType();
+					geosetScaling.scalingTrack = new GeosetScaling.ScalingTrack[af.size()];
+					final boolean hasTans = af.tans();
+					for (int i = 0; i < af.size(); i++) {
+						final GeosetScaling.ScalingTrack mdxEntry = geosetScaling.new ScalingTrack();
+						geosetScaling.scalingTrack[i] = mdxEntry;
+						final AnimFlag.Entry mdlEntry = af.getEntry(i);
+						mdxEntry.scaling = ((Vertex) mdlEntry.value).toFloatArray();
+						mdxEntry.time = mdlEntry.time;
+						if (hasTans) {
+							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+						}
 					}
+					break;
 				}
-			} else if (af.getName().equals("Rotation")) {
-				geosetRotation = new GeosetRotation();
-				geosetRotation.globalSequenceId = af.getGlobalSeqId();
-				geosetRotation.interpolationType = af.getInterpType();
-				geosetRotation.rotationTrack = new GeosetRotation.RotationTrack[af.size()];
-				final boolean hasTans = af.tans();
-				for (int i = 0; i < af.size(); i++) {
-					final GeosetRotation.RotationTrack mdxEntry = geosetRotation.new RotationTrack();
-					geosetRotation.rotationTrack[i] = mdxEntry;
-					final AnimFlag.Entry mdlEntry = af.getEntry(i);
-					mdxEntry.rotation = ((QuaternionRotation) mdlEntry.value).toFloatArray();
-					mdxEntry.time = mdlEntry.time;
-					if (hasTans) {
-						mdxEntry.inTan = ((QuaternionRotation) mdlEntry.inTan).toFloatArray();
-						mdxEntry.outTan = ((QuaternionRotation) mdlEntry.outTan).toFloatArray();
+				case "Rotation": {
+					geosetRotation = new GeosetRotation();
+					geosetRotation.globalSequenceId = af.getGlobalSeqId();
+					geosetRotation.interpolationType = af.getInterpType();
+					geosetRotation.rotationTrack = new GeosetRotation.RotationTrack[af.size()];
+					final boolean hasTans = af.tans();
+					for (int i = 0; i < af.size(); i++) {
+						final GeosetRotation.RotationTrack mdxEntry = geosetRotation.new RotationTrack();
+						geosetRotation.rotationTrack[i] = mdxEntry;
+						final AnimFlag.Entry mdlEntry = af.getEntry(i);
+						mdxEntry.rotation = ((QuaternionRotation) mdlEntry.value).toFloatArray();
+						mdxEntry.time = mdlEntry.time;
+						if (hasTans) {
+							mdxEntry.inTan = ((QuaternionRotation) mdlEntry.inTan).toFloatArray();
+							mdxEntry.outTan = ((QuaternionRotation) mdlEntry.outTan).toFloatArray();
+						}
 					}
+					break;
 				}
-			} else {
-				if (Node.LOG_DISCARDED_FLAGS) {
-					System.err.println("node discarded flag " + af.getName());
-				}
+				default:
+					if (Node.LOG_DISCARDED_FLAGS) {
+						System.err.println("node discarded flag " + af.getName());
+					}
+					break;
 			}
 		}
 	}

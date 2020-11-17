@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.AnimFlag;
+import com.hiveworkshop.wc3.mdl.Vertex;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Vertex;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class LightChunk {
 	public Light[] light = new Light[0];
@@ -18,7 +17,7 @@ public class LightChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "LITE");
 		final int chunkSize = in.readInt();
-		final List<Light> lightList = new ArrayList();
+		final List<Light> lightList = new ArrayList<>();
 		int lightCounter = chunkSize;
 		while (lightCounter > 0) {
 			final Light templight = new Light();
@@ -194,129 +193,145 @@ public class LightChunk {
 			node.flags |= 0x200;
 			// more to do here
 			for (final AnimFlag af : light.getAnimFlags()) {
-				if (af.getName().equals("Visibility")) {
-					lightVisibility = new LightVisibility();
-					lightVisibility.globalSequenceId = af.getGlobalSeqId();
-					lightVisibility.interpolationType = af.getInterpType();
-					lightVisibility.scalingTrack = new LightVisibility.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightVisibility.ScalingTrack mdxEntry = lightVisibility.new ScalingTrack();
-						lightVisibility.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+				switch (af.getName()) {
+					case "Visibility": {
+						lightVisibility = new LightVisibility();
+						lightVisibility.globalSequenceId = af.getGlobalSeqId();
+						lightVisibility.interpolationType = af.getInterpType();
+						lightVisibility.scalingTrack = new LightVisibility.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightVisibility.ScalingTrack mdxEntry = lightVisibility.new ScalingTrack();
+							lightVisibility.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Color")) {
-					lightColor = new LightColor();
-					lightColor.globalSequenceId = af.getGlobalSeqId();
-					lightColor.interpolationType = af.getInterpType();
-					lightColor.scalingTrack = new LightColor.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightColor.ScalingTrack mdxEntry = lightColor.new ScalingTrack();
-						lightColor.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.color = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+					case "Color": {
+						lightColor = new LightColor();
+						lightColor.globalSequenceId = af.getGlobalSeqId();
+						lightColor.interpolationType = af.getInterpType();
+						lightColor.scalingTrack = new LightColor.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightColor.ScalingTrack mdxEntry = lightColor.new ScalingTrack();
+							lightColor.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.color = ((Vertex) mdlEntry.value).toFloatArray();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Intensity")) {
-					lightIntensity = new LightIntensity();
-					lightIntensity.globalSequenceId = af.getGlobalSeqId();
-					lightIntensity.interpolationType = af.getInterpType();
-					lightIntensity.scalingTrack = new LightIntensity.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightIntensity.ScalingTrack mdxEntry = lightIntensity.new ScalingTrack();
-						lightIntensity.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.intensity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Intensity": {
+						lightIntensity = new LightIntensity();
+						lightIntensity.globalSequenceId = af.getGlobalSeqId();
+						lightIntensity.interpolationType = af.getInterpType();
+						lightIntensity.scalingTrack = new LightIntensity.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightIntensity.ScalingTrack mdxEntry = lightIntensity.new ScalingTrack();
+							lightIntensity.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.intensity = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("AmbIntensity")) {
-					lightAmbientIntensity = new LightAmbientIntensity();
-					lightAmbientIntensity.globalSequenceId = af.getGlobalSeqId();
-					lightAmbientIntensity.interpolationType = af.getInterpType();
-					lightAmbientIntensity.scalingTrack = new LightAmbientIntensity.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightAmbientIntensity.ScalingTrack mdxEntry = lightAmbientIntensity.new ScalingTrack();
-						lightAmbientIntensity.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.ambientIntensity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "AmbIntensity": {
+						lightAmbientIntensity = new LightAmbientIntensity();
+						lightAmbientIntensity.globalSequenceId = af.getGlobalSeqId();
+						lightAmbientIntensity.interpolationType = af.getInterpType();
+						lightAmbientIntensity.scalingTrack = new LightAmbientIntensity.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightAmbientIntensity.ScalingTrack mdxEntry = lightAmbientIntensity.new ScalingTrack();
+							lightAmbientIntensity.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.ambientIntensity = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("AmbColor")) {
-					lightAmbientColor = new LightAmbientColor();
-					lightAmbientColor.globalSequenceId = af.getGlobalSeqId();
-					lightAmbientColor.interpolationType = af.getInterpType();
-					lightAmbientColor.scalingTrack = new LightAmbientColor.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightAmbientColor.ScalingTrack mdxEntry = lightAmbientColor.new ScalingTrack();
-						lightAmbientColor.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.ambientColor = ((Vertex) mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+					case "AmbColor": {
+						lightAmbientColor = new LightAmbientColor();
+						lightAmbientColor.globalSequenceId = af.getGlobalSeqId();
+						lightAmbientColor.interpolationType = af.getInterpType();
+						lightAmbientColor.scalingTrack = new LightAmbientColor.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightAmbientColor.ScalingTrack mdxEntry = lightAmbientColor.new ScalingTrack();
+							lightAmbientColor.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.ambientColor = ((Vertex) mdlEntry.value).toFloatArray();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("AttenuationStart")) {
-					lightAttenuationStart = new LightAttenuationStart();
-					lightAttenuationStart.globalSequenceId = af.getGlobalSeqId();
-					lightAttenuationStart.interpolationType = af.getInterpType();
-					lightAttenuationStart.scalingTrack = new LightAttenuationStart.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightAttenuationStart.ScalingTrack mdxEntry = lightAttenuationStart.new ScalingTrack();
-						lightAttenuationStart.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.attenuationStart = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "AttenuationStart": {
+						lightAttenuationStart = new LightAttenuationStart();
+						lightAttenuationStart.globalSequenceId = af.getGlobalSeqId();
+						lightAttenuationStart.interpolationType = af.getInterpType();
+						lightAttenuationStart.scalingTrack = new LightAttenuationStart.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightAttenuationStart.ScalingTrack mdxEntry = lightAttenuationStart.new ScalingTrack();
+							lightAttenuationStart.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.attenuationStart = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("AttenuationEnd")) {
-					lightAttenuationEnd = new LightAttenuationEnd();
-					lightAttenuationEnd.globalSequenceId = af.getGlobalSeqId();
-					lightAttenuationEnd.interpolationType = af.getInterpType();
-					lightAttenuationEnd.scalingTrack = new LightAttenuationEnd.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final LightAttenuationEnd.ScalingTrack mdxEntry = lightAttenuationEnd.new ScalingTrack();
-						lightAttenuationEnd.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.attenuationEnd = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "AttenuationEnd": {
+						lightAttenuationEnd = new LightAttenuationEnd();
+						lightAttenuationEnd.globalSequenceId = af.getGlobalSeqId();
+						lightAttenuationEnd.interpolationType = af.getInterpType();
+						lightAttenuationEnd.scalingTrack = new LightAttenuationEnd.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final LightAttenuationEnd.ScalingTrack mdxEntry = lightAttenuationEnd.new ScalingTrack();
+							lightAttenuationEnd.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.attenuationEnd = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else {
-					if (Node.LOG_DISCARDED_FLAGS) {
-						System.err.println("discarded flag " + af.getName());
-					}
+					default:
+						if (Node.LOG_DISCARDED_FLAGS) {
+							System.err.println("discarded flag " + af.getName());
+						}
+						break;
 				}
 			}
 			// other components of light, copied regardless currently (if this

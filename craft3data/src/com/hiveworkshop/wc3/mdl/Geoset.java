@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdl;
 
+import com.hiveworkshop.wc3.mdx.GeosetChunk;
+import com.hiveworkshop.wc3.util.ModelUtils;
+
+import javax.swing.*;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
-import com.hiveworkshop.wc3.mdx.GeosetChunk;
-import com.hiveworkshop.wc3.util.ModelUtils;
 
 public class Geoset implements Named, VisibilitySource {
 	ExtLog extents;
@@ -88,8 +87,10 @@ public class Geoset implements Named, VisibilitySource {
 		// on the web (i.e. quads).
 		// if you wanted to fix that, you'd want to do it below
 		for (int i = 0; i < mdxGeo.faces.length; i += 3) {
-			final Triangle triangle = new Triangle(convertPossiblyBuggedShort(mdxGeo.faces[i + 0]),
-					convertPossiblyBuggedShort(mdxGeo.faces[i + 1]), convertPossiblyBuggedShort(mdxGeo.faces[i + 2]),
+			final Triangle triangle = new Triangle(
+					convertPossiblyBuggedShort(mdxGeo.faces[i + 0]),
+					convertPossiblyBuggedShort(mdxGeo.faces[i + 1]),
+					convertPossiblyBuggedShort(mdxGeo.faces[i + 2]),
 					this);
 			add(triangle);
 		}

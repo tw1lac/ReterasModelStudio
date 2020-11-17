@@ -1,10 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff.uv;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
 import com.hiveworkshop.wc3.gui.modeledit.actions.UVRemapAction;
@@ -14,11 +9,7 @@ import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.selection.SetSelectio
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericMoveAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericRotateAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericScaleAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.MirrorTVerticesAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.SimpleRotateUVAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.StaticMeshUVMoveAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.StaticMeshUVRotateAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.StaticMeshUVScaleAction;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.actions.*;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.wc3.gui.modeledit.selection.VertexSelectionHelper;
@@ -26,6 +17,11 @@ import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.TVertex;
 import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexEditor<T> implements TVertexEditor {
 	protected final ModelView model;
@@ -165,8 +161,7 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	@Override
 	public TVertex getSelectionCenter() {
 //		return selectionManager.getCenter();
-		final Set<TVertex> tvertices = new HashSet<>();
-		tvertices.addAll(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
+		final Set<TVertex> tvertices = new HashSet<>(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
 		return TVertex.centerOfGroup(tvertices); // TODO is this correct?
 	}
 

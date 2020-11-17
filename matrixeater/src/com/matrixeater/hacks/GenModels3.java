@@ -1,26 +1,14 @@
 package com.matrixeater.hacks;
 
+import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
+import com.hiveworkshop.wc3.util.ModelUtils;
+import com.hiveworkshop.wc3.util.ModelUtils.Mesh;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.QuaternionRotation;
-import com.hiveworkshop.wc3.mdl.TextureAnim;
-import com.hiveworkshop.wc3.mdl.Vertex;
-import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
-import com.hiveworkshop.wc3.util.ModelUtils;
-import com.hiveworkshop.wc3.util.ModelUtils.Mesh;
 
 public class GenModels3 {
 
@@ -124,8 +112,8 @@ public class GenModels3 {
 			final ArrayList<AnimFlag> flags = new ArrayList<>();
 			final AnimFlag translationData = new AnimFlag("Translation");
 			for (int i = 0; i < 16; i++) {
-				translationData.addEntry(0 + (i * 100),
-						new Vertex(((i + geosetId) % 4) * 0.25, (((i + geosetId) % particleCount) / 4) * 0.25, 0));
+				translationData.addEntry((i * 100),
+						new Vertex(((i + geosetId) % 4) * 0.25, (((i + geosetId) % particleCount) / 4.0) * 0.25, 0));
 			}
 			translationData.setGlobSeq(1600);
 			flags.add(translationData);

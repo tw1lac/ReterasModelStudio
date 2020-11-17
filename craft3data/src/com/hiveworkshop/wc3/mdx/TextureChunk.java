@@ -1,13 +1,12 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.Bitmap;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.Bitmap;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class TextureChunk {
 	public Texture[] texture = new Texture[0];
@@ -17,7 +16,7 @@ public class TextureChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "TEXS");
 		int chunkSize = in.readInt();
-		List<Texture> textureList = new ArrayList();
+		List<Texture> textureList = new ArrayList<>();
 		int textureCounter = chunkSize;
 		while (textureCounter > 0) {
 			Texture temptexture = new Texture();

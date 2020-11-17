@@ -1,8 +1,6 @@
 package com.matrixeater.hacks.blessing;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BorderedBox implements FrameHandle {
@@ -43,6 +41,7 @@ public class BorderedBox implements FrameHandle {
 		g2.drawImage(borderTexture, (bounds.x + bounds.width) - borderBoxSize,
 				(bounds.y + bounds.height) - borderBoxSize, bounds.x + bounds.width, bounds.y + bounds.height,
 				borderBoxSize * 7, 0, (borderBoxSize * 7) + borderBoxSize, borderBoxSize, null);
+
 		for (int i = 1; i < (borderVerticalRepeatCount - 1); i++) {
 			g2.drawImage(borderTexture, bounds.x, bounds.y + (borderBoxSize * i), bounds.x + borderBoxSize,
 					bounds.y + (borderBoxSize * i) + borderBoxSize, 0, 0, borderBoxSize, borderBoxSize, null);
@@ -61,21 +60,24 @@ public class BorderedBox implements FrameHandle {
 				borderBoxSize * 2, heightRemainder, null);
 
 		final int borderHorizontalRepeatCount = bounds.width / borderBoxSize;
+		double halfBorderBoxSize = borderBoxSize / 2.0;
 		for (int i = 1; i < (borderHorizontalRepeatCount - 1); i++) {
-			g2.rotate(Math.PI / 2, bounds.x + (borderBoxSize * i) + (borderBoxSize / 2),
-					bounds.y + (borderBoxSize / 2));
-			g2.drawImage(borderTexture, bounds.x + (borderBoxSize * i), bounds.y,
-					bounds.x + borderBoxSize + (borderBoxSize * i), bounds.y + borderBoxSize, borderBoxSize * 2, 0,
+			int xBBi = bounds.x + (borderBoxSize * i);
+			int bYbH = bounds.y + bounds.height;
+			g2.rotate(Math.PI / 2, xBBi + halfBorderBoxSize,
+					bounds.y + halfBorderBoxSize);
+			g2.drawImage(borderTexture, xBBi, bounds.y,
+					borderBoxSize + xBBi, bounds.y + borderBoxSize, borderBoxSize * 2, 0,
 					(borderBoxSize * 2) + borderBoxSize, borderBoxSize, null);
-			g2.rotate(-Math.PI / 2, bounds.x + (borderBoxSize * i) + (borderBoxSize / 2),
-					bounds.y + (borderBoxSize / 2));
-			g2.rotate(Math.PI / 2, bounds.x + (borderBoxSize * i) + (borderBoxSize / 2),
-					((bounds.y + bounds.height) - borderBoxSize) + (borderBoxSize / 2));
-			g2.drawImage(borderTexture, bounds.x + (borderBoxSize * i), (bounds.y + bounds.height) - borderBoxSize,
-					bounds.x + borderBoxSize + (borderBoxSize * i), bounds.y + bounds.height, borderBoxSize * 3, 0,
+			g2.rotate(-Math.PI / 2, xBBi + halfBorderBoxSize,
+					bounds.y + halfBorderBoxSize);
+			g2.rotate(Math.PI / 2, xBBi + halfBorderBoxSize,
+					((bYbH) - borderBoxSize) + halfBorderBoxSize);
+			g2.drawImage(borderTexture, xBBi, (bYbH) - borderBoxSize,
+					borderBoxSize + xBBi, bYbH, borderBoxSize * 3, 0,
 					(borderBoxSize * 3) + borderBoxSize, borderBoxSize, null);
-			g2.rotate(-Math.PI / 2, bounds.x + (borderBoxSize * i) + (borderBoxSize / 2),
-					((bounds.y + bounds.height) - borderBoxSize) + (borderBoxSize / 2));
+			g2.rotate(-Math.PI / 2, xBBi + halfBorderBoxSize,
+					((bYbH) - borderBoxSize) + halfBorderBoxSize);
 		}
 	}
 

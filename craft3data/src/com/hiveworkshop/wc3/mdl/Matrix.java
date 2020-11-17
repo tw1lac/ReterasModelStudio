@@ -1,10 +1,9 @@
 package com.hiveworkshop.wc3.mdl;
 
+import javax.swing.*;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 /**
  * Vertex motion matrices.
@@ -12,15 +11,15 @@ import javax.swing.JOptionPane;
  * Eric Theller 11/10/2011
  */
 public class Matrix {
-	ArrayList m_boneIds;
+	ArrayList<Integer> m_boneIds;
 	ArrayList<Bone> bones;
 
 	public Matrix() {
-		m_boneIds = new ArrayList();
+		m_boneIds = new ArrayList<>();
 	}
 
 	public Matrix(final int id) {
-		m_boneIds = new ArrayList();
+		m_boneIds = new ArrayList<>();
 		m_boneIds.add(id);
 	}
 
@@ -61,7 +60,7 @@ public class Matrix {
 	public void updateIds(final EditableModel mdlr) {
 		final int sz1 = bones.size();
 		if (m_boneIds == null) {
-			m_boneIds = new ArrayList();
+			m_boneIds = new ArrayList<>();
 		} else {
 			m_boneIds.clear();
 		}
@@ -116,7 +115,7 @@ public class Matrix {
 	}
 
 	public Matrix(final int[] boneIds) {
-		m_boneIds = new ArrayList();
+		m_boneIds = new ArrayList<>();
 		for (int boneId : boneIds) {
 			m_boneIds.add(boneId);
 		}

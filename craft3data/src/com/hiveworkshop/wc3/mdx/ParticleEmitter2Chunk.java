@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.AnimFlag;
+import com.hiveworkshop.wc3.mdl.Vertex;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Vertex;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class ParticleEmitter2Chunk {
 	public ParticleEmitter2[] particleEmitter2 = new ParticleEmitter2[0];
@@ -18,7 +17,7 @@ public class ParticleEmitter2Chunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "PRE2");
 		final int chunkSize = in.readInt();
-		final List<ParticleEmitter2> particleEmitter2List = new ArrayList();
+		final List<ParticleEmitter2> particleEmitter2List = new ArrayList<>();
 		int particleEmitter2Counter = chunkSize;
 		while (particleEmitter2Counter > 0) {
 			final ParticleEmitter2 tempparticleEmitter2 = new ParticleEmitter2();
@@ -403,147 +402,165 @@ public class ParticleEmitter2Chunk {
 			replaceableId = mdlEmitter.getReplaceableId();
 
 			for (final AnimFlag af : mdlEmitter.getAnimFlags()) {
-				if (af.getName().equals("Visibility")) {
-					particleEmitter2Visibility = new ParticleEmitter2Visibility();
-					particleEmitter2Visibility.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Visibility.interpolationType = af.getInterpType();
-					particleEmitter2Visibility.scalingTrack = new ParticleEmitter2Visibility.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Visibility.ScalingTrack mdxEntry = particleEmitter2Visibility.new ScalingTrack();
-						particleEmitter2Visibility.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+				switch (af.getName()) {
+					case "Visibility": {
+						particleEmitter2Visibility = new ParticleEmitter2Visibility();
+						particleEmitter2Visibility.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Visibility.interpolationType = af.getInterpType();
+						particleEmitter2Visibility.scalingTrack = new ParticleEmitter2Visibility.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Visibility.ScalingTrack mdxEntry = particleEmitter2Visibility.new ScalingTrack();
+							particleEmitter2Visibility.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Variation")) {
-					particleEmitter2Variation = new ParticleEmitter2Variation();
-					particleEmitter2Variation.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Variation.interpolationType = af.getInterpType();
-					particleEmitter2Variation.scalingTrack = new ParticleEmitter2Variation.VariationTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Variation.VariationTrack mdxEntry = particleEmitter2Variation.new VariationTrack();
-						particleEmitter2Variation.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.variation = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Variation": {
+						particleEmitter2Variation = new ParticleEmitter2Variation();
+						particleEmitter2Variation.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Variation.interpolationType = af.getInterpType();
+						particleEmitter2Variation.scalingTrack = new ParticleEmitter2Variation.VariationTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Variation.VariationTrack mdxEntry = particleEmitter2Variation.new VariationTrack();
+							particleEmitter2Variation.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.variation = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Gravity")) {
-					particleEmitter2Gravity = new ParticleEmitter2Gravity();
-					particleEmitter2Gravity.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Gravity.interpolationType = af.getInterpType();
-					particleEmitter2Gravity.scalingTrack = new ParticleEmitter2Gravity.VariationTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Gravity.VariationTrack mdxEntry = particleEmitter2Gravity.new VariationTrack();
-						particleEmitter2Gravity.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.gravity = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Gravity": {
+						particleEmitter2Gravity = new ParticleEmitter2Gravity();
+						particleEmitter2Gravity.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Gravity.interpolationType = af.getInterpType();
+						particleEmitter2Gravity.scalingTrack = new ParticleEmitter2Gravity.VariationTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Gravity.VariationTrack mdxEntry = particleEmitter2Gravity.new VariationTrack();
+							particleEmitter2Gravity.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.gravity = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("EmissionRate")) {
-					particleEmitter2EmissionRate = new ParticleEmitter2EmissionRate();
-					particleEmitter2EmissionRate.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2EmissionRate.interpolationType = af.getInterpType();
-					particleEmitter2EmissionRate.scalingTrack = new ParticleEmitter2EmissionRate.ScalingTrack[af
-							.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2EmissionRate.ScalingTrack mdxEntry = particleEmitter2EmissionRate.new ScalingTrack();
-						particleEmitter2EmissionRate.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.emissionRate = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "EmissionRate": {
+						particleEmitter2EmissionRate = new ParticleEmitter2EmissionRate();
+						particleEmitter2EmissionRate.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2EmissionRate.interpolationType = af.getInterpType();
+						particleEmitter2EmissionRate.scalingTrack = new ParticleEmitter2EmissionRate.ScalingTrack[af
+								.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2EmissionRate.ScalingTrack mdxEntry = particleEmitter2EmissionRate.new ScalingTrack();
+							particleEmitter2EmissionRate.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.emissionRate = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Latitude")) {
-					particleEmitter2Latitude = new ParticleEmitter2Latitude();
-					particleEmitter2Latitude.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Latitude.interpolationType = af.getInterpType();
-					particleEmitter2Latitude.scalingTrack = new ParticleEmitter2Latitude.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Latitude.ScalingTrack mdxEntry = particleEmitter2Latitude.new ScalingTrack();
-						particleEmitter2Latitude.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Latitude": {
+						particleEmitter2Latitude = new ParticleEmitter2Latitude();
+						particleEmitter2Latitude.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Latitude.interpolationType = af.getInterpType();
+						particleEmitter2Latitude.scalingTrack = new ParticleEmitter2Latitude.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Latitude.ScalingTrack mdxEntry = particleEmitter2Latitude.new ScalingTrack();
+							particleEmitter2Latitude.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Length")) {
-					particleEmitter2Length = new ParticleEmitter2Length();
-					particleEmitter2Length.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Length.interpolationType = af.getInterpType();
-					particleEmitter2Length.scalingTrack = new ParticleEmitter2Length.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Length.ScalingTrack mdxEntry = particleEmitter2Length.new ScalingTrack();
-						particleEmitter2Length.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.length = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Length": {
+						particleEmitter2Length = new ParticleEmitter2Length();
+						particleEmitter2Length.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Length.interpolationType = af.getInterpType();
+						particleEmitter2Length.scalingTrack = new ParticleEmitter2Length.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Length.ScalingTrack mdxEntry = particleEmitter2Length.new ScalingTrack();
+							particleEmitter2Length.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.length = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Width")) {
-					particleEmitter2Width = new ParticleEmitter2Width();
-					particleEmitter2Width.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Width.interpolationType = af.getInterpType();
-					particleEmitter2Width.scalingTrack = new ParticleEmitter2Width.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Width.ScalingTrack mdxEntry = particleEmitter2Width.new ScalingTrack();
-						particleEmitter2Width.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.width = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Width": {
+						particleEmitter2Width = new ParticleEmitter2Width();
+						particleEmitter2Width.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Width.interpolationType = af.getInterpType();
+						particleEmitter2Width.scalingTrack = new ParticleEmitter2Width.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Width.ScalingTrack mdxEntry = particleEmitter2Width.new ScalingTrack();
+							particleEmitter2Width.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.width = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Speed")) {
-					particleEmitter2Speed = new ParticleEmitter2Speed();
-					particleEmitter2Speed.globalSequenceId = af.getGlobalSeqId();
-					particleEmitter2Speed.interpolationType = af.getInterpType();
-					particleEmitter2Speed.scalingTrack = new ParticleEmitter2Speed.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final ParticleEmitter2Speed.ScalingTrack mdxEntry = particleEmitter2Speed.new ScalingTrack();
-						particleEmitter2Speed.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Speed": {
+						particleEmitter2Speed = new ParticleEmitter2Speed();
+						particleEmitter2Speed.globalSequenceId = af.getGlobalSeqId();
+						particleEmitter2Speed.interpolationType = af.getInterpType();
+						particleEmitter2Speed.scalingTrack = new ParticleEmitter2Speed.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final ParticleEmitter2Speed.ScalingTrack mdxEntry = particleEmitter2Speed.new ScalingTrack();
+							particleEmitter2Speed.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.speed = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else {
-					if (Node.LOG_DISCARDED_FLAGS) {
-						System.err.println("discarded flag " + af.getName());
-					}
+					default:
+						if (Node.LOG_DISCARDED_FLAGS) {
+							System.err.println("discarded flag " + af.getName());
+						}
+						break;
 				}
 			}
 		}

@@ -1,81 +1,23 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.GlobalIcons;
+import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
+import com.hiveworkshop.wc3.mdl.EventObject;
+import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
+import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.gui.GlobalIcons;
-import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Attachment;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.EventObject;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetAnim;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Helper;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.Light;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.Matrix;
-import com.hiveworkshop.wc3.mdl.Named;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.ParticleEmitterPopcorn;
-import com.hiveworkshop.wc3.mdl.RibbonEmitter;
-import com.hiveworkshop.wc3.mdl.Vertex;
-import com.hiveworkshop.wc3.mdl.VisibilitySource;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.List;
+import java.util.*;
 
 /**
  * The panel to handle the import function.
@@ -123,7 +65,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	JButton importAllAnims, timescaleAllAnims, uncheckAllAnims, renameAllAnims;
 	JCheckBox clearExistingAnims;
 	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-	DefaultListModel existingAnims;
+	DefaultListModel<AnimShell> existingAnims;
 
 	// Bones
 	JPanel bonesPanel = new JPanel();
@@ -133,7 +75,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	// JTabbedPane(JTabbedPane.LEFT,JTabbedPane.SCROLL_TAB_LAYOUT);
 	DefaultListModel<BonePanel> bonePanels = new DefaultListModel<>();
 	private final Map<Bone, BonePanel> boneToPanel = new HashMap<>();
-	JList boneTabs = new JList(bonePanels);
+	JList<BonePanel> boneTabs = new JList<>(bonePanels);
 	JScrollPane boneTabsPane = new JScrollPane(boneTabs);
 	// DefaultListModel<BonePanel> oldBonePanels = new
 	// DefaultListModel<BonePanel>();
@@ -162,7 +104,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	// JTabbedPane objectTabs = new
 	// JTabbedPane(JTabbedPane.LEFT,JTabbedPane.SCROLL_TAB_LAYOUT);
 	DefaultListModel<ObjectPanel> objectPanels = new DefaultListModel<>();
-	JList objectTabs = new JList(objectPanels);
+	JList<ObjectPanel>  objectTabs = new JList<>(objectPanels);
 	JScrollPane objectTabsPane = new JScrollPane(objectTabs);
 	CardLayout objectCardLayout = new CardLayout();
 	JPanel objectPanelCards = new JPanel(objectCardLayout);
@@ -216,7 +158,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 		// Geoset Panel
 		addTab("Geosets", geoIcon, geosetsPanel, "Controls which geosets will be imported.");
 
-		final DefaultListModel materials = new DefaultListModel();
+		final DefaultListModel<Material> materials = new DefaultListModel<>();
 		for (int i = 0; i < currentModel.getMaterials().size(); i++) {
 			materials.addElement(currentModel.getMaterials().get(i));
 		}
@@ -268,7 +210,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 		// Animation Panel
 		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
 
-		existingAnims = new DefaultListModel();
+		existingAnims = new DefaultListModel<AnimShell>();
 		for (int i = 0; i < currentModel.getAnims().size(); i++) {
 			existingAnims.addElement(new AnimShell(currentModel.getAnims().get(i)));
 		}
@@ -1388,9 +1330,9 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	}
 
 	public void initVisibilityList() {
-		visSourcesOld = new ArrayList();
-		visSourcesNew = new ArrayList();
-		allVisShells = new ArrayList<>();
+		visSourcesOld = new ArrayList<Object>();
+		visSourcesNew = new ArrayList<Object>();
+		allVisShells = new ArrayList<VisibilityShell>();
 		EditableModel model = currentModel;
 		final ArrayList tempList = new ArrayList();
 		for (final Material mat : model.getMaterials()) {
@@ -1714,8 +1656,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 					}
 				}
 			}
-			final ArrayList<Animation> oldAnims = new ArrayList<>();
-			oldAnims.addAll(currentModel.getAnims());
+			final ArrayList<Animation> oldAnims = new ArrayList<>(currentModel.getAnims());
 			final ArrayList<Animation> newAnims = new ArrayList<>();
 			final java.util.List<AnimFlag> curFlags = currentModel.getAllAnimFlags();
 			final java.util.List<AnimFlag> impFlags = importedModel.getAllAnimFlags();

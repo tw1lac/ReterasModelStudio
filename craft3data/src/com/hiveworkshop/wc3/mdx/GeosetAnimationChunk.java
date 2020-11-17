@@ -1,15 +1,14 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.GeosetAnim;
 import com.hiveworkshop.wc3.mdl.Vertex;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeosetAnimationChunk {
 	public GeosetAnimation[] geosetAnimation = new GeosetAnimation[0];
@@ -19,7 +18,7 @@ public class GeosetAnimationChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "GEOA");
 		final int chunkSize = in.readInt();
-		final List<GeosetAnimation> geosetAnimationList = new ArrayList();
+		final List<GeosetAnimation> geosetAnimationList = new ArrayList<>();
 		int geosetAnimationCounter = chunkSize;
 		while (geosetAnimationCounter > 0) {
 			final GeosetAnimation tempgeosetAnimation = new GeosetAnimation();

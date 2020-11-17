@@ -1,12 +1,11 @@
 package com.hiveworkshop.wc3.mdl;
 
+import com.hiveworkshop.wc3.mdx.TextureAnimationChunk;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
-import com.hiveworkshop.wc3.mdx.TextureAnimationChunk;
 
 /**
  * TextureAnims, inside them called TVertexAnims
@@ -14,7 +13,7 @@ import com.hiveworkshop.wc3.mdx.TextureAnimationChunk;
  * Eric Theller 3/9/2012
  */
 public class TextureAnim {
-	ArrayList<AnimFlag> animFlags = new ArrayList();// The flags of animation
+	ArrayList<AnimFlag> animFlags = new ArrayList<>();// The flags of animation
 
 	/**
 	 * Constructor for objects of class TextureAnim

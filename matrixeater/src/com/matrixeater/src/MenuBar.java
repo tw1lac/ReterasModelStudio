@@ -340,7 +340,6 @@ public class MenuBar {
         mainPanel.scaleAnimations = createMenuItem(mainPanel, "Change Animation Lengths by Scaling", KeyEvent.VK_A, mainPanel.scriptsMenu);
 
         final JMenuItem version800Toggle = createMenuItem("Assign FormatVersion 800", KeyEvent.VK_A, mainPanel.scriptsMenu, e -> mainPanel.currentMDL().setFormatVersion(800));
-        ;
 
         final JMenuItem version1000Toggle = createMenuItem("Assign FormatVersion 1000", KeyEvent.VK_A, mainPanel.scriptsMenu, e -> mainPanel.currentMDL().setFormatVersion(1000));
 

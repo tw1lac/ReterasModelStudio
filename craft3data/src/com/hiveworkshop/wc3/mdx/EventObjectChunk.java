@@ -1,11 +1,11 @@
 package com.hiveworkshop.wc3.mdx;
 
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class EventObjectChunk {
 	public EventObject[] eventObject = new EventObject[0];
@@ -15,7 +15,7 @@ public class EventObjectChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "EVTS");
 		int chunkSize = in.readInt();
-		List<EventObject> eventObjectList = new ArrayList();
+		List<EventObject> eventObjectList = new ArrayList<>();
 		int eventObjectCounter = chunkSize;
 		while (eventObjectCounter > 0) {
 			EventObject tempeventObject = new EventObject();

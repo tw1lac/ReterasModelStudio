@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.AnimFlag;
+import com.hiveworkshop.wc3.mdl.Vertex;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Vertex;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class CornChunk {
 	public ParticleEmitterPopcorn[] corns = new ParticleEmitterPopcorn[0];
@@ -18,7 +17,7 @@ public class CornChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, key);
 		final int chunkSize = in.readInt();
-		final List<ParticleEmitterPopcorn> cornList = new ArrayList();
+		final List<ParticleEmitterPopcorn> cornList = new ArrayList<>();
 		int lightCounter = chunkSize;
 		while (lightCounter > 0) {
 			final ParticleEmitterPopcorn tempcorn = new ParticleEmitterPopcorn();

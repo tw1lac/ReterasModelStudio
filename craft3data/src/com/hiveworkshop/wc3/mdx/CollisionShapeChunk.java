@@ -1,13 +1,12 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.Vertex;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.Vertex;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class CollisionShapeChunk {
 	public CollisionShape[] collisionShape = new CollisionShape[0];
@@ -17,7 +16,7 @@ public class CollisionShapeChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "CLID");
 		final int chunkSize = in.readInt();
-		final List<CollisionShape> collisionShapeList = new ArrayList();
+		final List<CollisionShape> collisionShapeList = new ArrayList<>();
 		int collisionShapeCounter = chunkSize;
 		while (collisionShapeCounter > 0) {
 			final CollisionShape tempcollisionShape = new CollisionShape();

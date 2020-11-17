@@ -1,20 +1,18 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
-import org.lwjgl.opengl.GL11;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.render3d.EmitterIdObject;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.Node;
 import com.hiveworkshop.wc3.mdx.ParticleEmitter2Chunk;
+import org.lwjgl.opengl.GL11;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ParticleEmitter2 class, these are the things most people would think of as a
@@ -258,17 +256,31 @@ public class ParticleEmitter2 extends EmitterIdObject implements VisibilitySourc
 		setTime(emitter.time);
 		// SegmentColor - Inverse order for MDL!
 		for (int i = 0; i < 3; i++) {
-			setSegmentColor(i, new Vertex(emitter.segmentColor[(i * 3) + 2], emitter.segmentColor[(i * 3) + 1],
+			setSegmentColor(i, new Vertex(
+					emitter.segmentColor[(i * 3) + 2],
+					emitter.segmentColor[(i * 3) + 1],
 					emitter.segmentColor[(i * 3) + 0]));
 		}
-		setAlpha(new Vertex((256 + emitter.segmentAlpha[0]) % 256, (256 + emitter.segmentAlpha[1]) % 256,
+		setAlpha(new Vertex(
+				(256 + emitter.segmentAlpha[0]) % 256,
+				(256 + emitter.segmentAlpha[1]) % 256,
 				(256 + emitter.segmentAlpha[2]) % 256));
 		setParticleScaling(new Vertex(emitter.segmentScaling));
-		setLifeSpanUVAnim(new Vertex(emitter.headIntervalStart, emitter.headIntervalEnd, emitter.headIntervalRepeat));
-		setDecayUVAnim(new Vertex(emitter.headDecayIntervalStart, emitter.headDecayIntervalEnd,
+		setLifeSpanUVAnim(new Vertex(
+				emitter.headIntervalStart,
+				emitter.headIntervalEnd,
+				emitter.headIntervalRepeat));
+		setDecayUVAnim(new Vertex(
+				emitter.headDecayIntervalStart,
+				emitter.headDecayIntervalEnd,
 				emitter.headDecayIntervalRepeat));
-		setTailUVAnim(new Vertex(emitter.tailIntervalStart, emitter.tailIntervalEnd, emitter.tailIntervalRepeat));
-		setTailDecayUVAnim(new Vertex(emitter.tailDecayIntervalStart, emitter.tailDecayIntervalEnd,
+		setTailUVAnim(new Vertex(
+				emitter.tailIntervalStart,
+				emitter.tailIntervalEnd,
+				emitter.tailIntervalRepeat));
+		setTailDecayUVAnim(new Vertex(
+				emitter.tailDecayIntervalStart,
+				emitter.tailDecayIntervalEnd,
 				emitter.tailDecayIntervalRepeat));
 		setTextureID(emitter.textureId);
 		if (emitter.squirt == 1) {

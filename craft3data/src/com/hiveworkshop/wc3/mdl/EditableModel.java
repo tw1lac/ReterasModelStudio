@@ -1,56 +1,13 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.awt.Component;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.datachooser.CompoundDataSource;
 import com.hiveworkshop.wc3.gui.datachooser.DataSource;
 import com.hiveworkshop.wc3.gui.datachooser.FolderDataSource;
 import com.hiveworkshop.wc3.mdl.AnimFlag.Entry;
-import com.hiveworkshop.wc3.mdl.v2.visitor.GeosetVisitor;
-import com.hiveworkshop.wc3.mdl.v2.visitor.MeshVisitor;
-import com.hiveworkshop.wc3.mdl.v2.visitor.ModelVisitor;
-import com.hiveworkshop.wc3.mdl.v2.visitor.TriangleVisitor;
-import com.hiveworkshop.wc3.mdl.v2.visitor.VertexVisitor;
-import com.hiveworkshop.wc3.mdx.AttachmentChunk;
-import com.hiveworkshop.wc3.mdx.BindPoseChunk;
-import com.hiveworkshop.wc3.mdx.BoneChunk;
-import com.hiveworkshop.wc3.mdx.CameraChunk;
-import com.hiveworkshop.wc3.mdx.CollisionShapeChunk;
-import com.hiveworkshop.wc3.mdx.CornChunk;
-import com.hiveworkshop.wc3.mdx.EventObjectChunk;
-import com.hiveworkshop.wc3.mdx.FaceEffectsChunk;
+import com.hiveworkshop.wc3.mdl.v2.visitor.*;
+import com.hiveworkshop.wc3.mdx.*;
 import com.hiveworkshop.wc3.mdx.FaceEffectsChunk.FaceEffect;
-import com.hiveworkshop.wc3.mdx.GeosetAnimationChunk;
-import com.hiveworkshop.wc3.mdx.GeosetChunk;
-import com.hiveworkshop.wc3.mdx.HelperChunk;
-import com.hiveworkshop.wc3.mdx.LightChunk;
-import com.hiveworkshop.wc3.mdx.MaterialChunk;
-import com.hiveworkshop.wc3.mdx.MdxModel;
-import com.hiveworkshop.wc3.mdx.MdxUtils;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Chunk;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterChunk;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterChunk;
 import com.hiveworkshop.wc3.mdx.SequenceChunk.Sequence;
 import com.hiveworkshop.wc3.mdx.TextureAnimationChunk.TextureAnimation;
 import com.hiveworkshop.wc3.mdx.TextureChunk.Texture;
@@ -58,9 +15,14 @@ import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.util.MathUtils;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import com.hiveworkshop.wc3.util.ModelUtils.Mesh;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.util.List;
+import java.util.*;
 
 /**
  * A java object to represent and store an MDL 3d model (Warcraft III file
@@ -746,89 +708,6 @@ public class EditableModel implements Named {
 	 *
 	 * @param other
 	 */
-	public void addAnimationsFrom(EditableModel other) {
-		// this process destroys the "other" model inside memory, so destroy
-		// a copy instead
-		other = EditableModel.deepClone(other, "animation source file");
-
-		final List<AnimFlag> flags = getAllAnimFlags();
-		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
-
-		final List<AnimFlag> othersFlags = other.getAllAnimFlags();
-		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
-
-		// ------ Duplicate the time track in the other model -------------
-		//
-		// On this new, separate time track, we want to be able to
-		// the information specific to each node about how it will
-		// move if it gets translated into or onto the current model
-
-		final ArrayList<AnimFlag> newImpFlags = new ArrayList<>();
-		for (final AnimFlag af : othersFlags) {
-			if (!af.hasGlobalSeq) {
-				newImpFlags.add(AnimFlag.buildEmptyFrom(af));
-			} else {
-				newImpFlags.add(new AnimFlag(af));
-			}
-		}
-		final ArrayList<EventObject> newImpEventObjs = new ArrayList<>();
-		for (final Object e : othersEventObjs) {
-			newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
-		}
-
-		// Fill the newly created time track with
-		// the exact same data, but shifted forward relative to wherever the
-		// current model's last animation starts
-		for (final Animation anim : other.anims) {
-			final int animTrackEnd = animTrackEnd();
-			final int newStart = animTrackEnd + 300;
-			final int newEnd = newStart + anim.length();
-			final Animation newAnim = new Animation(anim); // clone the
-															// animation from
-															// the other model
-			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
-			newAnim.setInterval(newStart, newEnd);
-			add(newAnim); // add the new animation to this model
-		}
-
-		// destroy the other model's animations, filling them in with the new
-		// stuff
-		for (final AnimFlag af : othersFlags) {
-			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
-		}
-		for (final Object e : othersEventObjs) {
-			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
-		}
-
-		// Now, map the bones in the other model onto the bones in the current
-		// model
-		final List<Bone> leftBehind = new ArrayList<>(); // the bones that
-															// don't find
-															// matches in
-															// current model
-		for (final IdObject object : other.idObjects) {
-			if (object instanceof Bone) {
-				// the bone from the other model
-				final Bone bone = (Bone) object;
-				// the object in this model of similar name
-				final Object localObject = getObject(bone.getName());
-				if ((localObject != null) && (localObject instanceof Bone)) {
-					final Bone localBone = (Bone) localObject;
-					localBone.copyMotionFrom(bone); // if it's a match, take the
-													// data
-				} else {
-					leftBehind.add(bone);
-				}
-			}
-		}
-		for (final Bone bone : leftBehind) {
-			if (bone.animates()) {
-				add(bone);
-			}
-		}
-
-		// i think we're done????
-	}
 
 	public List<Animation> addAnimationsFrom(EditableModel other, final List<Animation> anims) {
 		// this process destroys the "other" model inside memory, so destroy
@@ -899,7 +778,7 @@ public class EditableModel implements Named {
 				final Bone bone = (Bone) object;
 				// the object in this model of similar name
 				final Object localObject = getObject(bone.getName());
-				if ((localObject != null) && (localObject instanceof Bone)) {
+				if (localObject instanceof Bone) {
 					final Bone localBone = (Bone) localObject;
 					localBone.copyMotionFrom(bone); // if it's a match, take the
 													// data
@@ -1401,105 +1280,96 @@ public class EditableModel implements Named {
 		writer.println("}");
 
 		// Animations
-		if (anims != null) {
-			if (anims.size() > 0) {
-				writer.println("Sequences " + anims.size() + " {");
-				for (Animation anim : anims) {
-					anim.printTo(writer, 1);
-				}
-				writer.println("}");
+		if (anims != null && anims.size() > 0) {
+			writer.println("Sequences " + anims.size() + " {");
+			for (Animation anim : anims) {
+				anim.printTo(writer, 1);
 			}
+			writer.println("}");
 		}
+
 
 		// Global Sequences
-		if (globalSeqs != null) {
-			if (globalSeqs.size() > 0) {
-				writer.println("GlobalSequences " + globalSeqs.size() + " {");
-				for (Integer globalSeq : globalSeqs) {
-					writer.println("\tDuration " + globalSeq.toString() + ",");
-				}
-				writer.println("}");
+		if (globalSeqs != null && globalSeqs.size() > 0) {
+			writer.println("GlobalSequences " + globalSeqs.size() + " {");
+			for (Integer globalSeq : globalSeqs) {
+				writer.println("\tDuration " + globalSeq.toString() + ",");
 			}
+			writer.println("}");
 		}
+
 
 		// Textures
-		if (textures != null) {
-			if (textures.size() > 0) {
-				writer.println("Textures " + textures.size() + " {");
-				for (Bitmap texture : textures) {
-					texture.printTo(writer, 1);
-				}
-				writer.println("}");
+		if (textures != null && textures.size() > 0) {
+			writer.println("Textures " + textures.size() + " {");
+			for (Bitmap texture : textures) {
+				texture.printTo(writer, 1);
 			}
+			writer.println("}");
 		}
+
 
 		// Materials
-		if (materials != null) {
-			if (materials.size() > 0) {
-				writer.println("Materials " + materials.size() + " {");
-				for (Material material : materials) {
-					material.printTo(writer, 1, formatVersion);
-				}
-				writer.println("}");
+		if (materials != null && materials.size() > 0) {
+			writer.println("Materials " + materials.size() + " {");
+			for (Material material : materials) {
+				material.printTo(writer, 1, formatVersion);
 			}
+			writer.println("}");
 		}
+
 
 		// TextureAnims
-		if (texAnims != null) {
-			if (texAnims.size() > 0) {
-				writer.println("TextureAnims " + texAnims.size() + " {");
-				for (TextureAnim texAnim : texAnims) {
-					texAnim.printTo(writer, 1);
+		if (texAnims != null && texAnims.size() > 0) {
+			writer.println("TextureAnims " + texAnims.size() + " {");
+			for (TextureAnim texAnim : texAnims) {
+				texAnim.printTo(writer, 1);
+			}
+			writer.println("}");
+		}
+
+
+		// Geosets -- delete if empty
+		if (geosets != null && geosets.size() > 0) {
+			for (int i = geosets.size() - 1; i >= 0; i--) {
+				if (geosets.get(i).isEmpty()) {
+					if (geosets.get(i).geosetAnim != null) {
+						geosetAnims.remove(geosets.get(i).geosetAnim);
+					}
+					geosets.remove(i);
 				}
-				writer.println("}");
 			}
 		}
 
-		// Geosets -- delete if empty
-		if (geosets != null) {
-			if (geosets.size() > 0) {
-				for (int i = geosets.size() - 1; i >= 0; i--) {
-					if (geosets.get(i).isEmpty()) {
-						if (geosets.get(i).geosetAnim != null) {
-							geosetAnims.remove(geosets.get(i).geosetAnim);
-						}
-						geosets.remove(i);
-					}
-				}
-			}
-		}
 
 		cureBoneGeoAnimIds();
 		updateObjectIds();
 		// We want to print out the right ObjectIds!
 
 		// Geosets
-		if (geosets != null) {
-			if (geosets.size() > 0) {
-				for (Geoset geoset : geosets) {
-					geoset.doSavePrep(this);
-				}
+		if (geosets != null && geosets.size() > 0) {
+			for (Geoset geoset : geosets) {
+				geoset.doSavePrep(this);
 			}
 		}
-		if (geosets != null) {
-			if (geosets.size() > 0) {
-				for (Geoset geoset : geosets) {
-					geoset.printTo(writer, this, true);
-				}
+
+		if (geosets != null && geosets.size() > 0) {
+			for (Geoset geoset : geosets) {
+				geoset.printTo(writer, this, true);
 			}
 		}
+
 
 		// GeosetAnims
 		for (final GeosetAnim geoAnim : geosetAnims) {
 			geoAnim.geosetId = geosets.indexOf(geoAnim.geoset);
 		}
-		if (geosetAnims != null) {
-			if (geosetAnims.size() > 0) {
-				for (GeosetAnim geosetAnim : geosetAnims) {
-					geosetAnim.printTo(writer, 0);
-				}
+		if (geosetAnims != null && geosetAnims.size() > 0) {
+			for (GeosetAnim geosetAnim : geosetAnims) {
+				geosetAnim.printTo(writer, 0);
 			}
 		}
+
 
 		// Clearing pivot points
 		pivots.clear();
@@ -1632,31 +1502,29 @@ public class EditableModel implements Named {
 		// Animations
 
 		// Geosets -- delete if empty
-		if (geosets != null) {
-			if (geosets.size() > 0) {
-				for (int i = geosets.size() - 1; i >= 0; i--) {
-					if (geosets.get(i).isEmpty()) {
-						if (geosets.get(i).geosetAnim != null) {
-							geosetAnims.remove(geosets.get(i).geosetAnim);
-						}
-						geosets.remove(i);
+		if (geosets != null && geosets.size() > 0) {
+			for (int i = geosets.size() - 1; i >= 0; i--) {
+				if (geosets.get(i).isEmpty()) {
+					if (geosets.get(i).geosetAnim != null) {
+						geosetAnims.remove(geosets.get(i).geosetAnim);
 					}
+					geosets.remove(i);
 				}
 			}
 		}
+
 
 		cureBoneGeoAnimIds();
 		updateObjectIds();
 		// We want to print out the right ObjectIds!
 
 		// Geosets
-		if (geosets != null) {
-			if (geosets.size() > 0) {
-				for (Geoset geoset : geosets) {
-					geoset.doSavePrep(this);
-				}
+		if (geosets != null && geosets.size() > 0) {
+			for (Geoset geoset : geosets) {
+				geoset.doSavePrep(this);
 			}
 		}
+
 
 		// GeosetAnims
 		for (final GeosetAnim geoAnim : geosetAnims) {

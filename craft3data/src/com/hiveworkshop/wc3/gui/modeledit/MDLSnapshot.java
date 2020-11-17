@@ -1,46 +1,25 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_DIFFUSE;
-import static org.lwjgl.opengl.GL11.GL_FILL;
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LIGHT0;
-import static org.lwjgl.opengl.GL11.GL_LIGHT1;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.GL_LIGHT_MODEL_AMBIENT;
-import static org.lwjgl.opengl.GL11.GL_LINE;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_NORMALIZE;
-import static org.lwjgl.opengl.GL11.GL_POSITION;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glColor4f;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLight;
-import static org.lwjgl.opengl.GL11.glLightModel;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glPolygonMode;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.util.glu.GLU.gluPerspective;
+import com.hiveworkshop.wc3.gui.BLPHandler;
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.ProgramPreferences;
+import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdl.AnimFlag.Entry;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
+import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
+import com.hiveworkshop.wc3.mdx.MdxUtils;
+import com.hiveworkshop.wc3.mpq.MpqCodebase;
+import com.hiveworkshop.wc3.units.GameObject;
+import de.wc3data.stream.BlizzardDataInputStream;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.Pbuffer;
+import org.lwjgl.opengl.PixelFormat;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -49,38 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.PixelFormat;
-
-import com.hiveworkshop.wc3.gui.BLPHandler;
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.gui.ProgramPreferences;
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.AnimFlag.Entry;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.CollisionShape;
-import com.hiveworkshop.wc3.mdl.ExtLog;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
-import com.hiveworkshop.wc3.mdx.MdxUtils;
-import com.hiveworkshop.wc3.mpq.MpqCodebase;
-import com.hiveworkshop.wc3.units.GameObject;
-
-import de.wc3data.stream.BlizzardDataInputStream;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 public class MDLSnapshot {
 
@@ -990,19 +939,19 @@ public class MDLSnapshot {
 	// }
 	// }
 	public double convertX(final double x) {
-		return ((x + cameraPos.x) * zoom) + (getWidth() / 2);
+		return ((x + cameraPos.x) * zoom) + (getWidth() / 2.0);
 	}
 
 	public double convertY(final double y) {
-		return ((-y + cameraPos.y) * zoom) + (getHeight() / 2);
+		return ((-y + cameraPos.y) * zoom) + (getHeight() / 2.0);
 	}
 
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / zoom) - cameraPos.x;
+		return ((x - (getWidth() / 2.0)) / zoom) - cameraPos.x;
 	}
 
 	public double geomY(final double y) {
-		return -(((y - (getHeight() / 2)) / zoom) - cameraPos.y);
+		return -(((y - (getHeight() / 2.0)) / zoom) - cameraPos.y);
 	}
 
 	public Rectangle2D.Double pointsToGeomRect(final Point a, final Point b) {
@@ -1010,9 +959,8 @@ public class MDLSnapshot {
 				Math.min(geomY(a.y), geomY(b.y)));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
 				Math.max(geomY(a.y), geomY(b.y)));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, (lowRight.x - (topLeft.x)),
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, (lowRight.x - (topLeft.x)),
 				((lowRight.y) - (topLeft.y)));
-		return temp;
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {

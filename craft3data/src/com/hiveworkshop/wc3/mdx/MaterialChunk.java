@@ -1,13 +1,12 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.util.ModelUtils;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.util.ModelUtils;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class MaterialChunk {
 	public Material[] material = new Material[0];
@@ -17,7 +16,7 @@ public class MaterialChunk {
 	public void load(final BlizzardDataInputStream in, final int version) throws IOException {
 		MdxUtils.checkId(in, "MTLS");
 		final int chunkSize = in.readInt();
-		final List<Material> materialList = new ArrayList();
+		final List<Material> materialList = new ArrayList<>();
 		int materialCounter = chunkSize;
 		while (materialCounter > 0) {
 			final Material tempmaterial = new Material();

@@ -1,14 +1,14 @@
 package com.hiveworkshop.wc3.jworldedit.wipdesign;
 
-import java.io.PrintStream;
-import java.util.*;
-
 import com.hiveworkshop.wc3.jworldedit.wipdesign.units.meta.Category;
 import com.hiveworkshop.wc3.resources.WEString;
 import com.hiveworkshop.wc3.units.DataTable;
 import com.hiveworkshop.wc3.units.Element;
 import com.hiveworkshop.wc3.units.ObjectData;
 import com.hiveworkshop.wc3.units.StandardObjectData;
+
+import java.io.PrintStream;
+import java.util.*;
 
 public class MetaDataToJavaClassConverter {
 
@@ -110,12 +110,16 @@ public class MetaDataToJavaClassConverter {
 				if (metaField.hasField("maxVal")) {
 					final String maxVal = metaField.getField("maxVal");
 					if (maxVal.contains("TT")) {
-						if (maxVal.equals("TTDesc")) {
-							System.out.println("\t@TTDesc");
-						} else if (maxVal.equals("TTName")) {
-							System.out.println("\t@TTName");
-						} else if (maxVal.equals("TTUber")) {
-							System.out.println("\t@TTUber");
+						switch (maxVal) {
+							case "TTDesc":
+								System.out.println("\t@TTDesc");
+								break;
+							case "TTName":
+								System.out.println("\t@TTName");
+								break;
+							case "TTUber":
+								System.out.println("\t@TTUber");
+								break;
 						}
 					} else {
 						System.out.println("\t@MaxValue(" + maxVal + "f)");

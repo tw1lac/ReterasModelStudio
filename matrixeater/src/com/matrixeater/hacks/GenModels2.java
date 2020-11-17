@@ -1,21 +1,11 @@
 package com.matrixeater.hacks;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.TextureAnim;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import com.hiveworkshop.wc3.util.ModelUtils.Mesh;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class GenModels2 {
 
@@ -51,7 +41,7 @@ public class GenModels2 {
 		final ArrayList<AnimFlag> flags = new ArrayList<>();
 		final AnimFlag translationData = new AnimFlag("Translation");
 		for (int i = 0; i < 16; i++) {
-			translationData.addEntry(333 + (i * 1000), new Vertex((i % 4) * 0.25, (i / 4) * 0.25, 0));
+			translationData.addEntry(333 + (i * 1000), new Vertex((i % 4) * 0.25, (i / 4.0) * 0.25, 0));
 		}
 		flags.add(translationData);
 		final TextureAnim textureAnim = new TextureAnim(flags);

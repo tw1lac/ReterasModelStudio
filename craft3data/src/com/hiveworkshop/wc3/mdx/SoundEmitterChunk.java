@@ -1,11 +1,11 @@
 package com.hiveworkshop.wc3.mdx;
 
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class SoundEmitterChunk {
 	public SoundEmitter[] soundEmitter = new SoundEmitter[0];
@@ -15,7 +15,7 @@ public class SoundEmitterChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, key);
 		int chunkSize = in.readInt();
-		List<SoundEmitter> soundEmitterList = new ArrayList();
+		List<SoundEmitter> soundEmitterList = new ArrayList<>();
 		int soundEmitterCounter = chunkSize;
 		while (soundEmitterCounter > 0) {
 			SoundEmitter tempSoundEmitter = new SoundEmitter();

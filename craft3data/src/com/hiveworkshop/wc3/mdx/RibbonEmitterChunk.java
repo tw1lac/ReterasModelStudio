@@ -1,15 +1,14 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.MdlxUtils;
 import com.hiveworkshop.wc3.mdl.Vertex;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RibbonEmitterChunk {
 	public RibbonEmitter[] ribbonEmitter = new RibbonEmitter[0];
@@ -19,7 +18,7 @@ public class RibbonEmitterChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "RIBB");
 		final int chunkSize = in.readInt();
-		final List<RibbonEmitter> ribbonEmitterList = new ArrayList();
+		final List<RibbonEmitter> ribbonEmitterList = new ArrayList<>();
 		int ribbonEmitterCounter = chunkSize;
 		while (ribbonEmitterCounter > 0) {
 			final RibbonEmitter tempribbonEmitter = new RibbonEmitter();
@@ -207,121 +206,135 @@ public class RibbonEmitterChunk {
 			textureSlot = (int) mdlEmitter.getTextureSlot();
 
 			for (final AnimFlag af : mdlEmitter.getAnimFlags()) {
-				if (af.getName().equals("Visibility")) {
-					ribbonEmitterVisibility = new RibbonEmitterVisibility();
-					ribbonEmitterVisibility.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterVisibility.interpolationType = af.getInterpType();
-					ribbonEmitterVisibility.scalingTrack = new RibbonEmitterVisibility.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterVisibility.ScalingTrack mdxEntry = ribbonEmitterVisibility.new ScalingTrack();
-						ribbonEmitterVisibility.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+				switch (af.getName()) {
+					case "Visibility": {
+						ribbonEmitterVisibility = new RibbonEmitterVisibility();
+						ribbonEmitterVisibility.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterVisibility.interpolationType = af.getInterpType();
+						ribbonEmitterVisibility.scalingTrack = new RibbonEmitterVisibility.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterVisibility.ScalingTrack mdxEntry = ribbonEmitterVisibility.new ScalingTrack();
+							ribbonEmitterVisibility.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.visibility = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("HeightAbove")) {
-					ribbonEmitterHeightAbove = new RibbonEmitterHeightAbove();
-					ribbonEmitterHeightAbove.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterHeightAbove.interpolationType = af.getInterpType();
-					ribbonEmitterHeightAbove.scalingTrack = new RibbonEmitterHeightAbove.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterHeightAbove.ScalingTrack mdxEntry = ribbonEmitterHeightAbove.new ScalingTrack();
-						ribbonEmitterHeightAbove.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.heightAbove = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "HeightAbove": {
+						ribbonEmitterHeightAbove = new RibbonEmitterHeightAbove();
+						ribbonEmitterHeightAbove.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterHeightAbove.interpolationType = af.getInterpType();
+						ribbonEmitterHeightAbove.scalingTrack = new RibbonEmitterHeightAbove.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterHeightAbove.ScalingTrack mdxEntry = ribbonEmitterHeightAbove.new ScalingTrack();
+							ribbonEmitterHeightAbove.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.heightAbove = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("HeightBelow")) {
-					ribbonEmitterHeightBelow = new RibbonEmitterHeightBelow();
-					ribbonEmitterHeightBelow.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterHeightBelow.interpolationType = af.getInterpType();
-					ribbonEmitterHeightBelow.scalingTrack = new RibbonEmitterHeightBelow.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterHeightBelow.ScalingTrack mdxEntry = ribbonEmitterHeightBelow.new ScalingTrack();
-						ribbonEmitterHeightBelow.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.heightBelow = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "HeightBelow": {
+						ribbonEmitterHeightBelow = new RibbonEmitterHeightBelow();
+						ribbonEmitterHeightBelow.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterHeightBelow.interpolationType = af.getInterpType();
+						ribbonEmitterHeightBelow.scalingTrack = new RibbonEmitterHeightBelow.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterHeightBelow.ScalingTrack mdxEntry = ribbonEmitterHeightBelow.new ScalingTrack();
+							ribbonEmitterHeightBelow.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.heightBelow = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Alpha")) {
-					ribbonEmitterAlpha = new RibbonEmitterAlpha();
-					ribbonEmitterAlpha.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterAlpha.interpolationType = af.getInterpType();
-					ribbonEmitterAlpha.scalingTrack = new RibbonEmitterAlpha.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterAlpha.ScalingTrack mdxEntry = ribbonEmitterAlpha.new ScalingTrack();
-						ribbonEmitterAlpha.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+					case "Alpha": {
+						ribbonEmitterAlpha = new RibbonEmitterAlpha();
+						ribbonEmitterAlpha.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterAlpha.interpolationType = af.getInterpType();
+						ribbonEmitterAlpha.scalingTrack = new RibbonEmitterAlpha.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterAlpha.ScalingTrack mdxEntry = ribbonEmitterAlpha.new ScalingTrack();
+							ribbonEmitterAlpha.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.alpha = ((Number) mdlEntry.value).floatValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).floatValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).floatValue();
+							}
 						}
+						alphaFound = true;
+						break;
 					}
-					alphaFound = true;
-				} else if (af.getName().equals("TextureSlot")) {
-					ribbonEmitterTextureSlot = new RibbonEmitterTextureSlot();
-					ribbonEmitterTextureSlot.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterTextureSlot.interpolationType = af.getInterpType();
-					ribbonEmitterTextureSlot.scalingTrack = new RibbonEmitterTextureSlot.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterTextureSlot.ScalingTrack mdxEntry = ribbonEmitterTextureSlot.new ScalingTrack();
-						ribbonEmitterTextureSlot.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.textureSlot = ((Number) mdlEntry.value).intValue();
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Number) mdlEntry.inTan).intValue();
-							mdxEntry.outTan = ((Number) mdlEntry.outTan).intValue();
+					case "TextureSlot": {
+						ribbonEmitterTextureSlot = new RibbonEmitterTextureSlot();
+						ribbonEmitterTextureSlot.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterTextureSlot.interpolationType = af.getInterpType();
+						ribbonEmitterTextureSlot.scalingTrack = new RibbonEmitterTextureSlot.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterTextureSlot.ScalingTrack mdxEntry = ribbonEmitterTextureSlot.new ScalingTrack();
+							ribbonEmitterTextureSlot.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.textureSlot = ((Number) mdlEntry.value).intValue();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Number) mdlEntry.inTan).intValue();
+								mdxEntry.outTan = ((Number) mdlEntry.outTan).intValue();
+							}
 						}
+						break;
 					}
-				} else if (af.getName().equals("Color")) {
-					ribbonEmitterColor = new RibbonEmitterColor();
-					ribbonEmitterColor.globalSequenceId = af.getGlobalSeqId();
-					ribbonEmitterColor.interpolationType = af.getInterpType();
-					ribbonEmitterColor.scalingTrack = new RibbonEmitterColor.ScalingTrack[af.size()];
-					final boolean hasTans = af.tans();
-					for (int i = 0; i < af.size(); i++) {
-						final RibbonEmitterColor.ScalingTrack mdxEntry = ribbonEmitterColor.new ScalingTrack();
-						ribbonEmitterColor.scalingTrack[i] = mdxEntry;
-						final AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.color = ((Vertex) mdlEntry.value).toFloatArray();
-						// ========== RGB for some reason, mdl is BGR
-						// ==============
-						// final float blue = mdxEntry.color[0];
-						// mdxEntry.color[0] = mdxEntry.color[2];
-						// mdxEntry.color[2] = blue;
-						// ========== RGB for some reason, mdl is BGR
-						// ==============
-						mdxEntry.time = mdlEntry.time;
-						if (hasTans) {
-							mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+					case "Color": {
+						ribbonEmitterColor = new RibbonEmitterColor();
+						ribbonEmitterColor.globalSequenceId = af.getGlobalSeqId();
+						ribbonEmitterColor.interpolationType = af.getInterpType();
+						ribbonEmitterColor.scalingTrack = new RibbonEmitterColor.ScalingTrack[af.size()];
+						final boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							final RibbonEmitterColor.ScalingTrack mdxEntry = ribbonEmitterColor.new ScalingTrack();
+							ribbonEmitterColor.scalingTrack[i] = mdxEntry;
+							final AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.color = ((Vertex) mdlEntry.value).toFloatArray();
+							// ========== RGB for some reason, mdl is BGR
+							// ==============
+							// final float blue = mdxEntry.color[0];
+							// mdxEntry.color[0] = mdxEntry.color[2];
+							// mdxEntry.color[2] = blue;
+							// ========== RGB for some reason, mdl is BGR
+							// ==============
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						colorFound = true;
+						break;
 					}
-					colorFound = true;
-				} else {
-					if (Node.LOG_DISCARDED_FLAGS) {
-						System.err.println("discarded flag " + af.getName());
-					}
+					default:
+						if (Node.LOG_DISCARDED_FLAGS) {
+							System.err.println("discarded flag " + af.getName());
+						}
+						break;
 				}
 			}
 			if (alphaFound || (Math.abs(mdlEmitter.getAlpha() - (-1)) <= 0.001)) {

@@ -1,21 +1,19 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.datachooser.DataSource;
 import com.hiveworkshop.wc3.mdl.v2.MaterialView;
 import com.hiveworkshop.wc3.mdx.LayerChunk;
 import com.hiveworkshop.wc3.mdx.MaterialChunk;
 import com.hiveworkshop.wc3.util.ModelUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class for MDL materials.
@@ -24,7 +22,7 @@ import com.hiveworkshop.wc3.util.ModelUtils;
  */
 public class Material implements MaterialView {
 	public static final String SHADER_HD_DEFAULT_UNIT = "Shader_HD_DefaultUnit";
-	public static int teamColor = 00;
+	public static int teamColor = 0;
 	com.etheller.collections.ArrayList<Layer> layers;
 	private int priorityPlane = 0;
 	// "flags" are my way of dealing with all the stuff that I

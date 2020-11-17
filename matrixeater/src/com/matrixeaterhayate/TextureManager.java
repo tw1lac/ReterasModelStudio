@@ -10,7 +10,6 @@ import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -103,14 +102,11 @@ public class TextureManager extends JPanel {
 	}
 
 	private ListSelectionListener NewListSelectionListener(ModelView modelView, JList<Bitmap> list) {
-		return new ListSelectionListener() {
-			@Override
-			public void valueChanged(final ListSelectionEvent e) {
-				final Bitmap selectedValue = list.getSelectedValue();
-				if (selectedValue != null) {
-					pathField.setText(selectedValue.getPath());
-					loadBitmap(modelView, list.getSelectedValue());
-				}
+		return e -> {
+			final Bitmap selectedValue = list.getSelectedValue();
+			if (selectedValue != null) {
+				pathField.setText(selectedValue.getPath());
+				loadBitmap(modelView, list.getSelectedValue());
 			}
 		};
 	}

@@ -1,13 +1,12 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.Animation;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.Animation;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class SequenceChunk {
 	public Sequence[] sequence = new Sequence[0];
@@ -17,7 +16,7 @@ public class SequenceChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "SEQS");
 		final int chunkSize = in.readInt();
-		final List<Sequence> sequenceList = new ArrayList();
+		final List<Sequence> sequenceList = new ArrayList<>();
 		int sequenceCounter = chunkSize;
 		while (sequenceCounter > 0) {
 			final Sequence tempsequence = new Sequence();

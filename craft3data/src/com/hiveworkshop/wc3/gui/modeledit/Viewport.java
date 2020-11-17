@@ -1,46 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.awt.Stroke;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.Timer;
-import javax.swing.TransferHandler;
-
 import com.etheller.util.CollectionUtils;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
@@ -52,30 +11,21 @@ import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditor;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericScaleAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ModelEditorChangeListener;
-import com.hiveworkshop.wc3.gui.modeledit.viewport.AnimatedViewportModelRenderer;
-import com.hiveworkshop.wc3.gui.modeledit.viewport.NodeIconPalette;
-import com.hiveworkshop.wc3.gui.modeledit.viewport.ResettableAnimatedIdObjectParentLinkRenderer;
-import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportModelRenderer;
-import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportView;
-import com.hiveworkshop.wc3.mdl.Attachment;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.CollisionShape;
-import com.hiveworkshop.wc3.mdl.EventObject;
-import com.hiveworkshop.wc3.mdl.GeosetAnim;
-import com.hiveworkshop.wc3.mdl.Helper;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Light;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.ParticleEmitterPopcorn;
-import com.hiveworkshop.wc3.mdl.RibbonEmitter;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.gui.modeledit.viewport.*;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.v2.MaterialView;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.visitor.GeosetVisitor;
 import com.hiveworkshop.wc3.mdl.v2.visitor.ModelVisitor;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Viewport extends JPanel implements MouseListener, ActionListener, MouseWheelListener, CoordinateSystem,
 		ViewportView, MouseMotionListener, ModelEditorChangeListener {
@@ -457,22 +407,22 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 
 	@Override
 	public double convertX(final double x) {
-		return ((x + m_a) * m_zoom) + (getWidth() / 2);
+		return ((x + m_a) * m_zoom) + (getWidth() / 2.0);
 	}
 
 	@Override
 	public double convertY(final double y) {
-		return ((-y + m_b) * m_zoom) + (getHeight() / 2);
+		return ((-y + m_b) * m_zoom) + (getHeight() / 2.0);
 	}
 
 	@Override
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / m_zoom) - m_a;
+		return ((x - (getWidth() / 2.0)) / m_zoom) - m_a;
 	}
 
 	@Override
 	public double geomY(final double y) {
-		return -(((y - (getHeight() / 2)) / m_zoom) - m_b);
+		return -(((y - (getHeight() / 2.0)) / m_zoom) - m_b);
 	}
 
 	@Override
@@ -511,8 +461,8 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 					lastClick.x = (int) mx;
 					lastClick.y = (int) my;
 				}
-				coordDisplayListener.notifyUpdate(m_d1, m_d2, ((mx - (getWidth() / 2)) / m_zoom) - m_a,
-						-(((my - (getHeight() / 2)) / m_zoom) - m_b));
+				coordDisplayListener.notifyUpdate(m_d1, m_d2, ((mx - (getWidth() / 2.0)) / m_zoom) - m_a,
+						-(((my - (getHeight() / 2.0)) / m_zoom) - m_b));
 				// MainFrame.panel.setMouseCoordDisplay(m_d1,m_d2,((mx-getWidth()/2)/m_zoom)-m_a,-(((my-getHeight()/2)/m_zoom)-m_b));
 				// TODO update mouse coord display could be used still
 
@@ -847,13 +797,13 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		}
 		for (int i = 0; i < wr; i++) {
 			if (neg) {
-				m_a -= (mx - (getWidth() / 2)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
-				m_b -= (my - (getHeight() / 2)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_a -= (mx - (getWidth() / 2.0)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
 				m_zoom *= 1.15;
 			} else {
 				m_zoom /= 1.15;
-				m_a -= (mx - (getWidth() / 2)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
-				m_b -= (my - (getHeight() / 2)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_a -= (mx - (getWidth() / 2.0)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
 			}
 		}
 	}

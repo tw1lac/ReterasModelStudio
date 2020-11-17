@@ -1,16 +1,15 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.QuaternionRotation;
 import com.hiveworkshop.wc3.mdl.TextureAnim;
 import com.hiveworkshop.wc3.mdl.Vertex;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextureAnimationChunk {
 	public TextureAnimation[] textureAnimation = new TextureAnimation[0];
@@ -20,7 +19,7 @@ public class TextureAnimationChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "TXAN");
 		int chunkSize = in.readInt();
-		List<TextureAnimation> textureAnimationList = new ArrayList();
+		List<TextureAnimation> textureAnimationList = new ArrayList<>();
 		int textureAnimationCounter = chunkSize;
 		while (textureAnimationCounter > 0) {
 			TextureAnimation temptextureAnimation = new TextureAnimation();
@@ -109,56 +108,63 @@ public class TextureAnimationChunk {
 		}
 		public TextureAnimation(TextureAnim txa) {
 			for( AnimFlag af: txa.getAnimFlags() ) {
-				if( af.getName().equals("Translation") ) {
-					textureTranslation = new TextureTranslation();
-					textureTranslation.globalSequenceId = af.getGlobalSeqId();
-					textureTranslation.interpolationType = af.getInterpType();
-					textureTranslation.translationTrack = new TextureTranslation.TranslationTrack[af.size()];
-					boolean hasTans = af.tans();
-					for( int i = 0; i < af.size(); i++ ) {
-						TextureTranslation.TranslationTrack mdxEntry = textureTranslation.new TranslationTrack();
-						textureTranslation.translationTrack[i] = mdxEntry;
-						AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.translation = ((Vertex)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time;
-						if( hasTans ) {
-							mdxEntry.inTan = ((Vertex)mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((Vertex)mdlEntry.outTan).toFloatArray();
+				switch (af.getName()) {
+					case "Translation": {
+						textureTranslation = new TextureTranslation();
+						textureTranslation.globalSequenceId = af.getGlobalSeqId();
+						textureTranslation.interpolationType = af.getInterpType();
+						textureTranslation.translationTrack = new TextureTranslation.TranslationTrack[af.size()];
+						boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							TextureTranslation.TranslationTrack mdxEntry = textureTranslation.new TranslationTrack();
+							textureTranslation.translationTrack[i] = mdxEntry;
+							AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.translation = ((Vertex) mdlEntry.value).toFloatArray();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						break;
 					}
-				} else if( af.getName().equals("Scaling") ) {
-					textureScaling = new TextureScaling();
-					textureScaling.globalSequenceId = af.getGlobalSeqId();
-					textureScaling.interpolationType = af.getInterpType();
-					textureScaling.translationTrack = new TextureScaling.TranslationTrack[af.size()];
-					boolean hasTans = af.tans();
-					for( int i = 0; i < af.size(); i++ ) {
-						TextureScaling.TranslationTrack mdxEntry = textureScaling.new TranslationTrack();
-						textureScaling.translationTrack[i] = mdxEntry;
-						AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.scaling = ((Vertex)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time;
-						if( hasTans ) {
-							mdxEntry.inTan = ((Vertex)mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((Vertex)mdlEntry.outTan).toFloatArray();
+					case "Scaling": {
+						textureScaling = new TextureScaling();
+						textureScaling.globalSequenceId = af.getGlobalSeqId();
+						textureScaling.interpolationType = af.getInterpType();
+						textureScaling.translationTrack = new TextureScaling.TranslationTrack[af.size()];
+						boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							TextureScaling.TranslationTrack mdxEntry = textureScaling.new TranslationTrack();
+							textureScaling.translationTrack[i] = mdxEntry;
+							AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.scaling = ((Vertex) mdlEntry.value).toFloatArray();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((Vertex) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((Vertex) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						break;
 					}
-				} else if( af.getName().equals("Rotation") ) {
-					textureRotation = new TextureRotation();
-					textureRotation.globalSequenceId = af.getGlobalSeqId();
-					textureRotation.interpolationType = af.getInterpType();
-					textureRotation.translationTrack = new TextureRotation.TranslationTrack[af.size()];
-					boolean hasTans = af.tans();
-					for( int i = 0; i < af.size(); i++ ) {
-						TextureRotation.TranslationTrack mdxEntry = textureRotation.new TranslationTrack();
-						textureRotation.translationTrack[i] = mdxEntry;
-						AnimFlag.Entry mdlEntry = af.getEntry(i);
-						mdxEntry.rotation = ((QuaternionRotation)mdlEntry.value).toFloatArray();
-						mdxEntry.time = mdlEntry.time;
-						if( hasTans ) {
-							mdxEntry.inTan = ((QuaternionRotation)mdlEntry.inTan).toFloatArray();
-							mdxEntry.outTan = ((QuaternionRotation)mdlEntry.outTan).toFloatArray();
+					case "Rotation": {
+						textureRotation = new TextureRotation();
+						textureRotation.globalSequenceId = af.getGlobalSeqId();
+						textureRotation.interpolationType = af.getInterpType();
+						textureRotation.translationTrack = new TextureRotation.TranslationTrack[af.size()];
+						boolean hasTans = af.tans();
+						for (int i = 0; i < af.size(); i++) {
+							TextureRotation.TranslationTrack mdxEntry = textureRotation.new TranslationTrack();
+							textureRotation.translationTrack[i] = mdxEntry;
+							AnimFlag.Entry mdlEntry = af.getEntry(i);
+							mdxEntry.rotation = ((QuaternionRotation) mdlEntry.value).toFloatArray();
+							mdxEntry.time = mdlEntry.time;
+							if (hasTans) {
+								mdxEntry.inTan = ((QuaternionRotation) mdlEntry.inTan).toFloatArray();
+								mdxEntry.outTan = ((QuaternionRotation) mdlEntry.outTan).toFloatArray();
+							}
 						}
+						break;
 					}
 				}
 			}

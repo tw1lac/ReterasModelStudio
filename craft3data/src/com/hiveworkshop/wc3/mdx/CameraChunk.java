@@ -1,14 +1,13 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.AnimFlag;
+import com.hiveworkshop.wc3.mdl.Vertex;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Vertex;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class CameraChunk {
 	public Camera[] camera = new Camera[0];
@@ -18,7 +17,7 @@ public class CameraChunk {
 	public void load(final BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "CAMS");
 		final int chunkSize = in.readInt();
-		final List<Camera> cameraList = new ArrayList();
+		final List<Camera> cameraList = new ArrayList<>();
 		int cameraCounter = chunkSize;
 		while (cameraCounter > 0) {
 			final Camera tempcamera = new Camera();

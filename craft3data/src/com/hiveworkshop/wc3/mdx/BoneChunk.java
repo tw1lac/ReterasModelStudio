@@ -1,11 +1,11 @@
 package com.hiveworkshop.wc3.mdx;
 
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class BoneChunk {
 	public Bone[] bone = new Bone[0];
@@ -15,7 +15,7 @@ public class BoneChunk {
 	public void load(BlizzardDataInputStream in) throws IOException {
 		MdxUtils.checkId(in, "BONE");
 		int chunkSize = in.readInt();
-		List<Bone> boneList = new ArrayList();
+		List<Bone> boneList = new ArrayList<>();
 		int boneCounter = chunkSize;
 		while (boneCounter > 0) {
 			Bone tempbone = new Bone();

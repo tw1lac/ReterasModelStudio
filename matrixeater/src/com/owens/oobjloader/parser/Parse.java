@@ -1,15 +1,9 @@
 package com.owens.oobjloader.parser;
 
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.Logger;
+
+import static java.util.logging.Level.*;
 
 public class Parse {
     private final Logger log = Logger.getLogger(Parse.class.getName());
@@ -709,12 +703,16 @@ public class Parse {
 
     private void processReflectivityTransmissivity(final String fieldName, final String line) {
         int type = BuilderInterface.MTL_KA;
-        if (fieldName.equals(MTL_KD)) {
-            type = BuilderInterface.MTL_KD;
-        } else if (fieldName.equals(MTL_KS)) {
-            type = BuilderInterface.MTL_KS;
-        } else if (fieldName.equals(MTL_TF)) {
-            type = BuilderInterface.MTL_TF;
+        switch (fieldName) {
+            case MTL_KD:
+                type = BuilderInterface.MTL_KD;
+                break;
+            case MTL_KS:
+                type = BuilderInterface.MTL_KS;
+                break;
+            case MTL_TF:
+                type = BuilderInterface.MTL_TF;
+                break;
         }
 
         final String[] tokens = StringUtils.parseWhitespaceList(line.substring(fieldName.length()));
@@ -851,20 +849,28 @@ public class Parse {
     // Note the addition of -bm.
     private void processMapDecalDispBump(final String fieldname, final String line) {
         int type = BuilderInterface.MTL_MAP_KA;
-        if (fieldname.equals(MTL_MAP_KD)) {
-            type = BuilderInterface.MTL_MAP_KD;
-        } else if (fieldname.equals(MTL_MAP_KS)) {
-            type = BuilderInterface.MTL_MAP_KS;
-        } else if (fieldname.equals(MTL_MAP_NS)) {
-            type = BuilderInterface.MTL_MAP_NS;
-        } else if (fieldname.equals(MTL_MAP_D)) {
-            type = BuilderInterface.MTL_MAP_D;
-        } else if (fieldname.equals(MTL_DISP)) {
-            type = BuilderInterface.MTL_DISP;
-        } else if (fieldname.equals(MTL_DECAL)) {
-            type = BuilderInterface.MTL_DECAL;
-        } else if (fieldname.equals(MTL_BUMP)) {
-            type = BuilderInterface.MTL_BUMP;
+        switch (fieldname) {
+            case MTL_MAP_KD:
+                type = BuilderInterface.MTL_MAP_KD;
+                break;
+            case MTL_MAP_KS:
+                type = BuilderInterface.MTL_MAP_KS;
+                break;
+            case MTL_MAP_NS:
+                type = BuilderInterface.MTL_MAP_NS;
+                break;
+            case MTL_MAP_D:
+                type = BuilderInterface.MTL_MAP_D;
+                break;
+            case MTL_DISP:
+                type = BuilderInterface.MTL_DISP;
+                break;
+            case MTL_DECAL:
+                type = BuilderInterface.MTL_DECAL;
+                break;
+            case MTL_BUMP:
+                type = BuilderInterface.MTL_BUMP;
+                break;
         }
 
         final String filename = line.substring(fieldname.length()).trim();
