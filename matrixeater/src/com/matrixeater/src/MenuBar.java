@@ -1,15 +1,8 @@
 package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
-import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
-import com.hiveworkshop.wc3.mdl.EventObject;
 import com.hiveworkshop.wc3.mdl.*;
-import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
-import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
-import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.resources.Resources;
 import com.hiveworkshop.wc3.resources.WEString;
@@ -18,26 +11,17 @@ import com.hiveworkshop.wc3.units.ModelOptionPanel;
 import com.hiveworkshop.wc3.units.UnitOptionPanel;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.ModelUtils;
-import com.matrixeaterhayate.TextureManager;
-import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector4f;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Queue;
-import java.util.*;
+import java.util.ArrayList;
 
 public class MenuBar {
     public static JMenuBar createMenuBar(final MainPanel mainPanel) {
@@ -194,12 +178,12 @@ public class MenuBar {
         mainPanel.viewModes = new ButtonGroup();
 
         mainPanel.wireframe = new JRadioButtonMenuItem("Wireframe");
-        mainPanel.wireframe.addActionListener(repainter(mainPanel));
+        mainPanel.wireframe.addActionListener(MenuBarActionListeners.repainter(mainPanel));
         mainPanel.viewMode.add(mainPanel.wireframe);
         mainPanel.viewModes.add(mainPanel.wireframe);
 
         mainPanel.solid = new JRadioButtonMenuItem("Solid");
-        mainPanel.solid.addActionListener(repainter(mainPanel));
+        mainPanel.solid.addActionListener(MenuBarActionListeners.repainter(mainPanel));
         mainPanel.viewMode.add(mainPanel.solid);
         mainPanel.viewModes.add(mainPanel.solid);
 
@@ -213,37 +197,37 @@ public class MenuBar {
     }
 
     private static void fillToolsMenu(MainPanel mainPanel) {
-        mainPanel.showMatrices = createMenuItem("View Selected \"Matrices\"", -1, mainPanel.toolsMenu, mainPanel.viewMatricesAction);
+        mainPanel.showMatrices = createMenuItem("View Selected \"Matrices\"", -1, mainPanel.toolsMenu, mainPanel.viewMatricesAction());
 //		showMatrices = createMenuItem("View Selected \"Matrices\"", KeyEvent.VK_V, toolsMenu, viewMatricesAction);
 
-        mainPanel.insideOut = createMenuItem("Flip all selected faces", KeyEvent.VK_I, mainPanel.toolsMenu, mainPanel.insideOutAction, KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK));
+        mainPanel.insideOut = createMenuItem("Flip all selected faces", KeyEvent.VK_I, mainPanel.toolsMenu, mainPanel.insideOutAction(), KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK));
 
-        mainPanel.insideOutNormals = createMenuItem("Flip all selected normals", -1, mainPanel.toolsMenu, mainPanel.insideOutNormalsAction);
+        mainPanel.insideOutNormals = createMenuItem("Flip all selected normals", -1, mainPanel.toolsMenu, mainPanel.insideOutNormalsAction());
 
         mainPanel.toolsMenu.add(new JSeparator());
 
         mainPanel.editUVs = createMenuItem(mainPanel, "Edit UV Mapping", KeyEvent.VK_U, mainPanel.toolsMenu);
 
-        mainPanel.editTextures = createMenuItem("Edit Textures", KeyEvent.VK_T, mainPanel.toolsMenu, editTextures(mainPanel));
+        mainPanel.editTextures = createMenuItem("Edit Textures", KeyEvent.VK_T, mainPanel.toolsMenu, MenuBarActionListeners.editTextures(mainPanel));
 
-        mainPanel.rigButton = createMenuItem("Rig Selection", KeyEvent.VK_R, mainPanel.toolsMenu, mainPanel.rigAction, KeyStroke.getKeyStroke("control W"));
+        mainPanel.rigButton = createMenuItem("Rig Selection", KeyEvent.VK_R, mainPanel.toolsMenu, mainPanel.rigAction(), KeyStroke.getKeyStroke("control W"));
 
         mainPanel.tweaksSubmenu = createMenuMenu("Tweaks", KeyEvent.VK_T, "Allows the user to tweak conversion mistakes.", mainPanel.toolsMenu);
 
-        mainPanel.flipAllUVsU = createMenuItem("Flip All UVs U", KeyEvent.VK_U, mainPanel.tweaksSubmenu, mainPanel.flipAllUVsUAction);
+        mainPanel.flipAllUVsU = createMenuItem("Flip All UVs U", KeyEvent.VK_U, mainPanel.tweaksSubmenu, mainPanel.flipAllUVsAxisAction("Flip All UVs U"));
 
-        mainPanel.flipAllUVsV = createMenuItem("Flip All UVs V", -1, mainPanel.tweaksSubmenu, mainPanel.flipAllUVsVAction);
+        mainPanel.flipAllUVsV = createMenuItem("Flip All UVs V", -1, mainPanel.tweaksSubmenu, mainPanel.flipAllUVsAxisAction("Flip All UVs V"));
 //		flipAllUVsV = createMenuItem("Flip All UVs V", KeyEvent.VK_V, tweaksSubmenu, flipAllUVsVAction);
 
-        mainPanel.inverseAllUVs = createMenuItem("Swap All UVs U for V", KeyEvent.VK_S, mainPanel.tweaksSubmenu, mainPanel.inverseAllUVsAction);
+        mainPanel.inverseAllUVs = createMenuItem("Swap All UVs U for V", KeyEvent.VK_S, mainPanel.tweaksSubmenu, MenuBarActionListeners.inverseAllUVsAction(mainPanel));
 
         mainPanel.mirrorSubmenu = createMenuMenu("Mirror", KeyEvent.VK_M, "Allows the user to mirror objects.", mainPanel.toolsMenu);
 
-        mainPanel.mirrorX = createMenuItem("Mirror X", KeyEvent.VK_X, mainPanel.mirrorSubmenu, mainPanel.mirrorXAction);
+        mainPanel.mirrorX = createMenuItem("Mirror X", KeyEvent.VK_X, mainPanel.mirrorSubmenu, mainPanel.mirrorAxisAction("Mirror X"));
 
-        mainPanel.mirrorY = createMenuItem("Mirror Y", KeyEvent.VK_Y, mainPanel.mirrorSubmenu, mainPanel.mirrorYAction);
+        mainPanel.mirrorY = createMenuItem("Mirror Y", KeyEvent.VK_Y, mainPanel.mirrorSubmenu, mainPanel.mirrorAxisAction("Mirror Y"));
 
-        mainPanel.mirrorZ = createMenuItem("Mirror Z", KeyEvent.VK_Z, mainPanel.mirrorSubmenu, mainPanel.mirrorZAction);
+        mainPanel.mirrorZ = createMenuItem("Mirror Z", KeyEvent.VK_Z, mainPanel.mirrorSubmenu, mainPanel.mirrorAxisAction("Mirror Z"));
 
         mainPanel.mirrorSubmenu.add(new JSeparator());
 
@@ -253,7 +237,7 @@ public class MenuBar {
     }
 
     private static void fillWindowMenu(MainPanel mainPanel) {
-        final JMenuItem resetViewButton = createMenuItem("Reset Layout", -1, mainPanel.windowMenu, resetViewButton(mainPanel));
+        final JMenuItem resetViewButton = createMenuItem("Reset Layout", -1, mainPanel.windowMenu, MenuBarActionListeners.resetViewButton(mainPanel));
 
         final JMenu viewsMenu = createMenuMenu("Views", KeyEvent.VK_V, mainPanel.windowMenu);
 
@@ -347,11 +331,11 @@ public class MenuBar {
 
         mainPanel.nullmodelButton = createMenuItem(mainPanel, "Edit/delete model components", KeyEvent.VK_E, mainPanel.scriptsMenu, KeyStroke.getKeyStroke("control E"));
 
-        JMenuItem exportAnimatedToStaticMesh = createMenuItem("Export Animated to Static Mesh", KeyEvent.VK_E, mainPanel.scriptsMenu, exportAnimatedToStaticMesh(mainPanel));
+        JMenuItem exportAnimatedToStaticMesh = createMenuItem("Export Animated to Static Mesh", KeyEvent.VK_E, mainPanel.scriptsMenu, MenuBarActionListeners.exportAnimatedToStaticMesh(mainPanel));
 
-        JMenuItem exportAnimatedFramePNG = createMenuItem("Export Animated Frame PNG", KeyEvent.VK_F, mainPanel.scriptsMenu, exportAnimatedFramePNG(mainPanel));
+        JMenuItem exportAnimatedFramePNG = createMenuItem("Export Animated Frame PNG", KeyEvent.VK_F, mainPanel.scriptsMenu, MenuBarActionListeners.exportAnimatedFramePNG(mainPanel));
 
-        JMenuItem combineAnims = createMenuItem("Create Back2Back Animation", KeyEvent.VK_P, mainPanel.scriptsMenu, combineAnimations(mainPanel));
+        JMenuItem combineAnims = createMenuItem("Create Back2Back Animation", KeyEvent.VK_P, mainPanel.scriptsMenu, MenuBarActionListeners.combineAnimations(mainPanel));
 
         mainPanel.scaleAnimations = createMenuItem(mainPanel, "Change Animation Lengths by Scaling", KeyEvent.VK_A, mainPanel.scriptsMenu);
 
@@ -417,13 +401,13 @@ public class MenuBar {
 
         mainPanel.fileMenu.add(new JSeparator());
 
-        mainPanel.revert = createMenuItem("Revert", -1, mainPanel.fileMenu, revert(mainPanel));
+        mainPanel.revert = createMenuItem("Revert", -1, mainPanel.fileMenu, MenuBarActionListeners.revert(mainPanel));
 
         mainPanel.close = createMenuItem(mainPanel, "Close", KeyEvent.VK_E, mainPanel.fileMenu, KeyStroke.getKeyStroke("control E"));
 
         mainPanel.fileMenu.add(new JSeparator());
 
-        mainPanel.exit = createMenuItem("Exit", KeyEvent.VK_E, mainPanel.fileMenu, exit(mainPanel));
+        mainPanel.exit = createMenuItem("Exit", KeyEvent.VK_E, mainPanel.fileMenu, MenuBarActionListeners.exit(mainPanel));
     }
 
     private static void fillEditMenu(MainPanel mainPanel) {
@@ -449,482 +433,53 @@ public class MenuBar {
 
         mainPanel.simplifyKeyframes = createMenuItem(mainPanel, "Simplify Keyframes (Experimental)", KeyEvent.VK_K, optimizeMenu);
 
-        final JMenuItem minimizeGeoset = createMenuItem("Minimize Geosets", KeyEvent.VK_K, optimizeMenu, minimizeGeoset(mainPanel));
+        final JMenuItem minimizeGeoset = createMenuItem("Minimize Geosets", KeyEvent.VK_K, optimizeMenu, MenuBarActionListeners.minimizeGeoset(mainPanel));
 
-        mainPanel.sortBones = createMenuItem("Sort Nodes", KeyEvent.VK_S, optimizeMenu, sortBones(mainPanel));
+        mainPanel.sortBones = createMenuItem("Sort Nodes", KeyEvent.VK_S, optimizeMenu, MenuBarActionListeners.sortBones(mainPanel));
 
         final JMenuItem flushUnusedTexture = createMenuItem(mainPanel, "Flush Unused Texture", KeyEvent.VK_F, optimizeMenu);
         flushUnusedTexture.setEnabled(false);
 
-        final JMenuItem recalcNormals = createMenuItem("Recalculate Normals", -1, mainPanel.editMenu, mainPanel.recalcNormalsAction, KeyStroke.getKeyStroke("control N"));
+        final JMenuItem recalcNormals = createMenuItem("Recalculate Normals", -1, mainPanel.editMenu, mainPanel.recalculateNormalsAction(), KeyStroke.getKeyStroke("control N"));
 
-        final JMenuItem recalcExtents = createMenuItem("Recalculate Extents", -1, mainPanel.editMenu, mainPanel.recalcExtentsAction, KeyStroke.getKeyStroke("control shift E"));
+        final JMenuItem recalcExtents = createMenuItem("Recalculate Extents", -1, mainPanel.editMenu, mainPanel.recalculateExtentsAction(), KeyStroke.getKeyStroke("control shift E"));
 
         mainPanel.editMenu.add(new JSeparator());
 
-        mainPanel.cut = createMenuItem( "Cut", -1, mainPanel.editMenu, copyActionListener(mainPanel), KeyStroke.getKeyStroke("control X"));
+        mainPanel.cut = createMenuItem( "Cut", -1, mainPanel.editMenu, MenuBarActionListeners.copyActionListener(mainPanel), KeyStroke.getKeyStroke("control X"));
         mainPanel.cut.setActionCommand((String) TransferHandler.getCutAction().getValue(Action.NAME));
 
-        mainPanel.copy = createMenuItem( "Copy", -1, mainPanel.editMenu, copyActionListener(mainPanel), KeyStroke.getKeyStroke("control C"));
+        mainPanel.copy = createMenuItem( "Copy", -1, mainPanel.editMenu, MenuBarActionListeners.copyActionListener(mainPanel), KeyStroke.getKeyStroke("control C"));
         mainPanel.copy.setActionCommand((String) TransferHandler.getCopyAction().getValue(Action.NAME));
 
-        mainPanel.paste = createMenuItem("Paste", -1, mainPanel.editMenu, copyActionListener(mainPanel), KeyStroke.getKeyStroke("control V"));
+        mainPanel.paste = createMenuItem("Paste", -1, mainPanel.editMenu, MenuBarActionListeners.copyActionListener(mainPanel), KeyStroke.getKeyStroke("control V"));
         mainPanel.paste.setActionCommand((String) TransferHandler.getPasteAction().getValue(Action.NAME));
 
-        mainPanel.duplicateSelection = createMenuItem("Duplicate", -1, mainPanel.editMenu, mainPanel.cloneAction, KeyStroke.getKeyStroke("control D"));
+        mainPanel.duplicateSelection = createMenuItem("Duplicate", -1, mainPanel.editMenu, mainPanel.cloneAction(), KeyStroke.getKeyStroke("control D"));
 
         mainPanel.editMenu.add(new JSeparator());
 
-        mainPanel.snapVertices = createMenuItem("Snap Vertices", -1, mainPanel.editMenu, mainPanel.snapVerticesAction, KeyStroke.getKeyStroke("control shift W"));
+        mainPanel.snapVertices = createMenuItem("Snap Vertices", -1, mainPanel.editMenu, mainPanel.snapVerticesAction(), KeyStroke.getKeyStroke("control shift W"));
 
-        mainPanel.snapNormals = createMenuItem("Snap Normals", -1, mainPanel.editMenu, mainPanel.snapNormalsAction, KeyStroke.getKeyStroke("control L"));
+        mainPanel.snapNormals = createMenuItem("Snap Normals", -1, mainPanel.editMenu, mainPanel.snapNormalsAction(), KeyStroke.getKeyStroke("control L"));
 
         mainPanel.editMenu.add(new JSeparator());
 
-        mainPanel.selectAll = createMenuItem("Select All", -1, mainPanel.editMenu, mainPanel.selectAllAction, KeyStroke.getKeyStroke("control A"));
+        mainPanel.selectAll = createMenuItem("Select All", -1, mainPanel.editMenu, mainPanel.selectAllAction(), KeyStroke.getKeyStroke("control A"));
 
-        mainPanel.invertSelect = createMenuItem("Invert Selection", -1, mainPanel.editMenu, mainPanel.invertSelectAction, KeyStroke.getKeyStroke("control I"));
+        mainPanel.invertSelect = createMenuItem("Invert Selection", -1, mainPanel.editMenu, mainPanel.invertSelectAction(), KeyStroke.getKeyStroke("control I"));
 
-        mainPanel.expandSelection = createMenuItem("Expand Selection", -1, mainPanel.editMenu, mainPanel.expandSelectionAction, KeyStroke.getKeyStroke("control E"));
+        mainPanel.expandSelection = createMenuItem("Expand Selection", -1, mainPanel.editMenu, mainPanel.expandSelectionAction(), KeyStroke.getKeyStroke("control E"));
 
         mainPanel.editMenu.addSeparator();
 
-        final JMenuItem deleteButton = createMenuItem("Delete", KeyEvent.VK_D, mainPanel.editMenu, mainPanel.deleteAction);
+        final JMenuItem deleteButton = createMenuItem("Delete", KeyEvent.VK_D, mainPanel.editMenu, mainPanel.deleteAction());
 
         mainPanel.editMenu.addSeparator();
 
         mainPanel.preferencesWindow = createMenuItem("Preferences Window", KeyEvent.VK_P, mainPanel.editMenu, mainPanel.openPreferencesAction);
     }
 
-    private static ActionListener repainter(MainPanel mainPanel) {
-        return e -> {
-            if (mainPanel.wireframe.isSelected()) {
-                mainPanel.prefs.setViewMode(0);
-            } else if (mainPanel.solid.isSelected()) {
-                mainPanel.prefs.setViewMode(1);
-            } else {
-                mainPanel.prefs.setViewMode(-1);
-            }
-            mainPanel.repaint();
-        };
-    }
-
-    private static ActionListener copyActionListener(MainPanel mainPanel) {
-        return e -> {
-            final TransferActionListener transferActionListener = new TransferActionListener();
-            if (!mainPanel.animationModeState) {
-                transferActionListener.actionPerformed(e);
-            } else {
-                if (e.getActionCommand().equals(TransferHandler.getCutAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.cut();
-                } else if (e.getActionCommand().equals(TransferHandler.getCopyAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.copy();
-                } else if (e.getActionCommand().equals(TransferHandler.getPasteAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.paste();
-                }
-            }
-        };
-    }
-
-    private static ActionListener sortBones(MainPanel mainPanel) {
-        return e -> {
-            final EditableModel model = mainPanel.currentMDL();
-            final List<IdObject> roots = new ArrayList<>();
-            final ArrayList<IdObject> modelList = model.getIdObjects();
-            for (final IdObject object : modelList) {
-                if (object.getParent() == null) {
-                    roots.add(object);
-                }
-            }
-            final Queue<IdObject> bfsQueue = new LinkedList<>(roots);
-            final List<IdObject> result = new ArrayList<>();
-            while (!bfsQueue.isEmpty()) {
-                final IdObject nextItem = bfsQueue.poll();
-                bfsQueue.addAll(nextItem.getChildrenNodes());
-                result.add(nextItem);
-            }
-            for (final IdObject node : result) {
-                model.remove(node);
-            }
-            mainPanel.modelStructureChangeListener.nodesRemoved(result);
-            for (final IdObject node : result) {
-                model.add(node);
-            }
-            mainPanel.modelStructureChangeListener.nodesAdded(result);
-        };
-    }
-
-    private static ActionListener minimizeGeoset(MainPanel mainPanel) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final int confirm = JOptionPane.showConfirmDialog(mainPanel,
-                        "This is experimental and I did not code the Undo option for it yet. Continue?\nMy advice is to click cancel and save once first.",
-                        "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (confirm != JOptionPane.OK_OPTION) {
-                    return;
-                }
-
-                mainPanel.currentMDL().doSavePreps();
-
-                final Map<Geoset, Geoset> sourceToDestination = new HashMap<>();
-                final List<Geoset> retainedGeosets = new ArrayList<>();
-                for (final Geoset geoset : mainPanel.currentMDL().getGeosets()) {
-                    boolean alreadyRetained = false;
-                    for (final Geoset retainedGeoset : retainedGeosets) {
-                        if (retainedGeoset.getMaterial().equals(geoset.getMaterial())
-                                && (retainedGeoset.getSelectionGroup() == geoset.getSelectionGroup())
-                                && (retainedGeoset.getFlags().contains("Unselectable") == geoset.getFlags()
-                                .contains("Unselectable"))
-                                && mergableGeosetAnims(retainedGeoset.getGeosetAnim(), geoset.getGeosetAnim())) {
-                            alreadyRetained = true;
-                            for (final GeosetVertex gv : geoset.getVertices()) {
-                                retainedGeoset.add(gv);
-                            }
-                            for (final Triangle t : geoset.getTriangles()) {
-                                retainedGeoset.add(t);
-                            }
-                            break;
-                        }
-                    }
-                    if (!alreadyRetained) {
-                        retainedGeosets.add(geoset);
-                    }
-                }
-                final EditableModel currentMDL = mainPanel.currentMDL();
-                final ArrayList<Geoset> geosets = currentMDL.getGeosets();
-                final List<Geoset> geosetsRemoved = new ArrayList<>();
-                final Iterator<Geoset> iterator = geosets.iterator();
-                while (iterator.hasNext()) {
-                    final Geoset geoset = iterator.next();
-                    if (!retainedGeosets.contains(geoset)) {
-                        iterator.remove();
-                        final GeosetAnim geosetAnim = geoset.getGeosetAnim();
-                        if (geosetAnim != null) {
-                            currentMDL.remove(geosetAnim);
-                        }
-                        geosetsRemoved.add(geoset);
-                    }
-                }
-                mainPanel.modelStructureChangeListener.geosetsRemoved(geosetsRemoved);
-            }
-
-            private boolean mergableGeosetAnims(final GeosetAnim first, final GeosetAnim second) {
-                if ((first == null) && (second == null)) {
-                    return true;
-                }
-                if ((first == null) || (second == null)) {
-                    return false;
-                }
-                final AnimFlag firstVisibilityFlag = first.getVisibilityFlag();
-                final AnimFlag secondVisibilityFlag = second.getVisibilityFlag();
-                if ((firstVisibilityFlag == null) != (secondVisibilityFlag == null)) {
-                    return false;
-                }
-                if ((firstVisibilityFlag != null) && !firstVisibilityFlag.equals(secondVisibilityFlag)) {
-                    return false;
-                }
-                if (first.isDropShadow() != second.isDropShadow()) {
-                    return false;
-                }
-                if (Math.abs(first.getStaticAlpha() - second.getStaticAlpha()) > 0.001) {
-                    return false;
-                }
-                if ((first.getStaticColor() == null) != (second.getStaticColor() == null)) {
-                    return false;
-                }
-                if ((first.getStaticColor() != null) && !first.getStaticColor().equalLocs(second.getStaticColor())) {
-                    return false;
-                }
-                final AnimFlag firstAnimatedColor = AnimFlag.find(first.getAnimFlags(), "Color");
-                final AnimFlag secondAnimatedColor = AnimFlag.find(second.getAnimFlags(), "Color");
-                if ((firstAnimatedColor == null) != (secondAnimatedColor == null)) {
-                    return false;
-                }
-                if ((firstAnimatedColor != null) && !firstAnimatedColor.equals(secondAnimatedColor)) {
-                    return false;
-                }
-                return true;
-            }
-        };
-    }
-
-    private static ActionListener exit(MainPanel mainPanel) {
-        return e -> {
-            if (mainPanel.closeAll()) {
-                MainFrame.frame.dispose();
-            }
-        };
-    }
-
-    private static ActionListener revert(MainPanel mainPanel) {
-        return e -> {
-            final ModelPanel modelPanel = mainPanel.currentModelPanel();
-            final int oldIndex = mainPanel.modelPanels.indexOf(modelPanel);
-            if (modelPanel != null) {
-                if (modelPanel.close(mainPanel)) {
-                    mainPanel.modelPanels.remove(modelPanel);
-                    mainPanel.windowMenu.remove(modelPanel.getMenuItem());
-                    if (mainPanel.modelPanels.size() > 0) {
-                        final int newIndex = Math.min(mainPanel.modelPanels.size() - 1, oldIndex);
-                        mainPanel.setCurrentModel(mainPanel.modelPanels.get(newIndex));
-                    } else {
-                        // TODO remove from notifiers to fix leaks
-                        mainPanel.setCurrentModel(null);
-                    }
-                    final File fileToRevert = modelPanel.getModel().getFile();
-                    FileUtils.loadFile(mainPanel, fileToRevert);
-                }
-            }
-        };
-    }
-
-    private static ActionListener editTextures(MainPanel mainPanel) {
-        return e -> {
-            final TextureManager textureManager = new TextureManager(mainPanel.currentModelPanel().getModelViewManager(),
-                    mainPanel.modelStructureChangeListener, mainPanel.textureExporter);
-            final JFrame frame = new JFrame("Edit Textures");
-            textureManager.setSize(new Dimension(800, 650));
-            frame.setContentPane(textureManager);
-            frame.setSize(textureManager.getSize());
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            frame.setVisible(true);
-        };
-    }
-
-    private static ActionListener resetViewButton(MainPanel mainPanel) {
-        return e -> {
-            mainPanel.traverseAndReset(mainPanel.rootWindow);
-            final TabWindow startupTabWindow = mainPanel.createMainLayout();
-            mainPanel.rootWindow.setWindow(startupTabWindow);
-            mainPanel.traverseAndFix(mainPanel.rootWindow);
-        };
-    }
-
-    private static ActionListener exportAnimatedToStaticMesh(MainPanel mainPanel) {
-        return e -> {
-            if (!mainPanel.animationModeState) {
-                JOptionPane.showMessageDialog(mainPanel, "You must be in the Animation Editor to use that!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            final Vector4f vertexHeap = new Vector4f();
-            final Vector4f appliedVertexHeap = new Vector4f();
-            final Vector4f vertexSumHeap = new Vector4f();
-            final Vector4f normalHeap = new Vector4f();
-            final Vector4f appliedNormalHeap = new Vector4f();
-            final Vector4f normalSumHeap = new Vector4f();
-            final ModelPanel modelContext = mainPanel.currentModelPanel();
-            final RenderModel editorRenderModel = modelContext.getEditorRenderModel();
-            final EditableModel model = modelContext.getModel();
-            final ModelViewManager modelViewManager = modelContext.getModelViewManager();
-            final EditableModel snapshotModel = EditableModel.deepClone(model, model.getHeaderName() + "At"
-                    + editorRenderModel.getAnimatedRenderEnvironment().getAnimationTime());
-            for (int geosetIndex = 0; geosetIndex < snapshotModel.getGeosets().size(); geosetIndex++) {
-                final Geoset geoset = model.getGeoset(geosetIndex);
-                final Geoset snapshotGeoset = snapshotModel.getGeoset(geosetIndex);
-                for (int vertexIndex = 0; vertexIndex < geoset.getVertices().size(); vertexIndex++) {
-                    final GeosetVertex vertex = geoset.getVertex(vertexIndex);
-                    final GeosetVertex snapshotVertex = snapshotGeoset.getVertex(vertexIndex);
-                    final List<Bone> bones = vertex.getBones();
-                    vertexHeap.x = (float) vertex.x;
-                    vertexHeap.y = (float) vertex.y;
-                    vertexHeap.z = (float) vertex.z;
-                    vertexHeap.w = 1;
-                    if (bones.size() > 0) {
-                        vertexSumHeap.set(0, 0, 0, 0);
-                        for (final Bone bone : bones) {
-                            Matrix4f.transform(editorRenderModel.getRenderNode(bone).getWorldMatrix(), vertexHeap,
-                                    appliedVertexHeap);
-                            Vector4f.add(vertexSumHeap, appliedVertexHeap, vertexSumHeap);
-                        }
-                        final int boneCount = bones.size();
-                        vertexSumHeap.x /= boneCount;
-                        vertexSumHeap.y /= boneCount;
-                        vertexSumHeap.z /= boneCount;
-                        vertexSumHeap.w /= boneCount;
-                    } else {
-                        vertexSumHeap.set(vertexHeap);
-                    }
-                    snapshotVertex.x = vertexSumHeap.x;
-                    snapshotVertex.y = vertexSumHeap.y;
-                    snapshotVertex.z = vertexSumHeap.z;
-
-                    normalHeap.x = (float) vertex.getNormal().x;
-                    normalHeap.y = (float) vertex.getNormal().y;
-                    normalHeap.z = (float) vertex.getNormal().z;
-                    normalHeap.w = 0;
-                    if (bones.size() > 0) {
-                        normalSumHeap.set(0, 0, 0, 0);
-                        for (final Bone bone : bones) {
-                            Matrix4f.transform(editorRenderModel.getRenderNode(bone).getWorldMatrix(), normalHeap,
-                                    appliedNormalHeap);
-                            Vector4f.add(normalSumHeap, appliedNormalHeap, normalSumHeap);
-                        }
-
-                        if (normalSumHeap.length() > 0) {
-                            normalSumHeap.normalise();
-                        } else {
-                            normalSumHeap.set(0, 1, 0, 0);
-                        }
-                    } else {
-                        normalSumHeap.set(normalHeap);
-                    }
-                    snapshotVertex.getNormal().x = normalSumHeap.x;
-                    snapshotVertex.getNormal().y = normalSumHeap.y;
-                    snapshotVertex.getNormal().z = normalSumHeap.z;
-                }
-            }
-            snapshotModel.getIdObjects().clear();
-            final Bone boneRoot = new Bone("Bone_Root");
-            boneRoot.setPivotPoint(new Vertex(0, 0, 0));
-            snapshotModel.add(boneRoot);
-            for (final Geoset geoset : snapshotModel.getGeosets()) {
-                for (final GeosetVertex vertex : geoset.getVertices()) {
-                    vertex.getBones().clear();
-                    vertex.getBones().add(boneRoot);
-                }
-            }
-            final Iterator<Geoset> geosetIterator = snapshotModel.getGeosets().iterator();
-            while (geosetIterator.hasNext()) {
-                final Geoset geoset = geosetIterator.next();
-                final GeosetAnim geosetAnim = geoset.getGeosetAnim();
-                if (geosetAnim != null) {
-                    final Object visibilityValue = geosetAnim.getVisibilityFlag()
-                            .interpolateAt(editorRenderModel.getAnimatedRenderEnvironment());
-                    if (visibilityValue instanceof Double) {
-                        final Double visibility = (Double) visibilityValue;
-                        final double visvalue = visibility;
-                        if (visvalue < 0.01) {
-                            geosetIterator.remove();
-                            snapshotModel.remove(geosetAnim);
-                        }
-                    }
-
-                }
-            }
-            snapshotModel.getAnims().clear();
-            snapshotModel.add(new Animation("Stand", 333, 1333));
-            final List<AnimFlag> allAnimFlags = snapshotModel.getAllAnimFlags();
-            for (final AnimFlag flag : allAnimFlags) {
-                if (!flag.hasGlobalSeq()) {
-                    if (flag.size() > 0) {
-                        final Object value = flag.interpolateAt(mainPanel.animatedRenderEnvironment);
-                        flag.setInterpType(InterpolationType.DONT_INTERP);
-                        flag.getValues().clear();
-                        flag.getTimes().clear();
-                        flag.getInTans().clear();
-                        flag.getOutTans().clear();
-                        flag.addEntry(333, value);
-                    }
-                }
-            }
-            mainPanel.fc.setDialogTitle("Export Static Snapshot");
-            final int result = mainPanel.fc.showSaveDialog(mainPanel);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = mainPanel.fc.getSelectedFile();
-                if (selectedFile != null) {
-                    if (!selectedFile.getPath().toLowerCase().endsWith(".mdx")) {
-                        selectedFile = new File(selectedFile.getPath() + ".mdx");
-                    }
-                    snapshotModel.printTo(selectedFile);
-                }
-            }
-
-        };
-    }
-
-    private static ActionListener exportAnimatedFramePNG(MainPanel mainPanel) {
-        return e -> {
-            final BufferedImage fBufferedImage = mainPanel.currentModelPanel().getAnimationViewer().getBufferedImage();
-
-            if (mainPanel.exportTextureDialog.getCurrentDirectory() == null) {
-                final EditableModel current = mainPanel.currentMDL();
-                if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-                    mainPanel.fc.setCurrentDirectory(current.getFile().getParentFile());
-                } else if (mainPanel.profile.getPath() != null) {
-                    mainPanel.fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
-                }
-            }
-            if (mainPanel.exportTextureDialog.getCurrentDirectory() == null) {
-                mainPanel.exportTextureDialog
-                        .setSelectedFile(new File(mainPanel.exportTextureDialog.getCurrentDirectory() + File.separator));
-            }
-
-            final int x = mainPanel.exportTextureDialog.showSaveDialog(mainPanel);
-            if (x == JFileChooser.APPROVE_OPTION) {
-                final File file = mainPanel.exportTextureDialog.getSelectedFile();
-                if (file != null) {
-                    try {
-                        if (file.getName().lastIndexOf('.') >= 0) {
-                            BufferedImage bufferedImage = fBufferedImage;
-                            String fileExtension = file.getName().substring(file.getName().lastIndexOf('.') + 1)
-                                    .toUpperCase();
-                            if (fileExtension.equals("BMP") || fileExtension.equals("JPG")
-                                    || fileExtension.equals("JPEG")) {
-                                JOptionPane.showMessageDialog(mainPanel,
-                                        "Warning: Alpha channel was converted to black. Some data will be lost\nif you convert this texture back to Warcraft BLP.");
-                                bufferedImage = BLPHandler.removeAlphaChannel(bufferedImage);
-                            }
-                            if (fileExtension.equals("BLP")) {
-                                fileExtension = "blp";
-                            }
-                            final boolean write = ImageIO.write(bufferedImage, fileExtension, file);
-                            if (!write) {
-                                JOptionPane.showMessageDialog(mainPanel, "File type unknown or unavailable");
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(mainPanel, "No file type was specified");
-                        }
-                    } catch (final Exception e1) {
-                        ExceptionPopup.display(e1);
-                        e1.printStackTrace();
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "No output file was specified");
-                }
-            }
-        };
-    }
-
-    private static ActionListener combineAnimations(MainPanel mainPanel) {
-        return e -> {
-            final ArrayList<Animation> anims = mainPanel.currentMDL().getAnims();
-            final Animation[] array = anims.toArray(new Animation[0]);
-            final Object choice = JOptionPane.showInputDialog(mainPanel, "Pick the first animation",
-                    "Choose 1st Anim", JOptionPane.PLAIN_MESSAGE, null, array, array[0]);
-            final Animation animation = (Animation) choice;
-
-            final Object choice2 = JOptionPane.showInputDialog(mainPanel, "Pick the second animation",
-                    "Choose 2nd Anim", JOptionPane.PLAIN_MESSAGE, null, array, array[0]);
-            final Animation animation2 = (Animation) choice2;
-
-            final String nameChoice = JOptionPane.showInputDialog(mainPanel,
-                    "What should the combined animation be called?");
-            if (nameChoice != null) {
-                final int anim1Length = animation.getEnd() - animation.getStart();
-                final int anim2Length = animation2.getEnd() - animation2.getStart();
-                final int totalLength = anim1Length + anim2Length;
-
-                final EditableModel model = mainPanel.currentMDL();
-                final int animTrackEnd = model.animTrackEnd();
-                final int start = animTrackEnd + 1000;
-                animation.copyToInterval(start, start + anim1Length, model.getAllAnimFlags(),
-                        model.sortedIdObjects(EventObject.class));
-                animation2.copyToInterval(start + anim1Length, start + totalLength, model.getAllAnimFlags(),
-                        model.sortedIdObjects(EventObject.class));
-
-                final Animation newAnimation = new Animation(nameChoice, start, start + totalLength);
-                model.add(newAnimation);
-                newAnimation.getTags().add("NonLooping");
-                newAnimation.setExtents(new ExtLog(animation.getExtents()));
-                JOptionPane.showMessageDialog(mainPanel,
-                        "DONE! Made a combined animation called " + newAnimation.getName(), "Success",
-                        JOptionPane.PLAIN_MESSAGE);
-            }
-        };
-    }
 
     private static JMenu createMenuBarMenu(JMenuBar menuBar, String menuText, int keyEvent) {
         JMenu menu = new JMenu(menuText);
@@ -977,4 +532,5 @@ public class MenuBar {
         menu.add(menuItem);
         return menuItem;
     }
+
 }
