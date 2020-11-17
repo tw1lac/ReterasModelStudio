@@ -1,10 +1,16 @@
 package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.modeledit.ImportPanel;
+import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
 import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdx.MdxUtils;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.IconUtils;
+import com.owens.oobjloader.builder.Build;
+import com.owens.oobjloader.parser.Parse;
+import de.wc3data.stream.BlizzardDataInputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,15 +18,18 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class FileUtils {
     public static void loadFile(MainPanel mainPanel, final File f, final boolean temporary) {
-        mainPanel.loadFile(f, temporary, true, MainPanel.MDLIcon);
+        loadFile(mainPanel, f, temporary, true, MainPanel.MDLIcon);
     }
 
     public static void loadFile(MainPanel mainPanel, final File f) {
@@ -342,5 +351,104 @@ public class FileUtils {
             }));
 
         }
+    }
+
+    //TODO move this!
+    public static void loadFile(MainPanel mainPanel, final File f, final boolean temporary, final boolean selectNewTab, final ImageIcon icon) {
+        if (f.getPath().toLowerCase().endsWith("blp")) {
+            loadBLPPathAsModel(mainPanel, f.getName(), f.getParentFile());
+            return;
+        }
+        if (f.getPath().toLowerCase().endsWith("png")) {
+            loadBLPPathAsModel(mainPanel, f.getName(), f.getParentFile());
+            return;
+        }
+        ModelPanel temp = null;
+        if (f.getPath().toLowerCase().endsWith("mdx")) {
+            try (BlizzardDataInputStream in = new BlizzardDataInputStream(new FileInputStream(f))) {
+                final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
+                model.setFileRef(f);
+                temp = mainPanel.createModelPanel(model, icon, false);
+            } catch (final IOException e) {
+                e.printStackTrace();
+                ExceptionPopup.display(e);
+                throw new RuntimeException("Reading mdx failed");
+            }
+        } else if (f.getPath().toLowerCase().endsWith("obj")) {
+            final Build builder = new Build();
+            try {
+                final Parse obj = new Parse(builder, f.getPath());
+                temp = mainPanel.createModelPanel(builder.createMDL(), icon, false);
+            } catch (final IOException e) {
+                ExceptionPopup.display(e);
+                e.printStackTrace();
+            }
+        } else {
+            temp = mainPanel.createModelPanel(EditableModel.read(f), icon, false);
+            temp.setFile(f);
+        }
+        mainPanel.loadModel(temporary, selectNewTab, temp);
+    }
+
+    public static void loadStreamMdx(MainPanel mainPanel, final InputStream f, final boolean temporary, final boolean selectNewTab,
+                                     final ImageIcon icon) {
+        ModelPanel temp = null;
+        try (BlizzardDataInputStream in = new BlizzardDataInputStream(f)) {
+            final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
+            model.setFileRef(null);
+            temp = mainPanel.createModelPanel(model, icon, false);
+        } catch (final IOException e) {
+            e.printStackTrace();
+            ExceptionPopup.display(e);
+            throw new RuntimeException("Reading mdx failed");
+        }
+        mainPanel.loadModel(temporary, selectNewTab, temp);
+    }
+
+    public static void loadBLPPathAsModel(MainPanel mainPanel, final String filepath) {
+        loadBLPPathAsModel(mainPanel, filepath, null);
+    }
+
+    public static void loadBLPPathAsModel(MainPanel mainPanel, final String filepath, final File workingDirectory) {
+        loadBLPPathAsModel(mainPanel, filepath, workingDirectory, 800);
+    }
+
+    public static void loadBLPPathAsModel(MainPanel mainPanel, final String filepath, final File workingDirectory, final int version) {
+        final EditableModel blankTextureModel = new EditableModel(filepath.substring(filepath.lastIndexOf('\\') + 1));
+        blankTextureModel.setFormatVersion(version);
+        if (workingDirectory != null) {
+            blankTextureModel.setFileRef(new File(workingDirectory.getPath() + "/" + filepath + ".mdl"));
+        }
+        final Geoset newGeoset = new Geoset();
+        final Layer layer = new Layer("Blend", new Bitmap(filepath));
+        layer.add("Unshaded");
+        final Material material = new Material(layer);
+        newGeoset.setMaterial(material);
+        final BufferedImage bufferedImage = material.getBufferedImage(blankTextureModel.getWrappedDataSource());
+        final int textureWidth = bufferedImage.getWidth();
+        final int textureHeight = bufferedImage.getHeight();
+        final float aspectRatio = textureWidth / (float) textureHeight;
+
+        final int displayWidth = (int) (aspectRatio > 1 ? 128 : 128 * aspectRatio);
+        final int displayHeight = (int) (aspectRatio < 1 ? 128 : 128 / aspectRatio);
+
+        final int groundOffset = aspectRatio > 1 ? (128 - displayHeight) / 2 : 0;
+
+        final GeosetVertex upperLeft = ModelUtils.addGeosetAndTVerticies(newGeoset, 0, displayWidth, displayHeight + groundOffset, 1, 0);
+
+        final GeosetVertex upperRight = ModelUtils.addGeosetAndTVerticies(newGeoset, 0, -displayWidth, displayHeight + groundOffset, 0, 0);
+
+        final GeosetVertex lowerLeft = ModelUtils.addGeosetAndTVerticies(newGeoset, 0, displayWidth, groundOffset, 1, 1);
+
+        final GeosetVertex lowerRight = ModelUtils.addGeosetAndTVerticies(newGeoset, 0, -displayWidth, groundOffset, 0, 1);
+
+        newGeoset.add(new Triangle(upperLeft, upperRight, lowerLeft));
+        newGeoset.add(new Triangle(upperRight, lowerRight, lowerLeft));
+        blankTextureModel.add(newGeoset);
+        blankTextureModel.add(new Animation("Stand", 0, 1000));
+        blankTextureModel.doSavePreps();
+
+        mainPanel.loadModel(workingDirectory == null, true,
+                mainPanel.createModelPanel(blankTextureModel, GlobalIcons.ORANGE_ICON, true));
     }
 }

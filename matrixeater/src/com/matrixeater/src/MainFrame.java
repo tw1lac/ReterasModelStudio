@@ -1,26 +1,5 @@
 package com.matrixeater.src;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.WindowConstants;
-import javax.swing.plaf.ColorUIResource;
-
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
@@ -37,10 +16,20 @@ import com.hiveworkshop.wc3.units.UnitOptionPanel;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.owens.oobjloader.builder.Build;
 import com.owens.oobjloader.parser.Parse;
-
 import net.infonode.gui.laf.InfoNodeLookAndFeel;
 import net.infonode.gui.laf.InfoNodeLookAndFeelTheme;
 import net.infonode.gui.laf.InfoNodeLookAndFeelThemes;
+
+import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Write a description of class MainFrame here.
@@ -268,7 +257,7 @@ public class MainFrame extends JFrame {
         setBounds(0, 0, 1000, 650);
         panel = new MainPanel();
         setContentPane(panel);
-        menuBar = panel.createMenuBar();
+        menuBar = MenuBar.createMenuBar(panel);
         setJMenuBar(menuBar);// MainFrame.class.getResource("ImageBin/DDChicken2.png")
         setIconImage(MAIN_PROGRAM_ICON);
 
