@@ -1,6 +1,6 @@
 package com.hiveworkshop.wc3.mdl;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  * Quaternions are the most useless thing I've ever heard of. Nevertheless, I
@@ -80,7 +80,7 @@ public class QuaternionRotation {
 		// c = s1 * c2 * c3 + c1 * s2 * s3;
 		// d = c1 * s2 * c3 - s1 * c2 * s3;
 
-		/**
+		/* *
 		 * double heading = eulerRotation.x; double attitude = eulerRotation.y; double
 		 * bank = eulerRotation.z; double c1 = Math.cos(heading); double s1 =
 		 * Math.sin(heading); double c2 = Math.cos(attitude); double s2 =

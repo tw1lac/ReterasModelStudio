@@ -1578,8 +1578,8 @@ public class JSONObject {
      * implementations and interfaces has the annotation. Returns the depth of the
      * annotation in the hierarchy.
      *
-     * @param <A>
-     *            type of the annotation
+     * @apiNote  <? extends Annotation>
+     *            ? type of the annotation
      *
      * @param m
      *            method to check
@@ -2364,7 +2364,6 @@ public class JSONObject {
      * </b>
      * 
      * @return The writer.
-     * @throws JSONException
      */
     public Writer write(Writer writer) throws JSONException {
         return this.write(writer, 0, 0);
@@ -2444,7 +2443,6 @@ public class JSONObject {
      * @param indent
      *            The indentation of the top level.
      * @return The writer.
-     * @throws JSONException
      */
     public Writer write(Writer writer, int indentFactor, int indent)
             throws JSONException {

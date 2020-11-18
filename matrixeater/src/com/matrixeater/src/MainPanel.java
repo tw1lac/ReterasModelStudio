@@ -2968,8 +2968,6 @@ public class MainPanel extends JPanel
     /**
      * Returns the MDLDisplay associated with a given MDL, or null if one cannot be
      * found.
-     *
-     * @param model
      */
     public ModelPanel displayFor(final EditableModel model) {
         ModelPanel output = null;

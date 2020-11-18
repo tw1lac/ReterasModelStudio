@@ -1,15 +1,13 @@
 package com.hiveworkshop.wc3.mdl;
 
+import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
+import com.hiveworkshop.wc3.mdx.GeosetAnimationChunk;
+import org.lwjgl.util.vector.Vector3f;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
-import org.lwjgl.util.vector.Vector3f;
-
-import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.wc3.mdx.GeosetAnimationChunk;
 
 /**
  * The geoset anims, heaven forbid they be forgotten.
@@ -49,7 +47,6 @@ public class GeosetAnim implements VisibilitySource, Named {
 	}
 
 	/**
-	 * @param geosetId
 	 * @deprecated GeosetIds are regenerated on save, this is here for MDX converter
 	 */
 	@Deprecated
@@ -234,7 +231,6 @@ public class GeosetAnim implements VisibilitySource, Named {
 	}
 
 	/**
-	 * @return
 	 * @deprecated Used for MDX -> MDL code
 	 */
 	@Deprecated
@@ -243,7 +239,6 @@ public class GeosetAnim implements VisibilitySource, Named {
 	}
 
 	/**
-	 * @param geosetId
 	 * @deprecated Used for MDX -> MDL code
 	 */
 	@Deprecated

@@ -1,14 +1,14 @@
 package com.hiveworkshop.wc3.jworldedit.objects.better.fields.builders;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.hiveworkshop.wc3.jworldedit.objects.better.fields.factory.UpgradeSingleFieldFactory;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UpgradesFieldBuilder extends AbstractLevelsFieldBuilder {
 	private static final War3ID UPGRADE_MAX_LEVEL_FIELD = War3ID.fromString("glvl");
@@ -30,11 +30,9 @@ public class UpgradesFieldBuilder extends AbstractLevelsFieldBuilder {
 		final String effectType = metaDataField.getField("effectType");
 		if ("Base".equalsIgnoreCase(effectType) || "Mod".equalsIgnoreCase(effectType)
 				|| "Code".equalsIgnoreCase(effectType)) {
-			if (!effectIDToUpgradeEffect.containsKey(
+			return effectIDToUpgradeEffect.containsKey(
 					gameObject.getFieldAsString(War3ID.fromString("gef" + metaDataField.getId().charAt(3)), 0)
-							+ metaDataField.getField("effectType"))) {
-				return false;
-			}
+							+ metaDataField.getField("effectType"));
 		}
 		return true;
 	}

@@ -1,23 +1,14 @@
 package com.hiveworkshop.wc3.gui.modeledit.components;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SpinnerNumberModel;
-
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationIntervalEndAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationIntervalStartAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationMoveSpeedAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationNameAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationNonLoopingAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.SetAnimationRarityAction;
+import com.hiveworkshop.wc3.gui.modeledit.actions.componenttree.animation.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
 import com.hiveworkshop.wc3.gui.modeledit.components.editors.ComponentEditorJSpinner;
 import com.hiveworkshop.wc3.gui.modeledit.components.editors.ComponentEditorTextField;
 import com.hiveworkshop.wc3.mdl.Animation;
-
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
 
 public class ComponentAnimationPanel extends JPanel {
 	private final ComponentEditorTextField nameField;
@@ -112,11 +103,6 @@ public class ComponentAnimationPanel extends JPanel {
 		return newAnimation;
 	}
 
-	/**
-	 * @param animation
-	 * @param modelStructureChangeListener
-	 * @param undoListener
-	 */
 	public void setAnimation(final Animation animation, final UndoActionListener undoListener,
 			final ModelStructureChangeListener modelStructureChangeListener) {
 		this.animation = animation;

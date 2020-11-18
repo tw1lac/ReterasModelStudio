@@ -1,9 +1,9 @@
 package com.etheller.warsmash.parsers.mdlx.mdl;
 
+import com.etheller.warsmash.parsers.mdlx.MdlTokenInputStream;
+
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-
-import com.etheller.warsmash.parsers.mdlx.MdlTokenInputStream;
 
 public class GhostwolfTokenInputStream implements MdlTokenInputStream {
 	private final ByteBuffer buffer;
@@ -131,7 +131,7 @@ public class GhostwolfTokenInputStream implements MdlTokenInputStream {
 	 * Read an MDL keyframe value. If the value is a scalar, it is just the number.
 	 * If the value is a vector, it is enclosed with curly braces.
 	 *
-	 * @param {Float32Array|Uint32Array} value
+	 * @param values {Float32Array|Uint32Array} value
 	 */
 	@Override
 	public void readKeyframe(final float[] values) {

@@ -1,22 +1,19 @@
 package com.hiveworkshop.wc3.jworldedit.objects;
 
-import java.awt.Point;
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.WorldEditorDataType;
+import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.WorldEditorDataType;
-import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 	private final DataFlavor dataFlavor;
@@ -152,9 +149,6 @@ public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 	@Override
 	public boolean canImport(final TransferHandler.TransferSupport support) {
 		// we only import Strings
-		if (!support.isDataFlavorSupported(dataFlavor)) {
-			return false;
-		}
-		return true;
+		return support.isDataFlavorSupported(dataFlavor);
 	}
 }

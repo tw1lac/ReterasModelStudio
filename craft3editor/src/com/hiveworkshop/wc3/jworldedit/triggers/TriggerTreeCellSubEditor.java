@@ -1,23 +1,19 @@
 package com.hiveworkshop.wc3.jworldedit.triggers;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.EventObject;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.tree.TreeCellEditor;
-
 import com.hiveworkshop.wc3.jworldedit.triggers.gui.TriggerTreeNode;
 import com.hiveworkshop.wc3.jworldedit.triggers.impl.Trigger;
 import com.hiveworkshop.wc3.jworldedit.triggers.impl.TriggerCategory;
 import com.hiveworkshop.wc3.jworldedit.triggers.impl.TriggerEnvironment;
+
+import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.tree.TreeCellEditor;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.EventObject;
+import java.util.List;
 
 public class TriggerTreeCellSubEditor extends JTextField implements TreeCellEditor {
 	private final List<CellEditorListener> listeners = new ArrayList<>();
@@ -37,10 +33,7 @@ public class TriggerTreeCellSubEditor extends JTextField implements TreeCellEdit
 
 	@Override
 	public boolean isCellEditable(final EventObject anEvent) {
-		if ((anEvent == null) || ((anEvent instanceof MouseEvent) && (((MouseEvent) anEvent).isMetaDown()))) {
-			return true;
-		}
-		return false;
+		return (anEvent == null) || ((anEvent instanceof MouseEvent) && (((MouseEvent) anEvent).isMetaDown()));
 	}
 
 	@Override

@@ -1,5 +1,12 @@
 package com.hiveworkshop.blizzard.casc.io;
 
+import com.hiveworkshop.blizzard.casc.ConfigurationFile;
+import com.hiveworkshop.blizzard.casc.info.Info;
+import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
+import com.hiveworkshop.blizzard.casc.storage.Storage;
+import com.hiveworkshop.blizzard.casc.vfs.VirtualFileSystem;
+import com.hiveworkshop.blizzard.casc.vfs.VirtualFileSystem.PathResult;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -7,13 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.blizzard.casc.ConfigurationFile;
-import com.hiveworkshop.blizzard.casc.info.Info;
-import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
-import com.hiveworkshop.blizzard.casc.storage.Storage;
-import com.hiveworkshop.blizzard.casc.vfs.VirtualFileSystem;
-import com.hiveworkshop.blizzard.casc.vfs.VirtualFileSystem.PathResult;
 
 /**
  * A convenient access to locally stored Warcraft III data files. Intended for
@@ -204,18 +204,15 @@ public class WarcraftIIICASC implements AutoCloseable {
 		final String buildKey = buildInfo.getField(activeInfoRecord, buildKeyFieldIndex);
 
 		// resolve data folder
-		/**
-		 * Warcraft III CASC data folder path.
-		 */
+		// Warcraft III CASC data folder path.
+
 		Path dataPath = installFolder.resolve(WC3_DATA_FOLDER_NAME);
 		if (!Files.isDirectory(dataPath)) {
 			throw new MalformedCASCStructureException("data folder is missing");
 		}
 
 		// resolve build configuration file
-		/**
-		 * Warcraft III build configuration.
-		 */
+		// Warcraft III build configuration.
 		ConfigurationFile buildConfiguration = ConfigurationFile.lookupConfigurationFile(dataPath, buildKey);
 
 		// mounting local storage

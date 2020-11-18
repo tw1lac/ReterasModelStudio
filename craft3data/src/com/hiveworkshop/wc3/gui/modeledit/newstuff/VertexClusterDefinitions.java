@@ -1,15 +1,11 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff;
 
+import com.hiveworkshop.wc3.mdl.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
 
 public class VertexClusterDefinitions {
 	private final Map<Vertex, Integer> vertexToClusterId = new HashMap<>();
@@ -44,9 +40,6 @@ public class VertexClusterDefinitions {
 	/**
 	 * Returns the cluster ID of the vertex. Returns -1 for vertices added dynamically, so they should all be in a group
 	 * together and not cause error.
-	 *
-	 * @param vertex
-	 * @return
 	 */
 	public int getClusterId(final Vertex vertex) {
 		final Integer clusterId = vertexToClusterId.get(vertex);
@@ -108,16 +101,9 @@ public class VertexClusterDefinitions {
 				return false;
 			}
 			final HashableVector other = (HashableVector) obj;
-			if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
-				return false;
-			}
-			if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
-				return false;
-			}
-			if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z)) {
-				return false;
-			}
-			return true;
+			return Float.floatToIntBits(x) == Float.floatToIntBits(other.x)
+					&& Float.floatToIntBits(y) == Float.floatToIntBits(other.y)
+					&& (Float.floatToIntBits(z) == Float.floatToIntBits(other.z));
 		}
 
 	}

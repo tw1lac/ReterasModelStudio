@@ -1,17 +1,14 @@
 package com.hiveworkshop.wc3.gui.modeledit.components.editors;
 
-import java.beans.PropertyChangeEvent;
-import java.util.Objects;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 public class ComponentEditorTextField extends JTextField {
 
@@ -58,10 +55,10 @@ public class ComponentEditorTextField extends JTextField {
 	 * Installs a listener to receive notification when the text of any
 	 * {@code JTextComponent} is changed. Internally, it installs a
 	 * {@link DocumentListener} on the text component's {@link Document}, and a
-	 * {@link PropertyChangeListener} on the text component to detect if the
+	 * {@link ChangeListener} on the text component to detect if the
 	 * {@code Document} itself is replaced.
 	 *
-	 * @param text           any text component, such as a {@link JTextField} or
+	 * @ text           	 any text component, such as a {@link JTextField} or
 	 *                       {@link JTextArea}
 	 * @param changeListener a listener to receieve {@link ChangeEvent}s when the
 	 *                       text is changed; the source object for the events will

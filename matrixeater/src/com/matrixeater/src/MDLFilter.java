@@ -1,6 +1,7 @@
 package com.matrixeater.src;
-import java.io.File;
+
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 /**
  * Write a description of class MDLFilter here.
  * 
@@ -19,11 +20,7 @@ public class MDLFilter extends FileFilter
         }
         String name = f.getName();
         int perIndex = name.lastIndexOf('.');
-        if( name.substring(perIndex+1).toLowerCase().equals("mdl") && perIndex > 0 && perIndex < name.length() - 1 )
-        {
-            return true;
-        }
-        return false;
+        return name.substring(perIndex + 1).toLowerCase().equals("mdl") && perIndex > 0 && perIndex < name.length() - 1;
     }
     
     @Override

@@ -1,7 +1,14 @@
 package com.hiveworkshop.wc3.gui;
 
-import java.awt.Graphics2D;
-import java.awt.Transparency;
+import com.hiveworkshop.wc3.mpq.MpqCodebase;
+import de.wc3data.image.TgaFile;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -13,16 +20,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
-
-import com.hiveworkshop.wc3.mpq.MpqCodebase;
-
-import de.wc3data.image.TgaFile;
 
 public class OldBLPHandler {
 
@@ -55,15 +52,11 @@ public class OldBLPHandler {
 				if (newImage2 != null) {
 					return newImage2;
 				}
-			} catch (final Exception exc3) {
+			} catch (final Exception ignored) {
 			}
 			final String lastHopePath = workingDirectory + File.separator
 					+ filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);
-			final BufferedImage newImage3 = getCustomTex(lastHopePath, alpha);
-			if (newImage3 != null) {
-				return newImage3;
-			}
-			return null;
+			return getCustomTex(lastHopePath, alpha);
 //			throw new RuntimeException("Failed to load game texture: " + filepath + " (in " + workingDirectory + ")");
 		} catch (final Exception exc2) {
 			throw new RuntimeException("Failed to load game texture: " + filepath + " (in " + workingDirectory + ")",
@@ -117,9 +110,6 @@ public class OldBLPHandler {
 	 * Gets a texture file from BLP format inside the Warcraft archives into a
 	 * BufferedImage you can use, based on a filepath in the Warcraft installation's
 	 * MPQ files.
-	 *
-	 * @param filepath
-	 * @return
 	 */
 	public BufferedImage getGameTex(final String filepath, final boolean alpha) {
 		final Map<String, BufferedImage> cacheToUse = alpha ? rawCache : cache;
@@ -209,9 +199,6 @@ public class OldBLPHandler {
 	/**
 	 * Returns a BufferedImage from any arbitrary filepath string on your computer,
 	 * reading the image from BLP format.
-	 *
-	 * @param filepath
-	 * @return
 	 */
 	public BufferedImage getCustomTex(final String filepath, final boolean alpha) {
 		final File blpFile = new File(filepath);

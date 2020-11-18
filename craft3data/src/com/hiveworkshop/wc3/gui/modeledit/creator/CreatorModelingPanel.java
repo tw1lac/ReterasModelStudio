@@ -1,33 +1,12 @@
 package com.hiveworkshop.wc3.gui.modeledit.creator;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.animedit.TimeSliderTimeSelectionListener;
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.animedit.mdlvisripoff.TSpline;
 import com.hiveworkshop.wc3.gui.animedit.mdlvisripoff.TTan;
-import com.hiveworkshop.wc3.gui.modeledit.ActiveViewportWatcher;
-import com.hiveworkshop.wc3.gui.modeledit.FaceCreationException;
-import com.hiveworkshop.wc3.gui.modeledit.ModeButton;
-import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
-import com.hiveworkshop.wc3.gui.modeledit.Viewport;
+import com.hiveworkshop.wc3.gui.modeledit.*;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorMultiManipulatorActivity;
@@ -43,6 +22,13 @@ import com.hiveworkshop.wc3.mdl.Animation;
 import com.hiveworkshop.wc3.mdl.IdObject;
 import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.*;
 
 public class CreatorModelingPanel extends JPanel
 		implements ModelEditorChangeActivityListener, TimeSliderTimeSelectionListener {
@@ -412,13 +398,8 @@ public class CreatorModelingPanel extends JPanel
 			}
 			final ChooseableAnimation other = (ChooseableAnimation) obj;
 			if (animation == null) {
-				if (other.animation != null) {
-					return false;
-				}
-			} else if (!animation.equals(other.animation)) {
-				return false;
-			}
-			return true;
+				return other.animation == null;
+			} else return animation.equals(other.animation);
 		}
 	}
 
@@ -464,13 +445,8 @@ public class CreatorModelingPanel extends JPanel
 			}
 			final ChooseableDoNothing other = (ChooseableDoNothing) obj;
 			if (text == null) {
-				if (other.text != null) {
-					return false;
-				}
-			} else if (!text.equals(other.text)) {
-				return false;
-			}
-			return true;
+				return other.text == null;
+			} else return text.equals(other.text);
 		}
 	}
 
@@ -517,13 +493,8 @@ public class CreatorModelingPanel extends JPanel
 			}
 			final ChooseableGlobalSeq other = (ChooseableGlobalSeq) obj;
 			if (globalSeq == null) {
-				if (other.globalSeq != null) {
-					return false;
-				}
-			} else if (!globalSeq.equals(other.globalSeq)) {
-				return false;
-			}
-			return true;
+				return other.globalSeq == null;
+			} else return globalSeq.equals(other.globalSeq);
 		}
 
 	}

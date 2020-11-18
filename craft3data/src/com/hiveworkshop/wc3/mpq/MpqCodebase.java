@@ -1,16 +1,16 @@
 package com.hiveworkshop.wc3.mpq;
 
+import com.hiveworkshop.wc3.gui.datachooser.DataSource;
+import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
+import com.hiveworkshop.wc3.gui.datachooser.MpqDataSourceDescriptor;
+import com.hiveworkshop.wc3.user.SaveProfile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.*;
-
-import com.hiveworkshop.wc3.gui.datachooser.DataSource;
-import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
-import com.hiveworkshop.wc3.gui.datachooser.MpqDataSourceDescriptor;
-import com.hiveworkshop.wc3.user.SaveProfile;
 
 public class MpqCodebase implements Codebase, DataSource {
 	private final List<DataSource> mpqList = new ArrayList<>();
@@ -154,9 +154,7 @@ public class MpqCodebase implements Codebase, DataSource {
 		for (final DataSource mpqGuy : mpqList) {
 			final Collection<String> dataSourceListfile = mpqGuy.getListfile();
 			if (dataSourceListfile != null) {
-				for (final String element : dataSourceListfile) {
-					listfile.add(element);
-				}
+				listfile.addAll(dataSourceListfile);
 			}
 		}
 		return listfile;

@@ -1,30 +1,20 @@
 package com.hiveworkshop.wc3.mdl.render3d;
 
-import java.util.*;
-
+import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
+import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdl.Camera.SourceNode;
+import com.hiveworkshop.wc3.mdl.Camera.TargetNode;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
+import com.hiveworkshop.wc3.util.MathUtils;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.wc3.mdl.AnimatedNode;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.Camera.SourceNode;
-import com.hiveworkshop.wc3.mdl.Camera.TargetNode;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.QuaternionRotation;
-import com.hiveworkshop.wc3.mdl.Vertex;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import com.hiveworkshop.wc3.util.MathUtils;
+import java.util.*;
 
 /**
  * For rendering. Copied from ghostwolf's stuff
- *
- * @param forced
  */
 public final class RenderModel {
 	private final EditableModel model;
@@ -192,11 +182,11 @@ public final class RenderModel {
 				final Vector3f localScale = node.localScale;
 
 				// Only update the local data if there is a need to
-				if (forced || true /* variants */) {
+				if (true /* variants */) {
 					wasDirty = true;
 
 					// Translation
-					if (forced || true /* variants */) {
+					if (true /* variants */) {
 						final Vertex renderTranslation = idObject.getRenderTranslation(animatedRenderEnvironment);
 						if (renderTranslation != null) {
 							localLocation.x = (float) renderTranslation.x;
@@ -208,7 +198,7 @@ public final class RenderModel {
 					}
 
 					// Rotation
-					if (forced || true /* variants */) {
+					if (true /* variants */) {
 						final QuaternionRotation renderRotation = idObject.getRenderRotation(animatedRenderEnvironment);
 						if (renderRotation != null) {
 							localRotation.x = (float) renderRotation.a;
@@ -221,7 +211,7 @@ public final class RenderModel {
 					}
 
 					// Scale
-					if (forced || true /* variants */) {
+					if (true /* variants */) {
 						final Vertex renderScale = idObject.getRenderScale(animatedRenderEnvironment);
 						if (renderScale != null) {
 							localScale.x = (float) renderScale.x;

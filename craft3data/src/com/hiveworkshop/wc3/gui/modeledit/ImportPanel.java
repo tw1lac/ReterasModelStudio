@@ -210,7 +210,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 		// Animation Panel
 		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
 
-		existingAnims = new DefaultListModel<AnimShell>();
+		existingAnims = new DefaultListModel<>();
 		for (int i = 0; i < currentModel.getAnims().size(); i++) {
 			existingAnims.addElement(new AnimShell(currentModel.getAnims().get(i)));
 		}
@@ -906,7 +906,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 				boolean selectedt = false;
 				for (int i = 0; (i < selected.length) && !dif; i++) {
 					final ObjectPanel temp = (ObjectPanel) selected[i];
-					if (set == false) {
+					if (!set) {
 						set = true;
 						selectedt = temp.doImport.isSelected();
 					} else if (selectedt != temp.doImport.isSelected()) {
@@ -937,7 +937,7 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 
 				for (int i = 0; (i < selected.length) && !dif; i++) {
 					final VisibilityPane temp = (VisibilityPane) selected[i];
-					if (set == false) {
+					if (!set) {
 						set = true;
 						selectedt = temp.favorOld.isSelected();
 					} else if (selectedt != temp.favorOld.isSelected()) {
@@ -1024,8 +1024,6 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	/**
 	 * Provides a Runnable to the ImportPanel that will be run after the import has
 	 * ended successfully.
-	 *
-	 * @param callback
 	 */
 	public void setCallback(final ModelStructureChangeListener callback) {
 		this.callback = callback;
@@ -1330,9 +1328,9 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	}
 
 	public void initVisibilityList() {
-		visSourcesOld = new ArrayList<Object>();
-		visSourcesNew = new ArrayList<Object>();
-		allVisShells = new ArrayList<VisibilityShell>();
+		visSourcesOld = new ArrayList<>();
+		visSourcesNew = new ArrayList<>();
+		allVisShells = new ArrayList<>();
 		EditableModel model = currentModel;
 		final ArrayList tempList = new ArrayList();
 		for (final Material mat : model.getMaterials()) {

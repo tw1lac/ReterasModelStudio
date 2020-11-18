@@ -1,9 +1,8 @@
 package com.hiveworkshop.wc3.mdl;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 /**
  * GeosetVertex is a extended version of the Vertex class, for use strictly
@@ -220,7 +219,6 @@ public class GeosetVertex extends Vertex {
 	}
 
 	/**
-	 * @return
 	 * @deprecated for use only with saving functionalities inside the system
 	 */
 	@Deprecated

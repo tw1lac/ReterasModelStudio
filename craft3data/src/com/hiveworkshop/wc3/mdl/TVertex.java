@@ -1,8 +1,7 @@
 package com.hiveworkshop.wc3.mdl;
 
+import javax.swing.*;
 import java.util.Collection;
-
-import javax.swing.JOptionPane;
 
 public class TVertex {
 	public static final TVertex ORIGIN = new TVertex(0, 0);
@@ -37,8 +36,6 @@ public class TVertex {
 	/**
 	 * This method was designed late and is not reliable unless updated by an
 	 * outside source.
-	 *
-	 * @param gv
 	 */
 	public void setParent(final GeosetVertex gv) {
 		parent = gv;
@@ -47,8 +44,6 @@ public class TVertex {
 	/**
 	 * This method was designed late and is not reliable unless updated by an
 	 * outside source.
-	 *
-	 * @return
 	 */
 	public GeosetVertex getParent() {
 		return parent;

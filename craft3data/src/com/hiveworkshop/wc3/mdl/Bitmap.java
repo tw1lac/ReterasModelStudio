@@ -1,12 +1,11 @@
 package com.hiveworkshop.wc3.mdl;
 
+import com.hiveworkshop.wc3.mdx.TextureChunk;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
-import com.hiveworkshop.wc3.mdx.TextureChunk;
 
 /**
  * A class to represent MDL texture references. (Not materials)
@@ -106,13 +105,7 @@ public class Bitmap {
 		} else if (!imagePath.equals(other.imagePath)) {
 			return false;
 		}
-		if (replaceableId != other.replaceableId) {
-			return false;
-		}
-		if (wrapStyle != other.wrapStyle) {
-			return false;
-		}
-		return true;
+		return replaceableId == other.replaceableId && wrapStyle == other.wrapStyle;
 	}
 
 	// @Override

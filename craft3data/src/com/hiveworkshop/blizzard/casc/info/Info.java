@@ -1,5 +1,8 @@
 package com.hiveworkshop.blizzard.casc.info;
 
+import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
+import com.hiveworkshop.nio.ByteBufferInputStream;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
@@ -9,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-
-import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
-import com.hiveworkshop.nio.ByteBufferInputStream;
 
 /**
  * Top level CASC information file containing configuration information and
@@ -52,8 +52,7 @@ public class Info {
 	/**
 	 * Construct an info file from an array of encoded lines.
 	 *
-	 * @param encodedLines Encoded lines.
-	 * @throws IOException
+	 * @param fileBuffer Encoded lines.
 	 */
 	public Info(final ByteBuffer fileBuffer) throws IOException {
 		try (final ByteBufferInputStream fileStream = new ByteBufferInputStream(fileBuffer);

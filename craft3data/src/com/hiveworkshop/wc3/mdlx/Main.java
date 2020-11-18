@@ -1,22 +1,18 @@
 package com.hiveworkshop.wc3.mdlx;
 
+import com.hiveworkshop.wc3.mdl.EditableModel;
+import com.hiveworkshop.wc3.mdx.MdxModel;
+import com.hiveworkshop.wc3.mdx.MdxUtils;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdx.MdxModel;
-import com.hiveworkshop.wc3.mdx.MdxUtils;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
-
 
 public class Main {
 
-	/**
-	 * @param args
-	 */
 	public static void main(final String[] args) {
 //		System.out.println(Integer.toBinaryString(0x1));
 //		System.out.println(Integer.toBinaryString(0x2));

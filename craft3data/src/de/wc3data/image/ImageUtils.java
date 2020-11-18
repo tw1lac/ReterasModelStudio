@@ -1,9 +1,6 @@
 package de.wc3data.image;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageUtils {
@@ -11,9 +8,6 @@ public class ImageUtils {
     /**
      * Takes an images as input and generates an array containing this image and
      * all possible mipmaps
-     *
-     * @param input
-     * @return
      */
     public static BufferedImage[] generateMipMaps(final BufferedImage input) {
         int num = 0;
@@ -42,13 +36,7 @@ public class ImageUtils {
 
     /**
      * Scales an Image
-     *
-     * @param img
-     * @param targetWidth
-     * @param targetHeight
      * @param hint Rendering Hint
-     * @param higherQuality
-     * @return
      */
     public static BufferedImage getScaledInstance(final BufferedImage img, final int targetWidth, final int targetHeight, final Object hint, final boolean higherQuality) {
         final int type = img.getTransparency() == 1
@@ -79,7 +67,7 @@ public class ImageUtils {
 
 
             BufferedImage tmp;
-            if(img.getColorModel().hasAlpha() == false){
+            if(!img.getColorModel().hasAlpha()){
                 tmp= new BufferedImage(w, h, type);
                 final Graphics2D g2 = tmp.createGraphics();
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
@@ -128,9 +116,6 @@ public class ImageUtils {
     /**
      * An alternative way to convert an image to type_byte_indexed (paletted)
      * that avoids dithering.
-     *
-     * @param src
-     * @return
      */
     public static BufferedImage antiDitherConvert(final BufferedImage src) {
         final BufferedImage convertedImage = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_BYTE_INDEXED);
@@ -163,7 +148,7 @@ public class ImageUtils {
             return src;
         }
 
-        if (useAlpha == false && src.getType() == BufferedImage.TYPE_INT_RGB) {
+        if (!useAlpha && src.getType() == BufferedImage.TYPE_INT_RGB) {
             return src;
         }
 

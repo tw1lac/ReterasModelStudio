@@ -329,7 +329,7 @@ public class GeosetChunk {
 			return a;
 		}
 
-		public class Extent {
+		public static class Extent {
 			public float[] minimumExtent = new float[3];
 			public float[] maximumExtent = new float[3];
 			public float bounds;

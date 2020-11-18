@@ -1,5 +1,8 @@
 package com.hiveworkshop.blizzard.casc.storage;
 
+import com.hiveworkshop.blizzard.casc.Key;
+import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
+
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,14 +15,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.hiveworkshop.blizzard.casc.Key;
-import com.hiveworkshop.blizzard.casc.nio.MalformedCASCStructureException;
+import java.util.*;
 
 /**
  * Main data storage of a CASC archive. It consists of index files which point
@@ -154,9 +150,7 @@ public class Storage implements AutoCloseable {
 			bucketList.sort(bucketOrder);
 
 			final IndexFileNameMeta fileMeta = bucketList.get(0);
-			/**
-			 * Index file versions loaded. Possibly useful for debugging.
-			 */
+			// Index file versions loaded. Possibly useful for debugging.
 			long[] idxVersions = new long[INDEX_COUNT];
 			idxVersions[index] = fileMeta.version;
 			indicies[index] = new IndexFile(loadFileFully(fileMeta.filePath));

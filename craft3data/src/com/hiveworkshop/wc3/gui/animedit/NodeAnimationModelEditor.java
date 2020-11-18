@@ -1,20 +1,5 @@
 package com.hiveworkshop.wc3.gui.animedit;
 
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
@@ -22,12 +7,7 @@ import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeLis
 import com.hiveworkshop.wc3.gui.modeledit.cutpaste.CopiedModelData;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.AbstractSelectingEditor;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.ModelEditorActionType;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.AddKeyframeAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.AddTimelineAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.RotationKeyframeAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.ScalingKeyframeAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.SquatToolKeyframeAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.TranslationKeyframeAction;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.*;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.StaticMeshMoveAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.selection.MakeNotEditableAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.selection.SetSelectionAction;
@@ -42,26 +22,23 @@ import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.EditabilityToggleHan
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectableComponent;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectableComponentVisitor;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionManager;
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Attachment;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.CollisionShape;
 import com.hiveworkshop.wc3.mdl.EventObject;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.Helper;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Light;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.ParticleEmitterPopcorn;
-import com.hiveworkshop.wc3.mdl.RibbonEmitter;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.render3d.RenderNode;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.*;
 
 public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> {
 	private final GenericSelectorVisitor genericSelectorVisitor;
@@ -201,9 +178,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 	public UndoAction selectAll() {
 		final ArrayList<IdObject> oldSelection = new ArrayList<>(selectionManager.getSelection());
 		final Set<IdObject> allSelection = new HashSet<>();
-		for (final IdObject node : model.getEditableIdObjects()) {
-			allSelection.add(node);
-		}
+		allSelection.addAll(model.getEditableIdObjects());
 		selectionManager.setSelection(allSelection);
 		return new SetSelectionAction<>(allSelection, oldSelection, selectionManager, "select all");
 	}

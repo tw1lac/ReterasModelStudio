@@ -1,15 +1,5 @@
 package com.etheller.warsmash.parsers.mdlx;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.etheller.warsmash.parsers.mdlx.mdl.GhostwolfTokenInputStream;
 import com.etheller.warsmash.parsers.mdlx.mdl.GhostwolfTokenOutputStream;
 import com.etheller.warsmash.util.MdlUtils;
@@ -17,6 +7,11 @@ import com.etheller.warsmash.util.ParseUtils;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Warcraft 3 model. Supports loading from and saving to both the binary MDX
@@ -59,8 +54,6 @@ public class MdlxModel {
 	 * always be left empty. This is probably a leftover from the Warcraft 3 beta.
 	 * (WS game note: No, I never saw any animation files in the RoC 2001-2002 Beta.
 	 * So it must be from the Alpha)
-	 *
-	 * @member {string}
 	 */
 	private String animationFile = "";
 	private final Extent extent = new Extent();

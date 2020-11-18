@@ -1,13 +1,13 @@
 package com.hiveworkshop.wc3.gui.modeledit.actions;
 
+import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
+import com.hiveworkshop.wc3.mdl.GeosetVertex;
+import com.hiveworkshop.wc3.mdl.Vertex;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Vertex;
 
 /**
  * Undoable snap action.
@@ -89,16 +89,9 @@ public class RecalculateNormalsAction2 implements UndoAction {
 				return false;
 			}
 			final Tuplet other = (Tuplet) obj;
-			if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) {
-				return false;
-			}
-			if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) {
-				return false;
-			}
-			if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z)) {
-				return false;
-			}
-			return true;
+			return Double.doubleToLongBits(x) == Double.doubleToLongBits(other.x)
+					&& Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y)
+					&& Double.doubleToLongBits(z) == Double.doubleToLongBits(other.z);
 		}
 
 	}

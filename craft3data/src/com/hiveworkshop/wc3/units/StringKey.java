@@ -40,12 +40,7 @@ public final class StringKey {
 		}
 		final StringKey other = (StringKey) obj;
 		if (string == null) {
-			if (other.string != null) {
-				return false;
-			}
-		} else if (!string.equalsIgnoreCase(other.string)) {
-			return false;
-		}
-		return true;
+			return other.string == null;
+		} else return string.equalsIgnoreCase(other.string);
 	}
 }

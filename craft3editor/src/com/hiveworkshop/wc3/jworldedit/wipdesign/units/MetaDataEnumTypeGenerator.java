@@ -57,8 +57,6 @@ public final class MetaDataEnumTypeGenerator {
 
 	/**
 	 * Jank hacked version, generates TileSet class
-	 *
-	 * @param unitEditorData
 	 */
 	private static void generateWEData(final DataTable unitEditorData) {
 		for (final String enumName : unitEditorData.keySet()) {

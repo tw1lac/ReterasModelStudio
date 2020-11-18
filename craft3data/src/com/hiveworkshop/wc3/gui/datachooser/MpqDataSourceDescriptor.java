@@ -1,14 +1,14 @@
 package com.hiveworkshop.wc3.gui.datachooser;
 
+import mpq.MPQArchive;
+import mpq.MPQException;
+
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
-
-import mpq.MPQArchive;
-import mpq.MPQException;
 
 public class MpqDataSourceDescriptor implements DataSourceDescriptor {
 	/**
@@ -58,13 +58,8 @@ public class MpqDataSourceDescriptor implements DataSourceDescriptor {
 		}
 		final MpqDataSourceDescriptor other = (MpqDataSourceDescriptor) obj;
 		if (mpqFilePath == null) {
-			if (other.mpqFilePath != null) {
-				return false;
-			}
-		} else if (!mpqFilePath.equals(other.mpqFilePath)) {
-			return false;
-		}
-		return true;
+			return other.mpqFilePath == null;
+		} else return mpqFilePath.equals(other.mpqFilePath);
 	}
 
 	public String getMpqFilePath() {

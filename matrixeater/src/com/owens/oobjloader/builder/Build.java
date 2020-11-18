@@ -646,31 +646,14 @@ public class Build implements BuilderInterface {
 				return false;
 			}
 			final VertexKey other = (VertexKey) obj;
-			if (Float.floatToIntBits(normX) != Float.floatToIntBits(other.normX)) {
-				return false;
-			}
-			if (Float.floatToIntBits(normY) != Float.floatToIntBits(other.normY)) {
-				return false;
-			}
-			if (Float.floatToIntBits(normZ) != Float.floatToIntBits(other.normZ)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posX) != Float.floatToIntBits(other.posX)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posY) != Float.floatToIntBits(other.posY)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posZ) != Float.floatToIntBits(other.posZ)) {
-				return false;
-			}
-			if (Float.floatToIntBits(uvU) != Float.floatToIntBits(other.uvU)) {
-				return false;
-			}
-			if (Float.floatToIntBits(uvV) != Float.floatToIntBits(other.uvV)) {
-				return false;
-			}
-			return true;
+			return Float.floatToIntBits(normX) == Float.floatToIntBits(other.normX)
+					&& Float.floatToIntBits(normY) == Float.floatToIntBits(other.normY)
+					&& Float.floatToIntBits(normZ) == Float.floatToIntBits(other.normZ)
+					&& Float.floatToIntBits(posX) == Float.floatToIntBits(other.posX)
+					&& Float.floatToIntBits(posY) == Float.floatToIntBits(other.posY)
+					&& Float.floatToIntBits(posZ) == Float.floatToIntBits(other.posZ)
+					&& Float.floatToIntBits(uvU) == Float.floatToIntBits(other.uvU)
+					&& Float.floatToIntBits(uvV) == Float.floatToIntBits(other.uvV);
 		}
 	}
 

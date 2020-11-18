@@ -44,13 +44,8 @@ public class FolderDataSourceDescriptor implements DataSourceDescriptor {
 		}
 		final FolderDataSourceDescriptor other = (FolderDataSourceDescriptor) obj;
 		if (folderPath == null) {
-			if (other.folderPath != null) {
-				return false;
-			}
-		} else if (!folderPath.equals(other.folderPath)) {
-			return false;
-		}
-		return true;
+			return other.folderPath == null;
+		} else return folderPath.equals(other.folderPath);
 	}
 
 	public String getFolderPath() {

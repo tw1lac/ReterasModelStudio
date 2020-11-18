@@ -106,8 +106,6 @@ public class EditableModel implements Named {
 	/**
 	 * IMPORTANT: This is the only way to retrieve the true header name from the top
 	 * of the "model chunk", the same one set by {@link #setName(String)} function.
-	 *
-	 * @return
 	 */
 	public String getHeaderName() {
 		return name;
@@ -705,8 +703,6 @@ public class EditableModel implements Named {
 	 * In addition, any bones with significant amounts of motion that were not found
 	 * to correlate with the contents of this model get added to this model's list
 	 * of bones.
-	 *
-	 * @param other
 	 */
 
 	public List<Animation> addAnimationsFrom(EditableModel other, final List<Animation> anims) {
@@ -2088,11 +2084,7 @@ public class EditableModel implements Named {
 					if (!b.multiGeoId) {
 						if (b.geoset == null) {
 							// The bone has been found by no prior matrices
-							if (ga != null) {
-								b.geosetAnim = ga;
-							} else {
-								b.geosetAnim = null;
-							}
+							b.geosetAnim = ga;
 							b.geoset = g;
 						} else if (b.geoset != g) {
 							// The bone has only been found by ONE matrix
@@ -2120,11 +2112,7 @@ public class EditableModel implements Named {
 								if (b2.geoset == null) {
 									// The bone has been found by no prior
 									// matrices
-									if (ga != null) {
-										b2.geosetAnim = ga;
-									} else {
-										b2.geosetAnim = null;
-									}
+									b2.geosetAnim = ga;
 									b2.geoset = g;
 								} else if (b2.geoset != g) {
 									// The bone has only been found by ONE
@@ -2820,9 +2808,6 @@ public class EditableModel implements Named {
 
 	/**
 	 * Please, for the love of Pete, don't actually do this.
-	 *
-	 * @param targetLevelOfDetail
-	 * @param model
 	 */
 	public static void convertToV800(final int targetLevelOfDetail, final EditableModel model) {
 		// Things to fix:

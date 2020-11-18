@@ -1,16 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff;
 
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
@@ -27,13 +16,14 @@ import com.hiveworkshop.wc3.gui.modeledit.selection.SelectableComponent;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectableComponentVisitor;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.wc3.gui.modeledit.selection.VertexSelectionHelper;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.*;
 
 public final class VertexClusterModelEditor extends AbstractModelEditor<VertexClusterModelEditor.VertexGroupBundle> {
 	private final ProgramPreferences programPreferences;
@@ -94,10 +84,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 			} else if (!geoset.equals(other.geoset)) {
 				return false;
 			}
-			if (vertexGroupId != other.vertexGroupId) {
-				return false;
-			}
-			return true;
+			return vertexGroupId == other.vertexGroupId;
 		}
 
 	}

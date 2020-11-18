@@ -1,21 +1,15 @@
 package com.hiveworkshop.wc3.util;
 
+import com.hiveworkshop.wc3.mdl.Vertex;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.hiveworkshop.wc3.mdl.Vertex;
-
 public class MathUtils {
 	/**
 	 * Returns true if the value of <code>b</code> falls between the values
 	 * <code>a</code> and <code>c</code>.
-	 *
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
 	 */
 	public static boolean isBetween(final double a, final double b, final double c) {
 		final double min = Math.min(a, c);

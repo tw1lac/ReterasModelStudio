@@ -191,10 +191,7 @@ public class MenuBarActionListeners {
                 if ((firstAnimatedColor == null) != (secondAnimatedColor == null)) {
                     return false;
                 }
-                if ((firstAnimatedColor != null) && !firstAnimatedColor.equals(secondAnimatedColor)) {
-                    return false;
-                }
-                return true;
+                return (firstAnimatedColor == null) || firstAnimatedColor.equals(secondAnimatedColor);
             }
         };
     }

@@ -1,19 +1,10 @@
 package com.hiveworkshop.wc3.util;
 
+import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
+import com.hiveworkshop.wc3.mdl.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.Normal;
-import com.hiveworkshop.wc3.mdl.TVertex;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
 
 public final class ModelUtils {
 	public static final class Mesh {
@@ -129,11 +120,6 @@ public final class ModelUtils {
 		return new Mesh(vertices, triangles);
 	}
 
-	/**
-	 * @param model
-	 * @param max
-	 * @param min
-	 */
 	public static void createBox(final EditableModel model, final Vertex max, final Vertex min, final int segments) {
 		final Geoset geoset = new Geoset();
 		geoset.setMaterial(new Material(new Layer("None", new Bitmap("textures\\white.blp"))));
@@ -268,11 +254,6 @@ public final class ModelUtils {
 		return box;
 	}
 
-	/**
-	 * @param model
-	 * @param max
-	 * @param min
-	 */
 	public static void createGroundPlane(final EditableModel model, final Vertex max, final Vertex min, final int segments) {
 		final Geoset geoset = new Geoset();
 		geoset.setMaterial(new Material(new Layer("None", new Bitmap("textures\\white.blp"))));

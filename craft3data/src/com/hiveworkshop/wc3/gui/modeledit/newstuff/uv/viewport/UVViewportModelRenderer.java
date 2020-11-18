@@ -1,31 +1,21 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff.uv.viewport;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.VertexFilter;
 import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportView;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetAnim;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.renderer.GeosetRenderer;
 import com.hiveworkshop.wc3.mdl.renderer.TriangleRenderer;
 import com.hiveworkshop.wc3.mdl.v2.MaterialView;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.visitor.MeshVisitor;
 import com.hiveworkshop.wc3.mdl.v2.visitor.VertexVisitor;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UVViewportModelRenderer implements MeshVisitor {
 	private Graphics2D graphics;
@@ -142,14 +132,6 @@ public class UVViewportModelRenderer implements MeshVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param model
-	 * @param g
-	 * @param bounds
-	 * @param a
-	 * @param b
-	 * @param filter
-	 * @param extraHighlightPoint
 	 */
 	public static void drawFittedTriangles(final EditableModel model, final Graphics g, final Rectangle bounds, final byte a,
 			final byte b, final VertexFilter<? super GeosetVertex> filter, final Vertex extraHighlightPoint) {
@@ -221,11 +203,6 @@ public class UVViewportModelRenderer implements MeshVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param g
-	 * @param a
-	 * @param b
-	 * @param t
 	 */
 	private static void drawTriangle(final Graphics g, final byte a, final byte b, final Triangle t) {
 		final double[] x = t.getCoords(a);

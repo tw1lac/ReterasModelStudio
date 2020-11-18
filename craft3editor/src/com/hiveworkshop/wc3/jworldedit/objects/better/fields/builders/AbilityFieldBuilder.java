@@ -1,12 +1,12 @@
 package com.hiveworkshop.wc3.jworldedit.objects.better.fields.builders;
 
-import java.util.Arrays;
-
 import com.hiveworkshop.wc3.jworldedit.objects.better.fields.factory.LevelsSingleFieldFactory;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
+
+import java.util.Arrays;
 
 public class AbilityFieldBuilder extends AbstractLevelsFieldBuilder {
 	private static final War3ID ABILITY_LEVEL_FIELD = War3ID.fromString("alev");
@@ -36,12 +36,9 @@ public class AbilityFieldBuilder extends AbstractLevelsFieldBuilder {
 				passesSpecificCheck = false;
 			}
 		}
-		if (((heroAbility && !itemAbility && metaDataField.getFieldValue("useHero") == 1)
+		return ((heroAbility && !itemAbility && metaDataField.getFieldValue("useHero") == 1)
 				|| (!heroAbility && !itemAbility && metaDataField.getFieldValue("useUnit") == 1)
-				|| (itemAbility && metaDataField.getFieldValue("useItem") == 1)) && passesSpecificCheck) {
-			return true;
-		}
-		return false;
+				|| (itemAbility && metaDataField.getFieldValue("useItem") == 1)) && passesSpecificCheck;
 	}
 
 }

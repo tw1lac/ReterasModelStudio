@@ -1,11 +1,10 @@
 package com.hiveworkshop.wc3.jworldedit.triggers.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.hiveworkshop.wc3.jworldedit.triggers.gui.TriggerTreeController;
 import com.hiveworkshop.wc3.resources.WEString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class TriggerEnvironment implements TriggerTreeController {
 	private String name;

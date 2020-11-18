@@ -8,8 +8,6 @@ import java.nio.ByteOrder;
 public class LittleHashBlockProcessor {
 
 	/**
-	 *
-	 * @param encoded
 	 * @return The size of the block
 	 * @throws MalformedCASCStructureException If file is malformed.
 	 */

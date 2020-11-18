@@ -1,8 +1,20 @@
 package com.hiveworkshop.wc3.gui;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Transparency;
+import com.hiveworkshop.wc3.gui.datachooser.DataSource;
+import com.hiveworkshop.wc3.mdl.Bitmap;
+import com.hiveworkshop.wc3.mdl.Material;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
+import com.hiveworkshop.wc3.mpq.MpqCodebase;
+import de.wc3data.image.TgaFile;
+import org.lwjgl.BufferUtils;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -17,23 +29,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
-import javax.swing.JOptionPane;
-
-import org.lwjgl.BufferUtils;
-
-import com.hiveworkshop.wc3.gui.datachooser.DataSource;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import com.hiveworkshop.wc3.mpq.MpqCodebase;
-
-import de.wc3data.image.TgaFile;
 
 public class BLPHandler {
 
@@ -231,9 +226,6 @@ public class BLPHandler {
 	/**
 	 * Returns a BufferedImage from any arbitrary filepath string on your computer,
 	 * reading the image from BLP format.
-	 *
-	 * @param filepath
-	 * @return
 	 */
 	public BufferedImage getCustomTex(final String filepath) {
 		final File blpFile = new File(filepath);

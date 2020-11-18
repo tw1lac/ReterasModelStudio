@@ -1,69 +1,17 @@
 package com.hiveworkshop.wc3.mdl;
 
+import com.hiveworkshop.wc3.gui.animedit.BasicTimeBoundProvider;
+import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
+import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
+import com.hiveworkshop.wc3.mdx.*;
+import com.hiveworkshop.wc3.util.MathUtils;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import javax.swing.JOptionPane;
-
-import com.hiveworkshop.wc3.gui.animedit.BasicTimeBoundProvider;
-import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
-import com.hiveworkshop.wc3.mdx.AttachmentVisibility;
-import com.hiveworkshop.wc3.mdx.CameraPositionTranslation;
-import com.hiveworkshop.wc3.mdx.CameraRotation;
-import com.hiveworkshop.wc3.mdx.CameraTargetTranslation;
-import com.hiveworkshop.wc3.mdx.CornAlpha;
-import com.hiveworkshop.wc3.mdx.CornColor;
-import com.hiveworkshop.wc3.mdx.CornEmissionRate;
-import com.hiveworkshop.wc3.mdx.CornLifeSpan;
-import com.hiveworkshop.wc3.mdx.CornSpeed;
-import com.hiveworkshop.wc3.mdx.CornVisibility;
-import com.hiveworkshop.wc3.mdx.GeosetAlpha;
-import com.hiveworkshop.wc3.mdx.GeosetColor;
-import com.hiveworkshop.wc3.mdx.GeosetRotation;
-import com.hiveworkshop.wc3.mdx.GeosetScaling;
-import com.hiveworkshop.wc3.mdx.GeosetTranslation;
-import com.hiveworkshop.wc3.mdx.LightAmbientColor;
-import com.hiveworkshop.wc3.mdx.LightAmbientIntensity;
-import com.hiveworkshop.wc3.mdx.LightAttenuationEnd;
-import com.hiveworkshop.wc3.mdx.LightAttenuationStart;
-import com.hiveworkshop.wc3.mdx.LightColor;
-import com.hiveworkshop.wc3.mdx.LightIntensity;
-import com.hiveworkshop.wc3.mdx.LightVisibility;
-import com.hiveworkshop.wc3.mdx.MaterialAlpha;
-import com.hiveworkshop.wc3.mdx.MaterialEmissiveGain;
-import com.hiveworkshop.wc3.mdx.MaterialFresnelColor;
-import com.hiveworkshop.wc3.mdx.MaterialFresnelOpacity;
-import com.hiveworkshop.wc3.mdx.MaterialFresnelTeamColor;
-import com.hiveworkshop.wc3.mdx.MaterialTextureId;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2EmissionRate;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Gravity;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Latitude;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Length;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Speed;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Variation;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Visibility;
-import com.hiveworkshop.wc3.mdx.ParticleEmitter2Width;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterEmissionRate;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterGravity;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterLatitude;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterLifeSpan;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterLongitude;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterSpeed;
-import com.hiveworkshop.wc3.mdx.ParticleEmitterVisibility;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterAlpha;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterColor;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterHeightAbove;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterHeightBelow;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterTextureSlot;
-import com.hiveworkshop.wc3.mdx.RibbonEmitterVisibility;
-import com.hiveworkshop.wc3.mdx.TextureRotation;
-import com.hiveworkshop.wc3.mdx.TextureScaling;
-import com.hiveworkshop.wc3.mdx.TextureTranslation;
-import com.hiveworkshop.wc3.util.MathUtils;
 
 /**
  * A java class for MDL "motion flags," such as Alpha, Translation, Scaling, or
@@ -2250,12 +2198,6 @@ public class AnimFlag {
 	 * interval. The AnimFlag source of the data to copy cannot be same AnimFlag
 	 * into which the data is copied, or else a ConcurrentModificationException will
 	 * be thrown.
-	 *
-	 * @param source
-	 * @param sourceStart
-	 * @param sourceEnd
-	 * @param newStart
-	 * @param newEnd
 	 */
 	public void copyFrom(final AnimFlag source, final int sourceStart, final int sourceEnd, final int newStart,
 			final int newEnd) {

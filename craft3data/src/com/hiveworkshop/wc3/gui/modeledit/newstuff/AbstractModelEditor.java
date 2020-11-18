@@ -1,61 +1,25 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.DeleteAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.ExtrudeAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.RecalculateExtentsAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.RecalculateNormalsAction2;
-import com.hiveworkshop.wc3.gui.modeledit.actions.SnapAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.SnapNormalsAction;
-import com.hiveworkshop.wc3.gui.modeledit.actions.SpecialDeleteAction;
+import com.hiveworkshop.wc3.gui.modeledit.actions.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.creator.actions.DrawBoxAction;
 import com.hiveworkshop.wc3.gui.modeledit.creator.actions.DrawPlaneAction;
 import com.hiveworkshop.wc3.gui.modeledit.creator.actions.NewGeosetAction;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.ModelEditorActionType;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.CompoundMoveAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.SimpleRotateAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.StaticMeshMoveAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.StaticMeshRotateAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.StaticMeshScaleAction;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.editor.*;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.CloneAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.FlipFacesAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.FlipNormalsAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.MirrorModelAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.RigAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.SetMatrixAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.CompoundAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.DoNothingMoveActionAdapter;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericMoveAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericRotateAction;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.GenericScaleAction;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.*;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.util.*;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ClonedNodeNamePicker;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.wc3.gui.modeledit.selection.VertexSelectionHelper;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Layer;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.Layer.FilterMode;
-import com.hiveworkshop.wc3.mdl.Material;
-import com.hiveworkshop.wc3.mdl.Matrix;
-import com.hiveworkshop.wc3.mdl.Normal;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
+
+import java.util.*;
 
 public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> implements ModelEditor {
 	protected final ModelView model;
@@ -150,9 +114,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 	public UndoAction recalcExtents(final boolean onlyIncludeEditableGeosets) {
 		final List<Geoset> geosetsToIncorporate = new ArrayList<>();
 		if (onlyIncludeEditableGeosets) {
-			for (final Geoset geoset : model.getEditableGeosets()) {
-				geosetsToIncorporate.add(geoset);
-			}
+			geosetsToIncorporate.addAll(model.getEditableGeosets());
 		} else {
 			geosetsToIncorporate.addAll(model.getModel().getGeosets());
 		}

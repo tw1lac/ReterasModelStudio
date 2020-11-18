@@ -14,7 +14,7 @@ public class Map {
 
 	}
 
-	class Tavern {
+	static class Tavern {
 		List<HeroType> heroes = new ArrayList<>();
 	}
 

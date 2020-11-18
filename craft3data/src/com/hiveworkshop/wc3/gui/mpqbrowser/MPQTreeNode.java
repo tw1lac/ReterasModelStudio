@@ -1,8 +1,7 @@
 package com.hiveworkshop.wc3.gui.mpqbrowser;
 
-import java.util.*;
-
 import javax.swing.tree.TreeNode;
+import java.util.*;
 
 public class MPQTreeNode implements TreeNode {
 	private final MPQTreeNode parent;
@@ -66,9 +65,6 @@ public class MPQTreeNode implements TreeNode {
 	/**
 	 * Adds a child under the tree. Currently doesn't fix duplicates, which will
 	 * break the state of the system.
-	 *
-	 * @param subPathName
-	 * @param child
 	 */
 	public void addChild(final String subPathName, final MPQTreeNode child) {
 		final MPQTreeNode prev = children.put(subPathName, child);

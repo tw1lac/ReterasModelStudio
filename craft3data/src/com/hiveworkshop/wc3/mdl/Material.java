@@ -349,9 +349,6 @@ public class Material implements MaterialView {
 
 	/**
 	 * Intended to handle resolving ReplaceableIds into paths
-	 *
-	 * @param tex
-	 * @return
 	 */
 	private String getRenderableTexturePath(final Bitmap tex) {
 		if (tex == null) {

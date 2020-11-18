@@ -241,9 +241,6 @@ public class Geoset implements Named, VisibilitySource {
 	/**
 	 * Returns all vertices that directly inherit motion from the specified Bone, or
 	 * an empty list if no vertices reference the object.
-	 *
-	 * @param parent
-	 * @return
 	 */
 	public ArrayList<GeosetVertex> getChildrenOf(final Bone parent) {
 		final ArrayList<GeosetVertex> children = new ArrayList<>();

@@ -1,16 +1,15 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.BoneChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bones that make geometry animate.
@@ -266,7 +265,6 @@ public class Bone extends IdObject {
 	}
 
 	/**
-	 * @param geosetId
 	 * @deprecated Recalculated on save
 	 */
 	@Deprecated
@@ -284,7 +282,6 @@ public class Bone extends IdObject {
 	}
 
 	/**
-	 * @param multiGeoId
 	 * @deprecated Recalculated on save
 	 */
 	@Deprecated
@@ -301,7 +298,6 @@ public class Bone extends IdObject {
 	}
 
 	/**
-	 * @param geosetAnimId
 	 * @deprecated Recalculated on save
 	 */
 	@Deprecated
@@ -319,7 +315,6 @@ public class Bone extends IdObject {
 	}
 
 	/**
-	 * @param hasGeoAnim
 	 * @deprecated Recalculated on save
 	 */
 	@Deprecated

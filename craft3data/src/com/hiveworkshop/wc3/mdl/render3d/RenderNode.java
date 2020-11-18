@@ -1,16 +1,15 @@
 package com.hiveworkshop.wc3.mdl.render3d;
 
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
-
 import com.hiveworkshop.wc3.mdl.AnimatedNode;
 import com.hiveworkshop.wc3.mdl.IdObject;
 import com.hiveworkshop.wc3.mdl.IdObject.NodeFlags;
 import com.hiveworkshop.wc3.mdl.QuaternionRotation;
 import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.util.MathUtils;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public final class RenderNode {
 	private final AnimatedNode idObject;
@@ -223,8 +222,6 @@ public final class RenderNode {
 	 * Supposedly returns final matrix based on bind pose, but don't actually use
 	 * this yet, I'm not even sure it's computed correctly. Graphically, based on my
 	 * tests, it looked like maybe we do not need it.
-	 * 
-	 * @return
 	 */
 	public Matrix4f getFinalMatrix() {
 		return finalMatrix;

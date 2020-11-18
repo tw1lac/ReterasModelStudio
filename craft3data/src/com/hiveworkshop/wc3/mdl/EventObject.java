@@ -1,17 +1,16 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.EventObjectChunk;
 import com.hiveworkshop.wc3.mdx.Node;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class for EventObjects, which include such things as craters, footprints,
@@ -333,7 +332,6 @@ public class EventObject extends IdObject {
 	}
 
 	/**
-	 * @return
 	 * @deprecated Use getGlobalSeq
 	 */
 	@Deprecated
@@ -342,7 +340,6 @@ public class EventObject extends IdObject {
 	}
 
 	/**
-	 * @param globalSeqId
 	 * @deprecated Use setGlobalSeq
 	 */
 	@Deprecated

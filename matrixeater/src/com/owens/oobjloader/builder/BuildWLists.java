@@ -1,35 +1,21 @@
 package com.owens.oobjloader.builder;
 
+import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.modeledit.TargaReader;
+import com.hiveworkshop.wc3.mdl.*;
+import com.owens.oobjloader.parser.BuilderInterface;
+import de.wc3data.image.BlpFile;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.*;
+import java.util.logging.Logger;
+
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
-
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
-import com.hiveworkshop.wc3.gui.modeledit.TargaReader;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.Bitmap;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Layer;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.Normal;
-import com.hiveworkshop.wc3.mdl.TVertex;
-import com.hiveworkshop.wc3.mdl.Triangle;
-import com.hiveworkshop.wc3.mdl.UVLayer;
-import com.hiveworkshop.wc3.mdl.Vertex;
 // This code was written by myself, Sean R. Owens, sean at guild dot net,
 // and is released to the public domain. Share and enjoy. Since some
 // people argue that it is impossible to release software to the public
@@ -38,9 +24,6 @@ import com.hiveworkshop.wc3.mdl.Vertex;
 // license.  (I generally don't care so I'll almost certainly say yes.)
 // In addition this code may also be used under the "unlicense" described
 // at http://unlicense.org/ .  See the file UNLICENSE in the repo.
-import com.owens.oobjloader.parser.BuilderInterface;
-
-import de.wc3data.image.BlpFile;
 
 public class BuildWLists implements BuilderInterface {
 
@@ -674,31 +657,14 @@ public class BuildWLists implements BuilderInterface {
 				return false;
 			}
 			final VertexKey other = (VertexKey) obj;
-			if (Float.floatToIntBits(normX) != Float.floatToIntBits(other.normX)) {
-				return false;
-			}
-			if (Float.floatToIntBits(normY) != Float.floatToIntBits(other.normY)) {
-				return false;
-			}
-			if (Float.floatToIntBits(normZ) != Float.floatToIntBits(other.normZ)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posX) != Float.floatToIntBits(other.posX)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posY) != Float.floatToIntBits(other.posY)) {
-				return false;
-			}
-			if (Float.floatToIntBits(posZ) != Float.floatToIntBits(other.posZ)) {
-				return false;
-			}
-			if (Float.floatToIntBits(uvU) != Float.floatToIntBits(other.uvU)) {
-				return false;
-			}
-			if (Float.floatToIntBits(uvV) != Float.floatToIntBits(other.uvV)) {
-				return false;
-			}
-			return true;
+			return Float.floatToIntBits(normX) == Float.floatToIntBits(other.normX)
+					&& Float.floatToIntBits(normY) == Float.floatToIntBits(other.normY)
+					&& Float.floatToIntBits(normZ) == Float.floatToIntBits(other.normZ)
+					&& Float.floatToIntBits(posX) == Float.floatToIntBits(other.posX)
+					&& Float.floatToIntBits(posY) == Float.floatToIntBits(other.posY)
+					&& Float.floatToIntBits(posZ) == Float.floatToIntBits(other.posZ)
+					&& Float.floatToIntBits(uvU) == Float.floatToIntBits(other.uvU)
+					&& Float.floatToIntBits(uvV) == Float.floatToIntBits(other.uvV);
 		}
 	}
 

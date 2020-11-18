@@ -1,18 +1,17 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.LayerView;
 import com.hiveworkshop.wc3.mdl.v2.timelines.Animatable;
 import com.hiveworkshop.wc3.mdx.LayerChunk;
 import com.hiveworkshop.wc3.util.ModelUtils;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Layers for MDLToolkit/MatrixEater.
@@ -208,13 +207,8 @@ public class Layer implements Named, VisibilitySource, LayerView {
 			return false;
 		}
 		if (textures == null) {
-			if (other.textures != null) {
-				return false;
-			}
-		} else if (!textures.equals(other.textures)) {
-			return false;
-		}
-		return true;
+			return other.textures == null;
+		} else return textures.equals(other.textures);
 	}
 
 	// @Override
