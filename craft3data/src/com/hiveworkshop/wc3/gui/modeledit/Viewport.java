@@ -1,6 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import com.etheller.util.CollectionUtils;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
@@ -26,6 +25,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Viewport extends JPanel implements MouseListener, ActionListener, MouseWheelListener, CoordinateSystem,
 		ViewportView, MouseMotionListener, ModelEditorChangeListener {
@@ -483,7 +483,9 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 						JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION, null, words, words[1]);
 				if (i == 0) {
 					// JOptionPane.showMessageDialog(null,"action approved");
-					modelEditor.setMatrix(BoneShell.toBonesList(CollectionUtils.asList(matrixPopup.newRefs)));
+					BoneShell[] boneShell = new BoneShell[matrixPopup.newRefs.size()];
+					matrixPopup.newRefs.copyInto(boneShell);
+					modelEditor.setMatrix(BoneShell.toBonesList(Arrays.asList(boneShell)));
 				}
 			} else if (e.getSource() == setParent) {
 				class NodeShell {

@@ -15,7 +15,6 @@ import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.etheller.collections.ListView;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
@@ -286,7 +285,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 	}
 
 	@Override
-	protected UndoAction buildHideComponentAction(final ListView<? extends SelectableComponent> selectableComponents,
+	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents,
 			final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<IdObject> previousSelection = new ArrayList<>(selectionManager.getSelection());
 		final List<IdObject> possibleVerticesToTruncate = new ArrayList<>();
@@ -696,7 +695,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 	@Override
 	public GenericMoveAction beginTranslation() {
 		final Set<IdObject> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<UndoAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<UndoAction> actions = new ArrayList<>();
 		// TODO fix cast, meta knowledge: NodeAnimationModelEditor will only be
 		// constructed from
 		// a TimeEnvironmentImpl render environment, and never from the anim previewer
@@ -734,7 +733,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 	public GenericRotateAction beginRotation(final double centerX, final double centerY, final double centerZ,
 			final byte firstXYZ, final byte secondXYZ) {
 		final Set<IdObject> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<UndoAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<UndoAction> actions = new ArrayList<>();
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 				.getAnimatedRenderEnvironment();
 		for (final IdObject node : selection) {
@@ -767,7 +766,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 	@Override
 	public GenericScaleAction beginScaling(final double centerX, final double centerY, final double centerZ) {
 		final Set<IdObject> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<UndoAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<UndoAction> actions = new ArrayList<>();
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 				.getAnimatedRenderEnvironment();
 		for (final IdObject node : selection) {
@@ -814,7 +813,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 			throw new IllegalArgumentException();
 		}
 		final Set<IdObject> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<UndoAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<UndoAction> actions = new ArrayList<>();
 		for (final IdObject node : selection) {
 			final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 					.getAnimatedRenderEnvironment();
@@ -880,7 +879,7 @@ public class NodeAnimationModelEditor extends AbstractSelectingEditor<IdObject> 
 				selection.add(idObject);
 			}
 		}
-		final com.etheller.collections.List<UndoAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<UndoAction> actions = new ArrayList<>();
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 				.getAnimatedRenderEnvironment();
 		for (final IdObject node : selection) {

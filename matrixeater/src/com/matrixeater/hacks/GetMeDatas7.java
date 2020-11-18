@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Set;
 
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.mdl.Geoset;
 import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.EditableModel;
@@ -18,7 +18,7 @@ import de.wc3data.stream.BlizzardDataInputStream;
 public class GetMeDatas7 {
 
 	public static void main(final String[] args) {
-		final SetView<String> mergedListfile = MpqCodebase.get().getMergedListfile();
+		final Set<String> mergedListfile = MpqCodebase.get().getMergedListfile();
 //		for (final String file : mergedListfile) {
 //			System.out.println(file);
 //		}

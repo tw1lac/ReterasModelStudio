@@ -13,7 +13,6 @@ import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.mpq.MpqCodebase.LoadedMPQ;
 
 import de.wc3data.stream.BlizzardDataInputStream;
-import mpq.MPQException;
 
 public class ParseEveryBtTModel {
 

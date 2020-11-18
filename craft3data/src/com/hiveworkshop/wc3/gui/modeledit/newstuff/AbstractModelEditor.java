@@ -7,11 +7,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
-import com.etheller.collections.HashMap;
-import com.etheller.collections.ListView;
-import com.etheller.collections.Map;
-import com.etheller.util.CollectionUtils;
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
 import com.hiveworkshop.wc3.gui.modeledit.actions.DeleteAction;
@@ -215,14 +213,16 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 	public UndoAction mirror(final byte dim, final boolean flipModel, final double centerX, final double centerY,
 			final double centerZ) {
 		final MirrorModelAction mirror = new MirrorModelAction(selectionManager.getSelectedVertices(),
-				CollectionUtils.toJava(model.getEditableIdObjects()), dim, centerX, centerY, centerZ);
+				model.getEditableIdObjects(), dim, centerX, centerY, centerZ);
 		// super weird passing of currently editable id Objects, works because
 		// mirror action checks selected vertices against pivot points from this
 		// list
 		mirror.redo();
 		if (flipModel) {
 			final UndoAction flipFacesAction = flipSelectedFaces();
-			return new CompoundAction(mirror.actionName(), ListView.Util.of(mirror, flipFacesAction));
+
+			return new CompoundAction(mirror.actionName(), Arrays.asList(mirror, flipFacesAction));
+//			return new CompoundAction(mirror.actionName(), ListView.Util.of(mirror, flipFacesAction));
 		}
 		return mirror;
 	}
@@ -753,11 +753,12 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 
 	@Override
 	public UndoAction rotate(final Vertex center, final double rotateX, final double rotateY, final double rotateZ) {
+		SimpleRotateAction[] simpleRotateActions = new SimpleRotateAction[] {new SimpleRotateAction(this, center, rotateX, (byte) 2, (byte) 1),
+				new SimpleRotateAction(this, center, rotateY, (byte) 0, (byte) 2),
+				new SimpleRotateAction(this, center, rotateZ, (byte) 1, (byte) 0)};
 
-		final CompoundAction compoundAction = new CompoundAction("rotate",
-				ListView.Util.of(new SimpleRotateAction(this, center, rotateX, (byte) 2, (byte) 1),
-						new SimpleRotateAction(this, center, rotateY, (byte) 0, (byte) 2),
-						new SimpleRotateAction(this, center, rotateZ, (byte) 1, (byte) 0)));
+
+		final CompoundAction compoundAction = new CompoundAction("rotate", Arrays.asList(simpleRotateActions));
 		compoundAction.redo();
 		return compoundAction;
 	}
@@ -825,8 +826,9 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		if (needsGeosetAction) {
 			final NewGeosetAction newGeosetAction = new NewGeosetAction(solidWhiteGeoset, model.getModel(),
 					structureChangeListener);
-			action = new CompoundMoveAction("create plane",
-					ListView.Util.of(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
+			action = new CompoundMoveAction("create plane", Arrays.asList(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
+//			action = new CompoundMoveAction("create plane",
+//					ListView.Util.of(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
 		} else {
 			action = drawVertexAction;
 		}
@@ -861,8 +863,9 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 		if (needsGeosetAction) {
 			final NewGeosetAction newGeosetAction = new NewGeosetAction(solidWhiteGeoset, model.getModel(),
 					structureChangeListener);
-			action = new CompoundMoveAction("create plane",
-					ListView.Util.of(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
+			action = new CompoundMoveAction("create plane", Arrays.asList(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
+//			action = new CompoundMoveAction("create plane",
+//					ListView.Util.of(new DoNothingMoveActionAdapter(newGeosetAction), drawVertexAction));
 		} else {
 			action = drawVertexAction;
 		}

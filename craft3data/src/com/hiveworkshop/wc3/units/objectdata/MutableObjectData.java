@@ -4,13 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.List;
-import com.etheller.collections.MapView;
-import com.etheller.collections.MapView.Entry;
-import com.etheller.collections.SetView;
-import com.etheller.util.CollectionUtils;
 import com.hiveworkshop.wc3.resources.WEString;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ObjectData;
@@ -88,7 +84,7 @@ public final class MutableObjectData {
 	public void mergeChangset(final War3ObjectDataChangeset changeset) {
 		final List<War3ID> newObjects = new ArrayList<>();
 		final Map<War3ID, War3ID> previousAliasToNewAlias = new HashMap<>();
-		for (final MapView.Entry<War3ID, ObjectDataChangeEntry> entry : changeset.getCustom()) {
+		for (final Map.Entry<War3ID, ObjectDataChangeEntry> entry : changeset.getCustom()) {
 
 //			final String newId = JOptionPane.showInputDialog("Choose UNIT ID");
 			final War3ID nextDefaultEditorId = /* War3ID.fromString(newId); */getNextDefaultEditorId(
@@ -97,7 +93,7 @@ public final class MutableObjectData {
 			System.out.println("Merging " + nextDefaultEditorId + " for  " + entry.getKey());
 			// createNew API will notifier the changeNotifier
 			final MutableGameObject newObject = createNew(nextDefaultEditorId, entry.getValue().getOldId(), false);
-			for (final MapView.Entry<War3ID, List<Change>> changeList : entry.getValue().getChanges()) {
+			for (final Map.Entry<War3ID, List<Change>> changeList : entry.getValue().getChanges()) {
 				newObject.customUnitData.getChanges().add(changeList.getKey(), changeList.getValue());
 			}
 			newObjects.add(nextDefaultEditorId);
@@ -164,7 +160,7 @@ public final class MutableObjectData {
 						gameObject.isCustom() ? gameObject.getCode() : gameObject.getAlias(), newAlias);
 			}
 			if (gameObjectUserDataToCopy != null) {
-				for (final Entry<War3ID, List<Change>> changeEntry : gameObjectUserDataToCopy.getChanges()) {
+				for (final Map.Entry<War3ID, List<Change>> changeEntry : gameObjectUserDataToCopy.getChanges()) {
 					for (final Change change : changeEntry.getValue()) {
 						final Change newChange = new Change();
 						newChange.copyFrom(change);
@@ -228,14 +224,12 @@ public final class MutableObjectData {
 	/**
 	 * Returns the set of all Unit IDs in the map, at the cost of a lot of time to
 	 * go find them all.
-	 *
-	 * @return
 	 */
 
 	public Set<War3ID> keySet() {
 		if (cachedKeySet == null) {
-			final SetView<War3ID> customUnitKeys = editorData.getCustom().keySet();
-			final Set<War3ID> customKeys = new HashSet<>(CollectionUtils.toJava(customUnitKeys));
+			final Set<War3ID> customUnitKeys = editorData.getCustom().keySet();
+			final Set<War3ID> customKeys = new HashSet<>(customUnitKeys);
 			for (final String standardUnitKey : sourceSLKData.keySet()) {
 				customKeys.add(War3ID.fromString(standardUnitKey));
 			}

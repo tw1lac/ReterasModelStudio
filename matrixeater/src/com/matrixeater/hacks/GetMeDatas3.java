@@ -4,8 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Set;
 
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.mdl.Geoset;
 import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.EditableModel;
@@ -17,7 +17,7 @@ import de.wc3data.stream.BlizzardDataInputStream;
 public class GetMeDatas3 {
 
 	public static void main(final String[] args) {
-		final SetView<String> mergedListfile = MpqCodebase.get().getMergedListfile();
+		final Set<String> mergedListfile = MpqCodebase.get().getMergedListfile();
 
 		try (final InputStream footman = new FileInputStream(
 				"C:\\Users\\micro\\OneDrive\\Documents\\Warcraft III\\Models\\ReforgedArtProject\\UndeadArthas3.mdx")) {

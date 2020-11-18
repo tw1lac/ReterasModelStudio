@@ -1,15 +1,8 @@
 package com.hiveworkshop.wc3.gui.mpqbrowser;
 
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.swing.tree.TreeNode;
-
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.HashMap;
-import com.etheller.collections.List;
-import com.etheller.collections.ListView;
-import com.etheller.collections.Map;
 
 public class MPQTreeNode implements TreeNode {
 	private final MPQTreeNode parent;
@@ -89,7 +82,9 @@ public class MPQTreeNode implements TreeNode {
 		if (!(node instanceof MPQTreeNode)) {
 			return -1;
 		}
-		return ListView.Util.indexOf(childrenKeys, ((MPQTreeNode) node).getPath());
+
+		return childrenKeys.indexOf(((MPQTreeNode) node).getPath());
+//		return List.Util.indexOf(childrenKeys, ((MPQTreeNode) node).getPath());
 	}
 
 	@Override
@@ -108,7 +103,7 @@ public class MPQTreeNode implements TreeNode {
 	}
 
 	public void sort() {
-		List.Util.sort(childrenKeys, (o1, o2) -> {
+		childrenKeys.sort((o1, o2) -> {
 			final MPQTreeNode child1 = children.get(o1);
 			final MPQTreeNode child2 = children.get(o2);
 			if (child1.isLeaf() && !child2.isLeaf()) {
@@ -118,6 +113,16 @@ public class MPQTreeNode implements TreeNode {
 			}
 			return o1.compareTo(o2);
 		});
+//		List.Util.sort(childrenKeys, (o1, o2) -> {
+//			final MPQTreeNode child1 = children.get(o1);
+//			final MPQTreeNode child2 = children.get(o2);
+//			if (child1.isLeaf() && !child2.isLeaf()) {
+//				return 1;
+//			} else if (!child1.isLeaf() && child2.isLeaf()) {
+//				return -1;
+//			}
+//			return o1.compareTo(o2);
+//		});
 		for (final MPQTreeNode child : children.values()) {
 			if (!child.isLeaf()) {
 				child.sort();

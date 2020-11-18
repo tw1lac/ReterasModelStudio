@@ -13,8 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -34,9 +33,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.List;
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
@@ -235,12 +231,10 @@ public final class MPQBrowser extends JPanel {
 
 	public MPQTreeNode createMPQTree(final MpqCodebase mpqCodebase) {
 		final MPQTreeNode root = new MPQTreeNode(null, "", "");
-		final SetView<String> mergedListfile = mpqCodebase.getMergedListfile();
-		final List<String> listfile = new ArrayList<>();
-		for (final String string : mergedListfile) {
-			listfile.add(string);
-		}
-		List.Util.sort(listfile);
+		final Set<String> mergedListfile = mpqCodebase.getMergedListfile();
+		final List<String> listfile = new ArrayList<>(mergedListfile);
+		listfile.sort(String::compareToIgnoreCase);
+//		List.Util.sort(listfile);
 		for (String string : listfile) {
 			final int periodIndex = string.indexOf('.');
 			boolean foundMatch = false;

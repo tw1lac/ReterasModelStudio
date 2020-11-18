@@ -27,8 +27,6 @@ import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 
-import mpq.MPQException;
-
 public class ListFileFinder {
 
 	public static void main(final String[] args) {

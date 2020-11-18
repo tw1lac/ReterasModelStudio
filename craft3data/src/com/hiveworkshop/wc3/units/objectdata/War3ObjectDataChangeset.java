@@ -6,18 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
-import java.util.Iterator;
-
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.CollectionView;
-import com.etheller.collections.HashMap;
-import com.etheller.collections.HashSet;
-import com.etheller.collections.List;
-import com.etheller.collections.ListView;
-import com.etheller.collections.Map;
-import com.etheller.collections.MapView;
-import com.etheller.collections.MapView.Entry;
-import com.etheller.collections.SetView;
+import java.util.*;
 
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
@@ -37,8 +26,8 @@ public final class War3ObjectDataChangeset {
 	public static final int VAR_TYPE_STRING = 3;
 	public static final int VAR_TYPE_BOOLEAN = 4;
 	public static final int MAX_STR_LEN = 1024;
-	private static final SetView<War3ID> UNIT_ID_SET;
-	private static final SetView<War3ID> ABILITY_ID_SET;
+	private static final Set<War3ID> UNIT_ID_SET;
+	private static final Set<War3ID> ABILITY_ID_SET;
 	static {
 		final HashSet<War3ID> unitHashSet = new HashSet<>();
 		unitHashSet.add(War3ID.fromString("ubpx"));
@@ -243,12 +232,12 @@ public final class War3ObjectDataChangeset {
 
 	public void renameids(final ObjectMap map, final boolean isOriginal) {
 		final War3ID nameId = getNameField();
-		final List<War3ID> idsToRemoveFromMap = new ArrayList<>();
+		final List<War3ID> idsToRemoveFromMap = new java.util.ArrayList<>();
 		final Map<War3ID, ObjectDataChangeEntry> idsToObjectsForAddingToMap = new HashMap<>();
-        for (final Entry<War3ID, ObjectDataChangeEntry> entry : map) {
+        for (final Map.Entry<War3ID, ObjectDataChangeEntry> entry : map) {
             final ObjectDataChangeEntry current = entry.getValue();
-            final ListView<Change> nameEntry = current.getChanges().get(nameId);
-            if ((nameEntry != null) && !CollectionView.Util.isEmpty(nameEntry)) {
+            final List<Change> nameEntry = current.getChanges().get(nameId);
+            if ((nameEntry != null) && !nameEntry.isEmpty()) {
                 final Change firstNameChange = nameEntry.get(0);
                 int pos = firstNameChange.getStrval().lastIndexOf("::");
                 if ((pos != -1) && (firstNameChange.getStrval().length() > (pos + 2))) {
@@ -264,7 +253,7 @@ public final class War3ObjectDataChangeset {
                         firstNameChange.setStrval(firstNameChange.getStrval().substring(0, pos));
                         if (existingObjectWithMatchingId != null) {
                             // obj.cpp: carry over all changes
-							for (Entry<War3ID, List<Change>> changeIteratorNext : current.getChanges()) {
+							for (Map.Entry<War3ID, List<Change>> changeIteratorNext : current.getChanges()) {
 								final War3ID copiedChangeId = changeIteratorNext.getKey();
 								List<Change> changeListForFieldToOverwrite = existingObjectWithMatchingId.getChanges()
 										.get(copiedChangeId);
@@ -333,7 +322,7 @@ public final class War3ObjectDataChangeset {
 		for (final War3ID id : idsToRemoveFromMap) {
 			map.remove(id);
 		}
-		for (final MapView.Entry<War3ID, ObjectDataChangeEntry> entry : idsToObjectsForAddingToMap) {
+		for (final Map.Entry<War3ID, ObjectDataChangeEntry> entry : idsToObjectsForAddingToMap.entrySet()) {
 			map.put(entry.getKey(), entry.getValue());
 		}
 	}
@@ -383,7 +372,7 @@ public final class War3ObjectDataChangeset {
 
 	public void mergetable(final ObjectMap target, final ObjectMap targetCustom, final ObjectMap source,
 			final CollisionHandling collisionHandling) {
-		for (Entry<War3ID, ObjectDataChangeEntry> sourceObject : source) {
+		for (Map.Entry<War3ID, ObjectDataChangeEntry> sourceObject : source) {
 			if (target.containsKey(sourceObject.getKey())) {
 				// obj.cpp: we have a collision
 				War3ID oldId;
@@ -411,7 +400,7 @@ public final class War3ObjectDataChangeset {
 						break;
 					default:// merge
 						final ObjectDataChangeEntry targetObject = target.get(sourceObject.getKey());
-						for (final Entry<War3ID, List<Change>> sourceUnitField : sourceObject.getValue()
+						for (final Map.Entry<War3ID, List<Change>> sourceUnitField : sourceObject.getValue()
 								.getChanges()) {
 							for (final Change sourceChange : sourceUnitField.getValue()) {
 								List<Change> targetChanges = targetObject.getChanges().get(sourceUnitField.getKey());
@@ -645,14 +634,13 @@ public final class War3ObjectDataChangeset {
 
 	public boolean load(final File file, final WTS wts, final boolean inlineWTS) throws IOException {
 		try (BlizzardDataInputStream inputStream = new BlizzardDataInputStream(new FileInputStream(file))) {
-			final boolean result = load(inputStream, wts, inlineWTS);
-			return result;
+			return load(inputStream, wts, inlineWTS);
 		}
 	}
 
 	public static void inlineWTSTable(final ObjectMap map, final WTS wts) {
-		for (final MapView.Entry<War3ID, ObjectDataChangeEntry> entry : map) {
-			for (final MapView.Entry<War3ID, List<Change>> changes : entry.getValue().getChanges()) {
+		for (final Map.Entry<War3ID, ObjectDataChangeEntry> entry : map) {
+			for (final Map.Entry<War3ID, List<Change>> changes : entry.getValue().getChanges()) {
 				for (final Change change : changes.getValue()) {
 					if ((change.getStrval().length() > 8) && "TRIGSTR_".equals(change.getStrval().substring(0, 8))) {
 						final int key = getWTSValue(change);
@@ -694,10 +682,10 @@ public final class War3ObjectDataChangeset {
 		int count;
 		count = map.size();
 		outputStream.writeInt(count);
-		for (final MapView.Entry<War3ID, ObjectDataChangeEntry> entry : map) {
+		for (final Map.Entry<War3ID, ObjectDataChangeEntry> entry : map) {
 			final ObjectDataChangeEntry cl = entry.getValue();
 			int totalSize = 0;
-			for (final MapView.Entry<War3ID, List<Change>> changeEntry : cl.getChanges()) {
+			for (final Map.Entry<War3ID, List<Change>> changeEntry : cl.getChanges()) {
 				totalSize += changeEntry.getValue().size();
 			}
 			if ((totalSize > 0) || !isOriginal) {
@@ -705,7 +693,7 @@ public final class War3ObjectDataChangeset {
 				saveWriteChars(outputStream, cl.getNewId().asStringValue().toCharArray());
 				count = totalSize;// cl.getChanges().size();
 				outputStream.writeInt(count);
-				for (final MapView.Entry<War3ID, List<Change>> changes : entry.getValue().getChanges()) {
+				for (final Map.Entry<War3ID, List<Change>> changes : entry.getValue().getChanges()) {
 					for (final Change change : changes.getValue()) {
 						saveWriteChars(outputStream, change.getId().asStringValue().toCharArray());
 						outputStream.writeInt(change.getVartype());

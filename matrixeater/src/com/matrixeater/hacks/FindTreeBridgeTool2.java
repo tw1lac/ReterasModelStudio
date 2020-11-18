@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Set;
 
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.mpq.MpqCodebase.LoadedMPQ;
@@ -24,8 +24,6 @@ import com.hiveworkshop.wc3.units.Warcraft3MapObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
-
-import mpq.MPQException;
 
 public class FindTreeBridgeTool2 {
 	public static final War3ID UABI = War3ID.fromString("uabi");
@@ -43,7 +41,7 @@ public class FindTreeBridgeTool2 {
 	}
 
 	public static void main(final String[] args) {
-		final SetView<String> mergedListfile = MpqCodebase.get().getMergedListfile();
+		final Set<String> mergedListfile = MpqCodebase.get().getMergedListfile();
 		for (String gameFile : mergedListfile) {
 			gameFile = gameFile.toLowerCase();
 			if ((gameFile.endsWith(".w3m") || gameFile.endsWith(".w3x"))) {

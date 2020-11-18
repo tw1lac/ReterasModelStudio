@@ -8,10 +8,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
-import com.etheller.collections.HashMap;
-import com.etheller.collections.ListView;
-import com.etheller.collections.Map;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
@@ -120,7 +119,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 	@Override
 	public UndoAction addSelectedBoneSuffix(final String name) {
 		final Set<IdObject> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<RenameBoneAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<RenameBoneAction> actions = new ArrayList<>();
 		for (final IdObject bone : selection) {
 			final RenameBoneAction renameBoneAction = new RenameBoneAction(bone.getName(), bone.getName() + name, bone);
 			renameBoneAction.redo();
@@ -436,7 +435,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 	}
 
 	@Override
-	protected UndoAction buildHideComponentAction(final ListView<? extends SelectableComponent> selectableComponents,
+	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents,
 			final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<IdObject> previousSelection = new ArrayList<>(selectionManager.getSelection());
 		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(model.getModel().getIdObjects());

@@ -23,12 +23,12 @@ import java.util.List;
 public class Material implements MaterialView {
 	public static final String SHADER_HD_DEFAULT_UNIT = "Shader_HD_DefaultUnit";
 	public static int teamColor = 0;
-	com.etheller.collections.ArrayList<Layer> layers;
+	ArrayList<Layer> layers;
 	private int priorityPlane = 0;
-	// "flags" are my way of dealing with all the stuff that I
-	// forget/don't bother with: "Unshaded," "Unfogged,"
-	// "TwoSided," "CoordId X," actually CoordId was
-	// moved into its own field
+	// "flags" are my way of dealing with all the stuff that I forget/don't bother with:
+	// "Unshaded," "Unfogged,"
+	// "TwoSided," "CoordId X,"
+	// actually CoordId was  moved into its own field
 	private ArrayList<String> flags = new ArrayList<>();
 	private String shaderString;
 
@@ -84,26 +84,24 @@ public class Material implements MaterialView {
 	}
 
 	public Material(final Layer lay) {
-		layers = new com.etheller.collections.ArrayList<>();
+		layers = new ArrayList<>();
 		flags = new ArrayList<>();
 		layers.add(lay);
 	}
 
 	public Material(final List<Layer> layers) {
-		this.layers = new com.etheller.collections.ArrayList<>();
-		for (final Layer layer : layers) {
-			this.layers.add(layer);
-		}
+		this.layers = new ArrayList<>();
+		this.layers.addAll(layers);
 		// this.layers.addAll(layers);
 	}
 
 	private Material() {
-		layers = new com.etheller.collections.ArrayList<>();
+		layers = new ArrayList<>();
 		flags = new ArrayList<>();
 	}
 
 	public Material(final Material other) {
-		layers = new com.etheller.collections.ArrayList<>();
+		layers = new ArrayList<>();
 		flags = new ArrayList<>(other.flags);
 		for (final Layer lay : other.layers) {
 			layers.add(new Layer(lay));
@@ -148,11 +146,11 @@ public class Material implements MaterialView {
 	}
 
 	@Override
-	public com.etheller.collections.ArrayList<Layer> getLayers() {
+	public ArrayList<Layer> getLayers() {
 		return layers;
 	}
 
-	public void setLayers(final com.etheller.collections.ArrayList<Layer> layers) {
+	public void setLayers(final ArrayList<Layer> layers) {
 		this.layers = layers;
 	}
 
@@ -175,8 +173,7 @@ public class Material implements MaterialView {
 
 	public void updateTextureAnims(final ArrayList<TextureAnim> list) {
 		final int sz = layers.size();
-		for (int i = 0; i < sz; i++) {
-			final Layer lay = layers.get(i);
+		for (final Layer lay : layers) {
 			if (lay.hasTexAnim()) {
 				lay.setTextureAnim(list);
 			}
@@ -300,14 +297,14 @@ public class Material implements MaterialView {
 			writer.println(tabs + "\t" + flag + ",");
 		}
 		boolean useCoords = false;
-		for (int i = 0; i < layers.size(); i++) {
-			useCoords = layers.get(i).hasCoordId();
+		for (Layer value : layers) {
+			useCoords = value.hasCoordId();
 			if (useCoords) {
 				break;
 			}
 		}
-		for (int i = 0; i < layers.size(); i++) {
-			layers.get(i).printTo(writer, tabHeight + 1, useCoords, version);
+		for (Layer layer : layers) {
+			layer.printTo(writer, tabHeight + 1, useCoords, version);
 		}
 		writer.println(tabs + "}");
 	}
@@ -327,8 +324,7 @@ public class Material implements MaterialView {
 			}
 			return newImage;
 		} else {
-			for (int i = 0; i < layers.size(); i++) {
-				final Layer lay = layers.get(i);
+			for (final Layer lay : layers) {
 				final Bitmap tex = lay.firstTexture();
 				final String path = getRenderableTexturePath(tex);
 				BufferedImage newImage;

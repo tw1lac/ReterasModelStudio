@@ -1,12 +1,13 @@
 package com.etheller.util;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.etheller.collections.HashSet;
-import com.etheller.collections.Set;
+//import com.etheller.collections.HashSet;
+//import com.etheller.collections.Set;
 
 public abstract class SubscriberSetNotifier<LISTENER_TYPE> {
-	protected final Set<LISTENER_TYPE> set; // bad for iteration but there
-											// should never be a dude subscribed
-											// 2x
+	protected final Set<LISTENER_TYPE> set;
+	// bad for iteration but there should never be a dude subscribed 2x
 
 	public SubscriberSetNotifier() {
 		set = new HashSet<>();

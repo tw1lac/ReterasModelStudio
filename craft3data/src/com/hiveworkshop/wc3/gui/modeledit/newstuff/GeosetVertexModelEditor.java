@@ -3,14 +3,8 @@ package com.hiveworkshop.wc3.gui.modeledit.newstuff;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import com.etheller.collections.ListView;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.FaceCreationException;
@@ -223,7 +217,7 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 	}
 
 	@Override
-	protected UndoAction buildHideComponentAction(final ListView<? extends SelectableComponent> selectableComponents,
+	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents,
 			final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<GeosetVertex> previousSelection = new ArrayList<>(selectionManager.getSelection());
 		final List<GeosetVertex> possibleVerticesToTruncate = new ArrayList<>();
@@ -320,7 +314,8 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 		if (needsGeosetAction) {
 			final NewGeosetAction newGeosetAction = new NewGeosetAction(solidWhiteGeoset, model.getModel(),
 					structureChangeListener);
-			action = new CompoundAction("add vertex", ListView.Util.of(newGeosetAction, drawVertexAction));
+			action = new CompoundAction("add vertex", Arrays.asList(newGeosetAction, drawVertexAction));
+//			action = new CompoundAction("add vertex", ListView.Util.of(newGeosetAction, drawVertexAction));
 		} else {
 			action = drawVertexAction;
 		}

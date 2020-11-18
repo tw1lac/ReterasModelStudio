@@ -1,12 +1,9 @@
 package com.matrixeater.hacks;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.mpq.MpqCodebase.LoadedMPQ;
-
-import mpq.MPQException;
 
 public class LemmeJustGrabAFile {
 	public static void main(final String[] args) {

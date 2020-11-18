@@ -1,17 +1,15 @@
 package com.hiveworkshop.wc3.jworldedit.triggers.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import com.etheller.collections.CollectionView;
-import com.etheller.collections.CollectionView.ForEach;
 import com.hiveworkshop.wc3.jworldedit.triggers.gui.TriggerTreeController;
 import com.hiveworkshop.wc3.resources.WEString;
 
 public final class TriggerEnvironment implements TriggerTreeController {
 	private String name;
 	private final List<TriggerCategory> categories;
-	private transient final DefaultTriggerNameFinder nameFinder = new DefaultTriggerNameFinder();
 
 	public TriggerEnvironment(final String name) {
 		this.name = name;
@@ -37,16 +35,31 @@ public final class TriggerEnvironment implements TriggerTreeController {
 		}
 		String triggerName;
 		int triggerNameIndex = 0;
+		boolean nameFound;
+		String s1 = WEString.getString("WESTRING_UNTITLEDTRIGGER");
 		do {
 			triggerNameIndex++;
-			triggerName = String.format("%s %s", WEString.getString("WESTRING_UNTITLEDTRIGGER"),
-					String.format("%3d", triggerNameIndex).replace(' ', '0'));
-			forEachTrigger(nameFinder.reset(triggerName));
-		} while (nameFinder.isNameFound());
+			String s2 = String.format("%3d", triggerNameIndex).replace(' ', '0');
+			triggerName = s1 + " " + s2;
+
+			nameFound = findName(triggerName);
+		} while (nameFound);
+
 		final TriggerImpl triggerImpl = new TriggerImpl(triggerName);
 		triggerImpl.setCategory(triggerCategory);
 		triggerCategory.getTriggers().add(0, triggerImpl);
 		return triggerImpl;
+	}
+
+	private boolean findName(String triggerName) {
+		for (final TriggerCategory category : categories) {
+			for (final Trigger trigger : category.getTriggers()) {
+				if (triggerName.equals(trigger.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -93,39 +106,6 @@ public final class TriggerEnvironment implements TriggerTreeController {
 		category.setName(name);
 	}
 
-	public void forEachTrigger(final ForEach<Trigger> triggerForEach) {
-		AllTriggers: for (final TriggerCategory category : categories) {
-			for (final Trigger trigger : category.getTriggers()) {
-				if (!triggerForEach.onEntry(trigger)) {
-					break AllTriggers;
-				}
-			}
-		}
-	}
-
-	private static final class DefaultTriggerNameFinder implements CollectionView.ForEach<Trigger> {
-		private String name;
-		private boolean nameFound = false;
-
-		public DefaultTriggerNameFinder reset(final String name) {
-			this.name = name;
-			this.nameFound = false;
-			return this;
-		}
-
-		@Override
-		public boolean onEntry(final Trigger trigger) {
-			if (name.equals(trigger.getName())) {
-				nameFound = true;
-				return false;
-			}
-			return true;
-		}
-
-		public boolean isNameFound() {
-			return nameFound;
-		}
-	}
 
 	@Override
 	public void deleteTrigger(final Trigger trigger) {

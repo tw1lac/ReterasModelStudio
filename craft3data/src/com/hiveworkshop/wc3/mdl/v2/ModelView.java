@@ -1,6 +1,6 @@
 package com.hiveworkshop.wc3.mdl.v2;
+import java.util.Set;
 
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.mdl.Camera;
 import com.hiveworkshop.wc3.mdl.Geoset;
 import com.hiveworkshop.wc3.mdl.IdObject;
@@ -12,13 +12,13 @@ public interface ModelView {
 
 	EditableModel getModel();
 
-	SetView<Geoset> getVisibleGeosets();
+	Set<Geoset> getVisibleGeosets();
 
-	SetView<Geoset> getEditableGeosets();
+	Set<Geoset> getEditableGeosets();
 
-	SetView<IdObject> getEditableIdObjects();
+	Set<IdObject> getEditableIdObjects();
 
-	SetView<Camera> getEditableCameras();
+	Set<Camera> getEditableCameras();
 
 	void addStateListener(ModelViewStateListener listener);
 

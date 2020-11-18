@@ -3,8 +3,8 @@ package com.matrixeater.hacks;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
-import com.etheller.collections.SetView;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdx.MdxUtils;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
@@ -14,7 +14,7 @@ import de.wc3data.stream.BlizzardDataInputStream;
 public class GetMeDatas4 {
 
 	public static void main(final String[] args) {
-		final SetView<String> mergedListfile = MpqCodebase.get().getMergedListfile();
+		final Set<String> mergedListfile = MpqCodebase.get().getMergedListfile();
 //		for (final String file : mergedListfile) {
 //			System.out.println(file);
 //		}

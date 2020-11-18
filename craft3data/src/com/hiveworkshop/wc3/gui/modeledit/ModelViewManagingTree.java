@@ -5,16 +5,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
 import java.util.Objects;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Collection;
+import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.Collection;
-import com.etheller.collections.HashMap;
-import com.etheller.collections.List;
-import com.etheller.collections.Map;
 import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditorManager;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.EditabilityToggleHandler;
@@ -40,15 +40,13 @@ public final class ModelViewManagingTree extends JCheckBoxTree {
 				final JCheckBoxTreeNode sourceNode = (JCheckBoxTreeNode) event.getSource();
 				final List<CheckableDisplayElement<?>> components = new ArrayList<>();
 				handleNodeRecursively(sourceNode, components);
-				final CheckableDisplayElementToggleHandler toggleHandler = new CheckableDisplayElementToggleHandler(
-						components);
+				final CheckableDisplayElementToggleHandler toggleHandler = new CheckableDisplayElementToggleHandler(components);
 				UndoAction showHideComponentAction;
 				if (isSelected(sourceNode)) {
 					showHideComponentAction = modelEditorManager.getModelEditor().showComponent(toggleHandler);
 				} else {
 					final Runnable refreshGUIRunnable = ModelViewManagingTree.this::reloadFromModelView;
-					showHideComponentAction = modelEditorManager.getModelEditor().hideComponent(components,
-							toggleHandler, refreshGUIRunnable);
+					showHideComponentAction = modelEditorManager.getModelEditor().hideComponent(components, toggleHandler, refreshGUIRunnable);
 				}
 				undoActionListener.pushAction(showHideComponentAction);
 			}
@@ -145,18 +143,14 @@ public final class ModelViewManagingTree extends JCheckBoxTree {
 			}
 			final JCheckBoxTreeNode parentTreeNode = nodeToTreeElement.get(parent);
 			if (parentTreeNode == null) {
-				List<JCheckBoxTreeNode> awaitingChildrenList = nodeToChildrenAwaitingLink.get(parent);
-				if (awaitingChildrenList == null) {
-					awaitingChildrenList = new ArrayList<>();
-					nodeToChildrenAwaitingLink.put(parent, awaitingChildrenList);
-				}
+				List<JCheckBoxTreeNode> awaitingChildrenList = nodeToChildrenAwaitingLink.computeIfAbsent(parent, k -> new ArrayList<>());
 				awaitingChildrenList.add(treeNode);
 			} else {
 				parentTreeNode.add(treeNode);
 			}
 			final List<JCheckBoxTreeNode> childrenNeedingLinkToCurrentNode = nodeToChildrenAwaitingLink.get(object);
 			if ((childrenNeedingLinkToCurrentNode != null)
-					&& !Collection.Util.isEmpty(childrenNeedingLinkToCurrentNode)) {
+					&& !childrenNeedingLinkToCurrentNode.isEmpty()) {
 				for (final JCheckBoxTreeNode child : childrenNeedingLinkToCurrentNode) {
 					treeNode.add(child);
 				}
@@ -176,8 +170,7 @@ public final class ModelViewManagingTree extends JCheckBoxTree {
 			root.add(cameras);
 		}
 
-		final DefaultTreeModel defaultTreeModel = new DefaultTreeModel(root);
-		return defaultTreeModel;
+		return new DefaultTreeModel(root);
 	}
 
 	private final class HighlightOnMouseoverListenerImpl implements MouseMotionListener, MouseListener {

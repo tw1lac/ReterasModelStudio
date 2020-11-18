@@ -9,10 +9,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
-import com.etheller.collections.HashMap;
-import com.etheller.collections.ListView;
-import com.etheller.collections.Map;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
@@ -134,7 +133,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 	@Override
 	public UndoAction addSelectedBoneSuffix(final String name) {
 		final Set<Vertex> selection = selectionManager.getSelection();
-		final com.etheller.collections.List<RenameBoneAction> actions = new com.etheller.collections.ArrayList<>();
+		final List<RenameBoneAction> actions = new ArrayList<>();
 		for (final IdObject bone : this.model.getEditableIdObjects()) {
 			if (selection.contains(bone.getPivotPoint())) {
 				final RenameBoneAction renameBoneAction = new RenameBoneAction(bone.getName(), bone.getName() + name,
@@ -543,7 +542,7 @@ public class PivotPointModelEditor extends AbstractModelEditor<Vertex> {
 	}
 
 	@Override
-	protected UndoAction buildHideComponentAction(final ListView<? extends SelectableComponent> selectableComponents,
+	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents,
 			final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<Vertex> previousSelection = new ArrayList<>(selectionManager.getSelection());
 		final List<Vertex> possibleVerticesToTruncate = new ArrayList<>();

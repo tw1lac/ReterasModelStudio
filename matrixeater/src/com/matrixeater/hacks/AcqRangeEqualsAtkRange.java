@@ -9,8 +9,6 @@ import com.hiveworkshop.wc3.units.Warcraft3MapObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 
-import mpq.MPQException;
-
 public class AcqRangeEqualsAtkRange {
 	private static final War3ID HERO_ABIL_LIST = War3ID.fromString("uhab");
 	private static final War3ID UNIT_NAME = War3ID.fromString("unam");

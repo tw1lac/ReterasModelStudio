@@ -4,8 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -17,8 +19,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import com.etheller.collections.ArrayList;
-import com.etheller.collections.List;
 import com.hiveworkshop.wc3.jworldedit.objects.sorting.AbstractSortingFolderTreeNode;
 import com.hiveworkshop.wc3.jworldedit.objects.sorting.PreModelCreationTreeNodeLinker;
 import com.hiveworkshop.wc3.jworldedit.objects.sorting.TreeNodeLinker;
@@ -249,8 +249,7 @@ public class UnitEditorTree extends JTree {
 	public MutableGameObject getSelectedGameObject() {
 		final DefaultMutableTreeNode o = (DefaultMutableTreeNode) getLastSelectedPathComponent();
 		if ((o != null) && (o.getUserObject() instanceof MutableGameObject)) {
-			final MutableGameObject obj = (MutableGameObject) o.getUserObject();
-			return obj;
+			return (MutableGameObject) o.getUserObject();
 		}
 		return null;
 	}

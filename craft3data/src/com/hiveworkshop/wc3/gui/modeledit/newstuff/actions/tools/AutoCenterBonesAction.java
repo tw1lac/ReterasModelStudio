@@ -1,8 +1,7 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools;
+import java.util.Map;
+import java.util.HashMap;
 
-import com.etheller.collections.HashMap;
-import com.etheller.collections.Map;
-import com.etheller.collections.MapView;
 import com.hiveworkshop.wc3.gui.modeledit.UndoAction;
 import com.hiveworkshop.wc3.mdl.Bone;
 import com.hiveworkshop.wc3.mdl.Vertex;
@@ -21,17 +20,15 @@ public final class AutoCenterBonesAction implements UndoAction {
 
 	@Override
 	public void undo() {
-		for (final MapView.Entry<Bone, Vertex> entry : boneToOldPosition) {
-			final Bone bone = entry.getKey();
-			bone.getPivotPoint().setTo(entry.getValue());
+		for (Bone bone: boneToOldPosition.keySet()){
+			bone.getPivotPoint().setTo(boneToOldPosition.get(bone));
 		}
 	}
 
 	@Override
 	public void redo() {
-		for (final MapView.Entry<Bone, Vertex> entry : boneToNewPosition) {
-			final Bone bone = entry.getKey();
-			bone.getPivotPoint().setTo(entry.getValue());
+		for (Bone bone: boneToNewPosition.keySet()){
+			bone.getPivotPoint().setTo(boneToNewPosition.get(bone));
 		}
 	}
 

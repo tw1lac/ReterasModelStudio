@@ -14,7 +14,6 @@ import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 
 import de.wc3data.stream.BlizzardDataOutputStream;
-import mpq.MPQException;
 
 public class GridHotkeyMaker {
 	private static final War3ID UNIT_BUTTON_X = War3ID.fromString("ubpx");

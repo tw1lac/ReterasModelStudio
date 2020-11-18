@@ -1,7 +1,6 @@
 package com.matrixeater.hacks.jass;
 
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
-import mpq.MPQException;
 
 import java.io.FileWriter;
 import java.io.IOException;
