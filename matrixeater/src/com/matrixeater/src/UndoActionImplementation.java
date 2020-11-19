@@ -1,13 +1,11 @@
 package com.matrixeater.src;
 
-import java.awt.event.ActionEvent;
-import java.util.NoSuchElementException;
-
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.NoSuchElementException;
 
 public final class UndoActionImplementation extends AbstractAction {
 	private final MainPanel mainPanel;
@@ -19,7 +17,7 @@ public final class UndoActionImplementation extends AbstractAction {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		final ModelPanel mpanel = mainPanel.currentModelPanel();
+		final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
 		if (mpanel != null) {
 			try {
 				mpanel.getUndoManager().undo();

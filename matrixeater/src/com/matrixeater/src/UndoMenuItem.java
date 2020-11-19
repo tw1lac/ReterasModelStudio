@@ -13,7 +13,7 @@ public class UndoMenuItem extends JMenuItem {
     @Override
     public String getText() {
         if (funcEnabled()) {
-            return "Undo " + mainPanel.currentModelPanel().getUndoManager().getUndoText();// +"
+            return "Undo " + ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getUndoManager().getUndoText();// +"
             // Ctrl+Z";
         } else {
             return "Can't undo";// +" Ctrl+Z";
@@ -22,7 +22,7 @@ public class UndoMenuItem extends JMenuItem {
 
     public boolean funcEnabled() {
         try {
-            return !mainPanel.currentModelPanel().getUndoManager().isUndoListEmpty();
+            return !ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getUndoManager().isUndoListEmpty();
         } catch (final NullPointerException e) {
             return false;
         }

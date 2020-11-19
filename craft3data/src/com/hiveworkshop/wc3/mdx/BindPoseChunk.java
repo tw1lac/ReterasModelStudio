@@ -1,9 +1,9 @@
 package com.hiveworkshop.wc3.mdx;
 
-import java.io.IOException;
-
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
+
+import java.io.IOException;
 
 public class BindPoseChunk {
 	public static final String key = "BPOS";
@@ -25,8 +25,8 @@ public class BindPoseChunk {
 		out.writeInt(getSize() - 8);// ChunkSize
 
 		out.writeInt(bindPose.length);
-		for (int i = 0; i < bindPose.length; i++) {
-			float[] toSave = bindPose[i];
+		for (float[] floats : bindPose) {
+			float[] toSave = floats;
 			if (toSave == null) {
 				toSave = new float[12];
 			}

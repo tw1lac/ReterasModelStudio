@@ -24,7 +24,7 @@ public class ToolBar {
         mainPanel.toolbar = new JToolBar(JToolBar.HORIZONTAL);
         mainPanel.toolbar.setFloatable(false);
 
-        addToolbarIcon(mainPanel.toolbar, "New", "new.png", mainPanel::newModel);
+        addToolbarIcon(mainPanel.toolbar, "New", "new.png", () -> NewModelPanel.newModel(mainPanel));
 
         addToolbarIcon(mainPanel.toolbar, "Open", "open.png", mainPanel::onClickOpen);
 
@@ -111,7 +111,7 @@ public class ToolBar {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 try {
-                    final ModelPanel currentModelPanel = mainPanel.currentModelPanel();
+                    final ModelPanel currentModelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
                     if (currentModelPanel != null) {
                         currentModelPanel.getUndoManager().pushAction(
                                 currentModelPanel.getModelEditorManager().getModelEditor().snapSelectedVertices());

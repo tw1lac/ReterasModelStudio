@@ -368,7 +368,7 @@ public class FileUtils {
             try (BlizzardDataInputStream in = new BlizzardDataInputStream(new FileInputStream(f))) {
                 final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
                 model.setFileRef(f);
-                temp = mainPanel.createModelPanel(model, icon, false);
+                temp = NewModelPanel.createModelPanel(mainPanel, model, icon, false);
             } catch (final IOException e) {
                 e.printStackTrace();
                 ExceptionPopup.display(e);
@@ -378,16 +378,16 @@ public class FileUtils {
             final Build builder = new Build();
             try {
                 final Parse obj = new Parse(builder, f.getPath());
-                temp = mainPanel.createModelPanel(builder.createMDL(), icon, false);
+                temp = NewModelPanel.createModelPanel(mainPanel, builder.createMDL(), icon, false);
             } catch (final IOException e) {
                 ExceptionPopup.display(e);
                 e.printStackTrace();
             }
         } else {
-            temp = mainPanel.createModelPanel(EditableModel.read(f), icon, false);
+            temp = NewModelPanel.createModelPanel(mainPanel, EditableModel.read(f), icon, false);
             temp.setFile(f);
         }
-        mainPanel.loadModel(temporary, selectNewTab, temp);
+        ModelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     public static void loadStreamMdx(MainPanel mainPanel, final InputStream f, final boolean temporary, final boolean selectNewTab,
@@ -396,13 +396,13 @@ public class FileUtils {
         try (BlizzardDataInputStream in = new BlizzardDataInputStream(f)) {
             final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
             model.setFileRef(null);
-            temp = mainPanel.createModelPanel(model, icon, false);
+            temp = NewModelPanel.createModelPanel(mainPanel, model, icon, false);
         } catch (final IOException e) {
             e.printStackTrace();
             ExceptionPopup.display(e);
             throw new RuntimeException("Reading mdx failed");
         }
-        mainPanel.loadModel(temporary, selectNewTab, temp);
+        ModelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     public static void loadBLPPathAsModel(MainPanel mainPanel, final String filepath) {
@@ -448,7 +448,7 @@ public class FileUtils {
         blankTextureModel.add(new Animation("Stand", 0, 1000));
         blankTextureModel.doSavePreps();
 
-        mainPanel.loadModel(workingDirectory == null, true,
-                mainPanel.createModelPanel(blankTextureModel, GlobalIcons.ORANGE_ICON, true));
+        ModelPanelUgg.loadModel(mainPanel, workingDirectory == null, true,
+                NewModelPanel.createModelPanel(mainPanel, blankTextureModel, GlobalIcons.ORANGE_ICON, true));
     }
 }

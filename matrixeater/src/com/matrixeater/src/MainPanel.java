@@ -5,10 +5,8 @@ import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.ControllableTimeBoundProvider;
-import com.hiveworkshop.wc3.gui.animedit.TimeBoundChooserPanel;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.animedit.TimeSliderPanel;
-import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
@@ -25,7 +23,10 @@ import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.gui.mpqbrowser.MPQBrowser;
 import com.hiveworkshop.wc3.jworldedit.models.BetterUnitEditorModelSelector;
-import com.hiveworkshop.wc3.jworldedit.objects.*;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTreeBrowser;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitTabTreeBrowserBuilder;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdx.MdxModel;
@@ -41,39 +42,32 @@ import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.wc3.units.objectdata.WTSFile;
-import com.hiveworkshop.wc3.units.objectdata.War3ID;
 import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
-import com.hiveworkshop.wc3.util.ModelUtils;
 import com.matrixeater.imp.AnimationTransfer;
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
-import net.infonode.docking.*;
+import net.infonode.docking.DockingWindow;
+import net.infonode.docking.RootWindow;
+import net.infonode.docking.TabWindow;
+import net.infonode.docking.View;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.tabbedpanel.TabAreaVisiblePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabBorderSizePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabSizePolicy;
-import net.miginfocom.swing.MigLayout;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.lwjgl.util.vector.Quaternion;
 
 import javax.imageio.ImageIO;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -129,11 +123,11 @@ public class MainPanel extends JPanel
     final View leftView;
     final View bottomView;
     final View perspectiveView;
-    private final View timeSliderView;
+    final View timeSliderView;
     private final View hackerView;
-    private final View previewView;
-    private final View creatorView;
-    private final View animationControllerView;
+    final View previewView;
+    final View creatorView;
+    final View animationControllerView;
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
     final JTextField[] mouseCoordDisplay = new JTextField[3];
@@ -145,12 +139,12 @@ public class MainPanel extends JPanel
     JToolBar toolbar;
 
     final TimeSliderPanel timeSliderPanel;
-    private final JButton setKeyframe;
-    private final JButton setTimeBounds;
-    private final ModeButton animationModeButton;
+    final JButton setKeyframe;
+    final JButton setTimeBounds;
+    final ModeButton animationModeButton;
     boolean animationModeState = false;
 
-    private final ActiveViewportWatcher activeViewportWatcher = new ActiveViewportWatcher();
+    final ActiveViewportWatcher activeViewportWatcher = new ActiveViewportWatcher();
 
     final WarcraftDataSourceChangeNotifier directoryChangeNotifier = new WarcraftDataSourceChangeNotifier();
 
@@ -165,305 +159,6 @@ public class MainPanel extends JPanel
     final ClonedNodeNamePicker namePicker = new ClonedNodeNamePickerImplementation(this);
 
 
-    AbstractAction cloneAction() {
-        return new AbstractAction("CloneSelection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    try {
-                        mpanel.getUndoManager().pushAction(
-                                mpanel.getModelEditorManager().getModelEditor().cloneSelectedComponents(namePicker));
-                    } catch (final Exception exc) {
-                        ExceptionPopup.display(exc);
-                    }
-                }
-                refreshUndo();
-                repaintSelfAndChildren(mpanel);
-            }
-        };
-    }
-
-    AbstractAction deleteAction() {
-        return new AbstractAction("Delete") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    if (animationModeState) {
-                        timeSliderPanel.deleteSelectedKeyframes();
-                    } else {
-                        mpanel.getUndoManager()
-                                .pushAction(mpanel.getModelEditorManager().getModelEditor().deleteSelectedComponents());
-                    }
-                }
-                repaintSelfAndChildren(mpanel);
-            }
-        };
-    }
-
-    AbstractAction selectAllAction() {
-        return new AbstractAction("Select All") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().selectAll());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction invertSelectAction() {
-        return new AbstractAction("Invert Selection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().invertSelection());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction rigAction() {
-        return new AbstractAction("Rig") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    boolean valid = false;
-                    for (final Vertex v : mpanel.getModelEditorManager().getSelectionView().getSelectedVertices()) {
-                        final int index = mpanel.getModel().getPivots().indexOf(v);
-                        if (index != -1) {
-                            if (index < mpanel.getModel().getIdObjects().size()) {
-                                final IdObject node = mpanel.getModel().getIdObject(index);
-                                if ((node instanceof Bone) && !(node instanceof Helper)) {
-                                    valid = true;
-                                }
-                            }
-                        }
-                    }
-                    if (valid) {
-                        mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().rig());
-                    } else {
-                        System.err.println("NOT RIGGING, NOT VALID");
-                    }
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction expandSelectionAction() {
-        return new AbstractAction("Expand Selection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().expandSelection());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction snapNormalsAction() {
-        return new AbstractAction("Snap Normals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().snapNormals());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction snapVerticesAction() {
-        return new AbstractAction("Snap Vertices") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager()
-                            .pushAction(mpanel.getModelEditorManager().getModelEditor().snapSelectedVertices());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction recalculateNormalsAction() {
-        return new AbstractAction("RecalculateNormals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().recalcNormals());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction recalculateExtentsAction() {
-        return new AbstractAction("RecalculateExtents") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    final JPanel messagePanel = new JPanel(new MigLayout());
-                    messagePanel.add(new JLabel("This will calculate the extents of all model components. Proceed?"),
-                            "wrap");
-                    messagePanel.add(new JLabel("(It may destroy existing extents)"), "wrap");
-                    final JRadioButton considerAllBtn = new JRadioButton("Consider all geosets for calculation");
-                    final JRadioButton considerCurrentBtn = new JRadioButton(
-                            "Consider current editable geosets for calculation");
-                    final ButtonGroup buttonGroup = new ButtonGroup();
-                    buttonGroup.add(considerAllBtn);
-                    buttonGroup.add(considerCurrentBtn);
-                    considerAllBtn.setSelected(true);
-                    messagePanel.add(considerAllBtn, "wrap");
-                    messagePanel.add(considerCurrentBtn, "wrap");
-                    final int userChoice = JOptionPane.showConfirmDialog(MainPanel.this, messagePanel, "Message",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (userChoice == JOptionPane.YES_OPTION) {
-                        mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor()
-                                .recalcExtents(considerCurrentBtn.isSelected()));
-                    }
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction flipAllUVsAxisAction(String s) {
-        return new AbstractAction(s) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                for (final Geoset geo : currentMDL().getGeosets()) {
-                    for (final UVLayer layer : geo.getUVLayers()) {
-                        for (int i = 0; i < layer.numTVerteces(); i++) {
-                            final TVertex tvert = layer.getTVertex(i);
-                            if(s.endsWith("U")){
-                                tvert.x = 1.0 - tvert.x;
-                            }else {
-                                tvert.y = 1.0 - tvert.y;
-                            }
-                        }
-                    }
-                }
-                repaint();
-            }
-        };
-    }
-
-    static AbstractAction inverseAllUVsAction(final MainPanel mainPanel) {
-        return new AbstractAction("Swap UVs U for V") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                // TODO this should be an action
-                for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
-                    for (final UVLayer layer : geo.getUVLayers()) {
-                        for (int i = 0; i < layer.numTVerteces(); i++) {
-                            final TVertex tvert = layer.getTVertex(i);
-                            final double temp = tvert.x;
-                            tvert.x = tvert.y;
-                            tvert.y = temp;
-                        }
-                    }
-                }
-                mainPanel.repaint();
-            }
-        };
-    }
-
-//    AbstractAction inverseAllUVsAction() {
-//        return new AbstractAction("Swap UVs U for V") {
-//            @Override
-//            public void actionPerformed(final ActionEvent e) {
-//                // TODO this should be an action
-//                for (final Geoset geo : currentMDL().getGeosets()) {
-//                    for (final UVLayer layer : geo.getUVLayers()) {
-//                        for (int i = 0; i < layer.numTVerteces(); i++) {
-//                            final TVertex tvert = layer.getTVertex(i);
-//                            final double temp = tvert.x;
-//                            tvert.x = tvert.y;
-//                            tvert.y = temp;
-//                        }
-//                    }
-//                }
-//                repaint();
-//            }
-//        };
-//    }
-
-    AbstractAction mirrorAxisAction(String s) {
-        byte i = 0;
-        if(s.endsWith("Y")){
-            i = 1;
-        }else if (s.endsWith("Z")){
-            i = 2;
-        }
-        byte finalI = i;
-        return new AbstractAction(s) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    final Vertex selectionCenter = mpanel.getModelEditorManager().getModelEditor().getSelectionCenter();
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().mirror(finalI,
-                            mirrorFlip.isSelected(), selectionCenter.x, selectionCenter.y, selectionCenter.z));
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction insideOutAction() {
-        return new AbstractAction("Inside Out") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedFaces());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction insideOutNormalsAction() {
-        return new AbstractAction("Inside Out Normals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.getUndoManager()
-                            .pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedNormals());
-                }
-                repaint();
-            }
-        };
-    }
-
-    AbstractAction viewMatricesAction() {
-        return new AbstractAction("View Matrices") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = currentModelPanel();
-                if (mpanel != null) {
-                    mpanel.viewMatrices();
-                }
-                repaint();
-            }
-        };
-    }
-
     final AbstractAction openAnimationViewerAction;
     final AbstractAction openAnimationControllerAction;
     final AbstractAction openModelingTabAction;
@@ -476,194 +171,18 @@ public class MainPanel extends JPanel
     final AbstractAction openToolsAction;
     final AbstractAction openModelDataContentsViewAction;
     final AbstractAction hackerViewAction;
-    final AbstractAction openPreferencesAction = new AbstractAction("Open Preferences") {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final ProgramPreferences programPreferences = new ProgramPreferences();
-            programPreferences.loadFrom(prefs);
-            final List<DataSourceDescriptor> priorDataSources = SaveProfile.get().getDataSources();
-            final ProgramPreferencesPanel programPreferencesPanel = new ProgramPreferencesPanel(programPreferences,
-                    priorDataSources);
-            // final JFrame frame = new JFrame("Preferences");
-            // frame.setIconImage(MainFrame.frame.getIconImage());
-            // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            // frame.setContentPane(programPreferencesPanel);
-            // frame.pack();
-            // frame.setLocationRelativeTo(MainPanel.this);
-            // frame.setVisible(true);
-
-            final int ret = JOptionPane.showConfirmDialog(MainPanel.this, programPreferencesPanel, "Preferences",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            if (ret == JOptionPane.OK_OPTION) {
-                prefs.loadFrom(programPreferences);
-                final List<DataSourceDescriptor> dataSources = programPreferencesPanel.getDataSources();
-                final boolean changedDataSources = (dataSources != null) && !dataSources.equals(priorDataSources);
-                if (changedDataSources) {
-                    SaveProfile.get().setDataSources(dataSources);
-                }
-                SaveProfile.save();
-                if (changedDataSources) {
-                    dataSourcesChanged();
-                }
-                updateUIFromProgramPreferences();
-            }
-        }
-    };
-    final AbstractAction openMPQViewerAction = new AbstractAction("Open MPQ Browser") {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final View view = createMPQBrowser();
-            rootWindow.setWindow(new SplitWindow(true, 0.75f, rootWindow.getWindow(), view));
-        }
-    };
-    final AbstractAction openUnitViewerAction = new AbstractAction("Open Unit Browser") {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final UnitEditorTree unitEditorTree = createUnitEditorTree();
-            rootWindow.setWindow(new SplitWindow(true, 0.75f, rootWindow.getWindow(),
-                    new View("Unit Browser",
-                            new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
-                            new JScrollPane(unitEditorTree))));
-        }
-    };
-    final AbstractAction openDoodadViewerAction = new AbstractAction("Open Doodad Browser") {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final UnitEditorTree unitEditorTree = new UnitEditorTree(getDoodadData(), new DoodadTabTreeBrowserBuilder(),
-                    getUnitEditorSettings(), WorldEditorDataType.DOODADS);
-            unitEditorTree.selectFirstUnit();
-            // final FloatingWindow floatingWindow =
-            // rootWindow.createFloatingWindow(rootWindow.getLocation(),
-            // mpqBrowser.getPreferredSize(),
-            // new View("MPQ Browser",
-            // new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16,
-            // Image.SCALE_FAST)),
-            // mpqBrowser));
-            // floatingWindow.getTopLevelAncestor().setVisible(true);
-            unitEditorTree.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(final MouseEvent e) {
-                    try {
-                        if (e.getClickCount() >= 2) {
-                            final TreePath currentUnitTreePath = unitEditorTree.getSelectionPath();
-                            if (currentUnitTreePath != null) {
-                                final DefaultMutableTreeNode o = (DefaultMutableTreeNode) currentUnitTreePath
-                                        .getLastPathComponent();
-                                if (o.getUserObject() instanceof MutableGameObject) {
-                                    final MutableGameObject obj = (MutableGameObject) o.getUserObject();
-                                    final int numberOfVariations = obj.getFieldAsInteger(War3ID.fromString("dvar"), 0);
-                                    if (numberOfVariations > 1) {
-                                        for (int i = 0; i < numberOfVariations; i++) {
-                                            final String path = convertPathToMDX(
-                                                    obj.getFieldAsString(War3ID.fromString("dfil"), 0) + i + ".mdl");
-                                            final String portrait = ModelUtils.getPortrait(path);
-                                            final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
-                                                    .getIcon(obj, WorldEditorDataType.DOODADS)
-                                                    .getScaledInstance(16, 16, Image.SCALE_DEFAULT));
-
-                                            System.out.println(path);
-                                            FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(path), true, i == 0,
-                                                    icon);
-                                            if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                                                FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(portrait), true,
-                                                        false, icon);
-                                            }
-                                        }
-                                    } else {
-                                        final String path = convertPathToMDX(
-                                                obj.getFieldAsString(War3ID.fromString("dfil"), 0));
-                                        final String portrait = ModelUtils.getPortrait(path);
-                                        final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
-                                                .getIcon(obj, WorldEditorDataType.DOODADS)
-                                                .getScaledInstance(16, 16, Image.SCALE_DEFAULT));
-                                        System.out.println(path);
-                                        FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(path), true, true, icon);
-                                        if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                                            FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(portrait), true, false,
-                                                    icon);
-                                        }
-                                    }
-                                    toolsMenu.getAccessibleContext().setAccessibleDescription(
-                                            "Allows the user to control which parts of the model are displayed for editing.");
-                                    toolsMenu.setEnabled(true);
-                                }
-                            }
-                        }
-                    } catch (final Exception exc) {
-                        exc.printStackTrace();
-                        ExceptionPopup.display(exc);
-                    }
-                }
-            });
-            rootWindow.setWindow(new SplitWindow(true, 0.75f, rootWindow.getWindow(),
-                    new View("Doodad Browser",
-                            new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
-                            new JScrollPane(unitEditorTree))));
-        }
-    };
-    final AbstractAction openHiveViewerAction = new AbstractAction("Open Hive Browser") {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
-            panel.add(BorderLayout.BEFORE_FIRST_LINE, new JLabel(POWERED_BY_HIVE));
-            // final JPanel resourceFilters = new JPanel();
-            // resourceFilters.setBorder(BorderFactory.createTitledBorder("Resource
-            // Filters"));
-            // panel.add(BorderLayout.BEFORE_LINE_BEGINS, resourceFilters);
-            // resourceFilters.add(new JLabel("Resource Type"));
-            // resourceFilters.add(new JComboBox<>(new String[] { "Any" }));
-            final JList<String> view = new JList<>(
-                    new String[]{"Bongo Bongo (Phantom Shadow Beast)", "Other Model", "Other Model"});
-            view.setCellRenderer(new DefaultListCellRenderer() {
-                @Override
-                public Component getListCellRendererComponent(final javax.swing.JList<?> list, final Object value,
-                                                              final int index, final boolean isSelected, final boolean cellHasFocus) {
-                    final Component listCellRendererComponent = super.getListCellRendererComponent(list, value, index,
-                            isSelected, cellHasFocus);
-                    final ImageIcon icon = new ImageIcon(MainPanel.class.getResource("ImageBin/deleteme.png"));
-                    setIcon(new ImageIcon(icon.getImage().getScaledInstance(48, 32, Image.SCALE_DEFAULT)));
-                    return listCellRendererComponent;
-                }
-            });
-            panel.add(BorderLayout.BEFORE_LINE_BEGINS, new JScrollPane(view));
-
-            final JPanel tags = new JPanel();
-            tags.setBorder(BorderFactory.createTitledBorder("Tags"));
-            tags.setLayout(new GridLayout(30, 1));
-            tags.add(new JCheckBox("Results must include all selected tags"));
-            tags.add(new JSeparator());
-            tags.add(new JLabel("Types (Models)"));
-            tags.add(new JSeparator());
-            tags.add(new JCheckBox("Building"));
-            tags.add(new JCheckBox("Doodad"));
-            tags.add(new JCheckBox("Item"));
-            tags.add(new JCheckBox("User Interface"));
-            panel.add(BorderLayout.CENTER, tags);
-            // final FloatingWindow floatingWindow =
-            // rootWindow.createFloatingWindow(rootWindow.getLocation(),
-            // mpqBrowser.getPreferredSize(),
-            // new View("MPQ Browser",
-            // new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16,
-            // Image.SCALE_FAST)),
-            // mpqBrowser));
-            // floatingWindow.getTopLevelAncestor().setVisible(true);
-            rootWindow.setWindow(new SplitWindow(true, 0.75f, rootWindow.getWindow(), new View("Hive Browser",
-                    new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)), panel)));
-        }
-    };
 
     ToolbarButtonGroup<SelectionItemTypes> selectionItemTypeGroup;
     ToolbarButtonGroup<SelectionMode> selectionModeGroup;
     ToolbarButtonGroup<ToolbarActionButtonType> actionTypeGroup;
     final ModelStructureChangeListener modelStructureChangeListener;
-    private final ViewportTransferHandler viewportTransferHandler;
+    final ViewportTransferHandler viewportTransferHandler;
     final RootWindow rootWindow;
-    private final View viewportControllerWindowView;
-    private final View toolView;
-    private final View modelDataView;
-    private final View modelComponentView;
-    private ControllableTimeBoundProvider timeBoundProvider;
+    final View viewportControllerWindowView;
+    final View toolView;
+    final View modelDataView;
+    final View modelComponentView;
+    ControllableTimeBoundProvider timeBoundProvider;
     ActivityDescriptor currentActivity;
 
     public MainPanel() {
@@ -671,68 +190,7 @@ public class MainPanel extends JPanel
 
         StringViewMap viewMap = new StringViewMap();
         rootWindow = new RootWindow(viewMap);
-        rootWindow.addListener(new DockingWindowListener() {
-            @Override
-            public void windowUndocking(final DockingWindow arg0) {
-            }
-
-            @Override
-            public void windowUndocked(final DockingWindow dockingWindow) {
-                SwingUtilities.invokeLater(() -> SwingUtilities.invokeLater(() -> {
-                    if (dockingWindow instanceof View) {
-                        final Component component = ((View) dockingWindow).getComponent();
-                        if (component instanceof JComponent) {
-                            linkActions(((JComponent) component).getRootPane());
-                        }
-                    }
-                }));
-            }
-
-            @Override
-            public void windowShown(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRestoring(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRestored(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRemoved(final DockingWindow arg0, final DockingWindow arg1) { }
-
-            @Override
-            public void windowMinimizing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMinimized(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMaximizing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMaximized(final DockingWindow arg0) { }
-
-            @Override
-            public void windowHidden(final DockingWindow arg0) { }
-
-            @Override
-            public void windowDocking(final DockingWindow arg0) { }
-
-            @Override
-            public void windowDocked(final DockingWindow arg0) { }
-
-            @Override
-            public void windowClosing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowClosed(final DockingWindow arg0) { }
-
-            @Override
-            public void windowAdded(final DockingWindow arg0, final DockingWindow arg1) { }
-
-            @Override
-            public void viewFocusChanged(final View arg0, final View arg1) { }
-        });
+        rootWindow.addListener(MainPanelActions.createDockingWindowListener(this));
 
         add(ToolBar.createJToolBar(this));
         // testArea = new PerspDisplayPanel("Graphic Test",2,0);
@@ -749,70 +207,22 @@ public class MainPanel extends JPanel
             mouseCoordDisplay[i].setMinimumSize(new Dimension(50, 15));
             mouseCoordDisplay[i].setEditable(false);
         }
-        modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> currentModelPanel().getModel());
+        modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> ModelPanelUgg.currentModelPanel(currentModelPanel).getModel());
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         BLPPanel blpPanel = new BLPPanel(null);
         timeSliderPanel = new TimeSliderPanel(animatedRenderEnvironment, modelStructureChangeListener, prefs);
         timeSliderPanel.setDrawing(false);
-        timeSliderPanel.addListener(currentTime -> {
-            animatedRenderEnvironment.setCurrentTime(currentTime - animatedRenderEnvironment.getStart());
-            if (currentModelPanel() != null) {
-                currentModelPanel().getEditorRenderModel().updateNodes(true, false);
-                currentModelPanel().repaintSelfAndRelatedChildren();
-            }
-        });
+        timeSliderPanel.addListener(MainPanelActions.createTimeSliderTimeListener(this));
 //		timeSliderPanel.addListener(creatorPanel);
-        animatedRenderEnvironment.addChangeListener((start, end) -> {
-            final Integer globalSeq = animatedRenderEnvironment.getGlobalSeq();
-            if (globalSeq != null) {
-                creatorPanel.setChosenGlobalSeq(globalSeq);
-            } else {
-                final ModelPanel modelPanel = currentModelPanel();
-                if (modelPanel != null) {
-                    boolean foundAnim = false;
-                    for (final Animation animation : modelPanel.getModel().getAnims()) {
-                        if ((animation.getStart() == start) && (animation.getEnd() == end)) {
-                            creatorPanel.setChosenAnimation(animation);
-                            foundAnim = true;
-                            break;
-                        }
-                    }
-                    if (!foundAnim) {
-                        creatorPanel.setChosenAnimation(null);
-                    }
-                }
-
-            }
-        });
+        animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
         setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
         setKeyframe.setMargin(new Insets(0, 0, 0, 0));
         setKeyframe.setToolTipText("Create Keyframe");
-        setKeyframe.addActionListener(e -> {
-            final ModelPanel mpanel = currentModelPanel();
-            if (mpanel != null) {
-                mpanel.getUndoManager()
-                        .pushAction(mpanel.getModelEditorManager().getModelEditor().createKeyframe(actionType));
-            }
-            repaintSelfAndChildren(mpanel);
-        });
+        setKeyframe.addActionListener(MainPanelActions.createKeyframeAction(this));
         setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
         setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
         setTimeBounds.setToolTipText("Choose Time Bounds");
-        setTimeBounds.addActionListener(e -> {
-            final TimeBoundChooserPanel timeBoundChooserPanel = new TimeBoundChooserPanel(
-                    currentModelPanel() == null ? null : currentModelPanel().getModelViewManager(),
-                    modelStructureChangeListener);
-            final int confirmDialogResult = JOptionPane.showConfirmDialog(MainPanel.this, timeBoundChooserPanel,
-                    "Set Time Bounds", JOptionPane.OK_CANCEL_OPTION);
-            if (confirmDialogResult == JOptionPane.OK_OPTION) {
-                timeBoundChooserPanel.applyTo(animatedRenderEnvironment);
-                if (currentModelPanel() != null) {
-                    currentModelPanel().getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment,
-                            IDENTITY, IDENTITY, IDENTITY, currentModelPanel().getPerspArea().getViewport());
-                    currentModelPanel().getEditorRenderModel().updateNodes(true, false);
-                }
-            }
-        });
+        setTimeBounds.addActionListener(MainPanelActions.timeBoundChooserPanel(this));
 
         animationModeButton = new ModeButton("Animate");
         animationModeButton.setVisible(false);// TODO remove this if unused
@@ -849,196 +259,18 @@ public class MainPanel extends JPanel
         modelDataView = new View("Contents", null, contentsDummy);
         modelComponentView = new View("Component", null, new JPanel());
 //		toolView.getWindowProperties().setCloseEnabled(false);
-        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties()
-                .setSizePolicy(TitledTabSizePolicy.EQUAL_SIZE);
+        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setSizePolicy(TitledTabSizePolicy.EQUAL_SIZE);
         rootWindow.getRootWindowProperties().getViewProperties().getViewTitleBarProperties().setVisible(true);
-        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties()
-                .setBorderSizePolicy(TitledTabBorderSizePolicy.EQUAL_SIZE);
-        rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties()
-                .setTabAreaVisiblePolicy(TabAreaVisiblePolicy.MORE_THAN_ONE_TAB);
+        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setBorderSizePolicy(TitledTabBorderSizePolicy.EQUAL_SIZE);
+        rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties().setTabAreaVisiblePolicy(TabAreaVisiblePolicy.MORE_THAN_ONE_TAB);
         rootWindow.setBackground(Color.GREEN);
         rootWindow.setForeground(Color.GREEN);
         final Runnable fixit = () -> {
             traverseAndReset(rootWindow);
             traverseAndFix(rootWindow);
         };
-        rootWindow.addListener(new DockingWindowListener() {
+        rootWindow.addListener(MainPanelActions.createDockingWindowListener(fixit));
 
-            @Override
-            public void windowUndocking(final DockingWindow removedWindow) {
-                if (OLDMODE) {
-                    if (removedWindow instanceof View) {
-                        final View view = (View) removedWindow;
-                        view.getViewProperties().getViewTitleBarProperties().setVisible(true);
-                        System.out.println(
-                                view.getTitle() + ": (windowUndocking removedWindow as view) title bar visible now");
-                    }
-                } else {
-                    SwingUtilities.invokeLater(fixit);
-                }
-            }
-
-            @Override
-            public void windowUndocked(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowShown(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowRestoring(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowRestored(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowRemoved(final DockingWindow removedFromWindow, final DockingWindow removedWindow) {
-                if (OLDMODE) {
-                    if (removedFromWindow instanceof TabWindow) {
-                        if (removedWindow instanceof View) {
-                            final View view = (View) removedWindow;
-                            view.getViewProperties().getViewTitleBarProperties().setVisible(true);
-                            System.out.println(view.getTitle() + ": (removedWindow as view) title bar visible now");
-                        }
-                        final TabWindow tabWindow = (TabWindow) removedFromWindow;
-                        if (tabWindow.getChildWindowCount() == 1) {
-                            final DockingWindow childWindow = tabWindow.getChildWindow(0);
-                            if (childWindow instanceof View) {
-                                final View singleChildView = (View) childWindow;
-                                System.out.println(singleChildView.getTitle()
-                                        + ": (singleChildView, windowRemoved()) title bar visible now");
-                                singleChildView.getViewProperties().getViewTitleBarProperties().setVisible(true);
-                            }
-                        } else if (tabWindow.getChildWindowCount() == 0) {
-                            System.out.println(
-                                    tabWindow.getTitle() + ": force close because 0 child windows in windowRemoved()");
-//						tabWindow.close();
-                        }
-                    }
-                } else {
-                    SwingUtilities.invokeLater(fixit);
-                }
-            }
-
-            @Override
-            public void windowMinimizing(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowMinimized(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowMaximizing(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowMaximized(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowHidden(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowDocking(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowDocked(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void windowClosing(final DockingWindow closingWindow) {
-                if (OLDMODE) {
-                    if (closingWindow.getWindowParent() instanceof TabWindow) {
-                        if (closingWindow instanceof View) {
-                            final View view = (View) closingWindow;
-                            view.getViewProperties().getViewTitleBarProperties().setVisible(true);
-                            System.out.println(view.getTitle() + ": (closingWindow as view) title bar visible now");
-                        }
-                        final TabWindow tabWindow = (TabWindow) closingWindow.getWindowParent();
-                        if (tabWindow.getChildWindowCount() == 1) {
-                            final DockingWindow childWindow = tabWindow.getChildWindow(0);
-                            if (childWindow instanceof View) {
-                                final View singleChildView = (View) childWindow;
-                                singleChildView.getViewProperties().getViewTitleBarProperties().setVisible(true);
-                                System.out.println(singleChildView.getTitle()
-                                        + ": (singleChildView, windowClosing()) title bar visible now");
-                            }
-                        } else if (tabWindow.getChildWindowCount() == 0) {
-                            System.out.println(
-                                    tabWindow.getTitle() + ": force close because 0 child windows in windowClosing()");
-                            tabWindow.close();
-                        }
-                    }
-                } else {
-                    SwingUtilities.invokeLater(fixit);
-                }
-            }
-
-            @Override
-            public void windowClosed(final DockingWindow closedWindow) {
-            }
-
-            @Override
-            public void windowAdded(final DockingWindow addedToWindow, final DockingWindow addedWindow) {
-                if (OLDMODE) {
-                    if (addedToWindow instanceof TabWindow) {
-                        final TabWindow tabWindow = (TabWindow) addedToWindow;
-                        if (tabWindow.getChildWindowCount() == 2) {
-                            for (int i = 0; i < 2; i++) {
-                                final DockingWindow childWindow = tabWindow.getChildWindow(i);
-                                if (childWindow instanceof View) {
-                                    final View singleChildView = (View) childWindow;
-                                    singleChildView.getViewProperties().getViewTitleBarProperties().setVisible(false);
-                                    System.out.println(singleChildView.getTitle()
-                                            + ": (singleChildView as view, windowAdded()) title bar NOT visible now");
-                                }
-                            }
-                        }
-                        if (addedWindow instanceof View) {
-                            final View view = (View) addedWindow;
-                            view.getViewProperties().getViewTitleBarProperties().setVisible(false);
-                            System.out.println(view.getTitle() + ": (addedWindow as view) title bar NOT visible now");
-                        }
-                    }
-                } else {
-                    SwingUtilities.invokeLater(fixit);
-                }
-            }
-
-            @Override
-            public void viewFocusChanged(final View arg0, final View arg1) {
-                // TODO Auto-generated method stub
-
-            }
-        });
         leftView = new View("Side", null, new JPanel());
         frontView = new View("Front", null, new JPanel());
         bottomView = new View("Bottom", null, new JPanel());
@@ -1068,31 +300,7 @@ public class MainPanel extends JPanel
         final JButton run = new JButton("Run",
                 new ImageIcon(BLPHandler.get().getGameTex("ReplaceableTextures\\CommandButtons\\BTNReplay-Play.blp")
                         .getScaledInstance(24, 24, Image.SCALE_FAST)));
-        run.addActionListener(new ActionListener() {
-            final ScriptEngineManager factory = new ScriptEngineManager();
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final String text = matrixEaterScriptTextArea.getText();
-                final ScriptEngine engine = factory.getEngineByName("JavaScript");
-                final ModelPanel modelPanel = currentModelPanel();
-                if (modelPanel != null) {
-                    engine.put("modelPanel", modelPanel);
-                    engine.put("model", modelPanel.getModel());
-                    engine.put("world", MainPanel.this);
-                    try {
-                        engine.eval(text);
-                    } catch (final ScriptException e1) {
-                        e1.printStackTrace();
-                        JOptionPane.showMessageDialog(MainPanel.this, e1.getMessage(), "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(MainPanel.this, "Must open a file!", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        run.addActionListener(MainPanelActions.createBtnReplayPlayActionListener(this, matrixEaterScriptTextArea));
         hackerPanel.add(run, BorderLayout.NORTH);
         hackerView = new View("Matrix Eater Script", null, hackerPanel);
         creatorPanel = new CreatorModelingPanel(newType -> {
@@ -1103,7 +311,7 @@ public class MainPanel extends JPanel
         creatorView = new View("Modeling", null, creatorPanel);
         animationControllerView = new View("Animation Controller", null, new JPanel());
 
-        final TabWindow startupTabWindow = createMainLayout();
+        final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(this);
         rootWindow.setWindow(startupTabWindow);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
         startupTabWindow.setSelectedTab(0);
@@ -1137,30 +345,9 @@ public class MainPanel extends JPanel
 
         // setFocusable(true);
         // selectButton.requestFocus();
-        selectionItemTypeGroup.addToolbarButtonListener(newType -> {
-            animationModeState = newType == SelectionItemTypes.ANIMATE;
-            // we need to refresh the state of stuff AFTER the ModelPanels, this
-            // is a pretty signficant design flaw, so we're just going to
-            // post to the EDT to get behind them (they're called
-            // on the same notifier as this method)
-            SwingUtilities.invokeLater(this::refreshAnimationModeState);
+        selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
 
-            if (newType == SelectionItemTypes.TPOSE) {
-
-                final Object[] settings = {"Move Linked", "Move Single"};
-                final Object dialogResult = JOptionPane.showInputDialog(null, "Choose settings:", "T-Pose Settings",
-                        JOptionPane.PLAIN_MESSAGE, null, settings, settings[0]);
-                final boolean moveLinked = dialogResult == settings[0];
-                ModelEditorManager.MOVE_LINKED = moveLinked;
-            }
-            repaint();
-        });
-
-        actionTypeGroup.addToolbarButtonListener(newType -> {
-            if (newType != null) {
-                changeActivity(newType);
-            }
-        });
+        actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
         viewportTransferHandler = new ViewportTransferHandler();
         coordDisplayListener = MainPanel.this::setMouseCoordDisplay;
@@ -1176,80 +363,6 @@ public class MainPanel extends JPanel
         openToolsAction = new OpenViewAction(rootWindow, "Tools", () -> toolView);
         openModelDataContentsViewAction = new OpenViewAction(rootWindow, "Model", () -> modelDataView);
         hackerViewAction = new OpenViewAction(rootWindow, "Matrix Eater Script", () -> hackerView);
-    }
-
-    TabWindow createMainLayout() {
-        final TabWindow leftHandTabWindow = new TabWindow(
-                new DockingWindow[]{viewportControllerWindowView, toolView});
-        leftHandTabWindow.setSelectedTab(0);
-//		leftHandTabWindow.getWindowProperties().setCloseEnabled(false);
-        final SplitWindow editingTab = new SplitWindow(false, 0.875f,
-                new SplitWindow(true, 0.2f, leftHandTabWindow,
-                        new SplitWindow(true, 0.8f,
-                                new SplitWindow(false, new SplitWindow(true, frontView, bottomView),
-                                        new SplitWindow(true, leftView, perspectiveView)),
-                                creatorView)),
-                timeSliderView);
-        editingTab.getWindowProperties().setCloseEnabled(false);
-        editingTab.getWindowProperties().setTitleProvider(arg0 -> "Edit");
-        ImageIcon imageIcon;
-        imageIcon = new ImageIcon(MainFrame.MAIN_PROGRAM_ICON.getScaledInstance(16, 16, Image.SCALE_FAST));
-
-        final View mpqBrowserView = createMPQBrowser(imageIcon);
-
-        final UnitEditorTree unitEditorTree = createUnitEditorTree();
-        final TabWindow tabWindow = new TabWindow(new DockingWindow[]{
-                new View("Unit Browser", imageIcon, new JScrollPane(unitEditorTree)), mpqBrowserView});
-        tabWindow.setSelectedTab(0);
-        final SplitWindow viewingTab = new SplitWindow(true, 0.8f,
-                new SplitWindow(true, 0.8f, previewView, animationControllerView), tabWindow);
-        viewingTab.getWindowProperties().setTitleProvider(arg0 -> "View");
-        viewingTab.getWindowProperties().setCloseEnabled(false);
-
-        final SplitWindow modelTab = new SplitWindow(true, 0.2f, modelDataView, modelComponentView);
-        modelTab.getWindowProperties().setTitleProvider(arg0 -> "Model");
-
-        final TabWindow startupTabWindow = new TabWindow(new DockingWindow[]{viewingTab, editingTab, modelTab});
-        traverseAndFix(startupTabWindow);
-        return startupTabWindow;
-    }
-
-    private View createMPQBrowser(final ImageIcon imageIcon) {
-        final MPQBrowser mpqBrowser = new MPQBrowser(MpqCodebase.get(), filepath -> {
-            if (filepath.toLowerCase().endsWith(".mdx")) {
-                FileUtils.loadFile(this, MpqCodebase.get().getFile(filepath), true);
-            } else if (filepath.toLowerCase().endsWith(".blp")) {
-                FileUtils.loadBLPPathAsModel(this, filepath);
-            } else if (filepath.toLowerCase().endsWith(".png")) {
-                FileUtils.loadBLPPathAsModel(this, filepath);
-            } else if (filepath.toLowerCase().endsWith(".dds")) {
-                FileUtils.loadBLPPathAsModel(this, filepath, null, 1000);
-            }
-        }, path -> {
-            final int modIndex = Math.max(path.lastIndexOf(".w3mod/"), path.lastIndexOf(".w3mod\\"));
-            String finalPath;
-            if (modIndex == -1) {
-                finalPath = path;
-            } else {
-                finalPath = path.substring(modIndex + ".w3mod/".length());
-            }
-            final ModelPanel modelPanel = currentModelPanel();
-            if (modelPanel != null) {
-                if (modelPanel.getModel().getFormatVersion() > 800) {
-                    finalPath = finalPath.replace("\\", "/"); // Reforged prefers forward slash
-                }
-                modelPanel.getModel().add(new Bitmap(finalPath));
-                modelStructureChangeListener.texturesChanged();
-            }
-        });
-        final View view = new View("Data Browser", imageIcon, mpqBrowser);
-        view.getWindowProperties().setCloseEnabled(true);
-        return view;
-    }
-
-    private View createMPQBrowser() {
-        return createMPQBrowser(
-                new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)));
     }
 
     void traverseAndFix(final DockingWindow window) {
@@ -1308,7 +421,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private UnitEditorTree createUnitEditorTree() {
+    UnitEditorTree createUnitEditorTree() {
         final UnitEditorTree unitEditorTree = new UnitEditorTreeBrowser(getUnitData(), new UnitTabTreeBrowserBuilder(),
                 getUnitEditorSettings(), WorldEditorDataType.UNITS, (mdxFilePath, b, c, icon) -> FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(mdxFilePath), b, c, icon), prefs);
         return unitEditorTree;
@@ -1326,78 +439,12 @@ public class MainPanel extends JPanel
     static final Quaternion IDENTITY = new Quaternion();
     final TimeEnvironmentImpl animatedRenderEnvironment;
     JButton snapButton;
-    private final CoordDisplayListener coordDisplayListener;
+    final CoordDisplayListener coordDisplayListener;
     protected ModelEditorActionType actionType;
     JMenu teamColorMenu;
     CreatorModelingPanel creatorPanel;
 
-    public void refreshAnimationModeState() {
-        if (animationModeState) {
-            if ((currentModelPanel() != null) && (currentModelPanel().getModel() != null)) {
-                if (currentModelPanel().getModel().getAnimsSize() > 0) {
-                    final Animation anim = currentModelPanel().getModel().getAnim(0);
-                    animatedRenderEnvironment.setBounds(anim.getStart(), anim.getEnd());
-                }
-                currentModelPanel().getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, IDENTITY,
-                        IDENTITY, IDENTITY, currentModelPanel().getPerspArea().getViewport());
-                currentModelPanel().getEditorRenderModel().updateNodes(true, false);
-                timeSliderPanel.setNodeSelectionManager(
-                        currentModelPanel().getModelEditorManager().getNodeAnimationSelectionManager());
-            }
-            if ((actionTypeGroup.getActiveButtonType() == actionTypeGroup.getToolbarButtonTypes()[3])
-                    || (actionTypeGroup.getActiveButtonType() == actionTypeGroup.getToolbarButtonTypes()[4])) {
-                actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
-            }
-        }
-        animatedRenderEnvironment.setStaticViewMode(!animationModeState);
-        if (!animationModeState) {
-            if ((currentModelPanel() != null) && (currentModelPanel().getModel() != null)) {
-                currentModelPanel().getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, IDENTITY,
-                        IDENTITY, IDENTITY, currentModelPanel().getPerspArea().getViewport());
-                currentModelPanel().getEditorRenderModel().updateNodes(true, false); // update to 0 position
-            }
-        }
-        final List<ToolbarButtonGroup<ToolbarActionButtonType>.ToolbarButtonAction> buttons = actionTypeGroup
-                .getButtons();
-        final int numberOfButtons = buttons.size();
-        for (int i = 3; i < numberOfButtons; i++) {
-            buttons.get(i).getButton().setVisible(!animationModeState);
-        }
-        snapButton.setVisible(!animationModeState);
-        timeSliderPanel.setDrawing(animationModeState);
-        setKeyframe.setVisible(animationModeState);
-        setTimeBounds.setVisible(animationModeState);
-        timeSliderPanel.setKeyframeModeActive(animationModeState);
-        if (animationModeState) {
-            animationModeButton.setColors(prefs.getActiveColor1(), prefs.getActiveColor2());
-        } else {
-            animationModeButton.resetColors();
-        }
-        timeSliderPanel.repaint();
-        creatorPanel.setAnimationModeState(animationModeState);
-    }
-
-    void reloadGeosetManagers(final ModelPanel display) {
-        geoControl.repaint();
-        display.getModelViewManagingTree().reloadFromModelView();
-        geoControl.setViewportView(display.getModelViewManagingTree());
-        reloadComponentBrowser(display);
-        display.getPerspArea().reloadTextures();// .mpanel.perspArea.reloadTextures();//addGeosets(newGeosets);
-        display.getAnimationViewer().reload();
-        display.getAnimationController().reload();
-        creatorPanel.reloadAnimationList();
-
-        display.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, IDENTITY, IDENTITY, IDENTITY,
-                display.getPerspArea().getViewport());
-    }
-
-    void reloadComponentBrowser(final ModelPanel display) {
-        geoControlModelData.repaint();
-        display.getModelComponentBrowserTree().reloadFromModelView();
-        geoControlModelData.setViewportView(display.getModelComponentBrowserTree());
-    }
-
-//	public void reloadGUI() {
+    //	public void reloadGUI() {
 //		refreshUndo();
 //		refreshController();
 //		refreshAnimationModeState();
@@ -1453,7 +500,7 @@ public class MainPanel extends JPanel
         updateUIFromProgramPreferences();
     }
 
-    private void linkActions(final JComponent root) {
+    void linkActions(final JComponent root) {
         root.getActionMap().put("Undo", undoAction);
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control Z"),
                 "Undo");
@@ -1462,10 +509,10 @@ public class MainPanel extends JPanel
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control Y"),
                 "Redo");
 
-        root.getActionMap().put("Delete", deleteAction());
+        root.getActionMap().put("Delete", MainPanelActions.deleteAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("DELETE"), "Delete");
 
-        root.getActionMap().put("CloneSelection", cloneAction());
+        root.getActionMap().put("CloneSelection", MainPanelActions.cloneAction(this));
 
         root.getActionMap().put("MaximizeSpacebar", new AbstractAction() {
             @Override
@@ -1731,7 +778,7 @@ public class MainPanel extends JPanel
                 }
                 if (!animationModeState) {
                     try {
-                        final ModelPanel modelPanel = currentModelPanel();
+                        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
                         if (modelPanel != null) {
                             final Viewport viewport = activeViewportWatcher.getViewport();
                             final Vertex facingVector = viewport == null ? new Vertex(0, 0, 1)
@@ -1773,46 +820,8 @@ public class MainPanel extends JPanel
         // V"),
         // "CloneSelection");
 
-        root.getActionMap().put("shiftSelect", new AbstractAction("shiftSelect") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                // if (prefs.getSelectionType() == 0) {
-                // for (int b = 0; b < 3; b++) {
-                // buttons.get(b).resetColors();
-                // }
-                // addButton.setColors(prefs.getActiveColor1(),
-                // prefs.getActiveColor2());
-                // prefs.setSelectionType(1);
-                // cheatShift = true;
-                // }
-                if (selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT) {
-                    selectionModeGroup.setToolbarButtonType(SelectionMode.ADD);
-                    cheatShift = true;
-                }
-            }
-        });
-        root.getActionMap().put("altSelect", new AbstractAction("altSelect") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                // if (prefs.getSelectionType() == 0) {
-                // for (int b = 0; b < 3; b++) {
-                // buttons.get(b).resetColors();
-                // }
-                // deselectButton.setColors(prefs.getActiveColor1(),
-                // prefs.getActiveColor2());
-                // prefs.setSelectionType(2);
-                // cheatAlt = true;
-                // }
-                if (selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT) {
-                    selectionModeGroup.setToolbarButtonType(SelectionMode.DESELECT);
-                    cheatAlt = true;
-                }
-            }
-        });
+        root.getActionMap().put("shiftSelect", MainPanelActions.getShiftSelectAction(this, "shiftSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.ADD, true));
+        root.getActionMap().put("altSelect", MainPanelActions.getAltSelectAction(this, "altSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.DESELECT, true));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke("shift pressed SHIFT"), "shiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
@@ -1820,28 +829,8 @@ public class MainPanel extends JPanel
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed ALT"),
                 "altSelect");
 
-        root.getActionMap().put("unShiftSelect", new AbstractAction("unShiftSelect") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if ((selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift) {
-                    selectionModeGroup.setToolbarButtonType(SelectionMode.SELECT);
-                    cheatShift = false;
-                }
-            }
-        });
-        root.getActionMap().put("unAltSelect", new AbstractAction("unAltSelect") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                if ((selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt) {
-                    selectionModeGroup.setToolbarButtonType(SelectionMode.SELECT);
-                    cheatAlt = false;
-                }
-            }
-        });
+        root.getActionMap().put("unShiftSelect", MainPanelActions.getShiftSelectAction(this, "unShiftSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift, SelectionMode.SELECT, false));
+        root.getActionMap().put("unAltSelect", MainPanelActions.getAltSelectAction(this, "unAltSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released SHIFT"),
                 "unShiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released
@@ -1850,24 +839,24 @@ public class MainPanel extends JPanel
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released ALT"),
                 "unAltSelect");
 
-        root.getActionMap().put("Select All", selectAllAction());
+        root.getActionMap().put("Select All", MainPanelActions.selectAllAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control A"),
                 "Select All");
 
-        root.getActionMap().put("Invert Selection", invertSelectAction());
+        root.getActionMap().put("Invert Selection", MainPanelActions.invertSelectAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control I"),
                 "Invert Selection");
 
-        root.getActionMap().put("Expand Selection", expandSelectionAction());
+        root.getActionMap().put("Expand Selection", MainPanelActions.expandSelectionAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"),
                 "Expand Selection");
 
-        root.getActionMap().put("RigAction", rigAction());
+        root.getActionMap().put("RigAction", MainPanelActions.rigAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"),
                 "RigAction");
     }
 
-    private void updateUIFromProgramPreferences() {
+    void updateUIFromProgramPreferences() {
         // prefs.setShowVertexModifierControls(showVertexModifyControls.isSelected());
         showVertexModifyControls.setSelected(prefs.isShowVertexModifierControls());
         // prefs.setTextureModels(textureModels.isSelected());
@@ -1930,12 +919,12 @@ public class MainPanel extends JPanel
                 final int teamColorValueNumber = i;
                 menuItem.addActionListener(e -> {
                     Material.teamColor = teamColorValueNumber;
-                    final ModelPanel modelPanel = currentModelPanel();
+                    final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
                     if (modelPanel != null) {
                         modelPanel.getAnimationViewer().reloadAllTextures();
                         modelPanel.getPerspArea().reloadAllTextures();
 
-                        reloadComponentBrowser(modelPanel);
+                        ModelPanelUgg.reloadComponentBrowser(geoControlModelData, modelPanel);
                     }
                     profile.getPreferences().setTeamColor(teamColorValueNumber);
                 });
@@ -1955,7 +944,7 @@ public class MainPanel extends JPanel
         refreshUndo();
         try {
             if (e.getSource() == newModel) {
-                newModel();
+                NewModelPanel.newModel(this);
             } else if (e.getSource() == open) {
                 onClickOpen();
             } else if (e.getSource() == close) {
@@ -1980,8 +969,6 @@ public class MainPanel extends JPanel
                 importScript();
             } else if (e.getSource() == mergeGeoset) {
                 mergeGeoset();
-            } else if (e.getSource() == clearRecent) {
-                clearResent();
             } else if (e.getSource() == nullmodelButton) {
                 FileUtils.nullModelFile(this);
                 refreshController();
@@ -1990,17 +977,15 @@ public class MainPanel extends JPanel
             } else if (e.getSource() == saveAs) {
                 onClickSaveAs();
             } else if (e.getSource() == contextCloseAll) {
-                this.closeAll();
+                MainPanel.closeAll(this);
             } else if (e.getSource() == contextCloseOthers) {
-                this.closeOthers(currentModelPanel);
-            } else if (e.getSource() == showVertexModifyControls) {
-                showVertexModifyControls();
+                MainPanel.closeOthers(this, currentModelPanel);
             } else if (e.getSource() == textureModels) {
                 prefs.setTextureModels(textureModels.isSelected());
             } else if (e.getSource() == showNormals) {
                 prefs.setShowNormals(showNormals.isSelected());
             } else if (e.getSource() == editUVs) {
-                editUVs();
+                ModelPanelUgg.editUVs(this);
             } else if (e.getSource() == exportTextures) {
                 exportTextures();
             } else if (e.getSource() == scaleAnimations) {
@@ -2014,12 +999,12 @@ public class MainPanel extends JPanel
                 // {
                 // disp.uvpanel.showFrame();
                 // }
-                final AnimationFrame aFrame = new AnimationFrame(currentModelPanel(), timeSliderPanel::revalidateKeyframeDisplay);
+                final AnimationFrame aFrame = new AnimationFrame(ModelPanelUgg.currentModelPanel(currentModelPanel), timeSliderPanel::revalidateKeyframeDisplay);
                 aFrame.setVisible(true);
             } else if (e.getSource() == linearizeAnimations) {
                 linearizeAnimations();
             } else if (e.getSource() == duplicateSelection) {
-                duplicateSelection();
+                ModelPanelUgg.duplicateSelection(namePicker, currentModelPanel);
             } else if (e.getSource() == simplifyKeyframes) {
                 simplifyKeyframesButtonResponse();
             } else if (e.getSource() == riseFallBirth) {
@@ -2122,7 +1107,7 @@ public class MainPanel extends JPanel
             return;
         }
 
-        final ModelView disp = currentModelPanel().getModelViewManager();
+        final ModelView disp = ModelPanelUgg.currentModelPanel(currentModelPanel).getModelViewManager();
         final EditableModel model = disp.getModel();
 
         replaceOrUseOldAnimation(model, "Birth");
@@ -2237,23 +1222,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void duplicateSelection() {
-        // final int x = JOptionPane.showConfirmDialog(this,
-        // "This is an irreversible process that will split selected
-        // vertices into many copies of themself, one for each face, so
-        // you can wrap textures and normals in a different
-        // way.\n\nContinue?",
-        // "Warning"/* : Divide Vertices" */,
-        // JOptionPane.OK_CANCEL_OPTION);
-        // if (x == JOptionPane.OK_OPTION) {
-        final ModelPanel currentModelPanel = currentModelPanel();
-        if (currentModelPanel != null) {
-            currentModelPanel.getUndoManager().pushAction(currentModelPanel.getModelEditorManager()
-                    .getModelEditor().cloneSelectedComponents(namePicker));
-        }
-        // }
-    }
-
     private void linearizeAnimations() {
         final int x = JOptionPane.showConfirmDialog(this,
                 "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify animations?",
@@ -2300,7 +1268,7 @@ public class MainPanel extends JPanel
     }
 
     private void onClickClose() {
-        final ModelPanel modelPanel = currentModelPanel();
+        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
         final int oldIndex = modelPanels.indexOf(modelPanel);
         if (modelPanel != null) {
             if (modelPanel.close(this)) {
@@ -2308,10 +1276,10 @@ public class MainPanel extends JPanel
                 windowMenu.remove(modelPanel.getMenuItem());
                 if (modelPanels.size() > 0) {
                     final int newIndex = Math.min(modelPanels.size() - 1, oldIndex);
-                    setCurrentModel(modelPanels.get(newIndex));
+                    ModelPanelUgg.setCurrentModel(this, modelPanels.get(newIndex));
                 } else {
                     // TODO remove from notifiers to fix leaks
-                    setCurrentModel(null);
+                    ModelPanelUgg.setCurrentModel(this, null);
                 }
             }
         }
@@ -2508,17 +1476,7 @@ public class MainPanel extends JPanel
         fc.setSelectedFile(null);
     }
 
-    private void clearResent() {
-        final int dialogResult = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to clear the Recent history?", "Confirm Clear",
-                JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            SaveProfile.get().clearRecent();
-            updateRecent();
-        }
-    }
-
-    private void showVertexModifyControls() {
+    void showVertexModifyControls() {
         final boolean selected = showVertexModifyControls.isSelected();
         prefs.setShowVertexModifierControls(selected);
         // SaveProfile.get().setShowViewportButtons(selected);
@@ -2598,29 +1556,8 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void editUVs() {
-        final ModelPanel disp = currentModelPanel();
-        if (disp.getEditUVPanel() == null) {
-            final UVPanel panel = new UVPanel(disp, prefs, modelStructureChangeListener);
-            disp.setEditUVPanel(panel);
 
-            panel.initViewport();
-            final FloatingWindow floatingWindow = rootWindow.createFloatingWindow(
-                    new Point(getX() + (getWidth() / 2), getY() + (getHeight() / 2)), panel.getSize(),
-                    panel.getView());
-            panel.init();
-            floatingWindow.getTopLevelAncestor().setVisible(true);
-            panel.packFrame();
-        } else if (!disp.getEditUVPanel().frameVisible()) {
-            final FloatingWindow floatingWindow = rootWindow.createFloatingWindow(
-                    new Point(getX() + (getWidth() / 2), getY() + (getHeight() / 2)),
-                    disp.getEditUVPanel().getSize(), disp.getEditUVPanel().getView());
-            floatingWindow.getTopLevelAncestor().setVisible(true);
-        }
-    }
-
-
-    private void dataSourcesChanged() {
+    void dataSourcesChanged() {
         for (final ModelPanel modelPanel : modelPanels) {
             final PerspDisplayPanel pdp = modelPanel.getPerspArea();
             pdp.reloadAllTextures();
@@ -2634,7 +1571,7 @@ public class MainPanel extends JPanel
         currentMDL.simplifyKeyframes();
     }
 
-    private boolean onClickSaveAs() {
+    boolean onClickSaveAs() {
         final EditableModel current = currentMDL();
         return onClickSaveAs(current);
     }
@@ -2691,8 +1628,8 @@ public class MainPanel extends JPanel
                     currentMDL().setFileRef(currentFile);
                     // currentMDLDisp().resetBeenSaved();
                     // TODO reset been saved
-                    currentModelPanel().getMenuItem().setName(currentFile.getName().split("\\.")[0]);
-                    currentModelPanel().getMenuItem().setToolTipText(currentFile.getPath());
+                    ModelPanelUgg.currentModelPanel(currentModelPanel).getMenuItem().setName(currentFile.getName().split("\\.")[0]);
+                    ModelPanelUgg.currentModelPanel(currentModelPanel).getMenuItem().setToolTipText(currentFile.getPath());
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "You tried to save, but you somehow didn't select a file.\nThat is bad.");
@@ -2739,59 +1676,15 @@ public class MainPanel extends JPanel
         fc.setSelectedFile(null);
     }
 
-    void newModel() {
-        final JPanel newModelPanel = new JPanel();
-        newModelPanel.setLayout(new MigLayout());
-        newModelPanel.add(new JLabel("Model Name: "), "cell 0 0");
-        final JTextField newModelNameField = new JTextField("MrNew", 25);
-        newModelPanel.add(newModelNameField, "cell 1 0");
-        final JRadioButton createEmptyButton = new JRadioButton("Create Empty", true);
-        newModelPanel.add(createEmptyButton, "cell 0 1");
-        final JRadioButton createPlaneButton = new JRadioButton("Create Plane");
-        newModelPanel.add(createPlaneButton, "cell 0 2");
-        final JRadioButton createBoxButton = new JRadioButton("Create Box");
-        newModelPanel.add(createBoxButton, "cell 0 3");
-        final ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(createBoxButton);
-        buttonGroup.add(createPlaneButton);
-        buttonGroup.add(createEmptyButton);
-
-        final int userDialogResult = JOptionPane.showConfirmDialog(this, newModelPanel, "New Model",
+    JSpinner getjSpinner(String title) {
+        final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
+        final JSpinner spinner = new JSpinner(sModel);
+        final int userChoice = JOptionPane.showConfirmDialog(this, spinner, title,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        // TODO Duplicated code!
-        if (userDialogResult == JOptionPane.OK_OPTION) {
-            final EditableModel mdl = new EditableModel(newModelNameField.getText());
-            if (createBoxButton.isSelected()) {
-                final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
-                final JSpinner spinner = new JSpinner(sModel);
-                final int userChoice = JOptionPane.showConfirmDialog(this, spinner, "Box: Choose Segments",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (userChoice != JOptionPane.OK_OPTION) {
-                    return;
-                }
-                ModelUtils.createBox(mdl, new Vertex(64, 64, 128), new Vertex(-64, -64, 0),
-                        ((Number) spinner.getValue()).intValue());
-            } else if (createPlaneButton.isSelected()) {
-                final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
-                final JSpinner spinner = new JSpinner(sModel);
-                final int userChoice = JOptionPane.showConfirmDialog(this, spinner, "Plane: Choose Segments",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (userChoice != JOptionPane.OK_OPTION) {
-                    return;
-                }
-                ModelUtils.createGroundPlane(mdl, new Vertex(64, 64, 0), new Vertex(-64, -64, 0),
-                        ((Number) spinner.getValue()).intValue());
-            }
-            final ModelPanel temp = createModelPanel(mdl, GlobalIcons.MDL_ICON, false);
-            loadModel(true, true, temp);
+        if (userChoice != JOptionPane.OK_OPTION) {
+            return null;
         }
-
-    }
-
-    ModelPanel createModelPanel(EditableModel model, ImageIcon icon, boolean specialBLPModel) {
-        return new ModelPanel(this, model, prefs, MainPanel.this, selectionItemTypeGroup,
-                selectionModeGroup, modelStructureChangeListener, coordDisplayListener, viewportTransferHandler,
-                activeViewportWatcher, icon, specialBLPModel, textureExporter);
+        return spinner;
     }
 
     private GameObject fetchUnit() {
@@ -2815,7 +1708,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private String convertPathToMDX(String filepath) {
+    static String convertPathToMDX(String filepath) {
         if (filepath.endsWith(".mdl")) {
             filepath = filepath.replace(".mdl", ".mdx");
         } else if (!filepath.endsWith(".mdx")) {
@@ -2961,131 +1854,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    public ModelPanel currentModelPanel() {
-        return currentModelPanel;
-    }
-
-    /**
-     * Returns the MDLDisplay associated with a given MDL, or null if one cannot be
-     * found.
-     */
-    public ModelPanel displayFor(final EditableModel model) {
-        ModelPanel output = null;
-        ModelView tempDisplay;
-        for (final ModelPanel modelPanel : modelPanels) {
-            tempDisplay = modelPanel.getModelViewManager();
-            if (tempDisplay.getModel() == model) {
-                output = modelPanel;
-                break;
-            }
-        }
-        return output;
-    }
-
-    public void loadModel(final boolean temporary, final boolean selectNewTab, final ModelPanel temp) {
-        if (temporary) {
-            temp.getModelViewManager().getModel().setTemp(true);
-        }
-        final ModelPanel modelPanel = temp;
-        final JMenuItem menuItem = new JMenuItem(temp.getModel().getName());
-        menuItem.setIcon(temp.getIcon());
-        windowMenu.add(menuItem);
-        menuItem.addActionListener(e -> setCurrentModel(modelPanel));
-        temp.setJMenuItem(menuItem);
-        temp.getModelViewManager().addStateListener(new RepaintingModelStateListener(MainPanel.this));
-        temp.changeActivity(currentActivity);
-
-        if (geoControl == null) {
-            geoControl = new JScrollPane(temp.getModelViewManagingTree());
-            viewportControllerWindowView.setComponent(geoControl);
-            viewportControllerWindowView.repaint();
-            geoControlModelData = new JScrollPane(temp.getModelComponentBrowserTree());
-            modelDataView.setComponent(geoControlModelData);
-            modelComponentView.setComponent(temp.getComponentsPanel());
-            modelDataView.repaint();
-        }
-        addTabForView(temp, selectNewTab);
-        modelPanels.add(temp);
-
-        // tabbedPane.addTab(f.getName().split("\\.")[0], icon, temp, f.getPath());
-        // if (selectNewTab) {
-        // tabbedPane.setSelectedComponent(temp);
-        // }
-        if (temporary) {
-            temp.getModelViewManager().getModel().setFileRef(null);
-        }
-        // }
-        // }).start();
-        toolsMenu.setEnabled(true);
-
-        if (selectNewTab && (prefs.getQuickBrowse() != null) && prefs.getQuickBrowse()) {
-            for (int i = (modelPanels.size() - 2); i >= 0; i--) {
-                final ModelPanel openModelPanel = modelPanels.get(i);
-                if (openModelPanel.getUndoManager().isRedoListEmpty()
-                        && openModelPanel.getUndoManager().isUndoListEmpty()) {
-                    if (openModelPanel.close(this)) {
-                        modelPanels.remove(openModelPanel);
-                        windowMenu.remove(openModelPanel.getMenuItem());
-                    }
-                }
-            }
-        }
-    }
-
-    public void addTabForView(final ModelPanel view, final boolean selectNewTab) {
-        if (selectNewTab) {
-            view.getMenuItem().doClick();
-        }
-    }
-
-    public void setCurrentModel(final ModelPanel modelContextManager) {
-        currentModelPanel = modelContextManager;
-        if (currentModelPanel == null) {
-            final JPanel jPanel = new JPanel();
-            jPanel.add(new JLabel("..."));
-            viewportControllerWindowView.setComponent(jPanel);
-            geoControl = null;
-            frontView.setComponent(new JPanel());
-            bottomView.setComponent(new JPanel());
-            leftView.setComponent(new JPanel());
-            perspectiveView.setComponent(new JPanel());
-            previewView.setComponent(new JPanel());
-            animationControllerView.setComponent(new JPanel());
-            refreshAnimationModeState();
-            timeSliderPanel.setUndoManager(null, animatedRenderEnvironment);
-            timeSliderPanel.setModelView(null);
-            creatorPanel.setModelEditorManager(null);
-            creatorPanel.setCurrentModel(null);
-            creatorPanel.setUndoManager(null);
-            modelComponentView.setComponent(new JPanel());
-            geoControlModelData = null;
-        } else {
-            geoControl.setViewportView(currentModelPanel.getModelViewManagingTree());
-            geoControl.repaint();
-
-            frontView.setComponent(modelContextManager.getFrontArea());
-            bottomView.setComponent(modelContextManager.getBotArea());
-            leftView.setComponent(modelContextManager.getSideArea());
-            perspectiveView.setComponent(modelContextManager.getPerspArea());
-            previewView.setComponent(modelContextManager.getAnimationViewer());
-            animationControllerView.setComponent(modelContextManager.getAnimationController());
-            refreshAnimationModeState();
-            timeSliderPanel.setUndoManager(currentModelPanel.getUndoManager(), animatedRenderEnvironment);
-            timeSliderPanel.setModelView(currentModelPanel.getModelViewManager());
-            creatorPanel.setModelEditorManager(currentModelPanel.getModelEditorManager());
-            creatorPanel.setCurrentModel(currentModelPanel.getModelViewManager());
-            creatorPanel.setUndoManager(currentModelPanel.getUndoManager());
-
-            geoControlModelData.setViewportView(currentModelPanel.getModelComponentBrowserTree());
-
-            modelComponentView.setComponent(currentModelPanel.getComponentsPanel());
-            geoControlModelData.repaint();
-            currentModelPanel.getModelComponentBrowserTree().reloadFromModelView();
-        }
-        activeViewportWatcher.viewportChanged(null);
-        timeSliderPanel.revalidateKeyframeDisplay();
-    }
-
     @Override
     public void refreshUndo() {
         undo.setEnabled(undo.funcEnabled());
@@ -3152,17 +1920,17 @@ public class MainPanel extends JPanel
         mouseCoordDisplay[dim2].setText((float) value2 + "");
     }
 
-    public boolean closeAll() {
+    public static boolean closeAll(MainPanel mainPanel) {
         boolean success = true;
-        final Iterator<ModelPanel> iterator = modelPanels.iterator();
+        final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
         boolean closedCurrentPanel = false;
         ModelPanel lastUnclosedModelPanel = null;
         while (iterator.hasNext()) {
             final ModelPanel panel = iterator.next();
-            if (success = panel.close(this)) {
-                windowMenu.remove(panel.getMenuItem());
+            if (success = panel.close(mainPanel)) {
+                mainPanel.windowMenu.remove(panel.getMenuItem());
                 iterator.remove();
-                if (panel == currentModelPanel) {
+                if (panel == mainPanel.currentModelPanel) {
                     closedCurrentPanel = true;
                 }
             } else {
@@ -3171,14 +1939,14 @@ public class MainPanel extends JPanel
             }
         }
         if (closedCurrentPanel) {
-            setCurrentModel(lastUnclosedModelPanel);
+            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
         }
         return success;
     }
 
-    public boolean closeOthers(final ModelPanel panelToKeepOpen) {
+    public static boolean closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
         boolean success = true;
-        final Iterator<ModelPanel> iterator = modelPanels.iterator();
+        final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
         boolean closedCurrentPanel = false;
         ModelPanel lastUnclosedModelPanel = null;
         while (iterator.hasNext()) {
@@ -3187,10 +1955,10 @@ public class MainPanel extends JPanel
                 lastUnclosedModelPanel = panel;
                 continue;
             }
-            if (success = panel.close(this)) {
-                windowMenu.remove(panel.getMenuItem());
+            if (success = panel.close(mainPanel)) {
+                mainPanel.windowMenu.remove(panel.getMenuItem());
                 iterator.remove();
-                if (panel == currentModelPanel) {
+                if (panel == mainPanel.currentModelPanel) {
                     closedCurrentPanel = true;
                 }
             } else {
@@ -3199,7 +1967,7 @@ public class MainPanel extends JPanel
             }
         }
         if (closedCurrentPanel) {
-            setCurrentModel(lastUnclosedModelPanel);
+            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
         }
         return success;
     }
@@ -3222,13 +1990,13 @@ public class MainPanel extends JPanel
         }
     }
 
-    private Component getFocusedComponent() {
+    Component getFocusedComponent() {
         final KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         final Component focusedComponent = kfm.getFocusOwner();
         return focusedComponent;
     }
 
-    private boolean focusedComponentNeedsTyping(final Component focusedComponent) {
+    boolean focusedComponentNeedsTyping(final Component focusedComponent) {
         return (focusedComponent instanceof JTextArea) || (focusedComponent instanceof JTextField);
     }
 }

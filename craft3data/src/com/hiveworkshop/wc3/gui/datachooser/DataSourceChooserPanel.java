@@ -37,21 +37,21 @@ public class DataSourceChooserPanel extends JPanel {
 		try {
 			cascIcon = new ImageIcon(ImageIO.read(DataSourceChooserPanel.class.getResource("icons/CASC.png"))
 					.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
-		} catch (final IOException e) {
+		} catch (final IOException ignored) {
 		}
 		CASCIcon = cascIcon;
 		ImageIcon mpqIcon = null;
 		try {
 			mpqIcon = new ImageIcon(ImageIO.read(DataSourceChooserPanel.class.getResource("icons/MPQ.png"))
 					.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
-		} catch (final IOException e) {
+		} catch (final IOException ignored) {
 		}
 		MPQIcon = mpqIcon;
 		ImageIcon folderIcon = null;
 		try {
 			folderIcon = new ImageIcon(ImageIO.read(DataSourceChooserPanel.class.getResource("icons/Folder.png"))
 					.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
-		} catch (final IOException e) {
+		} catch (final IOException ignored) {
 		}
 		FolderIcon = folderIcon;
 	}
@@ -268,21 +268,9 @@ public class DataSourceChooserPanel extends JPanel {
 		});
 		moveSelectionDown.setEnabled(false);
 		final JButton enterHDMode = new JButton("Reforged Graphics Mode");
-		enterHDMode.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				enterHDMode();
-			}
-		});
+		enterHDMode.addActionListener(e -> enterHDMode());
 		final JButton enterSDMode = new JButton("Classic Graphics Mode");
-		enterSDMode.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				enterSDMode();
-			}
-		});
+		enterSDMode.addActionListener(e -> enterSDMode());
 		final JButton resetAllToDefaults = new JButton("Reset to Defaults");
 		resetAllToDefaults.addActionListener(e -> loadDefaults(null));
 		final JButton addCASCButton = new JButton("Add CASC");
@@ -662,7 +650,7 @@ public class DataSourceChooserPanel extends JPanel {
 		List<String> launcherDBLang = null;
 		try {
 			launcherDBLang = Files.readAllLines(installPathPath.resolve("Launcher.db"));
-		} catch (final Exception e1) {
+		} catch (final Exception ignored) {
 		}
 		if (launcherDBLang != null) {
 			if (launcherDBLang.size() > 0) {

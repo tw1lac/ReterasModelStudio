@@ -2,23 +2,40 @@ package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
+import com.hiveworkshop.wc3.gui.ProgramPreferences;
+import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
+import com.hiveworkshop.wc3.jworldedit.objects.DoodadTabTreeBrowserBuilder;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
 import com.hiveworkshop.wc3.mdl.EventObject;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
 import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
+import com.hiveworkshop.wc3.mpq.MpqCodebase;
+import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
+import com.hiveworkshop.wc3.units.objectdata.War3ID;
+import com.hiveworkshop.wc3.user.SaveProfile;
+import com.hiveworkshop.wc3.util.ModelUtils;
 import com.matrixeaterhayate.TextureManager;
+import net.infonode.docking.RootWindow;
+import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
+import net.infonode.docking.View;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
@@ -198,7 +215,7 @@ public class MenuBarActionListeners {
 
     static ActionListener exit(MainPanel mainPanel) {
         return e -> {
-            if (mainPanel.closeAll()) {
+            if (MainPanel.closeAll(mainPanel)) {
                 MainFrame.frame.dispose();
             }
         };
@@ -206,7 +223,7 @@ public class MenuBarActionListeners {
 
     static ActionListener revert(MainPanel mainPanel) {
         return e -> {
-            final ModelPanel modelPanel = mainPanel.currentModelPanel();
+            final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
             final int oldIndex = mainPanel.modelPanels.indexOf(modelPanel);
             if (modelPanel != null) {
                 if (modelPanel.close(mainPanel)) {
@@ -214,10 +231,10 @@ public class MenuBarActionListeners {
                     mainPanel.windowMenu.remove(modelPanel.getMenuItem());
                     if (mainPanel.modelPanels.size() > 0) {
                         final int newIndex = Math.min(mainPanel.modelPanels.size() - 1, oldIndex);
-                        mainPanel.setCurrentModel(mainPanel.modelPanels.get(newIndex));
+                        ModelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
                     } else {
                         // TODO remove from notifiers to fix leaks
-                        mainPanel.setCurrentModel(null);
+                        ModelPanelUgg.setCurrentModel(mainPanel, null);
                     }
                     final File fileToRevert = modelPanel.getModel().getFile();
                     FileUtils.loadFile(mainPanel, fileToRevert);
@@ -228,7 +245,7 @@ public class MenuBarActionListeners {
 
     static ActionListener editTextures(MainPanel mainPanel) {
         return e -> {
-            final TextureManager textureManager = new TextureManager(mainPanel.currentModelPanel().getModelViewManager(),
+            final TextureManager textureManager = new TextureManager(ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getModelViewManager(),
                     mainPanel.modelStructureChangeListener, mainPanel.textureExporter);
             final JFrame frame = new JFrame("Edit Textures");
             textureManager.setSize(new Dimension(800, 650));
@@ -243,7 +260,7 @@ public class MenuBarActionListeners {
     static ActionListener resetViewButton(MainPanel mainPanel) {
         return e -> {
             mainPanel.traverseAndReset(mainPanel.rootWindow);
-            final TabWindow startupTabWindow = mainPanel.createMainLayout();
+            final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(mainPanel);
             mainPanel.rootWindow.setWindow(startupTabWindow);
             mainPanel.traverseAndFix(mainPanel.rootWindow);
         };
@@ -262,7 +279,7 @@ public class MenuBarActionListeners {
             final Vector4f normalHeap = new Vector4f();
             final Vector4f appliedNormalHeap = new Vector4f();
             final Vector4f normalSumHeap = new Vector4f();
-            final ModelPanel modelContext = mainPanel.currentModelPanel();
+            final ModelPanel modelContext = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
             final RenderModel editorRenderModel = modelContext.getEditorRenderModel();
             final EditableModel model = modelContext.getModel();
             final ModelViewManager modelViewManager = modelContext.getModelViewManager();
@@ -384,7 +401,7 @@ public class MenuBarActionListeners {
 
     static ActionListener exportAnimatedFramePNG(MainPanel mainPanel) {
         return e -> {
-            final BufferedImage fBufferedImage = mainPanel.currentModelPanel().getAnimationViewer().getBufferedImage();
+            final BufferedImage fBufferedImage = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().getBufferedImage();
 
             if (mainPanel.exportTextureDialog.getCurrentDirectory() == null) {
                 final EditableModel current = mainPanel.currentMDL();
@@ -471,5 +488,206 @@ public class MenuBarActionListeners {
                         JOptionPane.PLAIN_MESSAGE);
             }
         };
+    }
+
+    static AbstractAction openHiveViewer(final RootWindow rootWindow) {
+        return new AbstractAction("Open Hive Browser") {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+                panel.add(BorderLayout.BEFORE_FIRST_LINE, new JLabel(MainPanel.POWERED_BY_HIVE));
+                // final JPanel resourceFilters = new JPanel();
+                // resourceFilters.setBorder(BorderFactory.createTitledBorder("Resource
+                // Filters"));
+                // panel.add(BorderLayout.BEFORE_LINE_BEGINS, resourceFilters);
+                // resourceFilters.add(new JLabel("Resource Type"));
+                // resourceFilters.add(new JComboBox<>(new String[] { "Any" }));
+                final JList<String> view = new JList<>(
+                        new String[]{"Bongo Bongo (Phantom Shadow Beast)", "Other Model", "Other Model"});
+                view.setCellRenderer(new DefaultListCellRenderer() {
+                    @Override
+                    public Component getListCellRendererComponent(final JList<?> list, final Object value,
+                                                                  final int index, final boolean isSelected, final boolean cellHasFocus) {
+                        final Component listCellRendererComponent = super.getListCellRendererComponent(list, value, index,
+                                isSelected, cellHasFocus);
+                        final ImageIcon icon = new ImageIcon(MainPanel.class.getResource("ImageBin/deleteme.png"));
+                        setIcon(new ImageIcon(icon.getImage().getScaledInstance(48, 32, Image.SCALE_DEFAULT)));
+                        return listCellRendererComponent;
+                    }
+                });
+                panel.add(BorderLayout.BEFORE_LINE_BEGINS, new JScrollPane(view));
+
+                final JPanel tags = new JPanel();
+                tags.setBorder(BorderFactory.createTitledBorder("Tags"));
+                tags.setLayout(new GridLayout(30, 1));
+                tags.add(new JCheckBox("Results must include all selected tags"));
+                tags.add(new JSeparator());
+                tags.add(new JLabel("Types (Models)"));
+                tags.add(new JSeparator());
+                tags.add(new JCheckBox("Building"));
+                tags.add(new JCheckBox("Doodad"));
+                tags.add(new JCheckBox("Item"));
+                tags.add(new JCheckBox("User Interface"));
+                panel.add(BorderLayout.CENTER, tags);
+                // final FloatingWindow floatingWindow =
+                // rootWindow.createFloatingWindow(rootWindow.getLocation(),
+                // mpqBrowser.getPreferredSize(),
+                // new View("MPQ Browser",
+                // new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16,
+                // Image.SCALE_FAST)),
+                // mpqBrowser));
+                // floatingWindow.getTopLevelAncestor().setVisible(true);
+                rootWindow.setWindow(new SplitWindow(true, 0.75f, rootWindow.getWindow(), new View("Hive Browser",
+                        new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)), panel)));
+            }
+        };
+    }
+
+    static AbstractAction openDoodadViewer(final MainPanel mainPanel) {
+        return new AbstractAction("Open Doodad Browser") {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final UnitEditorTree unitEditorTree = new UnitEditorTree(mainPanel.getDoodadData(), new DoodadTabTreeBrowserBuilder(),
+                        mainPanel.getUnitEditorSettings(), MutableObjectData.WorldEditorDataType.DOODADS);
+                unitEditorTree.selectFirstUnit();
+                // final FloatingWindow floatingWindow =
+                // rootWindow.createFloatingWindow(rootWindow.getLocation(),
+                // mpqBrowser.getPreferredSize(),
+                // new View("MPQ Browser",
+                // new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16,
+                // Image.SCALE_FAST)),
+                // mpqBrowser));
+                // floatingWindow.getTopLevelAncestor().setVisible(true);
+                unitEditorTree.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(final MouseEvent e) {
+                        try {
+                            if (e.getClickCount() >= 2) {
+                                final TreePath currentUnitTreePath = unitEditorTree.getSelectionPath();
+                                if (currentUnitTreePath != null) {
+                                    final DefaultMutableTreeNode o = (DefaultMutableTreeNode) currentUnitTreePath
+                                            .getLastPathComponent();
+                                    if (o.getUserObject() instanceof MutableObjectData.MutableGameObject) {
+                                        final MutableObjectData.MutableGameObject obj = (MutableObjectData.MutableGameObject) o.getUserObject();
+                                        final int numberOfVariations = obj.getFieldAsInteger(War3ID.fromString("dvar"), 0);
+                                        if (numberOfVariations > 1) {
+                                            for (int i = 0; i < numberOfVariations; i++) {
+                                                final String path = MainPanel.convertPathToMDX(
+                                                        obj.getFieldAsString(War3ID.fromString("dfil"), 0) + i + ".mdl");
+                                                final String portrait = com.hiveworkshop.wc3.util.ModelUtils.getPortrait(path);
+                                                final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
+                                                        .getIcon(obj, MutableObjectData.WorldEditorDataType.DOODADS)
+                                                        .getScaledInstance(16, 16, Image.SCALE_DEFAULT));
+
+                                                System.out.println(path);
+                                                FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get().getResourceAsStream(path), true, i == 0,
+                                                        icon);
+                                                if (mainPanel.prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
+                                                    FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get().getResourceAsStream(portrait), true,
+                                                            false, icon);
+                                                }
+                                            }
+                                        } else {
+                                            final String path = MainPanel.convertPathToMDX(
+                                                    obj.getFieldAsString(War3ID.fromString("dfil"), 0));
+                                            final String portrait = ModelUtils.getPortrait(path);
+                                            final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
+                                                    .getIcon(obj, MutableObjectData.WorldEditorDataType.DOODADS)
+                                                    .getScaledInstance(16, 16, Image.SCALE_DEFAULT));
+                                            System.out.println(path);
+                                            FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get().getResourceAsStream(path), true, true, icon);
+                                            if (mainPanel.prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
+                                                FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get().getResourceAsStream(portrait), true, false,
+                                                        icon);
+                                            }
+                                        }
+                                        mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+                                                "Allows the user to control which parts of the model are displayed for editing.");
+                                        mainPanel.toolsMenu.setEnabled(true);
+                                    }
+                                }
+                            }
+                        } catch (final Exception exc) {
+                            exc.printStackTrace();
+                            ExceptionPopup.display(exc);
+                        }
+                    }
+                });
+                mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(),
+                        new View("Doodad Browser",
+                                new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
+                                new JScrollPane(unitEditorTree))));
+            }
+        };
+    }
+
+    static AbstractAction openPreferences(final MainPanel mainPanel) {
+        return new AbstractAction("Open Preferences") {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final ProgramPreferences programPreferences = new ProgramPreferences();
+                programPreferences.loadFrom(mainPanel.prefs);
+                final List<DataSourceDescriptor> priorDataSources = SaveProfile.get().getDataSources();
+                final ProgramPreferencesPanel programPreferencesPanel = new ProgramPreferencesPanel(programPreferences,
+                        priorDataSources);
+                // final JFrame frame = new JFrame("Preferences");
+                // frame.setIconImage(MainFrame.frame.getIconImage());
+                // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                // frame.setContentPane(programPreferencesPanel);
+                // frame.pack();
+                // frame.setLocationRelativeTo(MainPanel.this);
+                // frame.setVisible(true);
+
+                final int ret = JOptionPane.showConfirmDialog(mainPanel, programPreferencesPanel, "Preferences",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (ret == JOptionPane.OK_OPTION) {
+                    mainPanel.prefs.loadFrom(programPreferences);
+                    final List<DataSourceDescriptor> dataSources = programPreferencesPanel.getDataSources();
+                    final boolean changedDataSources = (dataSources != null) && !dataSources.equals(priorDataSources);
+                    if (changedDataSources) {
+                        SaveProfile.get().setDataSources(dataSources);
+                    }
+                    SaveProfile.save();
+                    if (changedDataSources) {
+                        mainPanel.dataSourcesChanged();
+                    }
+                    mainPanel.updateUIFromProgramPreferences();
+                }
+            }
+        };
+    }
+
+    static AbstractAction openMPQViewer(final MainPanel mainPanel) {
+        return new AbstractAction("Open MPQ Browser") {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final View view = MPQBrowser.createMPQBrowser(mainPanel);
+                mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(), view));
+            }
+        };
+    }
+
+    static AbstractAction openUnitViewer(final MainPanel mainPanel) {
+        return new AbstractAction("Open Unit Browser") {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final UnitEditorTree unitEditorTree = mainPanel.createUnitEditorTree();
+                mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(),
+                        new View("Unit Browser",
+                                new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
+                                new JScrollPane(unitEditorTree))));
+            }
+        };
+    }
+
+    static void clearResent(MainPanel mainPanel) {
+        final int dialogResult = JOptionPane.showConfirmDialog(mainPanel,
+                "Are you sure you want to clear the Recent history?", "Confirm Clear",
+                JOptionPane.YES_NO_OPTION);
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            SaveProfile.get().clearRecent();
+            mainPanel.updateRecent();
+        }
     }
 }

@@ -264,7 +264,7 @@ public class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                if (panel.closeAll()) {
+                if (MainPanel.closeAll(panel)) {
                     System.exit(0);
                 }
             }
