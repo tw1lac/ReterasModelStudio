@@ -1,19 +1,29 @@
 package com.matrixeater.src;
 
+import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.modeledit.ImportPanel;
+import com.hiveworkshop.wc3.gui.modeledit.MaterialListRenderer;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
 import com.hiveworkshop.wc3.mdl.*;
+import com.hiveworkshop.wc3.mdx.MdxModel;
 import com.hiveworkshop.wc3.mdx.MdxUtils;
+import com.hiveworkshop.wc3.units.GameObject;
+import com.hiveworkshop.wc3.units.ModelOptionPane;
+import com.hiveworkshop.wc3.units.fields.UnitFields;
+import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.IconUtils;
 import com.owens.oobjloader.builder.Build;
 import com.owens.oobjloader.parser.Parse;
 import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,6 +38,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class FileUtils {
+    public final static JFileChooser fc = new JFileChooser();
+    public final static JFileChooser exportTextureDialog = new JFileChooser();
+
+    public FileUtils(){
+        createFileChooser();
+    }
+
     public static void loadFile(MainPanel mainPanel, final File f, final boolean temporary) {
         loadFile(mainPanel, f, temporary, true, MainPanel.MDLIcon);
     }
@@ -450,5 +467,330 @@ public class FileUtils {
 
         ModelPanelUgg.loadModel(mainPanel, workingDirectory == null, true,
                 NewModelPanel.createModelPanel(mainPanel, blankTextureModel, GlobalIcons.ORANGE_ICON, true));
+    }
+
+    static void exportTextures(MainPanel mainPanel) {
+        final DefaultListModel<Material> materials = new DefaultListModel<>();
+        for (int i = 0; i < mainPanel.currentMDL().getMaterials().size(); i++) {
+            final Material mat = mainPanel.currentMDL().getMaterials().get(i);
+            materials.addElement(mat);
+        }
+        for (final ParticleEmitter2 emitter2 : mainPanel.currentMDL().sortedIdObjects(ParticleEmitter2.class)) {
+            final Material dummyMaterial = new Material(
+                    new Layer("Blend", mainPanel.currentMDL().getTexture(emitter2.getTextureID())));
+        }
+
+        final JList<Material> materialsList = new JList<>(materials);
+        materialsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        materialsList.setCellRenderer(new MaterialListRenderer(mainPanel.currentMDL()));
+        JOptionPane.showMessageDialog(mainPanel, new JScrollPane(materialsList));
+
+        if (exportTextureDialog.getCurrentDirectory() == null) {
+            final EditableModel current = mainPanel.currentMDL();
+            if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+                fc.setCurrentDirectory(current.getFile().getParentFile());
+            } else if (mainPanel.profile.getPath() != null) {
+                fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+            }
+        }
+        if (exportTextureDialog.getCurrentDirectory() == null) {
+            exportTextureDialog.setSelectedFile(new File(exportTextureDialog.getCurrentDirectory()
+                    + File.separator + materialsList.getSelectedValue().getName()));
+        }
+
+        final int x = exportTextureDialog.showSaveDialog(mainPanel);
+        if (x == JFileChooser.APPROVE_OPTION) {
+            final File file = exportTextureDialog.getSelectedFile();
+            if (file != null) {
+                try {
+                    if (file.getName().lastIndexOf('.') >= 0) {
+                        BufferedImage bufferedImage = materialsList.getSelectedValue()
+                                .getBufferedImage(mainPanel.currentMDL().getWrappedDataSource());
+                        String fileExtension = file.getName().substring(file.getName().lastIndexOf('.') + 1)
+                                .toUpperCase();
+                        if (fileExtension.equals("BMP") || fileExtension.equals("JPG")
+                                || fileExtension.equals("JPEG")) {
+                            JOptionPane.showMessageDialog(mainPanel,
+                                    "Warning: Alpha channel was converted to black. Some data will be lost\nif you convert this texture back to Warcraft BLP.");
+                            bufferedImage = BLPHandler.removeAlphaChannel(bufferedImage);
+                        }
+                        if (fileExtension.equals("BLP")) {
+                            fileExtension = "blp";
+                        }
+                        final boolean write = ImageIO.write(bufferedImage, fileExtension, file);
+                        if (!write) {
+                            JOptionPane.showMessageDialog(mainPanel, "File type unknown or unavailable");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(mainPanel, "No file type was specified");
+                    }
+                } catch (final Exception e1) {
+                    ExceptionPopup.display(e1);
+                    e1.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(mainPanel, "No output file was specified");
+            }
+        }
+    }
+
+    static void importFromFile(MainPanel mainPanel) {
+        fc.setDialogTitle("Import");
+        final EditableModel current = mainPanel.currentMDL();
+        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+            fc.setCurrentDirectory(current.getFile().getParentFile());
+        } else if (mainPanel.profile.getPath() != null) {
+            fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+        }
+        final int returnValue = fc.showOpenDialog(mainPanel);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            mainPanel.currentFile = fc.getSelectedFile();
+            mainPanel.profile.setPath(mainPanel.currentFile.getParent());
+            mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+                    "Allows the user to control which parts of the model are displayed for editing.");
+            mainPanel.toolsMenu.setEnabled(true);
+            importFile(mainPanel, mainPanel.currentFile);
+        }
+
+        fc.setSelectedFile(null);
+        mainPanel.refreshController();
+    }
+
+    static void animFromFile(MainPanel mainPanel) {
+        fc.setDialogTitle("Animation Source");
+        final EditableModel current = mainPanel.currentMDL();
+        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+            fc.setCurrentDirectory(current.getFile().getParentFile());
+        } else if (mainPanel.profile.getPath() != null) {
+            fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+        }
+        final int returnValue = fc.showOpenDialog(mainPanel);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            mainPanel.currentFile = fc.getSelectedFile();
+            mainPanel.profile.setPath(mainPanel.currentFile.getParent());
+            final EditableModel animationSourceModel = EditableModel.read(mainPanel.currentFile);
+            mainPanel.addSingleAnimation(current, animationSourceModel);
+        }
+
+        fc.setSelectedFile(null);
+
+        mainPanel.refreshController();
+    }
+
+    static void animFromObject(MainPanel mainPanel) {
+        fc.setDialogTitle("Animation Source");
+        final MutableObjectData.MutableGameObject fetchResult = mainPanel.fetchObject();
+        if (fetchResult != null) {
+            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
+        }
+    }
+
+    static void animFromModel(MainPanel mainPanel) {
+        fc.setDialogTitle("Animation Source");
+        final ModelOptionPane.ModelElement fetchResult = mainPanel.fetchModel();
+        if (fetchResult != null) {
+            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getFilepath());
+        }
+    }
+
+    static void animFromUnit(MainPanel mainPanel) {
+        fc.setDialogTitle("Animation Source");
+        final GameObject fetchResult = mainPanel.fetchUnit();
+        if (fetchResult != null) {
+            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getField("file"));
+        }
+    }
+
+    static void onClickOpen(MainPanel mainPanel) {
+        fc.setDialogTitle("Open");
+        final EditableModel current = mainPanel.currentMDL();
+        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+            fc.setCurrentDirectory(current.getFile().getParentFile());
+        } else if (mainPanel.profile.getPath() != null) {
+            fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+        }
+
+        final int returnValue = fc.showOpenDialog(mainPanel);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            openFile(mainPanel, fc.getSelectedFile());
+        }
+
+        fc.setSelectedFile(null);
+    }
+
+    static void onClickSaveAs(MainPanel mainPanel) {
+        final EditableModel current = mainPanel.currentMDL();
+        onClickSaveAs(mainPanel, current);
+    }
+
+    static void onClickSaveAs(MainPanel mainPanel, final EditableModel current) {
+        try {
+            fc.setDialogTitle("Save as");
+            if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+                fc.setCurrentDirectory(current.getFile().getParentFile());
+                fc.setSelectedFile(current.getFile());
+            } else if (mainPanel.profile.getPath() != null) {
+                fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+            }
+            final int returnValue = fc.showSaveDialog(mainPanel);
+            File temp = fc.getSelectedFile();
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                if (temp != null) {
+                    final FileFilter ff = fc.getFileFilter();
+                    final String ext = ff.accept(new File("junk.mdl")) ? ".mdl" : ".mdx";
+                    if (ff.accept(new File("junk.obj"))) {
+                        throw new UnsupportedOperationException("OBJ saving has not been coded yet.");
+                    }
+                    final String name = temp.getName();
+                    if (name.lastIndexOf('.') != -1) {
+                        if (!name.substring(name.lastIndexOf('.')).equals(ext)) {
+                            temp = new File(
+                                    temp.getAbsolutePath().substring(0, temp.getAbsolutePath().lastIndexOf('.')) + ext);
+                        }
+                    } else {
+                        temp = new File(temp.getAbsolutePath() + ext);
+                    }
+                    mainPanel.currentFile = temp;
+                    if (temp.exists()) {
+                        final Object[] options = {"Overwrite", "Cancel"};
+                        final int n = JOptionPane.showOptionDialog(MainFrame.frame, "Selected file already exists.",
+                                "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options,
+                                options[1]);
+                        if (n == 1) {
+                            fc.setSelectedFile(null);
+                            return;
+                        }
+                    }
+                    mainPanel.profile.setPath(mainPanel.currentFile.getParent());
+                    if (ext.equals(".mdl")) {
+                        mainPanel.currentMDL().printTo(mainPanel.currentFile);
+                    } else {
+                        final MdxModel model = new MdxModel(mainPanel.currentMDL());
+                        try (BlizzardDataOutputStream writer = new BlizzardDataOutputStream(mainPanel.currentFile)) {
+                            model.save(writer);
+                        } catch (final IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    mainPanel.currentMDL().setFileRef(mainPanel.currentFile);
+                    // currentMDLDisp().resetBeenSaved();
+                    // TODO reset been saved
+                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getMenuItem().setName(mainPanel.currentFile.getName().split("\\.")[0]);
+                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getMenuItem().setToolTipText(mainPanel.currentFile.getPath());
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel,
+                            "You tried to save, but you somehow didn't select a file.\nThat is bad.");
+                }
+            }
+            fc.setSelectedFile(null);
+            return;
+        } catch (final Exception exc) {
+            ExceptionPopup.display(exc);
+        }
+        mainPanel.refreshController();
+    }
+
+    static void onClickSave(MainPanel mainPanel) {
+        try {
+            if (mainPanel.currentMDL() != null && mainPanel.currentMDL().getFile() != null) {
+                mainPanel.currentMDL().saveFile();
+                mainPanel.profile.setPath(mainPanel.currentMDL().getFile().getParent());
+                // currentMDLDisp().resetBeenSaved();
+                // TODO reset been saved
+            }
+        } catch (final Exception exc) {
+            ExceptionPopup.display(exc);
+        }
+        mainPanel.refreshController();
+    }
+
+    static void mergeGeoset(MainPanel mainPanel) {
+        fc.setDialogTitle("Merge Single Geoset (Oinker-based)");
+        final EditableModel current = mainPanel.currentMDL();
+        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
+            fc.setCurrentDirectory(current.getFile().getParentFile());
+        } else if (mainPanel.profile.getPath() != null) {
+            fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+        }
+        final int returnValue = fc.showOpenDialog(mainPanel);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            mainPanel.currentFile = fc.getSelectedFile();
+            final EditableModel geoSource = EditableModel.read(mainPanel.currentFile);
+            mainPanel.profile.setPath(mainPanel.currentFile.getParent());
+            boolean going = true;
+            Geoset host = null;
+            while (going) {
+                final String s = JOptionPane.showInputDialog(mainPanel,
+                        "Geoset into which to Import: (1 to " + current.getGeosetsSize() + ")");
+                try {
+                    final int x = Integer.parseInt(s);
+                    if ((x >= 1) && (x <= current.getGeosetsSize())) {
+                        host = current.getGeoset(x - 1);
+                        going = false;
+                    }
+                } catch (final NumberFormatException ignored) {
+
+                }
+            }
+            Geoset newGeoset = null;
+            going = true;
+            while (going) {
+                final String s = JOptionPane.showInputDialog(mainPanel,
+                        "Geoset to Import: (1 to " + geoSource.getGeosetsSize() + ")");
+                try {
+                    final int x = Integer.parseInt(s);
+                    if (x <= geoSource.getGeosetsSize()) {
+                        newGeoset = geoSource.getGeoset(x - 1);
+                        going = false;
+                    }
+                } catch (final NumberFormatException ignored) {
+
+                }
+            }
+            newGeoset.updateToObjects(current);
+            System.out.println("putting " + newGeoset.numUVLayers() + " into a nice " + host.numUVLayers());
+            for (int i = 0; i < newGeoset.numVerteces(); i++) {
+                final GeosetVertex ver = newGeoset.getVertex(i);
+                host.add(ver);
+                ver.setGeoset(host);// geoset = host;
+                // for( int z = 0; z < host.n.numUVLayers(); z++ )
+                // {
+                // host.getUVLayer(z).addTVertex(newGeoset.getVertex(i).getTVertex(z));
+                // }
+            }
+            for (int i = 0; i < newGeoset.numTriangles(); i++) {
+                final Triangle tri = newGeoset.getTriangle(i);
+                host.add(tri);
+                tri.setGeoRef(host);
+            }
+        }
+
+        fc.setSelectedFile(null);
+    }
+
+    public void createFileChooser() {
+//        JFileChooser fc;
+//        JFileChooser exportTextureDialog;
+//        final FileFilter filter;
+//        final File filterFile;
+//        filterFile = new File("", ".mdl");
+//        filter = new MDLFilter();
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("All Accepted FileTypes", "mdx", "blp", "png", "mdl", "obj"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Binary Model '-.mdx'", "mdx"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Model '-.mdl'", "mdl"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Texture '-.blp'", "blp"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image '-.png'", "png"));
+//        fc.addChoosableFileFilter(filter);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Wavefront OBJ '-.obj'", "obj"));
+        exportTextureDialog.setDialogTitle("Export Texture");
+        final String[] imageTypes = ImageIO.getWriterFileSuffixes();
+        for (final String suffix : imageTypes) {
+            exportTextureDialog.addChoosableFileFilter(new FileNameExtensionFilter(suffix.toUpperCase() + " Image File", suffix));
+        }
     }
 }

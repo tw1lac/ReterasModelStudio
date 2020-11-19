@@ -26,9 +26,9 @@ public class ToolBar {
 
         addToolbarIcon(mainPanel.toolbar, "New", "new.png", () -> NewModelPanel.newModel(mainPanel));
 
-        addToolbarIcon(mainPanel.toolbar, "Open", "open.png", mainPanel::onClickOpen);
+        addToolbarIcon(mainPanel.toolbar, "Open", "open.png", () -> FileUtils.onClickOpen(mainPanel));
 
-        addToolbarIcon(mainPanel.toolbar, "Save", "save.png", mainPanel::onClickSave);
+        addToolbarIcon(mainPanel.toolbar, "Save", "save.png", () -> FileUtils.onClickSave(mainPanel));
 
         mainPanel.toolbar.addSeparator();
 

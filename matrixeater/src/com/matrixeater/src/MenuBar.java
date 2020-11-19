@@ -152,10 +152,10 @@ public class MenuBar {
         mainPanel.textureModels = new JCheckBoxMenuItem("Texture Models", true);
         mainPanel.textureModels.setMnemonic(KeyEvent.VK_T);
         mainPanel.textureModels.setSelected(true);
-        mainPanel.textureModels.addActionListener(mainPanel);
+        mainPanel.textureModels.addActionListener(e -> mainPanel.prefs.setTextureModels(mainPanel.textureModels.isSelected()));
         mainPanel.viewMenu.add(mainPanel.textureModels);
 
-        mainPanel.newDirectory = createMenuItem("Change Game Directory", mainPanel.viewMenu, mainPanel, KeyEvent.VK_D, KeyStroke.getKeyStroke("control shift D"));
+        mainPanel.newDirectory =  createMenuItem("Change Game Directory", mainPanel.viewMenu, mainPanel, KeyEvent.VK_D, KeyStroke.getKeyStroke("control shift D"));
         mainPanel.newDirectory.setToolTipText("Changes the directory from which to load texture files for the 3D display.");
 
         mainPanel.viewMenu.add(new JSeparator());
@@ -170,7 +170,7 @@ public class MenuBar {
         mainPanel.showNormals = new JCheckBoxMenuItem("Show Normals", true);
         mainPanel.showNormals.setMnemonic(KeyEvent.VK_N);
         mainPanel.showNormals.setSelected(false);
-        mainPanel.showNormals.addActionListener(mainPanel);
+        mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
         mainPanel.viewMenu.add(mainPanel.showNormals);
 
         mainPanel.viewMode = createMenuMenu("3D View Mode", -1, mainPanel.viewMenu);
@@ -191,9 +191,9 @@ public class MenuBar {
     }
 
     private static void fillHelpMenu(MainPanel mainPanel) {
-        mainPanel.changelogButton = createMenuItem("Changelog", mainPanel.aboutMenu, mainPanel, KeyEvent.VK_A);
+        mainPanel.changelogButton = createMenuItem("Changelog", mainPanel.aboutMenu, e -> CreditsPanel.showCreditsButtonResponse("changelist.rtf", "Changelog"), KeyEvent.VK_A);
 
-        mainPanel.creditsButton = createMenuItem("About", mainPanel.aboutMenu, mainPanel, KeyEvent.VK_A);
+        mainPanel.creditsButton = createMenuItem("About", mainPanel.aboutMenu, e -> CreditsPanel.showCreditsButtonResponse("credits.rtf", "About"), KeyEvent.VK_A);
     }
 
     private static void fillToolsMenu(MainPanel mainPanel) {
@@ -206,7 +206,7 @@ public class MenuBar {
 
         mainPanel.toolsMenu.add(new JSeparator());
 
-        mainPanel.editUVs = createMenuItem("Edit UV Mapping", mainPanel.toolsMenu, mainPanel, KeyEvent.VK_U);
+        mainPanel.editUVs = createMenuItem("Edit UV Mapping", mainPanel.toolsMenu, e -> ModelPanelUgg.editUVs(mainPanel), KeyEvent.VK_U);
 
         mainPanel.editTextures = createMenuItem("Edit Textures", mainPanel.toolsMenu, MenuBarActionListeners.editTextures(mainPanel), KeyEvent.VK_T);
 
@@ -311,23 +311,23 @@ public class MenuBar {
 
         mainPanel.animationMenu = createMenuMenu("Animation", KeyEvent.VK_A, mainPanel.addMenu);
 
-        mainPanel.riseFallBirth = createMenuItem("Rising/Falling Birth/Death", mainPanel.animationMenu, mainPanel, KeyEvent.VK_R);
+        mainPanel.riseFallBirth = createMenuItem("Rising/Falling Birth/Death", mainPanel.animationMenu, e -> mainPanel.riseFallBirth(), KeyEvent.VK_R);
 
         mainPanel.singleAnimationMenu = createMenuMenu("Single", KeyEvent.VK_S, mainPanel.animationMenu);
 
-        mainPanel.animFromFile = createMenuItem("From File", mainPanel.singleAnimationMenu, mainPanel, KeyEvent.VK_F);
+        mainPanel.animFromFile = createMenuItem("From File", mainPanel.singleAnimationMenu, e -> FileUtils.animFromFile(mainPanel), KeyEvent.VK_F);
 
-        mainPanel.animFromUnit = createMenuItem("From Unit", mainPanel.singleAnimationMenu, mainPanel, KeyEvent.VK_U);
+        mainPanel.animFromUnit = createMenuItem("From Unit", mainPanel.singleAnimationMenu, e -> FileUtils.animFromUnit(mainPanel), KeyEvent.VK_U);
 
-        mainPanel.animFromModel = createMenuItem("From Model", mainPanel.singleAnimationMenu, mainPanel, KeyEvent.VK_M);
+        mainPanel.animFromModel = createMenuItem("From Model", mainPanel.singleAnimationMenu, e -> FileUtils.animFromModel(mainPanel), KeyEvent.VK_M);
 
-        mainPanel.animFromObject = createMenuItem("From Object", mainPanel.singleAnimationMenu, mainPanel, KeyEvent.VK_O);
+        mainPanel.animFromObject = createMenuItem("From Object", mainPanel.singleAnimationMenu, e -> FileUtils.animFromObject(mainPanel), KeyEvent.VK_O);
     }
 
     private static void fillScriptsMenu(MainPanel mainPanel) {
-        mainPanel.importButtonScript = createMenuItem("Oinkerwinkle-Style AnimTransfer", mainPanel.scriptsMenu, mainPanel, KeyEvent.VK_P, KeyStroke.getKeyStroke("control shift S"));
+        mainPanel.importButtonScript = createMenuItem("Oinkerwinkle-Style AnimTransfer", mainPanel.scriptsMenu, e -> mainPanel.importScript(), KeyEvent.VK_P, KeyStroke.getKeyStroke("control shift S"));
 
-        mainPanel.mergeGeoset = createMenuItem("Oinkerwinkle-Style Merge Geoset", mainPanel.scriptsMenu, mainPanel, KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
+        mainPanel.mergeGeoset = createMenuItem("Oinkerwinkle-Style Merge Geoset", mainPanel.scriptsMenu, e -> FileUtils.mergeGeoset(mainPanel), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
 
         mainPanel.nullmodelButton = createMenuItem("Edit/delete model components", mainPanel.scriptsMenu, mainPanel, KeyEvent.VK_E, KeyStroke.getKeyStroke("control E"));
 
@@ -353,7 +353,8 @@ public class MenuBar {
     private static void fillFileMenu(MainPanel mainPanel) {
         mainPanel.newModel = createMenuItem("New", mainPanel.fileMenu, mainPanel, KeyEvent.VK_N, KeyStroke.getKeyStroke("control N"));
 
-        mainPanel.open = createMenuItem("Open", mainPanel.fileMenu, mainPanel, KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
+//        mainPanel.open = createMenuItem("Open", mainPanel.fileMenu, e -> FileUtils.onClickOpen(mainPanel), KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
+        createMenuItem("Open", mainPanel.fileMenu, e -> FileUtils.onClickOpen(mainPanel), KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
 
         mainPanel.recentMenu = createMenuMenu("Open Recent", KeyEvent.VK_R, "Allows you to access recently opened files.", mainPanel.fileMenu);
         mainPanel.recentMenu.add(new JSeparator());
@@ -363,11 +364,11 @@ public class MenuBar {
 
         mainPanel.fetch = createMenuMenu("Open Internal", KeyEvent.VK_F, mainPanel.fileMenu);
 
-        mainPanel.fetchUnit = createMenuItem("Unit", mainPanel.fetch, mainPanel, KeyEvent.VK_U, KeyStroke.getKeyStroke("control U"));
+        mainPanel.fetchUnit = createMenuItem("Unit", mainPanel.fetch, e -> mainPanel.fetchUnitButtonResponse(), KeyEvent.VK_U, KeyStroke.getKeyStroke("control U"));
 
-        mainPanel.fetchModel = createMenuItem("Model", mainPanel.fetch, mainPanel, KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
+        mainPanel.fetchModel = createMenuItem("Model", mainPanel.fetch, e -> mainPanel.fetchModelButtonResponse(), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
 
-        mainPanel.fetchObject = createMenuItem("Object Editor", mainPanel.fetch, mainPanel, KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
+        mainPanel.fetchObject = createMenuItem("Object Editor", mainPanel.fetch, e -> mainPanel.fetchObjectButtonResponse(), KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
 
         mainPanel.fetch.add(new JSeparator());
 
@@ -381,29 +382,29 @@ public class MenuBar {
 
         mainPanel.importMenu = createMenuMenu("Import", KeyEvent.VK_I, mainPanel.fileMenu);
 
-        mainPanel.importButton = createMenuItem("From File", mainPanel.importMenu, mainPanel, KeyEvent.VK_I, KeyStroke.getKeyStroke("control shift I"));
+        mainPanel.importButton = createMenuItem("From File", mainPanel.importMenu, e -> FileUtils.importFromFile(mainPanel), KeyEvent.VK_I, KeyStroke.getKeyStroke("control shift I"));
 
-        mainPanel.importUnit = createMenuItem("From Unit", mainPanel.importMenu, mainPanel, KeyEvent.VK_U, KeyStroke.getKeyStroke("control shift U"));
+        mainPanel.importUnit = createMenuItem("From Unit", mainPanel.importMenu, e -> mainPanel.importUnit(), KeyEvent.VK_U, KeyStroke.getKeyStroke("control shift U"));
 
-        mainPanel.importGameModel = createMenuItem("From WC3 Model", mainPanel.importMenu, mainPanel, KeyEvent.VK_M);
+        mainPanel.importGameModel = createMenuItem("From WC3 Model", mainPanel.importMenu, e -> mainPanel.importGameModel(), KeyEvent.VK_M);
 
-        mainPanel.importGameObject = createMenuItem("From Object Editor", mainPanel.importMenu, mainPanel, KeyEvent.VK_O);
+        mainPanel.importGameObject = createMenuItem("From Object Editor", mainPanel.importMenu, e -> mainPanel.importGameObject(), KeyEvent.VK_O);
 
-        mainPanel.importFromWorkspace = createMenuItem("From Workspace", mainPanel.importMenu, mainPanel, KeyEvent.VK_O);
+        mainPanel.importFromWorkspace = createMenuItem("From Workspace", mainPanel.importMenu, e -> mainPanel.importFromWorkspace(), KeyEvent.VK_O);
 
-        mainPanel.save = createMenuItem("Save", mainPanel.fileMenu, mainPanel, KeyEvent.VK_S, KeyStroke.getKeyStroke("control S"));
+        mainPanel.save = createMenuItem("Save", mainPanel.fileMenu, e -> FileUtils.onClickSave(mainPanel), KeyEvent.VK_S, KeyStroke.getKeyStroke("control S"));
 
-        mainPanel.saveAs = createMenuItem("Save as", mainPanel.fileMenu, e -> mainPanel.onClickSaveAs(), KeyEvent.VK_A, KeyStroke.getKeyStroke("control Q"));
+        mainPanel.saveAs = createMenuItem("Save as", mainPanel.fileMenu, e -> FileUtils.onClickSaveAs(mainPanel), KeyEvent.VK_A, KeyStroke.getKeyStroke("control Q"));
 
         mainPanel.fileMenu.add(new JSeparator());
 
-        mainPanel.exportTextures = createMenuItem("Export Texture", mainPanel.fileMenu, mainPanel, KeyEvent.VK_E);
+        mainPanel.exportTextures = createMenuItem("Export Texture", mainPanel.fileMenu, e -> FileUtils.exportTextures(mainPanel), KeyEvent.VK_E);
 
         mainPanel.fileMenu.add(new JSeparator());
 
         mainPanel.revert = createMenuItem("Revert", mainPanel.fileMenu, MenuBarActionListeners.revert(mainPanel), -1);
 
-        mainPanel.close = createMenuItem("Close", mainPanel.fileMenu, mainPanel, KeyEvent.VK_E, KeyStroke.getKeyStroke("control E"));
+        mainPanel.close = createMenuItem("Close", mainPanel.fileMenu, e -> mainPanel.onClickClose(), KeyEvent.VK_E, KeyStroke.getKeyStroke("control E"));
 
         mainPanel.fileMenu.add(new JSeparator());
 
@@ -429,9 +430,9 @@ public class MenuBar {
 
         final JMenu optimizeMenu = createMenuMenu("Optimize", KeyEvent.VK_O, mainPanel.editMenu);
 
-        mainPanel.linearizeAnimations = createMenuItem("Linearize Animations", optimizeMenu, mainPanel, KeyEvent.VK_L);
+        mainPanel.linearizeAnimations = createMenuItem("Linearize Animations", optimizeMenu, e -> mainPanel.linearizeAnimations(), KeyEvent.VK_L);
 
-        mainPanel.simplifyKeyframes = createMenuItem("Simplify Keyframes (Experimental)", optimizeMenu, mainPanel, KeyEvent.VK_K);
+        mainPanel.simplifyKeyframes = createMenuItem("Simplify Keyframes (Experimental)", optimizeMenu, e -> mainPanel.simplifyKeyframesButtonResponse(), KeyEvent.VK_K);
 
         final JMenuItem minimizeGeoset = createMenuItem("Minimize Geosets", optimizeMenu, MenuBarActionListeners.minimizeGeoset(mainPanel), KeyEvent.VK_K);
 
@@ -456,7 +457,7 @@ public class MenuBar {
         mainPanel.paste.setActionCommand((String) TransferHandler.getPasteAction().getValue(Action.NAME));
 
         mainPanel.duplicateSelection = createMenuItem("Duplicate", mainPanel.editMenu, MainPanelActions.cloneAction(mainPanel), -1, KeyStroke.getKeyStroke("control D"));
-
+//        ModelPanelUgg.duplicateSelection(namePicker, currentModelPanel);
         mainPanel.editMenu.add(new JSeparator());
 
         mainPanel.snapVertices = createMenuItem("Snap Vertices", mainPanel.editMenu, MainPanelActions.snapVerticesAction(mainPanel), -1, KeyStroke.getKeyStroke("control shift W"));
@@ -515,9 +516,9 @@ public class MenuBar {
         return createMenuItem(itemText, menu, mainPanel, keyEvent, null);
     }
 
-    private static JMenuItem createMenuItem(String itemText, JMenu menu, MainPanel mainPanel, int keyEvent, KeyStroke keyStroke) {
-        return createMenuItem(itemText, menu, mainPanel, keyEvent, keyStroke);
-    }
+//    private static JMenuItem createMenuItem(String itemText, JMenu menu, MainPanel mainPanel, int keyEvent, KeyStroke keyStroke) {
+//        return createMenuItem(itemText, menu, mainPanel, keyEvent, keyStroke);
+//    }
 
     private static JMenuItem createMenuItem(String itemText, JMenu menu, ActionListener actionListener, int keyEvent) {
         return createMenuItem(itemText, menu, actionListener, keyEvent, null);

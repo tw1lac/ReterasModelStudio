@@ -384,10 +384,10 @@ public class MenuBarActionListeners {
                     }
                 }
             }
-            mainPanel.fc.setDialogTitle("Export Static Snapshot");
-            final int result = mainPanel.fc.showSaveDialog(mainPanel);
+            FileUtils.fc.setDialogTitle("Export Static Snapshot");
+            final int result = FileUtils.fc.showSaveDialog(mainPanel);
             if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = mainPanel.fc.getSelectedFile();
+                File selectedFile = FileUtils.fc.getSelectedFile();
                 if (selectedFile != null) {
                     if (!selectedFile.getPath().toLowerCase().endsWith(".mdx")) {
                         selectedFile = new File(selectedFile.getPath() + ".mdx");
@@ -403,22 +403,22 @@ public class MenuBarActionListeners {
         return e -> {
             final BufferedImage fBufferedImage = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().getBufferedImage();
 
-            if (mainPanel.exportTextureDialog.getCurrentDirectory() == null) {
+            if (FileUtils.exportTextureDialog.getCurrentDirectory() == null) {
                 final EditableModel current = mainPanel.currentMDL();
                 if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-                    mainPanel.fc.setCurrentDirectory(current.getFile().getParentFile());
+                    FileUtils.fc.setCurrentDirectory(current.getFile().getParentFile());
                 } else if (mainPanel.profile.getPath() != null) {
-                    mainPanel.fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+                    FileUtils.fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
                 }
             }
-            if (mainPanel.exportTextureDialog.getCurrentDirectory() == null) {
-                mainPanel.exportTextureDialog
-                        .setSelectedFile(new File(mainPanel.exportTextureDialog.getCurrentDirectory() + File.separator));
+            if (FileUtils.exportTextureDialog.getCurrentDirectory() == null) {
+                FileUtils.exportTextureDialog
+                        .setSelectedFile(new File(FileUtils.exportTextureDialog.getCurrentDirectory() + File.separator));
             }
 
-            final int x = mainPanel.exportTextureDialog.showSaveDialog(mainPanel);
+            final int x = FileUtils.exportTextureDialog.showSaveDialog(mainPanel);
             if (x == JFileChooser.APPROVE_OPTION) {
-                final File file = mainPanel.exportTextureDialog.getSelectedFile();
+                final File file = FileUtils.exportTextureDialog.getSelectedFile();
                 if (file != null) {
                     try {
                         if (file.getName().lastIndexOf('.') >= 0) {

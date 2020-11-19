@@ -29,7 +29,6 @@ import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTreeBrowser;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitTabTreeBrowserBuilder;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import com.hiveworkshop.wc3.mdx.MdxModel;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.resources.WEString;
 import com.hiveworkshop.wc3.units.GameObject;
@@ -47,7 +46,6 @@ import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
 import com.matrixeater.imp.AnimationTransfer;
 import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.TabWindow;
@@ -61,14 +59,10 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.lwjgl.util.vector.Quaternion;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,8 +82,8 @@ public class MainPanel extends JPanel
     JMenu fileMenu, recentMenu, editMenu, toolsMenu, mirrorSubmenu, tweaksSubmenu, viewMenu, importMenu, addMenu,
             scriptsMenu, windowMenu, addParticle, animationMenu, singleAnimationMenu, aboutMenu, fetch;
     JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
-    //	ArrayList geoItems = new ArrayList();
-    JMenuItem newModel, open, fetchUnit, fetchModel, fetchObject, save, close, exit, revert, mergeGeoset, saveAs,
+    //	ArrayList geoItems = new ArrayList(); open,
+    JMenuItem newModel, fetchUnit, fetchModel, fetchObject, save, close, exit, revert, mergeGeoset, saveAs,
             importButton, importUnit, importGameModel, importGameObject, importFromWorkspace, importButtonScript,
             newDirectory, creditsButton, changelogButton, clearRecent, nullmodelButton, selectAll, invertSelect,
             expandSelection, snapNormals, snapVertices, flipAllUVsU, flipAllUVsV, inverseAllUVs, mirrorX, mirrorY,
@@ -106,10 +100,14 @@ public class MainPanel extends JPanel
     JRadioButtonMenuItem wireframe, solid;
     ButtonGroup viewModes;
 
-    final JFileChooser fc;
-    final JFileChooser exportTextureDialog;
-    final FileFilter filter;
-    final File filterFile;
+//    final JFileChooser fc;
+//    final JFileChooser exportTextureDialog;
+
+//    final JFileChooser fc;
+//    final JFileChooser exportTextureDialog;
+//    FileUtils.createFileChooser();
+//    final FileFilter filter;
+//    final File filterFile;
     File currentFile;
     ImportPanel importPanel;
     static final ImageIcon MDLIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/MDLIcon_16.png"));
@@ -234,11 +232,11 @@ public class MainPanel extends JPanel
         contextMenu.add(contextClose);
 
         contextCloseOthers = new JMenuItem("Close Others");
-        contextCloseOthers.addActionListener(this);
+        contextCloseOthers.addActionListener(e -> closeOthers(this, currentModelPanel));
         contextMenu.add(contextCloseOthers);
 
         contextCloseAll = new JMenuItem("Close All");
-        contextCloseAll.addActionListener(this);
+        contextCloseAll.addActionListener(e -> closeAll(this));
         contextMenu.add(contextCloseAll);
 
         modelPanels = new ArrayList<>();
@@ -320,22 +318,8 @@ public class MainPanel extends JPanel
         layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolbar).addComponent(rootWindow));
         setLayout(layout);
         // Create a file chooser
-        fc = new JFileChooser();
-        filterFile = new File("", ".mdl");
-        filter = new MDLFilter();
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Binary Model '-.mdx'", "mdx"));
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Texture '-.blp'", "blp"));
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image '-.png'", "png"));
-        fc.addChoosableFileFilter(filter);
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Wavefront OBJ '-.obj'", "obj"));
-        exportTextureDialog = new JFileChooser();
-        exportTextureDialog.setDialogTitle("Export Texture");
-        final String[] imageTypes = ImageIO.getWriterFileSuffixes();
-        for (final String suffix : imageTypes) {
-            exportTextureDialog
-                    .addChoosableFileFilter(new FileNameExtensionFilter(suffix.toUpperCase() + " Image File", suffix));
-        }
+
+
 
         // getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
         // Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo" );
@@ -423,7 +407,8 @@ public class MainPanel extends JPanel
 
     UnitEditorTree createUnitEditorTree() {
         final UnitEditorTree unitEditorTree = new UnitEditorTreeBrowser(getUnitData(), new UnitTabTreeBrowserBuilder(),
-                getUnitEditorSettings(), WorldEditorDataType.UNITS, (mdxFilePath, b, c, icon) -> FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(mdxFilePath), b, c, icon), prefs);
+                getUnitEditorSettings(), WorldEditorDataType.UNITS,
+                (mdxFilePath, b, c, icon) -> FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(mdxFilePath), b, c, icon), prefs);
         return unitEditorTree;
     }
 
@@ -514,6 +499,7 @@ public class MainPanel extends JPanel
 
         root.getActionMap().put("CloneSelection", MainPanelActions.cloneAction(this));
 
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("SPACE"), "MaximizeSpacebar");
         root.getActionMap().put("MaximizeSpacebar", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -531,9 +517,8 @@ public class MainPanel extends JPanel
                 }
             }
         });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("SPACE"),
-                "MaximizeSpacebar");
 
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("RIGHT"), "PressRight");
         root.getActionMap().put("PressRight", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -546,8 +531,8 @@ public class MainPanel extends JPanel
                 }
             }
         });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("RIGHT"),
-                "PressRight");
+
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("LEFT"), "PressLeft");
         root.getActionMap().put("PressLeft", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -560,66 +545,16 @@ public class MainPanel extends JPanel
                 }
             }
         });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("LEFT"),
-                "PressLeft");
-        root.getActionMap().put("PressUp", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    timeSliderPanel.jumpFrames(1);
-                }
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("UP"), "PressUp");
-        root.getActionMap().put("PressShiftUp", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    timeSliderPanel.jumpFrames(10);
-                }
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("shift UP"),
-                "PressShiftUp");
-        root.getActionMap().put("PressDown", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    timeSliderPanel.jumpFrames(-1);
-                }
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("DOWN"),
-                "PressDown");
-        root.getActionMap().put("PressShiftDown", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    timeSliderPanel.jumpFrames(-10);
-                }
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("shift DOWN"),
-                "PressShiftDown");
 
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control SPACE"),
-                "PlayKeyboardKey");
+        makeTimeSliderShortcut(root, "UP", "PressUp", 1);
+
+        makeTimeSliderShortcut(root, "shift UP", "PressShiftUp", 10);
+
+        makeTimeSliderShortcut(root, "DOWN", "PressDown", -1);
+
+        makeTimeSliderShortcut(root, "shift DOWN", "PressShiftDown", -10);
+
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control SPACE"), "PlayKeyboardKey");
         root.getActionMap().put("PlayKeyboardKey", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -630,133 +565,28 @@ public class MainPanel extends JPanel
                 timeSliderPanel.play();
             }
         });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("W"),
-                "QKeyboardKey");
-        root.getActionMap().put("QKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("E"),
-                "WKeyboardKey");
-        root.getActionMap().put("WKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[1]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("R"),
-                "EKeyboardKey");
-        root.getActionMap().put("EKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[2]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("T"),
-                "RKeyboardKey");
-        root.getActionMap().put("RKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (!animationModeState) {
-                    actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[3]);
-                }
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("Y"),
-                "TKeyboardKey");
-        root.getActionMap().put("TKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (!animationModeState) {
-                    actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[4]);
-                }
-            }
-        });
 
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("A"),
-                "AKeyboardKey");
-        root.getActionMap().put("AKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[0]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("S"),
-                "SKeyboardKey");
-        root.getActionMap().put("SKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[1]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("D"),
-                "DKeyboardKey");
-        root.getActionMap().put("DKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[2]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("F"),
-                "FKeyboardKey");
-        root.getActionMap().put("FKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[3]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("G"),
-                "GKeyboardKey");
-        root.getActionMap().put("GKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[4]);
-            }
-        });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("Z"),
-                "ZKeyboardKey");
+        makeActionShortcut(root, "W", "QKeyboardKey", 0);
+
+        makeActionShortcut(root, "E", "WKeyboardKey", 1);
+
+        makeActionShortcut(root, "R", "EKeyboardKey", 2);
+
+        makeActionShortcut(root, "T", "RKeyboardKey", 3, true);
+
+        makeActionShortcut(root, "Y", "TKeyboardKey", 4, true);
+
+        makeShortCutKey(root, "A", "AKeyboardKey", 0);
+
+        makeShortCutKey(root, "S", "SKeyboardKey", 1);
+
+        makeShortCutKey(root, "D", "DKeyboardKey", 2);
+
+        makeShortCutKey(root, "F", "FKeyboardKey", 3);
+
+        makeShortCutKey(root, "G", "GKeyboardKey", 4);
+
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("Z"), "ZKeyboardKey");
         root.getActionMap().put("ZKeyboardKey", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -767,35 +597,10 @@ public class MainPanel extends JPanel
                 prefs.setViewMode(prefs.getViewMode() == 1 ? 0 : 1);
             }
         });
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control F"),
-                "CreateFaceShortcut");
-        root.getActionMap().put("CreateFaceShortcut", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (!animationModeState) {
-                    try {
-                        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
-                        if (modelPanel != null) {
-                            final Viewport viewport = activeViewportWatcher.getViewport();
-                            final Vertex facingVector = viewport == null ? new Vertex(0, 0, 1)
-                                    : viewport.getFacingVector();
-                            final UndoAction createFaceFromSelection = modelPanel.getModelEditorManager()
-                                    .getModelEditor().createFaceFromSelection(facingVector);
-                            modelPanel.getUndoManager().pushAction(createFaceFromSelection);
-                        }
-                    } catch (final FaceCreationException exc) {
-                        JOptionPane.showMessageDialog(MainPanel.this, exc.getMessage(), "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    } catch (final Exception exc) {
-                        ExceptionPopup.display(exc);
-                    }
-                }
-            }
-        });
+
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control F"), "CreateFaceShortcut");
+        root.getActionMap().put("CreateFaceShortcut", getCreateFaceShortcut());
+
         for (int i = 1; i <= 9; i++) {
             root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                     .put(KeyStroke.getKeyStroke("alt pressed " + i), i + "KeyboardKey");
@@ -822,38 +627,109 @@ public class MainPanel extends JPanel
 
         root.getActionMap().put("shiftSelect", MainPanelActions.getShiftSelectAction(this, "shiftSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.ADD, true));
         root.getActionMap().put("altSelect", MainPanelActions.getAltSelectAction(this, "altSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.DESELECT, true));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("shift pressed SHIFT"), "shiftSelect");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) .put(KeyStroke.getKeyStroke("shift pressed SHIFT"), "shiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
         // .put(KeyStroke.getKeyStroke("control pressed CONTROL"), "shiftSelect");
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed ALT"),
-                "altSelect");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed ALT"), "altSelect");
 
         root.getActionMap().put("unShiftSelect", MainPanelActions.getShiftSelectAction(this, "unShiftSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift, SelectionMode.SELECT, false));
         root.getActionMap().put("unAltSelect", MainPanelActions.getAltSelectAction(this, "unAltSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released SHIFT"),
-                "unShiftSelect");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released SHIFT"), "unShiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released
         // CONTROL"),
         // "unShiftSelect");
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released ALT"),
-                "unAltSelect");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released ALT"), "unAltSelect");
 
         root.getActionMap().put("Select All", MainPanelActions.selectAllAction(this));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control A"),
-                "Select All");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control A"), "Select All");
 
         root.getActionMap().put("Invert Selection", MainPanelActions.invertSelectAction(this));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control I"),
-                "Invert Selection");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control I"), "Invert Selection");
 
         root.getActionMap().put("Expand Selection", MainPanelActions.expandSelectionAction(this));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"),
-                "Expand Selection");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), "Expand Selection");
 
         root.getActionMap().put("RigAction", MainPanelActions.rigAction(this));
-        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"),
-                "RigAction");
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"), "RigAction");
+    }
+
+    private AbstractAction getCreateFaceShortcut() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final Component focusedComponent = getFocusedComponent();
+                if (focusedComponentNeedsTyping(focusedComponent)) {
+                    return;
+                }
+                if (!animationModeState) {
+                    try {
+                        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
+                        if (modelPanel != null) {
+                            final Viewport viewport = activeViewportWatcher.getViewport();
+                            final Vertex facingVector = viewport == null ? new Vertex(0, 0, 1)
+                                    : viewport.getFacingVector();
+                            final UndoAction createFaceFromSelection = modelPanel.getModelEditorManager()
+                                    .getModelEditor().createFaceFromSelection(facingVector);
+                            modelPanel.getUndoManager().pushAction(createFaceFromSelection);
+                        }
+                    } catch (final FaceCreationException exc) {
+                        JOptionPane.showMessageDialog(MainPanel.this, exc.getMessage(), "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } catch (final Exception exc) {
+                        ExceptionPopup.display(exc);
+                    }
+                }
+            }
+        };
+    }
+
+    private void makeTimeSliderShortcut(JComponent root, String keyStroke, String actionMapKey, int deltaFrames) {
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
+        root.getActionMap().put(actionMapKey, new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final Component focusedComponent = getFocusedComponent();
+                if (focusedComponentNeedsTyping(focusedComponent)) {
+                    return;
+                }
+                if (animationModeState) {
+                    timeSliderPanel.jumpFrames(deltaFrames);
+                }
+            }
+        });
+    }
+
+    private void makeActionShortcut(JComponent root, String keyStroke, String actionMapKey, int buttonType) {
+        makeActionShortcut(root, keyStroke, actionMapKey, buttonType, false);
+    }
+
+    private void makeActionShortcut(JComponent root, String keyStroke, String actionMapKey, int buttonType, boolean checkAnimationModeState) {
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
+        root.getActionMap().put(actionMapKey, new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final Component focusedComponent = getFocusedComponent();
+                if (focusedComponentNeedsTyping(focusedComponent)) {
+                    return;
+                }
+                if (!checkAnimationModeState || !animationModeState) {
+                    actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[buttonType]);
+                }
+            }
+        });
+    }
+    private void makeShortCutKey(JComponent root, String keyStroke, String actionMapKey, int buttonType) {
+        root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
+        root.getActionMap().put(actionMapKey, new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final Component focusedComponent = getFocusedComponent();
+                if (focusedComponentNeedsTyping(focusedComponent)) {
+                    return;
+                }
+                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[buttonType]);
+            }
+        });
     }
 
     void updateUIFromProgramPreferences() {
@@ -886,27 +762,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    private static JMenuItem createMenuItem(MainPanel mainPanel, String itemText, int keyEvent, JMenu menu) {
-        return createMenuItem(itemText, keyEvent, menu, mainPanel, null);
-    }
-
-    private static JMenuItem createMenuItem(MainPanel mainPanel, String itemText, int keyEvent, JMenu menu, KeyStroke keyStroke) {
-        return createMenuItem(itemText, keyEvent, menu, mainPanel, keyStroke);
-    }
-
-    private static JMenuItem createMenuItem(String itemText, int keyEvent, JMenu menu, ActionListener actionListener) {
-        return createMenuItem(itemText, keyEvent, menu, actionListener, null);
-    }
-
-    private static JMenuItem createMenuItem(String itemText, int keyEvent, JMenu menu, ActionListener actionListener, KeyStroke keyStroke) {
-        JMenuItem menuItem;
-        menuItem = new JMenuItem(itemText);
-        menuItem.setMnemonic(keyEvent);
-        menuItem.setAccelerator(keyStroke);
-        menuItem.addActionListener(actionListener);
-        menu.add(menuItem);
-        return menuItem;
-    }
 
     void createTeamColorMenuItems() {
         for (int i = 0; i < 25; i++) {
@@ -942,97 +797,17 @@ public class MainPanel extends JPanel
     public void actionPerformed(final ActionEvent e) {
         // Open, off of the file menu:
         refreshUndo();
+
         try {
             if (e.getSource() == newModel) {
                 NewModelPanel.newModel(this);
-            } else if (e.getSource() == open) {
-                onClickOpen();
-            } else if (e.getSource() == close) {
-                onClickClose();
-            } else if (e.getSource() == fetchUnit) {
-                fetchUnitButtonResponse();
-            } else if (e.getSource() == fetchModel) {
-                fetchModelButtonResponse();
-            } else if (e.getSource() == fetchObject) {
-                fetchObjectButtonResponse();
-            } else if (e.getSource() == importButton) {
-                importFromFile();
-            } else if (e.getSource() == importUnit) {
-                importUnit();
-            } else if (e.getSource() == importGameModel) {
-                importGameModel();
-            } else if (e.getSource() == importGameObject) {
-                importGameObject();
-            } else if (e.getSource() == importFromWorkspace) {
-                importFromWorkspace();
-            } else if (e.getSource() == importButtonScript) {
-                importScript();
-            } else if (e.getSource() == mergeGeoset) {
-                mergeGeoset();
             } else if (e.getSource() == nullmodelButton) {
                 FileUtils.nullModelFile(this);
                 refreshController();
-            } else if ((e.getSource() == save) && (currentMDL() != null) && (currentMDL().getFile() != null)) {
-                onClickSave();
-            } else if (e.getSource() == saveAs) {
-                onClickSaveAs();
-            } else if (e.getSource() == contextCloseAll) {
-                MainPanel.closeAll(this);
-            } else if (e.getSource() == contextCloseOthers) {
-                MainPanel.closeOthers(this, currentModelPanel);
-            } else if (e.getSource() == textureModels) {
-                prefs.setTextureModels(textureModels.isSelected());
-            } else if (e.getSource() == showNormals) {
-                prefs.setShowNormals(showNormals.isSelected());
-            } else if (e.getSource() == editUVs) {
-                ModelPanelUgg.editUVs(this);
-            } else if (e.getSource() == exportTextures) {
-                exportTextures();
             } else if (e.getSource() == scaleAnimations) {
-                // if( disp.animpanel == null )
-                // {
-                // AnimationPanel panel = new UVPanel(disp);
-                // disp.setUVPanel(panel);
-                // panel.showFrame();
-                // }
-                // else if(!disp.uvpanel.frameVisible() )
-                // {
-                // disp.uvpanel.showFrame();
-                // }
                 final AnimationFrame aFrame = new AnimationFrame(ModelPanelUgg.currentModelPanel(currentModelPanel), timeSliderPanel::revalidateKeyframeDisplay);
                 aFrame.setVisible(true);
-            } else if (e.getSource() == linearizeAnimations) {
-                linearizeAnimations();
-            } else if (e.getSource() == duplicateSelection) {
-                ModelPanelUgg.duplicateSelection(namePicker, currentModelPanel);
-            } else if (e.getSource() == simplifyKeyframes) {
-                simplifyKeyframesButtonResponse();
-            } else if (e.getSource() == riseFallBirth) {
-                riseFallBirth();
-            } else if (e.getSource() == animFromFile) {
-                animFromFile();
-            } else if (e.getSource() == animFromUnit) {
-                if (animFromUnit()) return;
-            } else if (e.getSource() == animFromModel) {
-                if (animFromModel()) return;
-            } else if (e.getSource() == animFromObject) {
-                if (animFromObject()) return;
-            } else if (e.getSource() == creditsButton) {
-                CreditsPanel.showCreditsButtonResponse("credits.rtf", "About");
-            } else if (e.getSource() == changelogButton) {
-                CreditsPanel.showCreditsButtonResponse("changelist.rtf", "Changelog");
-                // JOptionPane.showMessageDialog(this,new JScrollPane(epane));
             }
-            // for( int i = 0; i < geoItems.size(); i++ )
-            // {
-            // JCheckBoxMenuItem geoItem = (JCheckBoxMenuItem)geoItems.get(i);
-            // if( e.getSource() == geoItem )
-            // {
-            // frontArea.setGeosetVisible(i,geoItem.isSelected());
-            // frontArea.setGeosetHighlight(i,false);
-            // }
-            // repaint();
-            // }
         } catch (
 
                 final Exception exc) {
@@ -1040,66 +815,16 @@ public class MainPanel extends JPanel
         }
     }
 
-    private boolean animFromObject() {
-        fc.setDialogTitle("Animation Source");
-        final MutableGameObject fetchResult = fetchObject();
-        if (fetchResult != null) {
-            return fetchAndAddAnimationFromFile(fetchResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
-        }
-        return true;
-    }
-
-    private boolean animFromModel() {
-        fc.setDialogTitle("Animation Source");
-        final ModelElement fetchResult = fetchModel();
-        if (fetchResult != null) {
-            return fetchAndAddAnimationFromFile(fetchResult.getFilepath());
-        }
-        return true;
-    }
-
-    private boolean fetchAndAddAnimationFromFile(String filepath) {
+    void fetchAndAddAnimationFromFile(String filepath) {
         final EditableModel current = currentMDL();
         final String mdxFilepath = convertPathToMDX(filepath);
         if (mdxFilepath != null) {
             final EditableModel animationSource = EditableModel.read(MpqCodebase.get().getFile(mdxFilepath));
             addSingleAnimation(current, animationSource);
         }
-        return false;
     }
 
-    private boolean animFromUnit() {
-        fc.setDialogTitle("Animation Source");
-        final GameObject fetchResult = fetchUnit();
-        if (fetchResult != null) {
-            return fetchAndAddAnimationFromFile(fetchResult.getField("file"));
-        }
-        return true;
-    }
-
-    private void animFromFile() {
-        fc.setDialogTitle("Animation Source");
-        final EditableModel current = currentMDL();
-        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-            fc.setCurrentDirectory(current.getFile().getParentFile());
-        } else if (profile.getPath() != null) {
-            fc.setCurrentDirectory(new File(profile.getPath()));
-        }
-        final int returnValue = fc.showOpenDialog(this);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            currentFile = fc.getSelectedFile();
-            profile.setPath(currentFile.getParent());
-            final EditableModel animationSourceModel = EditableModel.read(currentFile);
-            addSingleAnimation(current, animationSourceModel);
-        }
-
-        fc.setSelectedFile(null);
-
-        refreshController();
-    }
-
-    private void riseFallBirth() {
+    void riseFallBirth() {
         final int confirmed = JOptionPane.showConfirmDialog(this,
                 "This will permanently alter model. Are you sure?", "Confirmation",
                 JOptionPane.OK_CANCEL_OPTION);
@@ -1213,7 +938,7 @@ public class MainPanel extends JPanel
 
     }
 
-    private void simplifyKeyframesButtonResponse() {
+    void simplifyKeyframesButtonResponse() {
         final int x = JOptionPane.showConfirmDialog(this,
                 "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify keyframes?",
                 "Warning: Simplify Keyframes", JOptionPane.OK_CANCEL_OPTION);
@@ -1222,7 +947,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void linearizeAnimations() {
+    void linearizeAnimations() {
         final int x = JOptionPane.showConfirmDialog(this,
                 "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify animations?",
                 "Warning: Linearize Animations", JOptionPane.OK_CANCEL_OPTION);
@@ -1234,7 +959,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void importScript() {
+    void importScript() {
         final JFrame frame = new JFrame("Animation Transferer");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(new AnimationTransfer(frame));
@@ -1244,30 +969,7 @@ public class MainPanel extends JPanel
         frame.setVisible(true);
     }
 
-    private void importFromFile() {
-        fc.setDialogTitle("Import");
-        final EditableModel current = currentMDL();
-        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-            fc.setCurrentDirectory(current.getFile().getParentFile());
-        } else if (profile.getPath() != null) {
-            fc.setCurrentDirectory(new File(profile.getPath()));
-        }
-        final int returnValue = fc.showOpenDialog(this);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            currentFile = fc.getSelectedFile();
-            profile.setPath(currentFile.getParent());
-            toolsMenu.getAccessibleContext().setAccessibleDescription(
-                    "Allows the user to control which parts of the model are displayed for editing.");
-            toolsMenu.setEnabled(true);
-            FileUtils.importFile(this, currentFile);
-        }
-
-        fc.setSelectedFile(null);
-        refreshController();
-    }
-
-    private void onClickClose() {
+    void onClickClose() {
         final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
         final int oldIndex = modelPanels.indexOf(modelPanel);
         if (modelPanel != null) {
@@ -1285,7 +987,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void fetchUnitButtonResponse() {
+    void fetchUnitButtonResponse() {
         final GameObject unitFetched = fetchUnit();
         if (unitFetched != null) {
             final String filepath = convertPathToMDX(unitFetched.getField("file"));
@@ -1305,7 +1007,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void fetchModelButtonResponse() {
+    void fetchModelButtonResponse() {
         final ModelElement model = fetchModel();
         if (model != null) {
             final String filepath = convertPathToMDX(model.getFilepath());
@@ -1327,7 +1029,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void fetchObjectButtonResponse() {
+    void fetchObjectButtonResponse() {
         final MutableGameObject objectFetched = fetchObject();
         if (objectFetched != null) {
             final String filepath = convertPathToMDX(objectFetched.getFieldAsString(UnitFields.MODEL_FILE, 0));
@@ -1351,10 +1053,10 @@ public class MainPanel extends JPanel
         }
     }
 
-    private boolean importUnit() {
+    void importUnit() {
         final GameObject fetchUnitResult = fetchUnit();
         if (fetchUnitResult == null) {
-            return true;
+            return;
         }
         final String filepath = convertPathToMDX(fetchUnitResult.getField("file"));
         final EditableModel current = currentMDL();
@@ -1363,13 +1065,12 @@ public class MainPanel extends JPanel
             FileUtils.importFile(this, animationSource);
         }
         refreshController();
-        return false;
     }
 
-    private boolean importGameModel() {
+    void importGameModel() {
         final ModelElement fetchModelResult = fetchModel();
         if (fetchModelResult == null) {
-            return true;
+            return;
         }
         final String filepath = convertPathToMDX(fetchModelResult.getFilepath());
         final EditableModel current = currentMDL();
@@ -1378,13 +1079,12 @@ public class MainPanel extends JPanel
             FileUtils.importFile(this, animationSource);
         }
         refreshController();
-        return false;
     }
 
-    private boolean importGameObject() {
+    void importGameObject() {
         final MutableGameObject fetchObjectResult = fetchObject();
         if (fetchObjectResult == null) {
-            return true;
+            return;
         }
         final String filepath = convertPathToMDX(fetchObjectResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
         final EditableModel current = currentMDL();
@@ -1393,10 +1093,9 @@ public class MainPanel extends JPanel
             FileUtils.importFile(this, animationSource);
         }
         refreshController();
-        return false;
     }
 
-    private void importFromWorkspace() {
+    void importFromWorkspace() {
         final List<EditableModel> optionNames = new ArrayList<>();
         for (final ModelPanel modelPanel : modelPanels) {
             final EditableModel model = modelPanel.getModel();
@@ -1411,71 +1110,6 @@ public class MainPanel extends JPanel
         refreshController();
     }
 
-    private void mergeGeoset() {
-        fc.setDialogTitle("Merge Single Geoset (Oinker-based)");
-        final EditableModel current = currentMDL();
-        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-            fc.setCurrentDirectory(current.getFile().getParentFile());
-        } else if (profile.getPath() != null) {
-            fc.setCurrentDirectory(new File(profile.getPath()));
-        }
-        final int returnValue = fc.showOpenDialog(this);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            currentFile = fc.getSelectedFile();
-            final EditableModel geoSource = EditableModel.read(currentFile);
-            profile.setPath(currentFile.getParent());
-            boolean going = true;
-            Geoset host = null;
-            while (going) {
-                final String s = JOptionPane.showInputDialog(this,
-                        "Geoset into which to Import: (1 to " + current.getGeosetsSize() + ")");
-                try {
-                    final int x = Integer.parseInt(s);
-                    if ((x >= 1) && (x <= current.getGeosetsSize())) {
-                        host = current.getGeoset(x - 1);
-                        going = false;
-                    }
-                } catch (final NumberFormatException ignored) {
-
-                }
-            }
-            Geoset newGeoset = null;
-            going = true;
-            while (going) {
-                final String s = JOptionPane.showInputDialog(this,
-                        "Geoset to Import: (1 to " + geoSource.getGeosetsSize() + ")");
-                try {
-                    final int x = Integer.parseInt(s);
-                    if (x <= geoSource.getGeosetsSize()) {
-                        newGeoset = geoSource.getGeoset(x - 1);
-                        going = false;
-                    }
-                } catch (final NumberFormatException ignored) {
-
-                }
-            }
-            newGeoset.updateToObjects(current);
-            System.out.println("putting " + newGeoset.numUVLayers() + " into a nice " + host.numUVLayers());
-            for (int i = 0; i < newGeoset.numVerteces(); i++) {
-                final GeosetVertex ver = newGeoset.getVertex(i);
-                host.add(ver);
-                ver.setGeoset(host);// geoset = host;
-                // for( int z = 0; z < host.n.numUVLayers(); z++ )
-                // {
-                // host.getUVLayer(z).addTVertex(newGeoset.getVertex(i).getTVertex(z));
-                // }
-            }
-            for (int i = 0; i < newGeoset.numTriangles(); i++) {
-                final Triangle tri = newGeoset.getTriangle(i);
-                host.add(tri);
-                tri.setGeoRef(host);
-            }
-        }
-
-        fc.setSelectedFile(null);
-    }
-
     void showVertexModifyControls() {
         final boolean selected = showVertexModifyControls.isSelected();
         prefs.setShowVertexModifierControls(selected);
@@ -1487,71 +1121,6 @@ public class MainPanel extends JPanel
             final UVPanel uvPanel = panel.getEditUVPanel();
             if (uvPanel != null) {
                 uvPanel.setControlsVisible(selected);
-            }
-        }
-    }
-
-    private void exportTextures() {
-        final DefaultListModel<Material> materials = new DefaultListModel<>();
-        for (int i = 0; i < currentMDL().getMaterials().size(); i++) {
-            final Material mat = currentMDL().getMaterials().get(i);
-            materials.addElement(mat);
-        }
-        for (final ParticleEmitter2 emitter2 : currentMDL().sortedIdObjects(ParticleEmitter2.class)) {
-            final Material dummyMaterial = new Material(
-                    new Layer("Blend", currentMDL().getTexture(emitter2.getTextureID())));
-        }
-
-        final JList<Material> materialsList = new JList<>(materials);
-        materialsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        materialsList.setCellRenderer(new MaterialListRenderer(currentMDL()));
-        JOptionPane.showMessageDialog(this, new JScrollPane(materialsList));
-
-        if (exportTextureDialog.getCurrentDirectory() == null) {
-            final EditableModel current = currentMDL();
-            if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-                fc.setCurrentDirectory(current.getFile().getParentFile());
-            } else if (profile.getPath() != null) {
-                fc.setCurrentDirectory(new File(profile.getPath()));
-            }
-        }
-        if (exportTextureDialog.getCurrentDirectory() == null) {
-            exportTextureDialog.setSelectedFile(new File(exportTextureDialog.getCurrentDirectory()
-                    + File.separator + materialsList.getSelectedValue().getName()));
-        }
-
-        final int x = exportTextureDialog.showSaveDialog(this);
-        if (x == JFileChooser.APPROVE_OPTION) {
-            final File file = exportTextureDialog.getSelectedFile();
-            if (file != null) {
-                try {
-                    if (file.getName().lastIndexOf('.') >= 0) {
-                        BufferedImage bufferedImage = materialsList.getSelectedValue()
-                                .getBufferedImage(currentMDL().getWrappedDataSource());
-                        String fileExtension = file.getName().substring(file.getName().lastIndexOf('.') + 1)
-                                .toUpperCase();
-                        if (fileExtension.equals("BMP") || fileExtension.equals("JPG")
-                                || fileExtension.equals("JPEG")) {
-                            JOptionPane.showMessageDialog(this,
-                                    "Warning: Alpha channel was converted to black. Some data will be lost\nif you convert this texture back to Warcraft BLP.");
-                            bufferedImage = BLPHandler.removeAlphaChannel(bufferedImage);
-                        }
-                        if (fileExtension.equals("BLP")) {
-                            fileExtension = "blp";
-                        }
-                        final boolean write = ImageIO.write(bufferedImage, fileExtension, file);
-                        if (!write) {
-                            JOptionPane.showMessageDialog(this, "File type unknown or unavailable");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No file type was specified");
-                    }
-                } catch (final Exception e1) {
-                    ExceptionPopup.display(e1);
-                    e1.printStackTrace();
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "No output file was specified");
             }
         }
     }
@@ -1571,111 +1140,6 @@ public class MainPanel extends JPanel
         currentMDL.simplifyKeyframes();
     }
 
-    boolean onClickSaveAs() {
-        final EditableModel current = currentMDL();
-        return onClickSaveAs(current);
-    }
-
-    private boolean onClickSaveAs(final EditableModel current) {
-        try {
-            fc.setDialogTitle("Save as");
-            if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-                fc.setCurrentDirectory(current.getFile().getParentFile());
-                fc.setSelectedFile(current.getFile());
-            } else if (profile.getPath() != null) {
-                fc.setCurrentDirectory(new File(profile.getPath()));
-            }
-            final int returnValue = fc.showSaveDialog(this);
-            File temp = fc.getSelectedFile();
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                if (temp != null) {
-                    final FileFilter ff = fc.getFileFilter();
-                    final String ext = ff.accept(new File("junk.mdl")) ? ".mdl" : ".mdx";
-                    if (ff.accept(new File("junk.obj"))) {
-                        throw new UnsupportedOperationException("OBJ saving has not been coded yet.");
-                    }
-                    final String name = temp.getName();
-                    if (name.lastIndexOf('.') != -1) {
-                        if (!name.substring(name.lastIndexOf('.')).equals(ext)) {
-                            temp = new File(
-                                    temp.getAbsolutePath().substring(0, temp.getAbsolutePath().lastIndexOf('.')) + ext);
-                        }
-                    } else {
-                        temp = new File(temp.getAbsolutePath() + ext);
-                    }
-                    currentFile = temp;
-                    if (temp.exists()) {
-                        final Object[] options = {"Overwrite", "Cancel"};
-                        final int n = JOptionPane.showOptionDialog(MainFrame.frame, "Selected file already exists.",
-                                "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options,
-                                options[1]);
-                        if (n == 1) {
-                            fc.setSelectedFile(null);
-                            return false;
-                        }
-                    }
-                    profile.setPath(currentFile.getParent());
-                    if (ext.equals(".mdl")) {
-                        currentMDL().printTo(currentFile);
-                    } else {
-                        final MdxModel model = new MdxModel(currentMDL());
-                        try (BlizzardDataOutputStream writer = new BlizzardDataOutputStream(currentFile)) {
-                            model.save(writer);
-                        } catch (final IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                    currentMDL().setFileRef(currentFile);
-                    // currentMDLDisp().resetBeenSaved();
-                    // TODO reset been saved
-                    ModelPanelUgg.currentModelPanel(currentModelPanel).getMenuItem().setName(currentFile.getName().split("\\.")[0]);
-                    ModelPanelUgg.currentModelPanel(currentModelPanel).getMenuItem().setToolTipText(currentFile.getPath());
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                            "You tried to save, but you somehow didn't select a file.\nThat is bad.");
-                }
-            }
-            fc.setSelectedFile(null);
-            return true;
-        } catch (final Exception exc) {
-            ExceptionPopup.display(exc);
-        }
-        refreshController();
-        return false;
-    }
-
-    void onClickSave() {
-        try {
-            if (currentMDL() != null) {
-                currentMDL().saveFile();
-                profile.setPath(currentMDL().getFile().getParent());
-                // currentMDLDisp().resetBeenSaved();
-                // TODO reset been saved
-            }
-        } catch (final Exception exc) {
-            ExceptionPopup.display(exc);
-        }
-        refreshController();
-    }
-
-    void onClickOpen() {
-        fc.setDialogTitle("Open");
-        final EditableModel current = currentMDL();
-        if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-            fc.setCurrentDirectory(current.getFile().getParentFile());
-        } else if (profile.getPath() != null) {
-            fc.setCurrentDirectory(new File(profile.getPath()));
-        }
-
-        final int returnValue = fc.showOpenDialog(this);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            FileUtils.openFile(this, fc.getSelectedFile());
-        }
-
-        fc.setSelectedFile(null);
-    }
-
     JSpinner getjSpinner(String title) {
         final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
         final JSpinner spinner = new JSpinner(sModel);
@@ -1687,7 +1151,7 @@ public class MainPanel extends JPanel
         return spinner;
     }
 
-    private GameObject fetchUnit() {
+    GameObject fetchUnit() {
         final GameObject choice = UnitOptionPane.show(this);
         if (choice != null) {
             String filepath = choice.getField("file");
@@ -1717,7 +1181,7 @@ public class MainPanel extends JPanel
         return filepath;
     }
 
-    private ModelOptionPane.ModelElement fetchModel() {
+    ModelOptionPane.ModelElement fetchModel() {
         final ModelOptionPane.ModelElement model = ModelOptionPane.showAndLogIcon(this);
         if (model == null) {
             return null;
@@ -1739,7 +1203,7 @@ public class MainPanel extends JPanel
         }
     }
 
-    private MutableGameObject fetchObject() {
+    MutableGameObject fetchObject() {
         final BetterUnitEditorModelSelector selector = new BetterUnitEditorModelSelector(getUnitData(),
                 getUnitEditorSettings());
         final int x = JOptionPane.showConfirmDialog(this, selector, "Object Editor - Select Unit",
@@ -1763,7 +1227,7 @@ public class MainPanel extends JPanel
         return choice;
     }
 
-    private void addSingleAnimation(final EditableModel current, final EditableModel animationSourceModel) {
+    void addSingleAnimation(final EditableModel current, final EditableModel animationSourceModel) {
         Animation choice = null;
         choice = (Animation) JOptionPane.showInputDialog(this, "Choose an animation!", "Add Animation",
                 JOptionPane.QUESTION_MESSAGE, null, animationSourceModel.getAnims().toArray(),
@@ -1869,49 +1333,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    // @Override
-    // public void mouseEntered(final MouseEvent e) {
-    // refreshUndo();
-    // }
-
-    // @Override
-    // public void mouseExited(final MouseEvent e) {
-    // refreshUndo();
-    // }
-
-    // @Override
-    // public void mousePressed(final MouseEvent e) {
-    // refreshUndo();
-    // }
-
-    // @Override
-    // public void mouseReleased(final MouseEvent e) {
-    // refreshUndo();
-    //
-    // }
-
-    // @Override
-    // public void mouseClicked(final MouseEvent e) {
-    // if (e.getSource() == tabbedPane && e.getButton() == MouseEvent.BUTTON3) {
-    // for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-    // if (tabbedPane.getBoundsAt(i).contains(e.getX(), e.getY())) {
-    // contextClickedTab = i;
-    // contextMenu.show(tabbedPane, e.getX(), e.getY());
-    // }
-    // }
-    // }
-    // }
-
-    // @Override
-    // public void stateChanged(final ChangeEvent e) {
-    // if (((ModelPanel) tabbedPane.getSelectedComponent()) != null) {
-    // geoControl.setMDLDisplay(((ModelPanel)
-    // tabbedPane.getSelectedComponent()).getModelViewManagingTree());
-    // } else {
-    // geoControl.setMDLDisplay(null);
-    // }
-    // }
-
     public void setMouseCoordDisplay(final byte dim1, final byte dim2, final double value1, final double value2) {
         for (JTextField jTextField : mouseCoordDisplay) {
             jTextField.setText("");
@@ -1920,7 +1341,7 @@ public class MainPanel extends JPanel
         mouseCoordDisplay[dim2].setText((float) value2 + "");
     }
 
-    public static boolean closeAll(MainPanel mainPanel) {
+    static boolean closeAll(MainPanel mainPanel) {
         boolean success = true;
         final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
         boolean closedCurrentPanel = false;
@@ -1986,7 +1407,7 @@ public class MainPanel extends JPanel
         if (model.getFile() != null) {
             model.saveFile();
         } else {
-            onClickSaveAs(model);
+            FileUtils.onClickSaveAs(this, model);
         }
     }
 
