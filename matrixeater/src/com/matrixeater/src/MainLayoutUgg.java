@@ -42,7 +42,7 @@ public class MainLayoutUgg {
         modelTab.getWindowProperties().setTitleProvider(arg0 -> "Model");
 
         final TabWindow startupTabWindow = new TabWindow(new DockingWindow[]{viewingTab, editingTab, modelTab});
-        mainPanel.traverseAndFix(startupTabWindow);
+        DockingWindowUtils.traverseAndFix(startupTabWindow);
         return startupTabWindow;
     }
 }

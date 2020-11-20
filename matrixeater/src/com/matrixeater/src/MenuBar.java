@@ -45,8 +45,6 @@ public class MenuBar {
         fillViewMenu(mainPanel, viewMenu);
 
         JMenu teamColorMenu = createMenuBarMenu("Team Color1", mainPanel.menuBar, -1, "Allows the user to control team color settings.");
-        System.out.println("currentModelPanel:");
-        System.out.println(mainPanel.currentModelPanel);
         createTeamColorMenuItems(mainPanel, teamColorMenu);
 
         mainPanel.directoryChangeNotifier.subscribe(() -> {
@@ -273,7 +271,7 @@ public class MenuBar {
 
         final JMenuItem timeItem = createMenuItem("Footer", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Footer", () -> mainPanel.timeSliderView), -1);
 
-        final JMenuItem hackerViewItem = createMenuItem("Matrix Eater Script", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Matrix Eater Script", () -> mainPanel.hackerView), KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"));
+        final JMenuItem scriptViewItem = createMenuItem("Matrix Eater Script", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Matrix Eater Script", () -> mainPanel.matrixEaterScriptView), KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"));
 
         final JMenu browsersMenu = createMenuMenu("Browsers", KeyEvent.VK_B, mainPanel.windowMenu);
 
@@ -565,9 +563,24 @@ public class MenuBar {
                     ModelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
                 } else {
                     // TODO remove from notifiers to fix leaks
+//                    System.out.println("(close) no more modelPanel :O");
                     ModelPanelUgg.setCurrentModel(mainPanel, null);
                 }
             }
         }
+    }
+
+    static void createMatrixEaterScriptPanel(MainPanel mainPanel) {
+        final JPanel hackerPanel = new JPanel(new BorderLayout());
+        final RSyntaxTextArea matrixEaterScriptTextArea = new RSyntaxTextArea(20, 60);
+        matrixEaterScriptTextArea.setCodeFoldingEnabled(true);
+        matrixEaterScriptTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+        hackerPanel.add(new RTextScrollPane(matrixEaterScriptTextArea), BorderLayout.CENTER);
+        final JButton run = new JButton("Run",
+                new ImageIcon(BLPHandler.get().getGameTex("ReplaceableTextures\\CommandButtons\\BTNReplay-Play.blp")
+                        .getScaledInstance(24, 24, Image.SCALE_FAST)));
+        run.addActionListener(MainPanelActions.createBtnReplayPlayActionListener(mainPanel, matrixEaterScriptTextArea));
+        hackerPanel.add(run, BorderLayout.NORTH);
+        mainPanel.matrixEaterScriptView = new View("Matrix Eater Script", null, hackerPanel);
     }
 }

@@ -21,26 +21,33 @@ import java.awt.event.ActionEvent;
 import java.util.NoSuchElementException;
 
 public class ToolBar {
-    public static JToolBar createJToolBar(final MainPanel mainPanel) {
-        mainPanel.toolbar = new JToolBar(JToolBar.HORIZONTAL);
-        mainPanel.toolbar.setFloatable(false);
+    final MainPanel mainPanel;
+    final JToolBar toolBar;
+    public ToolBar(MainPanel mainPanel){
+        this.mainPanel = mainPanel;
+        this.toolBar = createJToolBar();
+    }
+    public JToolBar createJToolBar() {
+        JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
+        toolbar.setFloatable(false);
+        toolbar.setMaximumSize(new Dimension(80000, 48));
 
-        addToolbarIcon(mainPanel.toolbar, "New", "new.png", () -> NewModelPanel.newModel(mainPanel));
+        addToolbarIcon(toolbar, "New", "new.png", () -> NewModelPanel.newModel(mainPanel));
 
-        addToolbarIcon(mainPanel.toolbar, "Open", "open.png", () -> FileUtils.onClickOpen(mainPanel));
+        addToolbarIcon(toolbar, "Open", "open.png", () -> FileUtils.onClickOpen(mainPanel));
 
-        addToolbarIcon(mainPanel.toolbar, "Save", "save.png", () -> FileUtils.onClickSave(mainPanel));
+        addToolbarIcon(toolbar, "Save", "save.png", () -> FileUtils.onClickSave(mainPanel));
 
-        mainPanel.toolbar.addSeparator();
+        toolbar.addSeparator();
 
-        addToolbarIcon(mainPanel.toolbar, "Undo", "undo.png", mainPanel.undoAction);
-        addToolbarIcon(mainPanel.toolbar, "Redo", "redo.png", mainPanel.redoAction);
+        addToolbarIcon(toolbar, "Undo", "undo.png", mainPanel.undoAction);
+        addToolbarIcon(toolbar, "Redo", "redo.png", mainPanel.redoAction);
 
-        mainPanel.toolbar.addSeparator();
-        mainPanel.selectionModeGroup = new ToolbarButtonGroup<>(mainPanel.toolbar, SelectionMode.values());
-        mainPanel.toolbar.addSeparator();
-        mainPanel.selectionItemTypeGroup = new ToolbarButtonGroup<>(mainPanel.toolbar, SelectionItemTypes.values());
-        mainPanel.toolbar.addSeparator();
+        toolbar.addSeparator();
+        mainPanel.selectionModeGroup = new ToolbarButtonGroup<>(toolbar, SelectionMode.values());
+        toolbar.addSeparator();
+        mainPanel.selectionItemTypeGroup = new ToolbarButtonGroup<>(toolbar, SelectionItemTypes.values());
+        toolbar.addSeparator();
 
         //TODO stuff that should be created using functions
         ToolbarActionButtonType selectAndMoveDescriptor = new ToolbarActionButtonType(
@@ -103,12 +110,12 @@ public class ToolBar {
                         undoActionListener, modelEditorManager.getSelectionView());
             }
         };
-        mainPanel.actionTypeGroup = new ToolbarButtonGroup<>(mainPanel.toolbar,
+        mainPanel.actionTypeGroup = new ToolbarButtonGroup<>(toolbar,
                 new ToolbarActionButtonType[]{selectAndMoveDescriptor, selectAndRotateDescriptor,
                         selectAndScaleDescriptor, selectAndExtrudeDescriptor, selectAndExtendDescriptor,});
         mainPanel.currentActivity = mainPanel.actionTypeGroup.getActiveButtonType();
-        mainPanel.toolbar.addSeparator();
-        mainPanel.snapButton = mainPanel.toolbar.add(new AbstractAction("Snap", ViewportIconUtils.loadImageIcon("icons/actions/snap.png")) {
+        toolbar.addSeparator();
+        mainPanel.snapButton = toolbar.add(new AbstractAction("Snap", ViewportIconUtils.loadImageIcon("icons/actions/snap.png")) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 try {
@@ -125,7 +132,7 @@ public class ToolBar {
             }
         });
 
-        return mainPanel.toolbar;
+        return toolbar;
     }
 
     static void addToolbarIcon(JToolBar toolbar, String hooverText, String icon, AbstractAction action) {

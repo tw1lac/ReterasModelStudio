@@ -103,7 +103,7 @@ public class MainPanel extends JPanel
     View creatorView;
     View perspectiveView;
     View timeSliderView;
-    View hackerView;
+    View matrixEaterScriptView;
     View animationControllerView;
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
@@ -113,7 +113,7 @@ public class MainPanel extends JPanel
     SaveProfile profile = SaveProfile.get();
     ProgramPreferences prefs = profile.getPreferences();
 
-    JToolBar toolbar;
+//    JToolBar toolbar;
 
     TimeSliderPanel timeSliderPanel;
     JButton setKeyframe;
@@ -150,7 +150,8 @@ public class MainPanel extends JPanel
 
     public MainPanel() {
         super();
-        add(ToolBar.createJToolBar(this));
+        ToolBar toolBar = new ToolBar(this);
+        add(toolBar.toolBar);
 
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
@@ -177,8 +178,8 @@ public class MainPanel extends JPanel
         rootWindow.setBackground(Color.GREEN);
         rootWindow.setForeground(Color.GREEN);
         final Runnable fixit = () -> {
-            traverseAndReset(rootWindow);
-            traverseAndFix(rootWindow);
+            DockingWindowUtils.traverseAndReset(rootWindow);
+            DockingWindowUtils.traverseAndFix(rootWindow);
         };
         rootWindow.addListener(MainPanelActions.createDockingWindowListener(fixit));
 
@@ -194,8 +195,8 @@ public class MainPanel extends JPanel
         rootWindow.setWindow(startupTabWindow);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
         startupTabWindow.setSelectedTab(0);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(toolbar).addComponent(rootWindow));
-        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolbar).addComponent(rootWindow));
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(toolBar.toolBar).addComponent(rootWindow));
+        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolBar.toolBar).addComponent(rootWindow));
         setLayout(layout);
 
         selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
@@ -227,18 +228,7 @@ public class MainPanel extends JPanel
         modelDataView = new View("Contents", null, contentsDummy);
         modelComponentView = new View("Component", null, new JPanel());
 
-        final JPanel hackerPanel = new JPanel(new BorderLayout());
-        final RSyntaxTextArea matrixEaterScriptTextArea = new RSyntaxTextArea(20, 60);
-        matrixEaterScriptTextArea.setCodeFoldingEnabled(true);
-        matrixEaterScriptTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-        hackerPanel.add(new RTextScrollPane(matrixEaterScriptTextArea), BorderLayout.CENTER);
-        final JButton run = new JButton("Run",
-                new ImageIcon(BLPHandler.get().getGameTex("ReplaceableTextures\\CommandButtons\\BTNReplay-Play.blp")
-                        .getScaledInstance(24, 24, Image.SCALE_FAST)));
-        run.addActionListener(MainPanelActions.createBtnReplayPlayActionListener(this, matrixEaterScriptTextArea));
-        hackerPanel.add(run, BorderLayout.NORTH);
-        hackerView = new View("Matrix Eater Script", null, hackerPanel);
-
+        MenuBar.createMatrixEaterScriptPanel(this);
 
 
         viewportTransferHandler = new ViewportTransferHandler();
@@ -264,7 +254,7 @@ public class MainPanel extends JPanel
         animationModeButton = new ModeButton("Animate");
         animationModeButton.setVisible(false);// TODO remove this if unused
 
-        toolbar.setMaximumSize(new Dimension(80000, 48));
+//        toolbar.setMaximumSize(new Dimension(80000, 48));
 
 //        modelPanels = new ArrayList<>();
         final JPanel toolsPanel = new JPanel();
@@ -323,65 +313,9 @@ public class MainPanel extends JPanel
         toolView = new View("Tools", null, new JPanel());
     }
 
-    void traverseAndFix(final DockingWindow window) {
-        final boolean tabWindow = window instanceof TabWindow;
-        final int childWindowCount = window.getChildWindowCount();
-        for (int i = 0; i < childWindowCount; i++) {
-            final DockingWindow childWindow = window.getChildWindow(i);
-            traverseAndFix(childWindow);
-            if (tabWindow && (childWindowCount != 1) && (childWindow instanceof View)) {
-                final View view = (View) childWindow;
-                view.getViewProperties().getViewTitleBarProperties().setVisible(false);
-            }
-        }
-    }
-
-    void traverseAndReset(final DockingWindow window) {
-        final int childWindowCount = window.getChildWindowCount();
-        for (int i = 0; i < childWindowCount; i++) {
-            final DockingWindow childWindow = window.getChildWindow(i);
-            traverseAndReset(childWindow);
-            if (childWindow instanceof View) {
-                final View view = (View) childWindow;
-                view.getViewProperties().getViewTitleBarProperties().setVisible(true);
-            }
-        }
-    }
-
-    void traverseAndReloadData(final DockingWindow window) {
-        final int childWindowCount = window.getChildWindowCount();
-        for (int i = 0; i < childWindowCount; i++) {
-            final DockingWindow childWindow = window.getChildWindow(i);
-            traverseAndReloadData(childWindow);
-            if (childWindow instanceof View) {
-                final View view = (View) childWindow;
-                final Component component = view.getComponent();
-                if (component instanceof JScrollPane) {
-                    final JScrollPane pane = (JScrollPane) component;
-                    final Component viewportView = pane.getViewport().getView();
-                    if (viewportView instanceof UnitEditorTree) {
-                        final UnitEditorTree unitEditorTree = (UnitEditorTree) viewportView;
-                        final WorldEditorDataType dataType = unitEditorTree.getDataType();
-                        if (dataType == WorldEditorDataType.UNITS) {
-                            System.out.println("saw unit tree");
-                            unitEditorTree.setUnitDataAndReloadVerySlowly(getUnitData());
-                        } else if (dataType == WorldEditorDataType.DOODADS) {
-                            System.out.println("saw doodad tree");
-                            unitEditorTree.setUnitDataAndReloadVerySlowly(getDoodadData());
-                        }
-                    }
-                } else if (component instanceof MPQBrowser) {
-                    System.out.println("saw mpq tree");
-                    final MPQBrowser comp = (MPQBrowser) component;
-                    comp.refreshTree();
-                }
-            }
-        }
-    }
-
     UnitEditorTree createUnitEditorTree() {
         final UnitEditorTree unitEditorTree = new UnitEditorTreeBrowser(getUnitData(), new UnitTabTreeBrowserBuilder(),
-                getUnitEditorSettings(), WorldEditorDataType.UNITS,
+                new UnitEditorSettings(), WorldEditorDataType.UNITS,
                 (mdxFilePath, b, c, icon) -> FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(mdxFilePath), b, c, icon), prefs);
         return unitEditorTree;
     }
@@ -410,28 +344,23 @@ public class MainPanel extends JPanel
      * future -- the MutableObjectData class can parse map unit data!
      */
     public MutableObjectData getUnitData() {
-        final War3ObjectDataChangeset editorData = new War3ObjectDataChangeset('u');
-        try {
-            final MpqCodebase mpqCodebase = MpqCodebase.get();
-            if (mpqCodebase.has("war3map.w3u")) {
-                editorData.load(new BlizzardDataInputStream(mpqCodebase.getResourceAsStream("war3map.w3u")),
-                        mpqCodebase.has("war3map.wts") ? new WTSFile(mpqCodebase.getResourceAsStream("war3map.wts"))
-                                : null,
-                        true);
-            }
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        final War3ObjectDataChangeset editorData = getWar3ObjectDataChangeset('u', "war3map.w3u");
         return new MutableObjectData(WorldEditorDataType.UNITS, StandardObjectData.getStandardUnits(),
                 StandardObjectData.getStandardUnitMeta(), editorData);
     }
 
     public MutableObjectData getDoodadData() {
-        final War3ObjectDataChangeset editorData = new War3ObjectDataChangeset('d');
+        final War3ObjectDataChangeset editorData = getWar3ObjectDataChangeset('d', "war3map.w3d");
+        return new MutableObjectData(WorldEditorDataType.DOODADS, StandardObjectData.getStandardDoodads(),
+                StandardObjectData.getStandardDoodadMeta(), editorData);
+    }
+
+    private War3ObjectDataChangeset getWar3ObjectDataChangeset(char expectedKind, String s) {
+        final War3ObjectDataChangeset editorData = new War3ObjectDataChangeset(expectedKind);
         try {
             final MpqCodebase mpqCodebase = MpqCodebase.get();
-            if (mpqCodebase.has("war3map.w3d")) {
-                editorData.load(new BlizzardDataInputStream(mpqCodebase.getResourceAsStream("war3map.w3d")),
+            if (mpqCodebase.has(s)) {
+                editorData.load(new BlizzardDataInputStream(mpqCodebase.getResourceAsStream(s)),
                         mpqCodebase.has("war3map.wts") ? new WTSFile(mpqCodebase.getResourceAsStream("war3map.wts"))
                                 : null,
                         true);
@@ -439,12 +368,7 @@ public class MainPanel extends JPanel
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        return new MutableObjectData(WorldEditorDataType.DOODADS, StandardObjectData.getStandardDoodads(),
-                StandardObjectData.getStandardDoodadMeta(), editorData);
-    }
-
-    public UnitEditorSettings getUnitEditorSettings() {
-        return new UnitEditorSettings();
+        return editorData;
     }
 
     public void init() {
@@ -567,7 +491,7 @@ public class MainPanel extends JPanel
         });
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control F"), "CreateFaceShortcut");
-        root.getActionMap().put("CreateFaceShortcut", getCreateFaceShortcut());
+        root.getActionMap().put("CreateFaceShortcut", ModelUtils.getCreateFaceShortcut(this));
 
         for (int i = 1; i <= 9; i++) {
             root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
@@ -619,36 +543,6 @@ public class MainPanel extends JPanel
 
         root.getActionMap().put("RigAction", MainPanelActions.rigAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"), "RigAction");
-    }
-
-    private AbstractAction getCreateFaceShortcut() {
-        return new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (!animationModeState) {
-                    try {
-                        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
-                        if (modelPanel != null) {
-                            final Viewport viewport = activeViewportWatcher.getViewport();
-                            final Vertex facingVector = viewport == null ? new Vertex(0, 0, 1)
-                                    : viewport.getFacingVector();
-                            final UndoAction createFaceFromSelection = modelPanel.getModelEditorManager()
-                                    .getModelEditor().createFaceFromSelection(facingVector);
-                            modelPanel.getUndoManager().pushAction(createFaceFromSelection);
-                        }
-                    } catch (final FaceCreationException exc) {
-                        JOptionPane.showMessageDialog(MainPanel.this, exc.getMessage(), "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    } catch (final Exception exc) {
-                        ExceptionPopup.display(exc);
-                    }
-                }
-            }
-        };
     }
 
     private void makeTimeSliderShortcut(JComponent root, String keyStroke, String actionMapKey, int deltaFrames) {
@@ -1094,7 +988,7 @@ public class MainPanel extends JPanel
 
     MutableGameObject fetchObject() {
         final BetterUnitEditorModelSelector selector = new BetterUnitEditorModelSelector(getUnitData(),
-                getUnitEditorSettings());
+                new UnitEditorSettings());
         final int x = JOptionPane.showConfirmDialog(this, selector, "Object Editor - Select Unit",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         final MutableGameObject choice = selector.getSelection();

@@ -261,10 +261,10 @@ public class MenuBarActionListeners {
 
     static ActionListener resetViewButton(MainPanel mainPanel) {
         return e -> {
-            mainPanel.traverseAndReset(mainPanel.rootWindow);
+            DockingWindowUtils.traverseAndReset(mainPanel.rootWindow);
             final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(mainPanel);
             mainPanel.rootWindow.setWindow(startupTabWindow);
-            mainPanel.traverseAndFix(mainPanel.rootWindow);
+            DockingWindowUtils.traverseAndFix(mainPanel.rootWindow);
         };
     }
 
@@ -551,7 +551,7 @@ public class MenuBarActionListeners {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 final UnitEditorTree unitEditorTree = new UnitEditorTree(mainPanel.getDoodadData(), new DoodadTabTreeBrowserBuilder(),
-                        mainPanel.getUnitEditorSettings(), MutableObjectData.WorldEditorDataType.DOODADS);
+                        new UnitEditorSettings(), MutableObjectData.WorldEditorDataType.DOODADS);
                 unitEditorTree.selectFirstUnit();
                 // final FloatingWindow floatingWindow =
                 // rootWindow.createFloatingWindow(rootWindow.getLocation(),
