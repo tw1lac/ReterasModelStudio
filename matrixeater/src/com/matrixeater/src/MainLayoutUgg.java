@@ -12,8 +12,7 @@ import java.awt.*;
 public class MainLayoutUgg {
 
     static TabWindow createMainLayout(MainPanel mainPanel) {
-        final TabWindow leftHandTabWindow = new TabWindow(
-                new DockingWindow[]{mainPanel.viewportControllerWindowView, mainPanel.toolView});
+        final TabWindow leftHandTabWindow = new TabWindow(new DockingWindow[]{mainPanel.viewportControllerWindowView, mainPanel.toolView});
         leftHandTabWindow.setSelectedTab(0);
 //		leftHandTabWindow.getWindowProperties().setCloseEnabled(false);
         final SplitWindow editingTab = new SplitWindow(false, 0.875f,

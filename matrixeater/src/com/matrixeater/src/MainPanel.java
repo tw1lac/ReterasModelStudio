@@ -81,16 +81,9 @@ public class MainPanel extends JPanel
     JMenuBar menuBar;
     JMenu fileMenu, recentMenu, editMenu, toolsMenu, mirrorSubmenu, tweaksSubmenu, viewMenu, importMenu, addMenu,
             scriptsMenu, windowMenu, addParticle, animationMenu, singleAnimationMenu, aboutMenu, fetch;
+
     JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
-    //	ArrayList geoItems = new ArrayList(); open,
-    JMenuItem newModel, fetchUnit, fetchModel, fetchObject, save, close, exit, revert, mergeGeoset, saveAs,
-            importButton, importUnit, importGameModel, importGameObject, importFromWorkspace, importButtonScript,
-            newDirectory, creditsButton, changelogButton, clearRecent, nullmodelButton, selectAll, invertSelect,
-            expandSelection, snapNormals, snapVertices, flipAllUVsU, flipAllUVsV, inverseAllUVs, mirrorX, mirrorY,
-            mirrorZ, insideOut, insideOutNormals, showMatrices, editUVs, exportTextures, editTextures, scaleAnimations,
-            animationViewer, animationController, modelingTab, mpqViewer, hiveViewer, unitViewer, preferencesWindow,
-            linearizeAnimations, sortBones, simplifyKeyframes, rigButton, duplicateSelection, riseFallBirth,
-            animFromFile, animFromUnit, animFromModel, animFromObject, teamColor, teamGlow;
+
     JMenuItem cut, copy, paste;
     final List<RecentItem> recentItems = new ArrayList<>();
     UndoMenuItem undo;
@@ -100,46 +93,37 @@ public class MainPanel extends JPanel
     JRadioButtonMenuItem wireframe, solid;
     ButtonGroup viewModes;
 
-//    final JFileChooser fc;
-//    final JFileChooser exportTextureDialog;
-
-//    final JFileChooser fc;
-//    final JFileChooser exportTextureDialog;
-//    FileUtils.createFileChooser();
-//    final FileFilter filter;
-//    final File filterFile;
     File currentFile;
     ImportPanel importPanel;
     static final ImageIcon MDLIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/MDLIcon_16.png"));
     static final ImageIcon POWERED_BY_HIVE = new ImageIcon(MainPanel.class.getResource("ImageBin/powered_by_hive.png"));
     public static final ImageIcon AnimIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/Anim.png"));
     protected static final boolean OLDMODE = false;
-    boolean loading;
-    final List<ModelPanel> modelPanels;
+    final List<ModelPanel> modelPanels = new ArrayList<>();
     ModelPanel currentModelPanel;
-    final View frontView;
-    final View leftView;
-    final View bottomView;
-    final View perspectiveView;
-    final View timeSliderView;
-    private final View hackerView;
-    final View previewView;
-    final View creatorView;
-    final View animationControllerView;
+    View frontView;
+    View leftView;
+    View bottomView;
+    View previewView;
+    View creatorView;
+    View perspectiveView;
+    View timeSliderView;
+    View hackerView;
+    View animationControllerView;
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
-    final JTextField[] mouseCoordDisplay = new JTextField[3];
+    JTextField[] mouseCoordDisplay = new JTextField[3];
     boolean cheatShift = false;
     boolean cheatAlt = false;
-    final SaveProfile profile = SaveProfile.get();
-    final ProgramPreferences prefs = profile.getPreferences();
+    SaveProfile profile = SaveProfile.get();
+    ProgramPreferences prefs = profile.getPreferences();
 
     JToolBar toolbar;
 
-    final TimeSliderPanel timeSliderPanel;
-    final JButton setKeyframe;
-    final JButton setTimeBounds;
-    final ModeButton animationModeButton;
+    TimeSliderPanel timeSliderPanel;
+    JButton setKeyframe;
+    JButton setTimeBounds;
+    ModeButton animationModeButton;
     boolean animationModeState = false;
 
     final ActiveViewportWatcher activeViewportWatcher = new ActiveViewportWatcher();
@@ -156,28 +140,14 @@ public class MainPanel extends JPanel
     final AbstractAction redoAction = new RedoActionImplementation("Redo", this);
     final ClonedNodeNamePicker namePicker = new ClonedNodeNamePickerImplementation(this);
 
-
-    final AbstractAction openAnimationViewerAction;
-    final AbstractAction openAnimationControllerAction;
-    final AbstractAction openModelingTabAction;
-    final AbstractAction openPerspectiveAction;
-    final AbstractAction openOutlinerAction;
-    final AbstractAction openSideAction;
-    final AbstractAction openTimeSliderAction;
-    final AbstractAction openFrontAction;
-    final AbstractAction openBottomAction;
-    final AbstractAction openToolsAction;
-    final AbstractAction openModelDataContentsViewAction;
-    final AbstractAction hackerViewAction;
-
     ToolbarButtonGroup<SelectionItemTypes> selectionItemTypeGroup;
     ToolbarButtonGroup<SelectionMode> selectionModeGroup;
     ToolbarButtonGroup<ToolbarActionButtonType> actionTypeGroup;
     final ModelStructureChangeListener modelStructureChangeListener;
     final ViewportTransferHandler viewportTransferHandler;
     final RootWindow rootWindow;
-    final View viewportControllerWindowView;
-    final View toolView;
+    View viewportControllerWindowView;
+    View toolView;
     final View modelDataView;
     final View modelComponentView;
     ControllableTimeBoundProvider timeBoundProvider;
@@ -185,45 +155,55 @@ public class MainPanel extends JPanel
 
     public MainPanel() {
         super();
+        add(ToolBar.createJToolBar(this));
+
+        animatedRenderEnvironment = new TimeEnvironmentImpl();
+        animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
+
+        creatorPanel = new CreatorModelingPanel(newType -> {
+            actionTypeGroup.maybeSetButtonType(newType);
+            MainPanel.this.changeActivity(newType);
+        }, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
+
+        actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
+        actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
+
+
+        createEditTabViews();
+
 
         StringViewMap viewMap = new StringViewMap();
         rootWindow = new RootWindow(viewMap);
         rootWindow.addListener(MainPanelActions.createDockingWindowListener(this));
+        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setSizePolicy(TitledTabSizePolicy.EQUAL_SIZE);
+        rootWindow.getRootWindowProperties().getViewProperties().getViewTitleBarProperties().setVisible(true);
+        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setBorderSizePolicy(TitledTabBorderSizePolicy.EQUAL_SIZE);
+        rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties().setTabAreaVisiblePolicy(TabAreaVisiblePolicy.MORE_THAN_ONE_TAB);
+        rootWindow.setBackground(Color.GREEN);
+        rootWindow.setForeground(Color.GREEN);
+        final Runnable fixit = () -> {
+            traverseAndReset(rootWindow);
+            traverseAndFix(rootWindow);
+        };
+        rootWindow.addListener(MainPanelActions.createDockingWindowListener(fixit));
 
-        add(ToolBar.createJToolBar(this));
-        // testArea = new PerspDisplayPanel("Graphic Test",2,0);
-        // //botArea.setViewport(0,1);
-        // add(testArea);
 
-        final JLabel[] divider = new JLabel[3];
-        for (int i = 0; i < divider.length; i++) {
-            divider[i] = new JLabel("----------");
-        }
-        for (int i = 0; i < mouseCoordDisplay.length; i++) {
-            mouseCoordDisplay[i] = new JTextField("");
-            mouseCoordDisplay[i].setMaximumSize(new Dimension(80, 18));
-            mouseCoordDisplay[i].setMinimumSize(new Dimension(50, 15));
-            mouseCoordDisplay[i].setEditable(false);
-        }
         modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> ModelPanelUgg.currentModelPanel(currentModelPanel).getModel());
-        animatedRenderEnvironment = new TimeEnvironmentImpl();
-        BLPPanel blpPanel = new BLPPanel(null);
-        timeSliderPanel = new TimeSliderPanel(animatedRenderEnvironment, modelStructureChangeListener, prefs);
-        timeSliderPanel.setDrawing(false);
-        timeSliderPanel.addListener(MainPanelActions.createTimeSliderTimeListener(this));
-//		timeSliderPanel.addListener(creatorPanel);
-        animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
-        setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
-        setKeyframe.setMargin(new Insets(0, 0, 0, 0));
-        setKeyframe.setToolTipText("Create Keyframe");
-        setKeyframe.addActionListener(MainPanelActions.createKeyframeAction(this));
-        setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
-        setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
-        setTimeBounds.setToolTipText("Choose Time Bounds");
-        setTimeBounds.addActionListener(MainPanelActions.timeBoundChooserPanel(this));
 
-        animationModeButton = new ModeButton("Animate");
-        animationModeButton.setVisible(false);// TODO remove this if unused
+        createAnimationPanelStuff();
+
+
+        final GroupLayout layout = new GroupLayout(this);
+
+        final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(this);
+        rootWindow.setWindow(startupTabWindow);
+        rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
+        startupTabWindow.setSelectedTab(0);
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(toolbar).addComponent(rootWindow));
+        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolbar).addComponent(rootWindow));
+        setLayout(layout);
+
+        selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
 
         //TODO stuff that should be created using functions
         contextMenu = new JPopupMenu();
@@ -239,57 +219,19 @@ public class MainPanel extends JPanel
         contextCloseAll.addActionListener(e -> closeAll(this));
         contextMenu.add(contextCloseAll);
 
-        modelPanels = new ArrayList<>();
-        final JPanel toolsPanel = new JPanel();
-        toolsPanel.setMaximumSize(new Dimension(30, 999999));
-        final GroupLayout layout = new GroupLayout(this);
-        toolbar.setMaximumSize(new Dimension(80000, 48));
-        final JPanel jPanel = new JPanel();
-        jPanel.add(new JLabel("..."));
-        viewportControllerWindowView = new View("Outliner", null, jPanel);// GlobalIcons.geoIcon
-//		viewportControllerWindowView.getWindowProperties().setCloseEnabled(false);
-//		viewportControllerWindowView.getWindowProperties().setMaximizeEnabled(true);
-//		viewportControllerWindowView.getWindowProperties().setMinimizeEnabled(true);
-//		viewportControllerWindowView.getWindowProperties().setRestoreEnabled(true);
-        toolView = new View("Tools", null, new JPanel());
+
+        final JLabel[] divider = new JLabel[3];
+        for (int i = 0; i < divider.length; i++) {
+            divider[i] = new JLabel("----------");
+        }
+
+        BLPPanel blpPanel = new BLPPanel(null);
+
         final JPanel contentsDummy = new JPanel();
         contentsDummy.add(new JLabel("..."));
         modelDataView = new View("Contents", null, contentsDummy);
         modelComponentView = new View("Component", null, new JPanel());
-//		toolView.getWindowProperties().setCloseEnabled(false);
-        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setSizePolicy(TitledTabSizePolicy.EQUAL_SIZE);
-        rootWindow.getRootWindowProperties().getViewProperties().getViewTitleBarProperties().setVisible(true);
-        rootWindow.getWindowProperties().getTabProperties().getTitledTabProperties().setBorderSizePolicy(TitledTabBorderSizePolicy.EQUAL_SIZE);
-        rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties().setTabAreaVisiblePolicy(TabAreaVisiblePolicy.MORE_THAN_ONE_TAB);
-        rootWindow.setBackground(Color.GREEN);
-        rootWindow.setForeground(Color.GREEN);
-        final Runnable fixit = () -> {
-            traverseAndReset(rootWindow);
-            traverseAndFix(rootWindow);
-        };
-        rootWindow.addListener(MainPanelActions.createDockingWindowListener(fixit));
 
-        leftView = new View("Side", null, new JPanel());
-        frontView = new View("Front", null, new JPanel());
-        bottomView = new View("Bottom", null, new JPanel());
-        perspectiveView = new View("Perspective", null, new JPanel());
-        previewView = new View("Preview", null, new JPanel());
-        final JPanel timeSliderAndExtra = new JPanel();
-        final GroupLayout tsaeLayout = new GroupLayout(timeSliderAndExtra);
-        final Component horizontalGlue = Box.createHorizontalGlue();
-        final Component verticalGlue = Box.createVerticalGlue();
-        tsaeLayout.setHorizontalGroup(
-                tsaeLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(timeSliderPanel)
-                        .addGroup(tsaeLayout.createSequentialGroup().addComponent(mouseCoordDisplay[0])
-                                .addComponent(mouseCoordDisplay[1]).addComponent(mouseCoordDisplay[2])
-                                .addComponent(horizontalGlue).addComponent(setKeyframe).addComponent(setTimeBounds)));
-        tsaeLayout.setVerticalGroup(tsaeLayout.createSequentialGroup().addComponent(timeSliderPanel).addGroup(
-                tsaeLayout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(mouseCoordDisplay[0])
-                        .addComponent(mouseCoordDisplay[1]).addComponent(mouseCoordDisplay[2])
-                        .addComponent(horizontalGlue).addComponent(setKeyframe).addComponent(setTimeBounds)));
-        timeSliderAndExtra.setLayout(tsaeLayout);
-
-        timeSliderView = new View("Footer", null, timeSliderAndExtra);
         final JPanel hackerPanel = new JPanel(new BorderLayout());
         final RSyntaxTextArea matrixEaterScriptTextArea = new RSyntaxTextArea(20, 60);
         matrixEaterScriptTextArea.setCodeFoldingEnabled(true);
@@ -301,52 +243,89 @@ public class MainPanel extends JPanel
         run.addActionListener(MainPanelActions.createBtnReplayPlayActionListener(this, matrixEaterScriptTextArea));
         hackerPanel.add(run, BorderLayout.NORTH);
         hackerView = new View("Matrix Eater Script", null, hackerPanel);
-        creatorPanel = new CreatorModelingPanel(newType -> {
-            actionTypeGroup.maybeSetButtonType(newType);
-            MainPanel.this.changeActivity(newType);
-        }, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
-
-        creatorView = new View("Modeling", null, creatorPanel);
-        animationControllerView = new View("Animation Controller", null, new JPanel());
-
-        final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(this);
-        rootWindow.setWindow(startupTabWindow);
-        rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
-        startupTabWindow.setSelectedTab(0);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(toolbar)
-                .addComponent(rootWindow));
-        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolbar).addComponent(rootWindow));
-        setLayout(layout);
-        // Create a file chooser
 
 
 
-        // getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-        // Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo" );
-
-        // getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-        // Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Undo" );
-
-        // setFocusable(true);
-        // selectButton.requestFocus();
-        selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
-
-        actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
-        actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
         viewportTransferHandler = new ViewportTransferHandler();
         coordDisplayListener = MainPanel.this::setMouseCoordDisplay;
-        openAnimationViewerAction = new OpenViewAction(rootWindow, "Animation Preview", () -> previewView);
-        openAnimationControllerAction = new OpenViewAction(rootWindow, "Animation Controller", () -> animationControllerView);
-        openModelingTabAction = new OpenViewAction(rootWindow, "Modeling", () -> creatorView);
-        openPerspectiveAction = new OpenViewAction(rootWindow, "Perspective", () -> perspectiveView);
-        openOutlinerAction = new OpenViewAction(rootWindow, "Outliner", () -> viewportControllerWindowView);
-        openSideAction = new OpenViewAction(rootWindow, "Side", () -> leftView);
-        openTimeSliderAction = new OpenViewAction(rootWindow, "Footer", () -> timeSliderView);
-        openFrontAction = new OpenViewAction(rootWindow, "Front", () -> frontView);
-        openBottomAction = new OpenViewAction(rootWindow, "Bottom", () -> bottomView);
-        openToolsAction = new OpenViewAction(rootWindow, "Tools", () -> toolView);
-        openModelDataContentsViewAction = new OpenViewAction(rootWindow, "Model", () -> modelDataView);
-        hackerViewAction = new OpenViewAction(rootWindow, "Matrix Eater Script", () -> hackerView);
+    }
+
+    private void createAnimationPanelStuff() {
+        timeSliderPanel = new TimeSliderPanel(animatedRenderEnvironment, modelStructureChangeListener, prefs);
+        timeSliderPanel.setDrawing(false);
+        timeSliderPanel.addListener(MainPanelActions.createTimeSliderTimeListener(this));
+//		timeSliderPanel.addListener(creatorPanel);
+
+        setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
+        setKeyframe.setMargin(new Insets(0, 0, 0, 0));
+        setKeyframe.setToolTipText("Create Keyframe");
+        setKeyframe.addActionListener(MainPanelActions.createKeyframeAction(this));
+
+        setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
+        setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
+        setTimeBounds.setToolTipText("Choose Time Bounds");
+        setTimeBounds.addActionListener(MainPanelActions.timeBoundChooserPanel(this));
+
+        animationModeButton = new ModeButton("Animate");
+        animationModeButton.setVisible(false);// TODO remove this if unused
+
+        toolbar.setMaximumSize(new Dimension(80000, 48));
+
+//        modelPanels = new ArrayList<>();
+        final JPanel toolsPanel = new JPanel();
+        toolsPanel.setMaximumSize(new Dimension(30, 999999));
+
+
+        animationControllerView = new View("Animation Controller", null, new JPanel());
+
+        for (int i = 0; i < mouseCoordDisplay.length; i++) {
+            mouseCoordDisplay[i] = new JTextField("");
+            mouseCoordDisplay[i].setMaximumSize(new Dimension(80, 18));
+            mouseCoordDisplay[i].setMinimumSize(new Dimension(50, 15));
+            mouseCoordDisplay[i].setEditable(false);
+        }
+
+        final JPanel timeSliderAndExtra = new JPanel();
+        final GroupLayout tsaeLayout = new GroupLayout(timeSliderAndExtra);
+        final Component horizontalGlue = Box.createHorizontalGlue();
+        final Component verticalGlue = Box.createVerticalGlue();
+        tsaeLayout.setHorizontalGroup(
+                tsaeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(timeSliderPanel)
+                        .addGroup(tsaeLayout.createSequentialGroup()
+                                .addComponent(mouseCoordDisplay[0])
+                                .addComponent(mouseCoordDisplay[1])
+                                .addComponent(mouseCoordDisplay[2])
+                                .addComponent(horizontalGlue)
+                                .addComponent(setKeyframe)
+                                .addComponent(setTimeBounds)));
+        tsaeLayout.setVerticalGroup(tsaeLayout.createSequentialGroup()
+                .addComponent(timeSliderPanel)
+                .addGroup(tsaeLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                        .addComponent(mouseCoordDisplay[0])
+                        .addComponent(mouseCoordDisplay[1])
+                        .addComponent(mouseCoordDisplay[2])
+                        .addComponent(horizontalGlue)
+                        .addComponent(setKeyframe)
+                        .addComponent(setTimeBounds)));
+        timeSliderAndExtra.setLayout(tsaeLayout);
+        timeSliderView = new View("Footer", null, timeSliderAndExtra);
+    }
+
+    private void createEditTabViews() {
+        final JPanel jPanel = new JPanel();
+        jPanel.add(new JLabel("..."));
+        viewportControllerWindowView = new View("Outliner", null, jPanel);// GlobalIcons.geoIcon
+
+        creatorView = new View("Modeling", null, creatorPanel);
+
+        leftView = new View("Side", null, new JPanel());
+        frontView = new View("Front", null, new JPanel());
+        bottomView = new View("Bottom", null, new JPanel());
+        perspectiveView = new View("Perspective", null, new JPanel());
+        previewView = new View("Preview", null, new JPanel());
+
+        toolView = new View("Tools", null, new JPanel());
     }
 
     void traverseAndFix(final DockingWindow window) {
@@ -429,12 +408,6 @@ public class MainPanel extends JPanel
     JMenu teamColorMenu;
     CreatorModelingPanel creatorPanel;
 
-    //	public void reloadGUI() {
-//		refreshUndo();
-//		refreshController();
-//		refreshAnimationModeState();
-//		reloadGeosetManagers(currentModelPanel());
-//	}
 
     /**
      * Right now this is a plug to the statics to load unit data. However, it's a
@@ -762,7 +735,6 @@ public class MainPanel extends JPanel
         }
     }
 
-
     void createTeamColorMenuItems() {
         for (int i = 0; i < 25; i++) {
             final String colorNumber = String.format("%2s", i).replace(' ', '0');
@@ -797,22 +769,16 @@ public class MainPanel extends JPanel
     public void actionPerformed(final ActionEvent e) {
         // Open, off of the file menu:
         refreshUndo();
+    }
 
-        try {
-            if (e.getSource() == newModel) {
-                NewModelPanel.newModel(this);
-            } else if (e.getSource() == nullmodelButton) {
-                FileUtils.nullModelFile(this);
-                refreshController();
-            } else if (e.getSource() == scaleAnimations) {
-                final AnimationFrame aFrame = new AnimationFrame(ModelPanelUgg.currentModelPanel(currentModelPanel), timeSliderPanel::revalidateKeyframeDisplay);
-                aFrame.setVisible(true);
-            }
-        } catch (
+    void nullModelUgg() {
+        FileUtils.nullModelFile(this);
+        refreshController();
+    }
 
-                final Exception exc) {
-            ExceptionPopup.display(exc);
-        }
+    void scaleAnimationsUgg() {
+        final AnimationFrame aFrame = new AnimationFrame(ModelPanelUgg.currentModelPanel(currentModelPanel), timeSliderPanel::revalidateKeyframeDisplay);
+        aFrame.setVisible(true);
     }
 
     void fetchAndAddAnimationFromFile(String filepath) {
@@ -1365,7 +1331,7 @@ public class MainPanel extends JPanel
         return success;
     }
 
-    public static boolean closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
+    public static void closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
         boolean success = true;
         final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
         boolean closedCurrentPanel = false;
@@ -1390,7 +1356,6 @@ public class MainPanel extends JPanel
         if (closedCurrentPanel) {
             ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
         }
-        return success;
     }
 
     protected void repaintSelfAndChildren(final ModelPanel mpanel) {
