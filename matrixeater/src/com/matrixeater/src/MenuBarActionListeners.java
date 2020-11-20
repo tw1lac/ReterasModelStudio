@@ -7,6 +7,7 @@ import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
 import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
+import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
 import com.hiveworkshop.wc3.jworldedit.objects.DoodadTabTreeBrowserBuilder;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
 import com.hiveworkshop.wc3.mdl.EventObject;
@@ -689,5 +690,27 @@ public class MenuBarActionListeners {
             SaveProfile.get().clearRecent();
             mainPanel.updateRecent();
         }
+    }
+
+    static OpenViewAction testItemAnimationPreviewListener(MainPanel mainPanel) {
+        return new OpenViewAction(mainPanel.rootWindow, "Animation Preview", () -> {
+            final JPanel testPanel = new JPanel();
+
+            for (int i = 0; i < 3; i++) {
+//					final ControlledAnimationViewer animationViewer = new ControlledAnimationViewer(
+//							currentModelPanel().getModelViewManager(), prefs);
+//					animationViewer.setMinimumSize(new Dimension(400, 400));
+//					final AnimationController animationController = new AnimationController(
+//							currentModelPanel().getModelViewManager(), true, animationViewer);
+
+                final AnimationViewer animationViewer2 = new AnimationViewer(
+                        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getModelViewManager(), mainPanel.prefs, false);
+                animationViewer2.setMinimumSize(new Dimension(400, 400));
+                testPanel.add(animationViewer2);
+//					testPanel.add(animationController);
+            }
+            testPanel.setLayout(new GridLayout(1, 4));
+            return new View("Test", null, testPanel);
+        });
     }
 }

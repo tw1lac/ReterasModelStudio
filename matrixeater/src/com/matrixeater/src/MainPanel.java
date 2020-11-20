@@ -30,7 +30,6 @@ import com.hiveworkshop.wc3.jworldedit.objects.UnitTabTreeBrowserBuilder;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
-import com.hiveworkshop.wc3.resources.WEString;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ModelOptionPane;
 import com.hiveworkshop.wc3.units.ModelOptionPane.ModelElement;
@@ -79,8 +78,9 @@ import java.util.List;
 public class MainPanel extends JPanel
         implements ActionListener, UndoHandler, ModelEditorChangeActivityListener, ModelPanelCloseListener {
     JMenuBar menuBar;
-    JMenu fileMenu, recentMenu, editMenu, toolsMenu, mirrorSubmenu, tweaksSubmenu, viewMenu, importMenu, addMenu,
-            scriptsMenu, windowMenu, addParticle, animationMenu, singleAnimationMenu, aboutMenu, fetch;
+//    JMenu fileMenu, editMenu, mirrorSubmenu, tweaksSubmenu, importMenu, addMenu,
+//            scriptsMenu, animationMenu, singleAnimationMenu, aboutMenu, fetch, viewMenu;
+    JMenu recentMenu, toolsMenu, windowMenu, addParticle;
 
     JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
 
@@ -405,7 +405,7 @@ public class MainPanel extends JPanel
     JButton snapButton;
     final CoordDisplayListener coordDisplayListener;
     protected ModelEditorActionType actionType;
-    JMenu teamColorMenu;
+//    JMenu teamColorMenu;
     CreatorModelingPanel creatorPanel;
 
 
@@ -735,35 +735,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    void createTeamColorMenuItems() {
-        for (int i = 0; i < 25; i++) {
-            final String colorNumber = String.format("%2s", i).replace(' ', '0');
-            try {
-                final String colorName = WEString.getString("WESTRING_UNITCOLOR_" + colorNumber);
-                final JMenuItem menuItem = new JMenuItem(colorName, new ImageIcon(BLPHandler.get()
-                        .getGameTex("ReplaceableTextures\\TeamColor\\TeamColor" + colorNumber + ".blp")));
-                teamColorMenu.add(menuItem);
-                final int teamColorValueNumber = i;
-                menuItem.addActionListener(e -> {
-                    Material.teamColor = teamColorValueNumber;
-                    final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
-                    if (modelPanel != null) {
-                        modelPanel.getAnimationViewer().reloadAllTextures();
-                        modelPanel.getPerspArea().reloadAllTextures();
-
-                        ModelPanelUgg.reloadComponentBrowser(geoControlModelData, modelPanel);
-                    }
-                    profile.getPreferences().setTeamColor(teamColorValueNumber);
-                });
-            } catch (final Exception ex) {
-                // load failed
-                break;
-            }
-        }
-    }
-
-
-
 
     @Override
     public void actionPerformed(final ActionEvent e) {
@@ -935,87 +906,52 @@ public class MainPanel extends JPanel
         frame.setVisible(true);
     }
 
-    void onClickClose() {
-        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
-        final int oldIndex = modelPanels.indexOf(modelPanel);
-        if (modelPanel != null) {
-            if (modelPanel.close(this)) {
-                modelPanels.remove(modelPanel);
-                windowMenu.remove(modelPanel.getMenuItem());
-                if (modelPanels.size() > 0) {
-                    final int newIndex = Math.min(modelPanels.size() - 1, oldIndex);
-                    ModelPanelUgg.setCurrentModel(this, modelPanels.get(newIndex));
-                } else {
-                    // TODO remove from notifiers to fix leaks
-                    ModelPanelUgg.setCurrentModel(this, null);
-                }
-            }
-        }
-    }
-
     void fetchUnitButtonResponse() {
         final GameObject unitFetched = fetchUnit();
         if (unitFetched != null) {
-            final String filepath = convertPathToMDX(unitFetched.getField("file"));
-            if (filepath != null) {
-                FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(filepath), true, true,
-                        unitFetched.getScaledIcon(0.25f));
-                final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-                        + filepath.substring(filepath.lastIndexOf('.'));
-                if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                    FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(portrait), true, false,
-                            unitFetched.getScaledIcon(0.25f));
-                }
-                toolsMenu.getAccessibleContext().setAccessibleDescription(
-                        "Allows the user to control which parts of the model are displayed for editing.");
-                toolsMenu.setEnabled(true);
-            }
+            ImageIcon icon = unitFetched.getScaledIcon(0.25f);
+
+            loadAsMDXAndEnableToolsMenu(icon, unitFetched.getField("file"));
         }
     }
 
     void fetchModelButtonResponse() {
         final ModelElement model = fetchModel();
         if (model != null) {
-            final String filepath = convertPathToMDX(model.getFilepath());
-            if (filepath != null) {
+            final ImageIcon icon = model.hasCachedIconPath() ?
+                    new ImageIcon(BLPHandler.get().getGameTex(model.getCachedIconPath())
+                            .getScaledInstance(16, 16, Image.SCALE_FAST)) : MDLIcon;
 
-                final ImageIcon icon = model.hasCachedIconPath() ? new ImageIcon(BLPHandler.get()
-                        .getGameTex(model.getCachedIconPath()).getScaledInstance(16, 16, Image.SCALE_FAST))
-                        : MDLIcon;
-                FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(filepath), true, true, icon);
-                final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-                        + filepath.substring(filepath.lastIndexOf('.'));
-                if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                    FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(portrait), true, false, icon);
-                }
-                toolsMenu.getAccessibleContext().setAccessibleDescription(
-                        "Allows the user to control which parts of the model are displayed for editing.");
-                toolsMenu.setEnabled(true);
-            }
+            loadAsMDXAndEnableToolsMenu(icon, model.getFilepath());
         }
     }
 
     void fetchObjectButtonResponse() {
         final MutableGameObject objectFetched = fetchObject();
         if (objectFetched != null) {
-            final String filepath = convertPathToMDX(objectFetched.getFieldAsString(UnitFields.MODEL_FILE, 0));
-            if (filepath != null) {
-                FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(filepath), true, true,
-                        new ImageIcon(BLPHandler.get()
-                                .getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
-                                .getScaledInstance(16, 16, Image.SCALE_FAST)));
-                final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
-                        + filepath.substring(filepath.lastIndexOf('.'));
-                if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                    FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(portrait), true, false,
-                            new ImageIcon(BLPHandler.get()
-                                    .getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
-                                    .getScaledInstance(16, 16, Image.SCALE_FAST)));
-                }
-                toolsMenu.getAccessibleContext().setAccessibleDescription(
-                        "Allows the user to control which parts of the model are displayed for editing.");
-                toolsMenu.setEnabled(true);
+            ImageIcon icon = new ImageIcon(BLPHandler.get()
+                    .getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
+                    .getScaledInstance(16, 16, Image.SCALE_FAST));
+
+            loadAsMDXAndEnableToolsMenu(icon, objectFetched.getFieldAsString(UnitFields.MODEL_FILE, 0));
+        }
+    }
+
+    private void loadAsMDXAndEnableToolsMenu(ImageIcon icon, String path) {
+        final String filepath = convertPathToMDX(path);
+
+        if (filepath != null) {
+            FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(filepath), true, true, icon);
+
+            final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait" + filepath.substring(filepath.lastIndexOf('.'));
+
+            if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
+                FileUtils.loadStreamMdx(this, MpqCodebase.get()
+                        .getResourceAsStream(portrait), true, false, icon);
             }
+            toolsMenu.getAccessibleContext().setAccessibleDescription(
+                    "Allows the user to control which parts of the model are displayed for editing.");
+            toolsMenu.setEnabled(true);
         }
     }
 

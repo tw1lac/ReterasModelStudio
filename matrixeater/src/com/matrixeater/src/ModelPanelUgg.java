@@ -21,6 +21,14 @@ import java.util.List;
 
 public class ModelPanelUgg {
     public static ModelPanel currentModelPanel(ModelPanel currentModelPanel) {
+        if(currentModelPanel != null){
+            System.out.println("repaint!");
+            currentModelPanel.repaintSelfAndRelatedChildren();
+        }
+        else {
+            System.out.println("no repaint");
+        }
+
         return currentModelPanel;
     }
 
