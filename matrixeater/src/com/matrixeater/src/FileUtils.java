@@ -678,8 +678,8 @@ public class FileUtils {
                     mainPanel.currentMDL().setFileRef(mainPanel.currentFile);
                     // currentMDLDisp().resetBeenSaved();
                     // TODO reset been saved
-                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getMenuItem().setName(mainPanel.currentFile.getName().split("\\.")[0]);
-                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getMenuItem().setToolTipText(mainPanel.currentFile.getPath());
+                    mainPanel.currentModelPanel.getMenuItem().setName(mainPanel.currentFile.getName().split("\\.")[0]);
+                    mainPanel.currentModelPanel.getMenuItem().setToolTipText(mainPanel.currentFile.getPath());
                 } else {
                     JOptionPane.showMessageDialog(mainPanel,
                             "You tried to save, but you somehow didn't select a file.\nThat is bad.");

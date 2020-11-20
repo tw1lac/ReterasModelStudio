@@ -37,7 +37,7 @@ public class MainPanelActions {
         return new AbstractAction("CloneSelection") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     try {
                         mpanel.getUndoManager().pushAction(
@@ -56,7 +56,7 @@ public class MainPanelActions {
         return new AbstractAction("Delete") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     if (mainPanel.animationModeState) {
                         mainPanel.timeSliderPanel.deleteSelectedKeyframes();
@@ -74,7 +74,7 @@ public class MainPanelActions {
         return new AbstractAction("Select All") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().selectAll());
                 }
@@ -87,7 +87,7 @@ public class MainPanelActions {
         return new AbstractAction("Invert Selection") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().invertSelection());
                 }
@@ -100,7 +100,7 @@ public class MainPanelActions {
         return new AbstractAction("Rig") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     boolean valid = false;
                     for (final Vertex v : mpanel.getModelEditorManager().getSelectionView().getSelectedVertices()) {
@@ -129,7 +129,7 @@ public class MainPanelActions {
         return new AbstractAction("Expand Selection") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().expandSelection());
                 }
@@ -142,7 +142,7 @@ public class MainPanelActions {
         return new AbstractAction("Snap Normals") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().snapNormals());
                 }
@@ -155,7 +155,7 @@ public class MainPanelActions {
         return new AbstractAction("Snap Vertices") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager()
                             .pushAction(mpanel.getModelEditorManager().getModelEditor().snapSelectedVertices());
@@ -169,7 +169,7 @@ public class MainPanelActions {
         return new AbstractAction("RecalculateNormals") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().recalcNormals());
                 }
@@ -182,7 +182,7 @@ public class MainPanelActions {
         return new AbstractAction("RecalculateExtents") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     final JPanel messagePanel = new JPanel(new MigLayout());
                     messagePanel.add(new JLabel("This will calculate the extents of all model components. Proceed?"),
@@ -261,7 +261,7 @@ public class MainPanelActions {
         return new AbstractAction(s) {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     final Vertex selectionCenter = mpanel.getModelEditorManager().getModelEditor().getSelectionCenter();
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().mirror(finalI,
@@ -276,7 +276,7 @@ public class MainPanelActions {
         return new AbstractAction("Inside Out") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedFaces());
                 }
@@ -289,7 +289,7 @@ public class MainPanelActions {
         return new AbstractAction("Inside Out Normals") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.getUndoManager()
                             .pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedNormals());
@@ -303,7 +303,7 @@ public class MainPanelActions {
         return new AbstractAction("View Matrices") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     mpanel.viewMatrices();
                 }
@@ -560,16 +560,16 @@ public class MainPanelActions {
     static TimeSliderTimeListener createTimeSliderTimeListener(MainPanel mainPanel) {
         return currentTime -> {
             mainPanel.animatedRenderEnvironment.setCurrentTime(currentTime - mainPanel.animatedRenderEnvironment.getStart());
-            if (ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel) != null) {
-                ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getEditorRenderModel().updateNodes(true, false);
-                ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).repaintSelfAndRelatedChildren();
+            if (mainPanel.currentModelPanel != null) {
+                mainPanel.currentModelPanel.getEditorRenderModel().updateNodes(true, false);
+                mainPanel.currentModelPanel.repaintSelfAndRelatedChildren();
             }
         };
     }
 
     static ActionListener createKeyframeAction(MainPanel mainPanel) {
         return e -> {
-            final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+            final ModelPanel mpanel = mainPanel.currentModelPanel;
             if (mpanel != null) {
                 mpanel.getUndoManager()
                         .pushAction(mpanel.getModelEditorManager().getModelEditor().createKeyframe(mainPanel.actionType));
@@ -581,16 +581,16 @@ public class MainPanelActions {
     static ActionListener timeBoundChooserPanel(MainPanel mainPanel) {
         return e -> {
             final TimeBoundChooserPanel timeBoundChooserPanel = new TimeBoundChooserPanel(
-                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel) == null ? null : ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getModelViewManager(),
+                    mainPanel.currentModelPanel == null ? null : mainPanel.currentModelPanel.getModelViewManager(),
                     mainPanel.modelStructureChangeListener);
             final int confirmDialogResult = JOptionPane.showConfirmDialog(mainPanel, timeBoundChooserPanel,
                     "Set Time Bounds", JOptionPane.OK_CANCEL_OPTION);
             if (confirmDialogResult == JOptionPane.OK_OPTION) {
                 timeBoundChooserPanel.applyTo(mainPanel.animatedRenderEnvironment);
-                if (ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel) != null) {
-                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment,
-                            MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY, ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getPerspArea().getViewport());
-                    ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getEditorRenderModel().updateNodes(true, false);
+                if (mainPanel.currentModelPanel != null) {
+                    mainPanel.currentModelPanel.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment,
+                            MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY, mainPanel.currentModelPanel.getPerspArea().getViewport());
+                    mainPanel.currentModelPanel.getEditorRenderModel().updateNodes(true, false);
                 }
             }
         };
@@ -602,7 +602,7 @@ public class MainPanelActions {
             if (globalSeq != null) {
                 mainPanel.creatorPanel.setChosenGlobalSeq(globalSeq);
             } else {
-                final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel modelPanel = mainPanel.currentModelPanel;
                 if (modelPanel != null) {
                     boolean foundAnim = false;
                     for (final Animation animation : modelPanel.getModel().getAnims()) {
@@ -629,7 +629,7 @@ public class MainPanelActions {
             public void actionPerformed(final ActionEvent e) {
                 final String text = matrixEaterScriptTextArea.getText();
                 final ScriptEngine engine = factory.getEngineByName("JavaScript");
-                final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                final ModelPanel modelPanel = mainPanel.currentModelPanel;
                 if (modelPanel != null) {
                     engine.put("modelPanel", modelPanel);
                     engine.put("model", modelPanel.getModel());

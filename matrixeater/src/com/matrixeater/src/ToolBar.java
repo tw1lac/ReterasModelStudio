@@ -16,6 +16,7 @@ import com.hiveworkshop.wc3.gui.modeledit.viewport.ViewportIconUtils;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.NoSuchElementException;
 
@@ -111,7 +112,7 @@ public class ToolBar {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 try {
-                    final ModelPanel currentModelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+                    final ModelPanel currentModelPanel = mainPanel.currentModelPanel;
                     if (currentModelPanel != null) {
                         currentModelPanel.getUndoManager().pushAction(
                                 currentModelPanel.getModelEditorManager().getModelEditor().snapSelectedVertices());

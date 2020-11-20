@@ -17,7 +17,7 @@ public final class RedoActionImplementation extends AbstractAction {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		final ModelPanel mpanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+		final ModelPanel mpanel = mainPanel.currentModelPanel;
 		if (mpanel != null) {
 			try {
 				mpanel.getUndoManager().redo();

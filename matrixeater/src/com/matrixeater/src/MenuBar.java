@@ -11,8 +11,13 @@ import com.hiveworkshop.wc3.units.ModelOptionPanel;
 import com.hiveworkshop.wc3.units.UnitOptionPanel;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.ModelUtils;
+import net.infonode.docking.View;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
@@ -40,6 +45,9 @@ public class MenuBar {
         fillViewMenu(mainPanel, viewMenu);
 
         JMenu teamColorMenu = createMenuBarMenu("Team Color1", mainPanel.menuBar, -1, "Allows the user to control team color settings.");
+        System.out.println("currentModelPanel:");
+        System.out.println(mainPanel.currentModelPanel);
+        createTeamColorMenuItems(mainPanel, teamColorMenu);
 
         mainPanel.directoryChangeNotifier.subscribe(() -> {
             MpqCodebase.get().refresh(SaveProfile.get().getDataSources());
@@ -51,10 +59,9 @@ public class MenuBar {
             Resources.dropCache();
             BLPHandler.get().dropCache();
             teamColorMenu.removeAll();
-            createTeamColorMenuItems(mainPanel.currentModelPanel, mainPanel.geoControlModelData, mainPanel.profile, teamColorMenu);
-            mainPanel.traverseAndReloadData(mainPanel.rootWindow);
+            createTeamColorMenuItems(mainPanel, teamColorMenu);
+            DockingWindowUtils.traverseAndReloadData(mainPanel, mainPanel.rootWindow);
         });
-        createTeamColorMenuItems(mainPanel.currentModelPanel, mainPanel.geoControlModelData, mainPanel.profile, teamColorMenu);
 
         mainPanel.windowMenu = createMenuBarMenu("Window", mainPanel.menuBar, KeyEvent.VK_W, "Allows the user to open various windows containing the program features.");
         fillWindowMenu(mainPanel);
@@ -513,46 +520,41 @@ public class MenuBar {
         return menuItem;
     }
 
-    static void createTeamColorMenuItems(ModelPanel currentModelPanel, JScrollPane geoControlModelData, SaveProfile profile, JMenu teamColorMenu) {
-        System.out.println("ugg");
+    static void createTeamColorMenuItems(MainPanel mainPanel, JMenu teamColorMenu) {
         for (int i = 0; i < 25; i++) {
-            System.out.println("ugg2");
             final String colorNumber = String.format("%2s", i).replace(' ', '0');
             try {
-                System.out.println("ugg3");
                 final String colorName = WEString.getString("WESTRING_UNITCOLOR_" + colorNumber);
                 final JMenuItem menuItem = new JMenuItem(colorName, new ImageIcon(BLPHandler.get()
                         .getGameTex("ReplaceableTextures\\TeamColor\\TeamColor" + colorNumber + ".blp")));
                 teamColorMenu.add(menuItem);
                 final int teamColorValueNumber = i;
-                menuItem.addActionListener(setTeamColor(currentModelPanel, geoControlModelData, profile, teamColorValueNumber));
+                menuItem.addActionListener(setTeamColor(mainPanel, teamColorValueNumber));
             } catch (final Exception ex) {
-                System.out.println("ugg fail");
-                ex.printStackTrace();
+//                ex.printStackTrace();
                 // load failed
                 break;
             }
         }
     }
 
-    private static ActionListener setTeamColor(ModelPanel currentModelPanel, JScrollPane geoControlModelData, SaveProfile profile, int teamColorValueNumber) {
+    private static ActionListener setTeamColor(MainPanel mainPanel, int teamColorValueNumber) {
         return e -> {
             Material.teamColor = teamColorValueNumber;
-            System.out.println("color?");
-            final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(currentModelPanel);
-            if (modelPanel != null) {
-                System.out.println("color!?");
-                modelPanel.getAnimationViewer().reloadAllTextures();
-                modelPanel.getPerspArea().reloadAllTextures();
 
-                ModelPanelUgg.reloadComponentBrowser(geoControlModelData, modelPanel);
+            if (mainPanel.currentModelPanel != null) {
+                mainPanel.currentModelPanel.getAnimationViewer().reloadAllTextures();
+                mainPanel.currentModelPanel.getPerspArea().reloadAllTextures();
+
+                ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, mainPanel.currentModelPanel);
             }
-            profile.getPreferences().setTeamColor(teamColorValueNumber);
+            mainPanel.profile.getPreferences().setTeamColor(teamColorValueNumber);
         };
     }
 
     static void onClickClose(MainPanel mainPanel) {
-        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+//        System.out.println("onClickClose");
+        final ModelPanel modelPanel = mainPanel.currentModelPanel;
         final int oldIndex = mainPanel.modelPanels.indexOf(modelPanel);
         if (modelPanel != null) {
             if (modelPanel.close(mainPanel)) {

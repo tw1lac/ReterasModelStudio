@@ -9,6 +9,7 @@ import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
 import com.hiveworkshop.wc3.jworldedit.objects.DoodadTabTreeBrowserBuilder;
+import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
 import com.hiveworkshop.wc3.mdl.EventObject;
 import com.hiveworkshop.wc3.mdl.*;
@@ -224,7 +225,7 @@ public class MenuBarActionListeners {
 
     static ActionListener revert(MainPanel mainPanel) {
         return e -> {
-            final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+            final ModelPanel modelPanel = mainPanel.currentModelPanel;
             final int oldIndex = mainPanel.modelPanels.indexOf(modelPanel);
             if (modelPanel != null) {
                 if (modelPanel.close(mainPanel)) {
@@ -246,7 +247,7 @@ public class MenuBarActionListeners {
 
     static ActionListener editTextures(MainPanel mainPanel) {
         return e -> {
-            final TextureManager textureManager = new TextureManager(ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getModelViewManager(),
+            final TextureManager textureManager = new TextureManager(mainPanel.currentModelPanel.getModelViewManager(),
                     mainPanel.modelStructureChangeListener, mainPanel.textureExporter);
             final JFrame frame = new JFrame("Edit Textures");
             textureManager.setSize(new Dimension(800, 650));
@@ -280,7 +281,7 @@ public class MenuBarActionListeners {
             final Vector4f normalHeap = new Vector4f();
             final Vector4f appliedNormalHeap = new Vector4f();
             final Vector4f normalSumHeap = new Vector4f();
-            final ModelPanel modelContext = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+            final ModelPanel modelContext = mainPanel.currentModelPanel;
             final RenderModel editorRenderModel = modelContext.getEditorRenderModel();
             final EditableModel model = modelContext.getModel();
             final ModelViewManager modelViewManager = modelContext.getModelViewManager();
@@ -402,7 +403,7 @@ public class MenuBarActionListeners {
 
     static ActionListener exportAnimatedFramePNG(MainPanel mainPanel) {
         return e -> {
-            final BufferedImage fBufferedImage = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().getBufferedImage();
+            final BufferedImage fBufferedImage = mainPanel.currentModelPanel.getAnimationViewer().getBufferedImage();
 
             if (FileUtils.exportTextureDialog.getCurrentDirectory() == null) {
                 final EditableModel current = mainPanel.currentMDL();
@@ -632,14 +633,6 @@ public class MenuBarActionListeners {
                 final List<DataSourceDescriptor> priorDataSources = SaveProfile.get().getDataSources();
                 final ProgramPreferencesPanel programPreferencesPanel = new ProgramPreferencesPanel(programPreferences,
                         priorDataSources);
-                // final JFrame frame = new JFrame("Preferences");
-                // frame.setIconImage(MainFrame.frame.getIconImage());
-                // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                // frame.setContentPane(programPreferencesPanel);
-                // frame.pack();
-                // frame.setLocationRelativeTo(MainPanel.this);
-                // frame.setVisible(true);
-
                 final int ret = JOptionPane.showConfirmDialog(mainPanel, programPreferencesPanel, "Preferences",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if (ret == JOptionPane.OK_OPTION) {
@@ -704,7 +697,7 @@ public class MenuBarActionListeners {
 //							currentModelPanel().getModelViewManager(), true, animationViewer);
 
                 final AnimationViewer animationViewer2 = new AnimationViewer(
-                        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getModelViewManager(), mainPanel.prefs, false);
+                        mainPanel.currentModelPanel.getModelViewManager(), mainPanel.prefs, false);
                 animationViewer2.setMinimumSize(new Dimension(400, 400));
                 testPanel.add(animationViewer2);
 //					testPanel.add(animationController);

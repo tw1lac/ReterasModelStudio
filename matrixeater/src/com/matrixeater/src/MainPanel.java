@@ -1,7 +1,6 @@
 package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
-import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.ControllableTimeBoundProvider;
@@ -21,7 +20,6 @@ import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarActionButtonType;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
-import com.hiveworkshop.wc3.gui.mpqbrowser.MPQBrowser;
 import com.hiveworkshop.wc3.jworldedit.models.BetterUnitEditorModelSelector;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
@@ -53,9 +51,6 @@ import net.infonode.docking.util.StringViewMap;
 import net.infonode.tabbedpanel.TabAreaVisiblePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabBorderSizePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabSizePolicy;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rtextarea.RTextScrollPane;
 import org.lwjgl.util.vector.Quaternion;
 
 import javax.swing.*;
@@ -188,7 +183,7 @@ public class MainPanel extends JPanel
         rootWindow.addListener(MainPanelActions.createDockingWindowListener(fixit));
 
 
-        modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> ModelPanelUgg.currentModelPanel(currentModelPanel).getModel());
+        modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> currentModelPanel.getModel());
 
         createAnimationPanelStuff();
 
@@ -706,15 +701,10 @@ public class MainPanel extends JPanel
     }
 
     void updateUIFromProgramPreferences() {
-        // prefs.setShowVertexModifierControls(showVertexModifyControls.isSelected());
         showVertexModifyControls.setSelected(prefs.isShowVertexModifierControls());
-        // prefs.setTextureModels(textureModels.isSelected());
         textureModels.setSelected(prefs.isTextureModels());
-        // prefs.setShowNormals(showNormals.isSelected());
         showNormals.setSelected(prefs.isShowNormals());
-        // prefs.setLoadPortraits(true);
         fetchPortraitsToo.setSelected(prefs.isLoadPortraits());
-        // prefs.setUseNativeMDXParser(useNativeMDXParser.isSelected());
         switch (prefs.getViewMode()) {
             case 0:
                 wireframe.setSelected(true);
@@ -726,12 +716,9 @@ public class MainPanel extends JPanel
                 break;
         }
         for (final ModelPanel mpanel : modelPanels) {
-            mpanel.getEditorRenderModel()
-                    .setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
-            mpanel.getEditorRenderModel().setAllowInanimateParticles(
-                    (prefs.getRenderStaticPoseParticles() == null) || prefs.getRenderStaticPoseParticles());
-            mpanel.getAnimationViewer()
-                    .setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
+            mpanel.getEditorRenderModel().setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
+            mpanel.getEditorRenderModel().setAllowInanimateParticles((prefs.getRenderStaticPoseParticles() == null) || prefs.getRenderStaticPoseParticles());
+            mpanel.getAnimationViewer().setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
         }
     }
 
@@ -748,7 +735,7 @@ public class MainPanel extends JPanel
     }
 
     void scaleAnimationsUgg() {
-        final AnimationFrame aFrame = new AnimationFrame(ModelPanelUgg.currentModelPanel(currentModelPanel), timeSliderPanel::revalidateKeyframeDisplay);
+        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, timeSliderPanel::revalidateKeyframeDisplay);
         aFrame.setVisible(true);
     }
 
@@ -769,7 +756,7 @@ public class MainPanel extends JPanel
             return;
         }
 
-        final ModelView disp = ModelPanelUgg.currentModelPanel(currentModelPanel).getModelViewManager();
+        final ModelView disp = currentModelPanel.getModelViewManager();
         final EditableModel model = disp.getModel();
 
         replaceOrUseOldAnimation(model, "Birth");

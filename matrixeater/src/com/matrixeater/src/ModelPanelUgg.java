@@ -162,7 +162,7 @@ public class ModelPanelUgg {
         // "Warning"/* : Divide Vertices" */,
         // JOptionPane.OK_CANCEL_OPTION);
         // if (x == JOptionPane.OK_OPTION) {
-        final ModelPanel currentModelPanel = currentModelPanel(currentModelPanel1);
+        final ModelPanel currentModelPanel = currentModelPanel1;
         if (currentModelPanel != null) {
             currentModelPanel.getUndoManager().pushAction(currentModelPanel.getModelEditorManager()
                     .getModelEditor().cloneSelectedComponents(namePicker));
@@ -172,16 +172,16 @@ public class ModelPanelUgg {
 
     public static void refreshAnimationModeState(ToolbarButtonGroup<ToolbarActionButtonType> actionTypeGroup, TimeEnvironmentImpl animatedRenderEnvironment, ModeButton animationModeButton, boolean animationModeState, CreatorModelingPanel creatorPanel, ModelPanel currentModelPanel, ProgramPreferences prefs, JButton setKeyframe, JButton setTimeBounds, JButton snapButton, TimeSliderPanel timeSliderPanel) {
         if (animationModeState) {
-            if ((currentModelPanel(currentModelPanel) != null) && (currentModelPanel(currentModelPanel).getModel() != null)) {
-                if (currentModelPanel(currentModelPanel).getModel().getAnimsSize() > 0) {
-                    final Animation anim = currentModelPanel(currentModelPanel).getModel().getAnim(0);
+            if ((currentModelPanel != null) && (currentModelPanel.getModel() != null)) {
+                if (currentModelPanel.getModel().getAnimsSize() > 0) {
+                    final Animation anim = currentModelPanel.getModel().getAnim(0);
                     animatedRenderEnvironment.setBounds(anim.getStart(), anim.getEnd());
                 }
-                currentModelPanel(currentModelPanel).getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
-                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel(currentModelPanel).getPerspArea().getViewport());
-                currentModelPanel(currentModelPanel).getEditorRenderModel().updateNodes(true, false);
+                currentModelPanel.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
+                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel.getPerspArea().getViewport());
+                currentModelPanel.getEditorRenderModel().updateNodes(true, false);
                 timeSliderPanel.setNodeSelectionManager(
-                        currentModelPanel(currentModelPanel).getModelEditorManager().getNodeAnimationSelectionManager());
+                        currentModelPanel.getModelEditorManager().getNodeAnimationSelectionManager());
             }
             if ((actionTypeGroup.getActiveButtonType() == actionTypeGroup.getToolbarButtonTypes()[3])
                     || (actionTypeGroup.getActiveButtonType() == actionTypeGroup.getToolbarButtonTypes()[4])) {
@@ -190,10 +190,10 @@ public class ModelPanelUgg {
         }
         animatedRenderEnvironment.setStaticViewMode(!animationModeState);
         if (!animationModeState) {
-            if ((currentModelPanel(currentModelPanel) != null) && (currentModelPanel(currentModelPanel).getModel() != null)) {
-                currentModelPanel(currentModelPanel).getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
-                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel(currentModelPanel).getPerspArea().getViewport());
-                currentModelPanel(currentModelPanel).getEditorRenderModel().updateNodes(true, false); // update to 0 position
+            if ((currentModelPanel != null) && (currentModelPanel.getModel() != null)) {
+                currentModelPanel.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
+                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel.getPerspArea().getViewport());
+                currentModelPanel.getEditorRenderModel().updateNodes(true, false); // update to 0 position
             }
         }
         final List<ToolbarButtonGroup<ToolbarActionButtonType>.ToolbarButtonAction> buttons = actionTypeGroup
@@ -237,7 +237,7 @@ public class ModelPanelUgg {
     }
 
     static void editUVs(MainPanel mainPanel) {
-        final ModelPanel disp = currentModelPanel(mainPanel.currentModelPanel);
+        final ModelPanel disp = mainPanel.currentModelPanel;
         if (disp.getEditUVPanel() == null) {
             final UVPanel panel = new UVPanel(disp, mainPanel.prefs, mainPanel.modelStructureChangeListener);
             disp.setEditUVPanel(panel);

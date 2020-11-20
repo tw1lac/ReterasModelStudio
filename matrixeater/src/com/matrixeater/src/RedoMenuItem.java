@@ -14,7 +14,7 @@ public class RedoMenuItem extends JMenuItem {
     @Override
     public String getText() {
         if (funcEnabled()) {
-            return "Redo " + ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getUndoManager().getRedoText();// +"
+            return "Redo " + mainPanel.currentModelPanel.getUndoManager().getRedoText();// +"
             // Ctrl+Y";
         } else {
             return "Can't redo";// +" Ctrl+Y";
@@ -23,7 +23,7 @@ public class RedoMenuItem extends JMenuItem {
 
     public boolean funcEnabled() {
         try {
-            return !ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getUndoManager().isRedoListEmpty();
+            return !mainPanel.currentModelPanel.getUndoManager().isRedoListEmpty();
         } catch (final NullPointerException e) {
             return false;
         }

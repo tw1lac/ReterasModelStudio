@@ -28,7 +28,7 @@ public class MPQBrowser {
             } else {
                 finalPath = path.substring(modIndex + ".w3mod/".length());
             }
-            final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+            final ModelPanel modelPanel = mainPanel.currentModelPanel;
             if (modelPanel != null) {
                 if (modelPanel.getModel().getFormatVersion() > 800) {
                     finalPath = finalPath.replace("\\", "/"); // Reforged prefers forward slash

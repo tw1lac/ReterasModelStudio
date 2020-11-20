@@ -138,8 +138,8 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void animationsAdded(final List<Animation> animation) {
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().reload();
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationController().reload();
+        mainPanel.currentModelPanel.getAnimationViewer().reload();
+        mainPanel.currentModelPanel.getAnimationController().reload();
         mainPanel.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
@@ -149,8 +149,8 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void animationsRemoved(final List<Animation> animation) {
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().reload();
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationController().reload();
+        mainPanel.currentModelPanel.getAnimationViewer().reload();
+        mainPanel.currentModelPanel.getAnimationController().reload();
         mainPanel.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
@@ -160,7 +160,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void texturesChanged() {
-        final ModelPanel modelPanel = ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel);
+        final ModelPanel modelPanel = mainPanel.currentModelPanel;
         if (modelPanel != null) {
             modelPanel.getAnimationViewer().reloadAllTextures();
             modelPanel.getPerspArea().reloadAllTextures();
@@ -181,8 +181,8 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void animationParamsChanged(final Animation animation) {
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().reload();
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationController().reload();
+        mainPanel.currentModelPanel.getAnimationViewer().reload();
+        mainPanel.currentModelPanel.getAnimationController().reload();
         mainPanel.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
@@ -192,8 +192,8 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void globalSequenceLengthChanged(final int index, final Integer newLength) {
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationViewer().reload();
-        ModelPanelUgg.currentModelPanel(mainPanel.currentModelPanel).getAnimationController().reload();
+        mainPanel.currentModelPanel.getAnimationViewer().reload();
+        mainPanel.currentModelPanel.getAnimationController().reload();
         mainPanel.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
