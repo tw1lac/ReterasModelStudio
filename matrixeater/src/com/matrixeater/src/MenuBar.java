@@ -30,22 +30,22 @@ import java.util.Iterator;
 public class MenuBar {
     public static JMenuBar createMenuBar(final MainPanel mainPanel) {
         // Create top menu bar
-        mainPanel.menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
-        JMenu fileMenu = createMenuBarMenu("File", mainPanel.menuBar, KeyEvent.VK_F, "Allows the user to open, save, close, and manipulate files.");
+        JMenu fileMenu = createMenuBarMenu("File", menuBar, KeyEvent.VK_F, "Allows the user to open, save, close, and manipulate files.");
         fillFileMenu(mainPanel, fileMenu);
 
-        JMenu editMenu = createMenuBarMenu("Edit", mainPanel.menuBar, KeyEvent.VK_E, "Allows the user to use various tools to edit the currently selected model.");
+        JMenu editMenu = createMenuBarMenu("Edit", menuBar, KeyEvent.VK_E, "Allows the user to use various tools to edit the currently selected model.");
         fillEditMenu(mainPanel, editMenu);
 
-        mainPanel.toolsMenu = createMenuBarMenu("Tools", mainPanel.menuBar, KeyEvent.VK_T, "Allows the user to use various model editing tools. (You must open a model before you may use this menu.)");
+        mainPanel.toolsMenu = createMenuBarMenu("Tools", menuBar, KeyEvent.VK_T, "Allows the user to use various model editing tools. (You must open a model before you may use this menu.)");
         fillToolsMenu(mainPanel);
 
-        JMenu viewMenu = createMenuBarMenu("View", mainPanel.menuBar, KeyEvent.VK_V, "Allows the user to control view settings.");
-//		viewMenu = createMenuBarMenu(mainPanel.menuBar, "View", -1, "Allows the user to control view settings.");
+        JMenu viewMenu = createMenuBarMenu("View", menuBar, KeyEvent.VK_V, "Allows the user to control view settings.");
+//		viewMenu = createMenuBarMenu(menuBar, "View", -1, "Allows the user to control view settings.");
         fillViewMenu(mainPanel, viewMenu);
 
-        JMenu teamColorMenu = createMenuBarMenu("Team Color1", mainPanel.menuBar, -1, "Allows the user to control team color settings.");
+        JMenu teamColorMenu = createMenuBarMenu("Team Color1", menuBar, -1, "Allows the user to control team color settings.");
         createTeamColorMenuItems(mainPanel, teamColorMenu);
 
         mainPanel.directoryChangeNotifier.subscribe(() -> {
@@ -62,24 +62,24 @@ public class MenuBar {
             DockingWindowUtils.traverseAndReloadData(mainPanel, mainPanel.rootWindow);
         });
 
-        mainPanel.windowMenu = createMenuBarMenu("Window", mainPanel.menuBar, KeyEvent.VK_W, "Allows the user to open various windows containing the program features.");
+        mainPanel.windowMenu = createMenuBarMenu("Window", menuBar, KeyEvent.VK_W, "Allows the user to open various windows containing the program features.");
         fillWindowMenu(mainPanel);
 
-        JMenu addMenu = createMenuBarMenu("Add", mainPanel.menuBar, KeyEvent.VK_A, "Allows the user to add new components to the model.");
+        JMenu addMenu = createMenuBarMenu("Add", menuBar, KeyEvent.VK_A, "Allows the user to add new components to the model.");
         fillAddMenu(mainPanel, addMenu);
 
-        JMenu scriptsMenu = createMenuBarMenu("Scripts", mainPanel.menuBar, KeyEvent.VK_A, "Allows the user to execute model edit scripts.");
+        JMenu scriptsMenu = createMenuBarMenu("Scripts", menuBar, KeyEvent.VK_A, "Allows the user to execute model edit scripts.");
         fillScriptsMenu(mainPanel, scriptsMenu);
 
-        JMenu aboutMenu = createMenuBarMenu("Help", mainPanel.menuBar, KeyEvent.VK_H);
+        JMenu aboutMenu = createMenuBarMenu("Help", menuBar, KeyEvent.VK_H);
         fillHelpMenu(mainPanel, aboutMenu);
 
 //        reteraLand(mainPanel);
 
-        for (int i = 0; i < mainPanel.menuBar.getMenuCount(); i++) {
-            mainPanel.menuBar.getMenu(i).getPopupMenu().setLightWeightPopupEnabled(false);
+        for (int i = 0; i < menuBar.getMenuCount(); i++) {
+            menuBar.getMenu(i).getPopupMenu().setLightWeightPopupEnabled(false);
         }
-        return mainPanel.menuBar;
+        return menuBar;
     }
 
     private static void reteraLand(MainPanel mainPanel) {
