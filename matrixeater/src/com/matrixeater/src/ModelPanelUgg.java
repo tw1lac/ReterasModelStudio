@@ -49,8 +49,8 @@ public class ModelPanelUgg {
 
         if (mainPanel.geoControl == null) {
             mainPanel.geoControl = new JScrollPane(temp.getModelViewManagingTree());
-            mainPanel.viewportControllerWindowView.setComponent(mainPanel.geoControl);
-            mainPanel.viewportControllerWindowView.repaint();
+            mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.setComponent(mainPanel.geoControl);
+            mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.repaint();
             mainPanel.geoControlModelData = new JScrollPane(temp.getModelComponentBrowserTree());
             mainPanel.mainLayoutUgg.modelDataView.setComponent(mainPanel.geoControlModelData);
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(temp.getComponentsPanel());
@@ -95,63 +95,65 @@ public class ModelPanelUgg {
         if (mainPanel.currentModelPanel == null) {
             final JPanel jPanel = new JPanel();
             jPanel.add(new JLabel("..."));
-            mainPanel.viewportControllerWindowView.setComponent(jPanel);
+            mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.setComponent(jPanel);
             mainPanel.geoControl = null;
 
-            mainPanel.mainLayoutUgg.frontView.setComponent(new JPanel());
-            mainPanel.mainLayoutUgg.bottomView.setComponent(new JPanel());
-            mainPanel.mainLayoutUgg.leftView.setComponent(new JPanel());
-            mainPanel.mainLayoutUgg.perspectiveView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.editTab.frontView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.editTab.bottomView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.editTab.leftView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.editTab.perspectiveView.setComponent(new JPanel());
+
             mainPanel.mainLayoutUgg.previewView.setComponent(new JPanel());
             mainPanel.mainLayoutUgg.animationControllerView.setComponent(new JPanel());
 
             refreshAnimationModeState(mainPanel.actionTypeGroup,
                     mainPanel.animatedRenderEnvironment,
-                    mainPanel.mainLayoutUgg.animationModeButton,
+                    mainPanel.mainLayoutUgg.editTab.animationModeButton,
                     mainPanel.animationModeState,
-                    mainPanel.mainLayoutUgg.creatorPanel,
+                    mainPanel.mainLayoutUgg.editTab.creatorPanel,
                     mainPanel.currentModelPanel,
                     mainPanel.prefs,
-                    mainPanel.mainLayoutUgg.setKeyframe,
-                    mainPanel.mainLayoutUgg.setTimeBounds,
+                    mainPanel.mainLayoutUgg.editTab.setKeyframe,
+                    mainPanel.mainLayoutUgg.editTab.setTimeBounds,
                     mainPanel.snapButton,
-                    mainPanel.mainLayoutUgg.timeSliderPanel);
+                    mainPanel.mainLayoutUgg.editTab.timeSliderPanel);
 
-            mainPanel.mainLayoutUgg.timeSliderPanel.setUndoManager(null, mainPanel.animatedRenderEnvironment);
-            mainPanel.mainLayoutUgg.timeSliderPanel.setModelView(null);
-            mainPanel.mainLayoutUgg.creatorPanel.setModelEditorManager(null);
-            mainPanel.mainLayoutUgg.creatorPanel.setCurrentModel(null);
-            mainPanel.mainLayoutUgg.creatorPanel.setUndoManager(null);
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.setUndoManager(null, mainPanel.animatedRenderEnvironment);
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.setModelView(null);
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setModelEditorManager(null);
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setCurrentModel(null);
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setUndoManager(null);
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(new JPanel());
             mainPanel.geoControlModelData = null;
         } else {
             mainPanel.geoControl.setViewportView(mainPanel.currentModelPanel.getModelViewManagingTree());
             mainPanel.geoControl.repaint();
 
-            mainPanel.mainLayoutUgg.frontView.setComponent(modelContextManager.getFrontArea());
-            mainPanel.mainLayoutUgg.bottomView.setComponent(modelContextManager.getBotArea());
-            mainPanel.mainLayoutUgg.leftView.setComponent(modelContextManager.getSideArea());
-            mainPanel.mainLayoutUgg.perspectiveView.setComponent(modelContextManager.getPerspArea());
+            mainPanel.mainLayoutUgg.editTab.frontView.setComponent(modelContextManager.getFrontArea());
+            mainPanel.mainLayoutUgg.editTab.bottomView.setComponent(modelContextManager.getBotArea());
+            mainPanel.mainLayoutUgg.editTab.leftView.setComponent(modelContextManager.getSideArea());
+            mainPanel.mainLayoutUgg.editTab.perspectiveView.setComponent(modelContextManager.getPerspArea());
+
             mainPanel.mainLayoutUgg.previewView.setComponent(modelContextManager.getAnimationViewer());
             mainPanel.mainLayoutUgg.animationControllerView.setComponent(modelContextManager.getAnimationController());
 
             refreshAnimationModeState(mainPanel.actionTypeGroup,
                     mainPanel.animatedRenderEnvironment,
-                    mainPanel.mainLayoutUgg.animationModeButton,
+                    mainPanel.mainLayoutUgg.editTab.animationModeButton,
                     mainPanel.animationModeState,
-                    mainPanel.mainLayoutUgg.creatorPanel,
+                    mainPanel.mainLayoutUgg.editTab.creatorPanel,
                     mainPanel.currentModelPanel,
                     mainPanel.prefs,
-                    mainPanel.mainLayoutUgg.setKeyframe,
-                    mainPanel.mainLayoutUgg.setTimeBounds,
+                    mainPanel.mainLayoutUgg.editTab.setKeyframe,
+                    mainPanel.mainLayoutUgg.editTab.setTimeBounds,
                     mainPanel.snapButton,
-                    mainPanel.mainLayoutUgg.timeSliderPanel);
+                    mainPanel.mainLayoutUgg.editTab.timeSliderPanel);
 
-            mainPanel.mainLayoutUgg.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
-            mainPanel.mainLayoutUgg.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());
-            mainPanel.mainLayoutUgg.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
-            mainPanel.mainLayoutUgg.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
-            mainPanel.mainLayoutUgg.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
+            mainPanel.mainLayoutUgg.editTab.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
 
             mainPanel.geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
@@ -160,7 +162,7 @@ public class ModelPanelUgg {
             mainPanel.currentModelPanel.getModelComponentBrowserTree().reloadFromModelView();
         }
         mainPanel.activeViewportWatcher.viewportChanged(null);
-        mainPanel.mainLayoutUgg.timeSliderPanel.revalidateKeyframeDisplay();
+        mainPanel.mainLayoutUgg.editTab.timeSliderPanel.revalidateKeyframeDisplay();
     }
 
     static void duplicateSelection(ClonedNodeNamePicker namePicker, ModelPanel currentModelPanel1) {
@@ -237,7 +239,7 @@ public class ModelPanelUgg {
         display.getPerspArea().reloadTextures();// .mpanel.perspArea.reloadTextures();//addGeosets(newGeosets);
         display.getAnimationViewer().reload();
         display.getAnimationController().reload();
-        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.editTab.creatorPanel.reloadAnimationList();
 
         display.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment, MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY,
                 display.getPerspArea().getViewport());

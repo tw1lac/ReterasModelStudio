@@ -263,23 +263,23 @@ public class MenuBar {
 
         createMenuItem("Animation Controller", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Animation Controller", () -> mainPanel.mainLayoutUgg.animationControllerView), KeyEvent.VK_C);
 
-        createMenuItem("Modeling", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Modeling", () -> mainPanel.mainLayoutUgg.creatorView), KeyEvent.VK_M);
+        createMenuItem("Modeling", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Modeling", () -> mainPanel.mainLayoutUgg.editTab.creatorView), KeyEvent.VK_M);
 
-        final JMenuItem outlinerItem = createMenuItem("Outliner", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Outliner", () -> mainPanel.viewportControllerWindowView), KeyEvent.VK_O);
+        final JMenuItem outlinerItem = createMenuItem("Outliner", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Outliner", () -> mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView), KeyEvent.VK_O);
 
-        final JMenuItem perspectiveItem = createMenuItem("Perspective", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Perspective", () -> mainPanel.mainLayoutUgg.perspectiveView), KeyEvent.VK_P);
+        final JMenuItem perspectiveItem = createMenuItem("Perspective", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Perspective", () -> mainPanel.mainLayoutUgg.editTab.perspectiveView), KeyEvent.VK_P);
 
-        final JMenuItem frontItem = createMenuItem("Front", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Front", () -> mainPanel.mainLayoutUgg.frontView), KeyEvent.VK_F);
+        final JMenuItem frontItem = createMenuItem("Front", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Front", () -> mainPanel.mainLayoutUgg.editTab.frontView), KeyEvent.VK_F);
 
-        final JMenuItem sideItem = createMenuItem("Side", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Side", () -> mainPanel.mainLayoutUgg.leftView), KeyEvent.VK_S);
+        final JMenuItem sideItem = createMenuItem("Side", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Side", () -> mainPanel.mainLayoutUgg.editTab.leftView), KeyEvent.VK_S);
 
-        final JMenuItem bottomItem = createMenuItem("Bottom", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Bottom", () -> mainPanel.mainLayoutUgg.bottomView), KeyEvent.VK_B);
+        final JMenuItem bottomItem = createMenuItem("Bottom", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Bottom", () -> mainPanel.mainLayoutUgg.editTab.bottomView), KeyEvent.VK_B);
 
-        final JMenuItem toolsItem = createMenuItem("Tools", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Tools", () -> mainPanel.toolView), KeyEvent.VK_T);
+        final JMenuItem toolsItem = createMenuItem("Tools", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Tools", () -> mainPanel.mainLayoutUgg.editTab.toolView), KeyEvent.VK_T);
 
         final JMenuItem contentsItem = createMenuItem("Contents", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Model", () -> mainPanel.mainLayoutUgg.modelDataView), KeyEvent.VK_C);
 
-        final JMenuItem timeItem = createMenuItem("Footer", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Footer", () -> mainPanel.mainLayoutUgg.timeSliderView), -1);
+        final JMenuItem timeItem = createMenuItem("Footer", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Footer", () -> mainPanel.mainLayoutUgg.editTab.timeSliderView), -1);
 
         final JMenuItem scriptViewItem = createMenuItem("Matrix Eater Script", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Matrix Eater Script", () -> createMatrixEaterScriptPanel(mainPanel)), KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"));
 

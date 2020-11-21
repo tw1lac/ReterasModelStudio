@@ -2,6 +2,7 @@ package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.util.ModelUtils;
@@ -49,8 +50,9 @@ public class NewModelPanel {
     }
 
     static ModelPanel createModelPanel(MainPanel mainPanel, EditableModel model, ImageIcon icon, boolean specialBLPModel) {
+        final ViewportTransferHandler viewportTransferHandler =  new ViewportTransferHandler();
         return new ModelPanel(mainPanel, model, mainPanel.prefs, mainPanel, mainPanel.selectionItemTypeGroup,
-                mainPanel.selectionModeGroup, mainPanel.modelStructureChangeListener, mainPanel.coordDisplayListener, mainPanel.viewportTransferHandler,
+                mainPanel.selectionModeGroup, mainPanel.modelStructureChangeListener, mainPanel.mainLayoutUgg.editTab.coordDisplayListener, viewportTransferHandler,
                 mainPanel.activeViewportWatcher, icon, specialBLPModel, mainPanel.textureExporter);
     }
 }

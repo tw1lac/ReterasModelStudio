@@ -55,7 +55,7 @@ public class MainPanelActions {
                 final ModelPanel mpanel = mainPanel.currentModelPanel;
                 if (mpanel != null) {
                     if (mainPanel.animationModeState) {
-                        mainPanel.mainLayoutUgg.timeSliderPanel.deleteSelectedKeyframes();
+                        mainPanel.mainLayoutUgg.editTab.timeSliderPanel.deleteSelectedKeyframes();
                     } else {
                         mpanel.getUndoManager()
                                 .pushAction(mpanel.getModelEditorManager().getModelEditor().deleteSelectedComponents());
@@ -563,20 +563,20 @@ public class MainPanelActions {
         return (start, end) -> {
             final Integer globalSeq = mainPanel.animatedRenderEnvironment.getGlobalSeq();
             if (globalSeq != null) {
-                mainPanel.mainLayoutUgg.creatorPanel.setChosenGlobalSeq(globalSeq);
+                mainPanel.mainLayoutUgg.editTab.creatorPanel.setChosenGlobalSeq(globalSeq);
             } else {
                 final ModelPanel modelPanel = mainPanel.currentModelPanel;
                 if (modelPanel != null) {
                     boolean foundAnim = false;
                     for (final Animation animation : modelPanel.getModel().getAnims()) {
                         if ((animation.getStart() == start) && (animation.getEnd() == end)) {
-                            mainPanel.mainLayoutUgg.creatorPanel.setChosenAnimation(animation);
+                            mainPanel.mainLayoutUgg.editTab.creatorPanel.setChosenAnimation(animation);
                             foundAnim = true;
                             break;
                         }
                     }
                     if (!foundAnim) {
-                        mainPanel.mainLayoutUgg.creatorPanel.setChosenAnimation(null);
+                        mainPanel.mainLayoutUgg.editTab.creatorPanel.setChosenAnimation(null);
                     }
                 }
 
@@ -592,15 +592,15 @@ public class MainPanelActions {
             SwingUtilities.invokeLater(() -> ModelPanelUgg.refreshAnimationModeState(
                     mainPanel.actionTypeGroup,
                     mainPanel.animatedRenderEnvironment,
-                    mainPanel.mainLayoutUgg.animationModeButton,
+                    mainPanel.mainLayoutUgg.editTab.animationModeButton,
                     mainPanel.animationModeState,
-                    mainPanel.mainLayoutUgg.creatorPanel,
+                    mainPanel.mainLayoutUgg.editTab.creatorPanel,
                     mainPanel.currentModelPanel,
                     mainPanel.prefs,
-                    mainPanel.mainLayoutUgg.setKeyframe,
-                    mainPanel.mainLayoutUgg.setTimeBounds,
+                    mainPanel.mainLayoutUgg.editTab.setKeyframe,
+                    mainPanel.mainLayoutUgg.editTab.setTimeBounds,
                     mainPanel.snapButton,
-                    mainPanel.mainLayoutUgg.timeSliderPanel));
+                    mainPanel.mainLayoutUgg.editTab.timeSliderPanel));
 
             if (newType == SelectionItemTypes.TPOSE) {
 

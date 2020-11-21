@@ -7,7 +7,6 @@ import com.hiveworkshop.wc3.gui.modeledit.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
-import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditorManager;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.ModelEditorActionType;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ClonedNodeNamePicker;
@@ -93,7 +92,7 @@ public class MainPanel extends JPanel
 
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
-    JTextField[] mouseCoordDisplay = new JTextField[3];
+//    JTextField[] mouseCoordDisplay = new JTextField[3];
     boolean cheatShift = false;
     boolean cheatAlt = false;
     SaveProfile profile = SaveProfile.get();
@@ -115,10 +114,8 @@ public class MainPanel extends JPanel
     ToolbarButtonGroup<SelectionMode> selectionModeGroup;
     ToolbarButtonGroup<ToolbarActionButtonType> actionTypeGroup;
     final ModelStructureChangeListener modelStructureChangeListener;
-    final ViewportTransferHandler viewportTransferHandler;
     final RootWindow rootWindow;
-    View viewportControllerWindowView;
-    View toolView;
+
     ActivityDescriptor currentActivity;
 
     public MainPanel() {
@@ -158,14 +155,7 @@ public class MainPanel extends JPanel
 
         modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> currentModelPanel.getModel());
 
-//        mainLayoutUgg.createAnimationPanelStuff(this);
-
         final GroupLayout layout = new GroupLayout(this);
-
-//        final TabWindow startupTabWindow = mainLayoutUgg.createMainLayout(this);
-//        rootWindow.setWindow(startupTabWindow);
-//        rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
-//        startupTabWindow.setSelectedTab(0);
 
         rootWindow.setWindow(mainLayoutUgg.startupTabWindow);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
@@ -185,11 +175,6 @@ public class MainPanel extends JPanel
         }
 
         BLPPanel blpPanel = new BLPPanel(null);
-
-
-
-        viewportTransferHandler = new ViewportTransferHandler();
-        coordDisplayListener = MainPanel.this::setMouseCoordDisplay;
     }
 
     @Override
@@ -198,13 +183,12 @@ public class MainPanel extends JPanel
         for (final ModelPanel modelPanel : modelPanels) {
             modelPanel.changeActivity(newType);
         }
-        mainLayoutUgg.creatorPanel.changeActivity(newType);
+        mainLayoutUgg.editTab.creatorPanel.changeActivity(newType);
     }
 
     static final Quaternion IDENTITY = new Quaternion();
     final TimeEnvironmentImpl animatedRenderEnvironment;
     JButton snapButton;
-    final CoordDisplayListener coordDisplayListener;
     protected ModelEditorActionType actionType;
 
 //    CreatorModelingPanel creatorPanel;
@@ -291,7 +275,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    mainLayoutUgg.timeSliderPanel.jumpRight();
+                    mainLayoutUgg.editTab.timeSliderPanel.jumpRight();
                 }
             }
         });
@@ -305,7 +289,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    mainLayoutUgg.timeSliderPanel.jumpLeft();
+                    mainLayoutUgg.editTab.timeSliderPanel.jumpLeft();
                 }
             }
         });
@@ -326,7 +310,7 @@ public class MainPanel extends JPanel
                 if (focusedComponentNeedsTyping(focusedComponent)) {
                     return;
                 }
-                mainLayoutUgg.timeSliderPanel.play();
+                mainLayoutUgg.editTab.timeSliderPanel.play();
             }
         });
 
@@ -427,7 +411,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    mainLayoutUgg.timeSliderPanel.jumpFrames(deltaFrames);
+                    mainLayoutUgg.editTab.timeSliderPanel.jumpFrames(deltaFrames);
                 }
             }
         });
@@ -501,7 +485,7 @@ public class MainPanel extends JPanel
     }
 
     void scaleAnimationsUgg() {
-        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, mainLayoutUgg.timeSliderPanel::revalidateKeyframeDisplay);
+        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, mainLayoutUgg.editTab.timeSliderPanel::revalidateKeyframeDisplay);
         aFrame.setVisible(true);
     }
 
@@ -986,14 +970,6 @@ public class MainPanel extends JPanel
         if (geoControlModelData != null) {
             geoControlModelData.repaint();
         }
-    }
-
-    public void setMouseCoordDisplay(final byte dim1, final byte dim2, final double value1, final double value2) {
-        for (JTextField jTextField : mouseCoordDisplay) {
-            jTextField.setText("");
-        }
-        mouseCoordDisplay[dim1].setText((float) value1 + "");
-        mouseCoordDisplay[dim2].setText((float) value2 + "");
     }
 
     public static void closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
