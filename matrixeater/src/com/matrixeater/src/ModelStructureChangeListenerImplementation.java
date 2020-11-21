@@ -123,7 +123,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void keyframeAdded(final TimelineContainer node, final AnimFlag timeline, final int trackTime) {
-        mainPanel.timeSliderPanel.revalidateKeyframeDisplay();
+        mainPanel.mainLayoutUgg.timeSliderPanel.revalidateKeyframeDisplay();
     }
 
     @Override
@@ -133,14 +133,14 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
 
     @Override
     public void keyframeRemoved(final TimelineContainer node, final AnimFlag timeline, final int trackTime) {
-        mainPanel.timeSliderPanel.revalidateKeyframeDisplay();
+        mainPanel.mainLayoutUgg.timeSliderPanel.revalidateKeyframeDisplay();
     }
 
     @Override
     public void animationsAdded(final List<Animation> animation) {
         mainPanel.currentModelPanel.getAnimationViewer().reload();
         mainPanel.currentModelPanel.getAnimationController().reload();
-        mainPanel.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
             ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
@@ -151,7 +151,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
     public void animationsRemoved(final List<Animation> animation) {
         mainPanel.currentModelPanel.getAnimationViewer().reload();
         mainPanel.currentModelPanel.getAnimationController().reload();
-        mainPanel.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
             ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
@@ -183,7 +183,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
     public void animationParamsChanged(final Animation animation) {
         mainPanel.currentModelPanel.getAnimationViewer().reload();
         mainPanel.currentModelPanel.getAnimationController().reload();
-        mainPanel.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
             ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
@@ -194,7 +194,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
     public void globalSequenceLengthChanged(final int index, final Integer newLength) {
         mainPanel.currentModelPanel.getAnimationViewer().reload();
         mainPanel.currentModelPanel.getAnimationController().reload();
-        mainPanel.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
             ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);

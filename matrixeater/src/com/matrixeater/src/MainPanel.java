@@ -1,15 +1,12 @@
 package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
-import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
-import com.hiveworkshop.wc3.gui.animedit.TimeSliderPanel;
 import com.hiveworkshop.wc3.gui.modeledit.*;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
-import com.hiveworkshop.wc3.gui.modeledit.creator.CreatorModelingPanel;
 import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditorManager;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.ModelEditorActionType;
@@ -102,11 +99,6 @@ public class MainPanel extends JPanel
     SaveProfile profile = SaveProfile.get();
     ProgramPreferences prefs = profile.getPreferences();
 
-
-    TimeSliderPanel timeSliderPanel;
-    JButton setKeyframe;
-    JButton setTimeBounds;
-    ModeButton animationModeButton;
     boolean animationModeState = false;
 
     final ActiveViewportWatcher activeViewportWatcher = new ActiveViewportWatcher();
@@ -137,13 +129,14 @@ public class MainPanel extends JPanel
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
 
-        creatorPanel = new CreatorModelingPanel(newType -> {actionTypeGroup.maybeSetButtonType(newType); MainPanel.this.changeActivity(newType);}, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
+//        creatorPanel = new CreatorModelingPanel(newType -> {actionTypeGroup.maybeSetButtonType(newType); MainPanel.this.changeActivity(newType);}, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
+
+        mainLayoutUgg = new MainLayoutUgg(this);
+//        mainLayoutUgg.createEditTabViews(this);
 
         actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
 
-        mainLayoutUgg = new MainLayoutUgg(this);
-        mainLayoutUgg.createEditTabViews(this);
 
 
         StringViewMap viewMap = new StringViewMap();
@@ -165,17 +158,23 @@ public class MainPanel extends JPanel
 
         modelStructureChangeListener = new ModelStructureChangeListenerImplementation(this, () -> currentModelPanel.getModel());
 
-        createAnimationPanelStuff();
+//        mainLayoutUgg.createAnimationPanelStuff(this);
 
         final GroupLayout layout = new GroupLayout(this);
 
-        final TabWindow startupTabWindow = mainLayoutUgg.createMainLayout(this);
-        rootWindow.setWindow(startupTabWindow);
+//        final TabWindow startupTabWindow = mainLayoutUgg.createMainLayout(this);
+//        rootWindow.setWindow(startupTabWindow);
+//        rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
+//        startupTabWindow.setSelectedTab(0);
+
+        rootWindow.setWindow(mainLayoutUgg.startupTabWindow);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
-        startupTabWindow.setSelectedTab(0);
+        mainLayoutUgg.startupTabWindow.setSelectedTab(0);
+
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(toolBar.toolBar).addComponent(rootWindow));
         layout.setVerticalGroup(layout.createSequentialGroup().addComponent(toolBar.toolBar).addComponent(rootWindow));
         setLayout(layout);
+
 
         selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
 
@@ -193,75 +192,13 @@ public class MainPanel extends JPanel
         coordDisplayListener = MainPanel.this::setMouseCoordDisplay;
     }
 
-    private void createAnimationPanelStuff() {
-        timeSliderPanel = new TimeSliderPanel(animatedRenderEnvironment, modelStructureChangeListener, prefs);
-        timeSliderPanel.setDrawing(false);
-        timeSliderPanel.addListener(MainPanelActions.createTimeSliderTimeListener(this));
-//		timeSliderPanel.addListener(creatorPanel);
-
-        setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
-        setKeyframe.setMargin(new Insets(0, 0, 0, 0));
-        setKeyframe.setToolTipText("Create Keyframe");
-        setKeyframe.addActionListener(MainPanelActions.createKeyframeAction(this));
-
-        setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
-        setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
-        setTimeBounds.setToolTipText("Choose Time Bounds");
-        setTimeBounds.addActionListener(MainPanelActions.timeBoundChooserPanel(this));
-
-        animationModeButton = new ModeButton("Animate");
-        animationModeButton.setVisible(false);// TODO remove this if unused
-
-//        toolbar.setMaximumSize(new Dimension(80000, 48));
-
-//        modelPanels = new ArrayList<>();
-        final JPanel toolsPanel = new JPanel();
-        toolsPanel.setMaximumSize(new Dimension(30, 999999));
-
-
-        mainLayoutUgg.animationControllerView = new View("Animation Controller", null, new JPanel());
-
-        for (int i = 0; i < mouseCoordDisplay.length; i++) {
-            mouseCoordDisplay[i] = new JTextField("");
-            mouseCoordDisplay[i].setMaximumSize(new Dimension(80, 18));
-            mouseCoordDisplay[i].setMinimumSize(new Dimension(50, 15));
-            mouseCoordDisplay[i].setEditable(false);
-        }
-
-        final JPanel timeSliderAndExtra = new JPanel();
-        final GroupLayout tsaeLayout = new GroupLayout(timeSliderAndExtra);
-        final Component horizontalGlue = Box.createHorizontalGlue();
-        final Component verticalGlue = Box.createVerticalGlue();
-        tsaeLayout.setHorizontalGroup(
-                tsaeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(timeSliderPanel)
-                        .addGroup(tsaeLayout.createSequentialGroup()
-                                .addComponent(mouseCoordDisplay[0])
-                                .addComponent(mouseCoordDisplay[1])
-                                .addComponent(mouseCoordDisplay[2])
-                                .addComponent(horizontalGlue)
-                                .addComponent(setKeyframe)
-                                .addComponent(setTimeBounds)));
-        tsaeLayout.setVerticalGroup(tsaeLayout.createSequentialGroup()
-                .addComponent(timeSliderPanel)
-                .addGroup(tsaeLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addComponent(mouseCoordDisplay[0])
-                        .addComponent(mouseCoordDisplay[1])
-                        .addComponent(mouseCoordDisplay[2])
-                        .addComponent(horizontalGlue)
-                        .addComponent(setKeyframe)
-                        .addComponent(setTimeBounds)));
-        timeSliderAndExtra.setLayout(tsaeLayout);
-        mainLayoutUgg.timeSliderView = new View("Footer", null, timeSliderAndExtra);
-    }
-
     @Override
     public void changeActivity(final ActivityDescriptor newType) {
         this.currentActivity = newType;
         for (final ModelPanel modelPanel : modelPanels) {
             modelPanel.changeActivity(newType);
         }
-        creatorPanel.changeActivity(newType);
+        mainLayoutUgg.creatorPanel.changeActivity(newType);
     }
 
     static final Quaternion IDENTITY = new Quaternion();
@@ -269,8 +206,8 @@ public class MainPanel extends JPanel
     JButton snapButton;
     final CoordDisplayListener coordDisplayListener;
     protected ModelEditorActionType actionType;
-//    JMenu teamColorMenu;
-    CreatorModelingPanel creatorPanel;
+
+//    CreatorModelingPanel creatorPanel;
 
 
     /**
@@ -354,7 +291,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    timeSliderPanel.jumpRight();
+                    mainLayoutUgg.timeSliderPanel.jumpRight();
                 }
             }
         });
@@ -368,7 +305,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    timeSliderPanel.jumpLeft();
+                    mainLayoutUgg.timeSliderPanel.jumpLeft();
                 }
             }
         });
@@ -389,7 +326,7 @@ public class MainPanel extends JPanel
                 if (focusedComponentNeedsTyping(focusedComponent)) {
                     return;
                 }
-                timeSliderPanel.play();
+                mainLayoutUgg.timeSliderPanel.play();
             }
         });
 
@@ -490,7 +427,7 @@ public class MainPanel extends JPanel
                     return;
                 }
                 if (animationModeState) {
-                    timeSliderPanel.jumpFrames(deltaFrames);
+                    mainLayoutUgg.timeSliderPanel.jumpFrames(deltaFrames);
                 }
             }
         });
@@ -564,7 +501,7 @@ public class MainPanel extends JPanel
     }
 
     void scaleAnimationsUgg() {
-        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, timeSliderPanel::revalidateKeyframeDisplay);
+        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, mainLayoutUgg.timeSliderPanel::revalidateKeyframeDisplay);
         aFrame.setVisible(true);
     }
 

@@ -87,11 +87,11 @@ public class MenuBarActionListeners {
                 transferActionListener.actionPerformed(e);
             } else {
                 if (e.getActionCommand().equals(TransferHandler.getCutAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.cut();
+                    mainPanel.mainLayoutUgg.timeSliderPanel.cut();
                 } else if (e.getActionCommand().equals(TransferHandler.getCopyAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.copy();
+                    mainPanel.mainLayoutUgg.timeSliderPanel.copy();
                 } else if (e.getActionCommand().equals(TransferHandler.getPasteAction().getValue(Action.NAME))) {
-                    mainPanel.timeSliderPanel.paste();
+                    mainPanel.mainLayoutUgg.timeSliderPanel.paste();
                 }
             }
         };

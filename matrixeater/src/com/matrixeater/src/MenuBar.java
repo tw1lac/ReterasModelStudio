@@ -28,6 +28,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MenuBar {
+
+    final MainPanel mainPanel;
+    final JMenuBar menuBar;
+
+    public MenuBar(MainPanel mainPanel){
+        this.mainPanel = mainPanel;
+        this.menuBar = createMenuBar(mainPanel);
+    }
+
     public static JMenuBar createMenuBar(final MainPanel mainPanel) {
         // Create top menu bar
         JMenuBar menuBar = new JMenuBar();

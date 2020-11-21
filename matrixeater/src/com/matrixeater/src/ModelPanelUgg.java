@@ -105,13 +105,23 @@ public class ModelPanelUgg {
             mainPanel.mainLayoutUgg.previewView.setComponent(new JPanel());
             mainPanel.mainLayoutUgg.animationControllerView.setComponent(new JPanel());
 
-            refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
+            refreshAnimationModeState(mainPanel.actionTypeGroup,
+                    mainPanel.animatedRenderEnvironment,
+                    mainPanel.mainLayoutUgg.animationModeButton,
+                    mainPanel.animationModeState,
+                    mainPanel.mainLayoutUgg.creatorPanel,
+                    mainPanel.currentModelPanel,
+                    mainPanel.prefs,
+                    mainPanel.mainLayoutUgg.setKeyframe,
+                    mainPanel.mainLayoutUgg.setTimeBounds,
+                    mainPanel.snapButton,
+                    mainPanel.mainLayoutUgg.timeSliderPanel);
 
-            mainPanel.timeSliderPanel.setUndoManager(null, mainPanel.animatedRenderEnvironment);
-            mainPanel.timeSliderPanel.setModelView(null);
-            mainPanel.creatorPanel.setModelEditorManager(null);
-            mainPanel.creatorPanel.setCurrentModel(null);
-            mainPanel.creatorPanel.setUndoManager(null);
+            mainPanel.mainLayoutUgg.timeSliderPanel.setUndoManager(null, mainPanel.animatedRenderEnvironment);
+            mainPanel.mainLayoutUgg.timeSliderPanel.setModelView(null);
+            mainPanel.mainLayoutUgg.creatorPanel.setModelEditorManager(null);
+            mainPanel.mainLayoutUgg.creatorPanel.setCurrentModel(null);
+            mainPanel.mainLayoutUgg.creatorPanel.setUndoManager(null);
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(new JPanel());
             mainPanel.geoControlModelData = null;
         } else {
@@ -125,13 +135,23 @@ public class ModelPanelUgg {
             mainPanel.mainLayoutUgg.previewView.setComponent(modelContextManager.getAnimationViewer());
             mainPanel.mainLayoutUgg.animationControllerView.setComponent(modelContextManager.getAnimationController());
 
-            refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
+            refreshAnimationModeState(mainPanel.actionTypeGroup,
+                    mainPanel.animatedRenderEnvironment,
+                    mainPanel.mainLayoutUgg.animationModeButton,
+                    mainPanel.animationModeState,
+                    mainPanel.mainLayoutUgg.creatorPanel,
+                    mainPanel.currentModelPanel,
+                    mainPanel.prefs,
+                    mainPanel.mainLayoutUgg.setKeyframe,
+                    mainPanel.mainLayoutUgg.setTimeBounds,
+                    mainPanel.snapButton,
+                    mainPanel.mainLayoutUgg.timeSliderPanel);
 
-            mainPanel.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
-            mainPanel.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());
-            mainPanel.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
-            mainPanel.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
-            mainPanel.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
+            mainPanel.mainLayoutUgg.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
+            mainPanel.mainLayoutUgg.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());
+            mainPanel.mainLayoutUgg.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
+            mainPanel.mainLayoutUgg.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
+            mainPanel.mainLayoutUgg.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
 
             mainPanel.geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
@@ -140,7 +160,7 @@ public class ModelPanelUgg {
             mainPanel.currentModelPanel.getModelComponentBrowserTree().reloadFromModelView();
         }
         mainPanel.activeViewportWatcher.viewportChanged(null);
-        mainPanel.timeSliderPanel.revalidateKeyframeDisplay();
+        mainPanel.mainLayoutUgg.timeSliderPanel.revalidateKeyframeDisplay();
     }
 
     static void duplicateSelection(ClonedNodeNamePicker namePicker, ModelPanel currentModelPanel1) {
@@ -217,7 +237,7 @@ public class ModelPanelUgg {
         display.getPerspArea().reloadTextures();// .mpanel.perspArea.reloadTextures();//addGeosets(newGeosets);
         display.getAnimationViewer().reload();
         display.getAnimationController().reload();
-        mainPanel.creatorPanel.reloadAnimationList();
+        mainPanel.mainLayoutUgg.creatorPanel.reloadAnimationList();
 
         display.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment, MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY,
                 display.getPerspArea().getViewport());
