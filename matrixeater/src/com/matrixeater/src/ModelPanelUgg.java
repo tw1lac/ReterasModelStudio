@@ -5,7 +5,6 @@ import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.animedit.TimeSliderPanel;
 import com.hiveworkshop.wc3.gui.modeledit.ModeButton;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
-import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
 import com.hiveworkshop.wc3.gui.modeledit.creator.CreatorModelingPanel;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.ClonedNodeNamePicker;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarActionButtonType;
@@ -13,25 +12,11 @@ import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.wc3.mdl.Animation;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
-import net.infonode.docking.FloatingWindow;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
 public class ModelPanelUgg {
-    public static ModelPanel currentModelPanel(ModelPanel currentModelPanel) {
-        if(currentModelPanel != null){
-            System.out.println("repaint!");
-            currentModelPanel.repaintSelfAndRelatedChildren();
-        }
-        else {
-            System.out.println("no repaint");
-        }
-
-        return currentModelPanel;
-    }
-
     /**
      * Returns the MDLDisplay associated with a given MDL, or null if one cannot be
      * found.
@@ -112,13 +97,16 @@ public class ModelPanelUgg {
             jPanel.add(new JLabel("..."));
             mainPanel.viewportControllerWindowView.setComponent(jPanel);
             mainPanel.geoControl = null;
+
             mainPanel.frontView.setComponent(new JPanel());
             mainPanel.bottomView.setComponent(new JPanel());
             mainPanel.leftView.setComponent(new JPanel());
             mainPanel.perspectiveView.setComponent(new JPanel());
             mainPanel.previewView.setComponent(new JPanel());
             mainPanel.animationControllerView.setComponent(new JPanel());
+
             refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
+
             mainPanel.timeSliderPanel.setUndoManager(null, mainPanel.animatedRenderEnvironment);
             mainPanel.timeSliderPanel.setModelView(null);
             mainPanel.creatorPanel.setModelEditorManager(null);
@@ -136,16 +124,18 @@ public class ModelPanelUgg {
             mainPanel.perspectiveView.setComponent(modelContextManager.getPerspArea());
             mainPanel.previewView.setComponent(modelContextManager.getAnimationViewer());
             mainPanel.animationControllerView.setComponent(modelContextManager.getAnimationController());
+
             refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
+
             mainPanel.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
             mainPanel.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());
             mainPanel.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
             mainPanel.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
             mainPanel.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
+            mainPanel.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
 
             mainPanel.geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
 
-            mainPanel.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
             mainPanel.geoControlModelData.repaint();
             mainPanel.currentModelPanel.getModelComponentBrowserTree().reloadFromModelView();
         }
@@ -177,9 +167,8 @@ public class ModelPanelUgg {
                     final Animation anim = currentModelPanel.getModel().getAnim(0);
                     animatedRenderEnvironment.setBounds(anim.getStart(), anim.getEnd());
                 }
-                currentModelPanel.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
-                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel.getPerspArea().getViewport());
-                currentModelPanel.getEditorRenderModel().updateNodes(true, false);
+                refreshAndUpdateNodes(animatedRenderEnvironment, currentModelPanel);
+
                 timeSliderPanel.setNodeSelectionManager(
                         currentModelPanel.getModelEditorManager().getNodeAnimationSelectionManager());
             }
@@ -191,9 +180,7 @@ public class ModelPanelUgg {
         animatedRenderEnvironment.setStaticViewMode(!animationModeState);
         if (!animationModeState) {
             if ((currentModelPanel != null) && (currentModelPanel.getModel() != null)) {
-                currentModelPanel.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
-                        MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel.getPerspArea().getViewport());
-                currentModelPanel.getEditorRenderModel().updateNodes(true, false); // update to 0 position
+                refreshAndUpdateNodes(animatedRenderEnvironment, currentModelPanel);
             }
         }
         final List<ToolbarButtonGroup<ToolbarActionButtonType>.ToolbarButtonAction> buttons = actionTypeGroup
@@ -216,6 +203,12 @@ public class ModelPanelUgg {
         creatorPanel.setAnimationModeState(animationModeState);
     }
 
+    private static void refreshAndUpdateNodes(TimeEnvironmentImpl animatedRenderEnvironment, ModelPanel currentModelPanel) {
+        currentModelPanel.getEditorRenderModel().refreshFromEditor(animatedRenderEnvironment, MainPanel.IDENTITY,
+                MainPanel.IDENTITY, MainPanel.IDENTITY, currentModelPanel.getPerspArea().getViewport());
+        currentModelPanel.getEditorRenderModel().updateNodes(true, false); // update to 0 position
+    }
+
     static void reloadGeosetManagers(MainPanel mainPanel, final ModelPanel display) {
         mainPanel.geoControl.repaint();
         display.getModelViewManagingTree().reloadFromModelView();
@@ -236,24 +229,4 @@ public class ModelPanelUgg {
         geoControlModelData.setViewportView(display.getModelComponentBrowserTree());
     }
 
-    static void editUVs(MainPanel mainPanel) {
-        final ModelPanel disp = mainPanel.currentModelPanel;
-        if (disp.getEditUVPanel() == null) {
-            final UVPanel panel = new UVPanel(disp, mainPanel.prefs, mainPanel.modelStructureChangeListener);
-            disp.setEditUVPanel(panel);
-
-            panel.initViewport();
-            final FloatingWindow floatingWindow = mainPanel.rootWindow.createFloatingWindow(
-                    new Point(mainPanel.getX() + (mainPanel.getWidth() / 2), mainPanel.getY() + (mainPanel.getHeight() / 2)), panel.getSize(),
-                    panel.getView());
-            panel.init();
-            floatingWindow.getTopLevelAncestor().setVisible(true);
-            panel.packFrame();
-        } else if (!disp.getEditUVPanel().frameVisible()) {
-            final FloatingWindow floatingWindow = mainPanel.rootWindow.createFloatingWindow(
-                    new Point(mainPanel.getX() + (mainPanel.getWidth() / 2), mainPanel.getY() + (mainPanel.getHeight() / 2)),
-                    disp.getEditUVPanel().getSize(), disp.getEditUVPanel().getView());
-            floatingWindow.getTopLevelAncestor().setVisible(true);
-        }
-    }
 }

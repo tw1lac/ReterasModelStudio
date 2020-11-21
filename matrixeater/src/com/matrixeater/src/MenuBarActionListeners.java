@@ -6,6 +6,7 @@ import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
 import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
+import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimationViewer;
 import com.hiveworkshop.wc3.jworldedit.objects.DoodadTabTreeBrowserBuilder;
@@ -22,14 +23,15 @@ import com.hiveworkshop.wc3.units.objectdata.War3ID;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import com.matrixeaterhayate.TextureManager;
-import net.infonode.docking.RootWindow;
-import net.infonode.docking.SplitWindow;
-import net.infonode.docking.TabWindow;
-import net.infonode.docking.View;
+import net.infonode.docking.*;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
 import javax.imageio.ImageIO;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -217,7 +219,7 @@ public class MenuBarActionListeners {
 
     static ActionListener exit(MainPanel mainPanel) {
         return e -> {
-            if (MainPanel.closeAll(mainPanel)) {
+            if (MenuBar.closeAll(mainPanel)) {
                 MainFrame.frame.dispose();
             }
         };
@@ -666,11 +668,12 @@ public class MenuBarActionListeners {
         return new AbstractAction("Open Unit Browser") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final UnitEditorTree unitEditorTree = mainPanel.createUnitEditorTree();
-                mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(),
-                        new View("Unit Browser",
-                                new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
-                                new JScrollPane(unitEditorTree))));
+//                final UnitEditorTree unitEditorTree = UnitBrowser.createUnitEditorTree(mainPanel);
+                final View unitBrowser = UnitBrowser.createUnitBrowser(mainPanel);
+                mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(), unitBrowser));
+//                        new View("Unit Browser",
+//                                new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
+//                                new JScrollPane(unitEditorTree))));
             }
         };
     }
@@ -705,5 +708,54 @@ public class MenuBarActionListeners {
             testPanel.setLayout(new GridLayout(1, 4));
             return new View("Test", null, testPanel);
         });
+    }
+
+    static ActionListener createBtnReplayPlayActionListener(final MainPanel mainPanel, RSyntaxTextArea matrixEaterScriptTextArea) {
+        return new ActionListener() {
+            final ScriptEngineManager factory = new ScriptEngineManager();
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final String text = matrixEaterScriptTextArea.getText();
+                final ScriptEngine engine = factory.getEngineByName("JavaScript");
+                final ModelPanel modelPanel = mainPanel.currentModelPanel;
+                if (modelPanel != null) {
+                    engine.put("modelPanel", modelPanel);
+                    engine.put("model", modelPanel.getModel());
+                    engine.put("world", mainPanel);
+                    try {
+                        engine.eval(text);
+                    } catch (final ScriptException e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(mainPanel, e1.getMessage(), "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "Must open a file!", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+    }
+
+    static void editUVs(MainPanel mainPanel) {
+        final ModelPanel disp = mainPanel.currentModelPanel;
+        if (disp.getEditUVPanel() == null) {
+            final UVPanel panel = new UVPanel(disp, mainPanel.prefs, mainPanel.modelStructureChangeListener);
+            disp.setEditUVPanel(panel);
+
+            panel.initViewport();
+            final FloatingWindow floatingWindow = mainPanel.rootWindow.createFloatingWindow(
+                    new Point(mainPanel.getX() + (mainPanel.getWidth() / 2), mainPanel.getY() + (mainPanel.getHeight() / 2)), panel.getSize(),
+                    panel.getView());
+            panel.init();
+            floatingWindow.getTopLevelAncestor().setVisible(true);
+            panel.packFrame();
+        } else if (!disp.getEditUVPanel().frameVisible()) {
+            final FloatingWindow floatingWindow = mainPanel.rootWindow.createFloatingWindow(
+                    new Point(mainPanel.getX() + (mainPanel.getWidth() / 2), mainPanel.getY() + (mainPanel.getHeight() / 2)),
+                    disp.getEditUVPanel().getSize(), disp.getEditUVPanel().getView());
+            floatingWindow.getTopLevelAncestor().setVisible(true);
+        }
     }
 }

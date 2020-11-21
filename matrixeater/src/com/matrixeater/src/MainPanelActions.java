@@ -17,11 +17,7 @@ import net.infonode.docking.DockingWindowListener;
 import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.miginfocom.swing.MigLayout;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -395,28 +391,16 @@ public class MainPanelActions {
             }
 
             @Override
-            public void windowUndocked(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowUndocked(final DockingWindow arg0) {}
 
             @Override
-            public void windowShown(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowShown(final DockingWindow arg0) {}
 
             @Override
-            public void windowRestoring(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowRestoring(final DockingWindow arg0) {}
 
             @Override
-            public void windowRestored(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowRestored(final DockingWindow arg0) {}
 
             @Override
             public void windowRemoved(final DockingWindow removedFromWindow, final DockingWindow removedWindow) {
@@ -448,46 +432,25 @@ public class MainPanelActions {
             }
 
             @Override
-            public void windowMinimizing(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowMinimizing(final DockingWindow arg0) {}
 
             @Override
-            public void windowMinimized(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowMinimized(final DockingWindow arg0) {}
 
             @Override
-            public void windowMaximizing(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowMaximizing(final DockingWindow arg0) {}
 
             @Override
-            public void windowMaximized(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowMaximized(final DockingWindow arg0) {}
 
             @Override
-            public void windowHidden(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowHidden(final DockingWindow arg0) {}
 
             @Override
-            public void windowDocking(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowDocking(final DockingWindow arg0) {}
 
             @Override
-            public void windowDocked(final DockingWindow arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void windowDocked(final DockingWindow arg0) {}
 
             @Override
             public void windowClosing(final DockingWindow closingWindow) {
@@ -621,42 +584,23 @@ public class MainPanelActions {
         };
     }
 
-    static ActionListener createBtnReplayPlayActionListener(final MainPanel mainPanel, RSyntaxTextArea matrixEaterScriptTextArea) {
-        return new ActionListener() {
-            final ScriptEngineManager factory = new ScriptEngineManager();
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final String text = matrixEaterScriptTextArea.getText();
-                final ScriptEngine engine = factory.getEngineByName("JavaScript");
-                final ModelPanel modelPanel = mainPanel.currentModelPanel;
-                if (modelPanel != null) {
-                    engine.put("modelPanel", modelPanel);
-                    engine.put("model", modelPanel.getModel());
-                    engine.put("world", mainPanel);
-                    try {
-                        engine.eval(text);
-                    } catch (final ScriptException e1) {
-                        e1.printStackTrace();
-                        JOptionPane.showMessageDialog(mainPanel, e1.getMessage(), "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "Must open a file!", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        };
-    }
-
     static ToolbarButtonListener<SelectionItemTypes> createSelectionItemTypesButtonListener(MainPanel mainPanel) {
+        // we need to refresh the state of stuff AFTER the ModelPanels, this is a pretty signficant design flaw,
+        // so we're just going to post to the EDT to get behind them (they're called on the same notifier as this method)
         return newType -> {
             mainPanel.animationModeState = newType == SelectionItemTypes.ANIMATE;
-            // we need to refresh the state of stuff AFTER the ModelPanels, this
-            // is a pretty signficant design flaw, so we're just going to
-            // post to the EDT to get behind them (they're called
-            // on the same notifier as this method)
-            SwingUtilities.invokeLater(() -> ModelPanelUgg.refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel));
+            SwingUtilities.invokeLater(() -> ModelPanelUgg.refreshAnimationModeState(
+                    mainPanel.actionTypeGroup,
+                    mainPanel.animatedRenderEnvironment,
+                    mainPanel.animationModeButton,
+                    mainPanel.animationModeState,
+                    mainPanel.creatorPanel,
+                    mainPanel.currentModelPanel,
+                    mainPanel.prefs,
+                    mainPanel.setKeyframe,
+                    mainPanel.setTimeBounds,
+                    mainPanel.snapButton,
+                    mainPanel.timeSliderPanel));
 
             if (newType == SelectionItemTypes.TPOSE) {
 

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MenuBar {
     public static JMenuBar createMenuBar(final MainPanel mainPanel) {
@@ -209,7 +210,7 @@ public class MenuBar {
 
         mainPanel.toolsMenu.add(new JSeparator());
 
-        createMenuItem("Edit UV Mapping", mainPanel.toolsMenu, e -> ModelPanelUgg.editUVs(mainPanel), KeyEvent.VK_U);
+        createMenuItem("Edit UV Mapping", mainPanel.toolsMenu, e -> MenuBarActionListeners.editUVs(mainPanel), KeyEvent.VK_U);
 
         createMenuItem("Edit Textures", mainPanel.toolsMenu, MenuBarActionListeners.editTextures(mainPanel), KeyEvent.VK_T);
 
@@ -271,7 +272,7 @@ public class MenuBar {
 
         final JMenuItem timeItem = createMenuItem("Footer", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Footer", () -> mainPanel.timeSliderView), -1);
 
-        final JMenuItem scriptViewItem = createMenuItem("Matrix Eater Script", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Matrix Eater Script", () -> mainPanel.matrixEaterScriptView), KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"));
+        final JMenuItem scriptViewItem = createMenuItem("Matrix Eater Script", viewsMenu, new OpenViewAction(mainPanel.rootWindow, "Matrix Eater Script", () -> createMatrixEaterScriptPanel(mainPanel)), KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"));
 
         final JMenu browsersMenu = createMenuMenu("Browsers", KeyEvent.VK_B, mainPanel.windowMenu);
 
@@ -570,7 +571,7 @@ public class MenuBar {
         }
     }
 
-    static void createMatrixEaterScriptPanel(MainPanel mainPanel) {
+    static View createMatrixEaterScriptPanel(MainPanel mainPanel) {
         final JPanel hackerPanel = new JPanel(new BorderLayout());
         final RSyntaxTextArea matrixEaterScriptTextArea = new RSyntaxTextArea(20, 60);
         matrixEaterScriptTextArea.setCodeFoldingEnabled(true);
@@ -579,8 +580,47 @@ public class MenuBar {
         final JButton run = new JButton("Run",
                 new ImageIcon(BLPHandler.get().getGameTex("ReplaceableTextures\\CommandButtons\\BTNReplay-Play.blp")
                         .getScaledInstance(24, 24, Image.SCALE_FAST)));
-        run.addActionListener(MainPanelActions.createBtnReplayPlayActionListener(mainPanel, matrixEaterScriptTextArea));
+        run.addActionListener(MenuBarActionListeners.createBtnReplayPlayActionListener(mainPanel, matrixEaterScriptTextArea));
         hackerPanel.add(run, BorderLayout.NORTH);
-        mainPanel.matrixEaterScriptView = new View("Matrix Eater Script", null, hackerPanel);
+        return new View("Matrix Eater Script", null, hackerPanel);
+    }
+
+    static boolean closeAll(MainPanel mainPanel) {
+        boolean success = true;
+        final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
+        boolean closedCurrentPanel = false;
+        ModelPanel lastUnclosedModelPanel = null;
+        while (iterator.hasNext()) {
+            final ModelPanel panel = iterator.next();
+            if (success = panel.close(mainPanel)) {
+                mainPanel.windowMenu.remove(panel.getMenuItem());
+                iterator.remove();
+                if (panel == mainPanel.currentModelPanel) {
+                    closedCurrentPanel = true;
+                }
+            } else {
+                lastUnclosedModelPanel = panel;
+                break;
+            }
+        }
+        if (closedCurrentPanel) {
+            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
+        }
+        return success;
+    }
+
+    static void createCloseContextPopupMenu(MainPanel mainPanel) {
+        JPopupMenu contextMenu = new JPopupMenu();
+        JMenuItem contextClose = new JMenuItem("Close uggabugga");
+        contextClose.addActionListener(mainPanel);
+        contextMenu.add(contextClose);
+
+        JMenuItem contextCloseOthers = new JMenuItem("Close Others");
+        contextCloseOthers.addActionListener(e -> MainPanel.closeOthers(mainPanel, mainPanel.currentModelPanel));
+        contextMenu.add(contextCloseOthers);
+
+        JMenuItem contextCloseAll = new JMenuItem("Close All");
+        contextCloseAll.addActionListener(e -> closeAll(mainPanel));
+        contextMenu.add(contextCloseAll);
     }
 }

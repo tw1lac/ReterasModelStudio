@@ -23,10 +23,12 @@ import java.util.NoSuchElementException;
 public class ToolBar {
     final MainPanel mainPanel;
     final JToolBar toolBar;
+
     public ToolBar(MainPanel mainPanel){
         this.mainPanel = mainPanel;
         this.toolBar = createJToolBar();
     }
+
     public JToolBar createJToolBar() {
         JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
         toolbar.setFloatable(false);

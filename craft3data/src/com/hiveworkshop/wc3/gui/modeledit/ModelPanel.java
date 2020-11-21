@@ -1,29 +1,8 @@
 package com.hiveworkshop.wc3.gui.modeledit;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.util.ArrayList;
-
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
-import com.hiveworkshop.wc3.gui.modeledit.activity.DoNothingActivity;
-import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorViewportActivityManager;
-import com.hiveworkshop.wc3.gui.modeledit.activity.UndoManager;
-import com.hiveworkshop.wc3.gui.modeledit.activity.UndoManagerImpl;
+import com.hiveworkshop.wc3.gui.modeledit.activity.*;
 import com.hiveworkshop.wc3.gui.modeledit.components.ComponentsPanel;
 import com.hiveworkshop.wc3.gui.modeledit.cutpaste.ViewportTransferHandler;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.ModelEditorManager;
@@ -40,6 +19,15 @@ import com.hiveworkshop.wc3.mdl.GeosetVertex;
 import com.hiveworkshop.wc3.mdl.Vertex;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * The ModelPanel is a pane holding the display of a given MDL model. I plan to
@@ -142,36 +130,6 @@ public class ModelPanel implements ActionListener, MouseListener {
 		componentsPanel = new ComponentsPanel(textureExporter);
 
 		modelComponentBrowserTree.addSelectListener(componentsPanel);
-		// perspAreaPanel.setMinimumSize(new Dimension(200,200));
-		// perspAreaPanel.add(Box.createHorizontalStrut(200));
-		// perspAreaPanel.add(Box.createVerticalStrut(200));
-		// perspAreaPanel.setLayout( new BoxLayout(this,BoxLayout.LINE_AXIS));
-		// botArea.setViewport(0,1);
-
-		// Hacky viewer
-		// frontArea.setVisible(false);
-		// sideArea.setVisible(false);
-		// botArea.setVisible(false);
-		// setLayout(new GridLayout(1,1));
-		// GroupLayout layout = new GroupLayout(this);
-		//
-		// layout.setHorizontalGroup(layout.createSequentialGroup()
-		// .addGroup(layout.createParallelGroup()
-		// .addComponent(frontArea)
-		// .addComponent(sideArea))
-		// .addGroup(layout.createParallelGroup()
-		// .addComponent(botArea)
-		// .addComponent(perspArea)));
-		// layout.setVerticalGroup(layout.createSequentialGroup()
-		// .addGroup(layout.createParallelGroup()
-		// .addComponent(frontArea)
-		// .addComponent(botArea))
-		// .addGroup(layout.createParallelGroup()
-		// .addComponent(sideArea)
-		// .addComponent(perspArea)));
-		// setLayout(layout);
-
-		// Create a file chooser
 	}
 
 	public RenderModel getEditorRenderModel() {
@@ -237,134 +195,6 @@ public class ModelPanel implements ActionListener, MouseListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		// //Open, off of the file menu:
-		// if( e.getSource() == open )
-		// {
-		// int returnValue = fc.showOpenDialog(this);
-		//
-		// if( returnValue == JFileChooser.APPROVE_OPTION )
-		// {
-		// currentFile = fc.getSelectedFile();
-		// frontArea.clearGeosets();
-		// sideArea.clearGeosets();
-		// botArea.clearGeosets();
-		// modelMenu.getAccessibleContext().setAccessibleDescription("Allows the
-		// user to control which parts of the model are displayed for
-		// editing.");
-		// modelMenu.setEnabled(true);
-		// loadFile(currentFile);
-		// }
-		//
-		// fc.setSelectedFile(null);
-		//
-		// // //Special thanks to the JWSFileChooserDemo from oracle's Java
-		// tutorials, from which many ideas were borrowed for the following
-		// // FileOpenService fos = null;
-		// // FileContents fileContents = null;
-		// //
-		// // try
-		// // {
-		// // fos =
-		// (FileOpenService)ServiceManager.lookup("javax.jnlp.FileOpenService");
-		// // }
-		// // catch (UnavailableServiceException exc )
-		// // {
-		// //
-		// // }
-		// //
-		// // if( fos != null )
-		// // {
-		// // try
-		// // {
-		// // fileContents = fos.openFileDialog(null, null);
-		// // }
-		// // catch (Exception exc )
-		// // {
-		// // JOptionPane.showMessageDialog(this,"Opening command failed:
-		// "+exc.getLocalizedMessage());
-		// // }
-		// // }
-		// //
-		// // if( fileContents != null)
-		// // {
-		// // try
-		// // {
-		// // fileContents.getName();
-		// // }
-		// // catch (IOException exc)
-		// // {
-		// // JOptionPane.showMessageDialog(this,"Problem opening file:
-		// "+exc.getLocalizedMessage());
-		// // }
-		// // }
-		// }
-		// if( e.getSource() == importButton )
-		// {
-		// int returnValue = fc.showOpenDialog(this);
-		//
-		// if( returnValue == JFileChooser.APPROVE_OPTION )
-		// {
-		// currentFile = fc.getSelectedFile();
-		// modelMenu.getAccessibleContext().setAccessibleDescription("Allows the
-		// user to control which parts of the model are displayed for
-		// editing.");
-		// modelMenu.setEnabled(true);
-		// loadFile(currentFile);
-		// }
-		//
-		// fc.setSelectedFile(null);
-		//
-		// // //Special thanks to the JWSFileChooserDemo from oracle's Java
-		// tutorials, from which many ideas were borrowed for the following
-		// // FileOpenService fos = null;
-		// // FileContents fileContents = null;
-		// //
-		// // try
-		// // {
-		// // fos =
-		// (FileOpenService)ServiceManager.lookup("javax.jnlp.FileOpenService");
-		// // }
-		// // catch (UnavailableServiceException exc )
-		// // {
-		// //
-		// // }
-		// //
-		// // if( fos != null )
-		// // {
-		// // try
-		// // {
-		// // fileContents = fos.openFileDialog(null, null);
-		// // }
-		// // catch (Exception exc )
-		// // {
-		// // JOptionPane.showMessageDialog(this,"Opening command failed:
-		// "+exc.getLocalizedMessage());
-		// // }
-		// // }
-		// //
-		// // if( fileContents != null)
-		// // {
-		// // try
-		// // {
-		// // fileContents.getName();
-		// // }
-		// // catch (IOException exc)
-		// // {
-		// // JOptionPane.showMessageDialog(this,"Problem opening file:
-		// "+exc.getLocalizedMessage());
-		// // }
-		// // }
-		// }
-		// for( int i = 0; i < geoItems.size(); i++ )
-		// {
-		// JCheckBoxMenuItem geoItem = (JCheckBoxMenuItem)geoItems.get(i);
-		// if( e.getSource() == geoItem )
-		// {
-		// frontArea.setGeosetVisible(i,geoItem.isSelected());
-		// frontArea.setGeosetHighlight(i,false);
-		// }
-		// repaint();
-		// }
 	}
 
 	public boolean close(final ModelPanelCloseListener listener)// MainPanel parent) TODO fix

@@ -3,7 +3,6 @@ package com.matrixeater.src;
 import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.GlobalIcons;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
-import com.hiveworkshop.wc3.gui.animedit.ControllableTimeBoundProvider;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.animedit.TimeSliderPanel;
 import com.hiveworkshop.wc3.gui.modeledit.*;
@@ -22,9 +21,6 @@ import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.jworldedit.models.BetterUnitEditorModelSelector;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTreeBrowser;
-import com.hiveworkshop.wc3.jworldedit.objects.UnitTabTreeBrowserBuilder;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
@@ -103,7 +99,6 @@ public class MainPanel extends JPanel
     View creatorView;
     View perspectiveView;
     View timeSliderView;
-    View matrixEaterScriptView;
     View animationControllerView;
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
@@ -125,11 +120,7 @@ public class MainPanel extends JPanel
 
     final WarcraftDataSourceChangeNotifier directoryChangeNotifier = new WarcraftDataSourceChangeNotifier();
 
-    final JMenuItem contextClose;
-    final JMenuItem contextCloseAll;
-    final JMenuItem contextCloseOthers;
     int contextClickedTab = 0;
-    final JPopupMenu contextMenu;
 
     final AbstractAction undoAction = new UndoActionImplementation("Undo", this);
     final AbstractAction redoAction = new RedoActionImplementation("Redo", this);
@@ -145,7 +136,6 @@ public class MainPanel extends JPanel
     View toolView;
     final View modelDataView;
     final View modelComponentView;
-    ControllableTimeBoundProvider timeBoundProvider;
     ActivityDescriptor currentActivity;
 
     public MainPanel() {
@@ -156,16 +146,13 @@ public class MainPanel extends JPanel
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
 
-        creatorPanel = new CreatorModelingPanel(newType -> {
-            actionTypeGroup.maybeSetButtonType(newType);
-            MainPanel.this.changeActivity(newType);
-        }, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
+        creatorPanel = new CreatorModelingPanel(newType -> {actionTypeGroup.maybeSetButtonType(newType); MainPanel.this.changeActivity(newType);}, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
 
         actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
 
 
-        createEditTabViews();
+        MainLayoutUgg.createEditTabViews(this);
 
 
         StringViewMap viewMap = new StringViewMap();
@@ -177,6 +164,7 @@ public class MainPanel extends JPanel
         rootWindow.getRootWindowProperties().getTabWindowProperties().getTabbedPanelProperties().getTabAreaProperties().setTabAreaVisiblePolicy(TabAreaVisiblePolicy.MORE_THAN_ONE_TAB);
         rootWindow.setBackground(Color.GREEN);
         rootWindow.setForeground(Color.GREEN);
+
         final Runnable fixit = () -> {
             DockingWindowUtils.traverseAndReset(rootWindow);
             DockingWindowUtils.traverseAndFix(rootWindow);
@@ -201,20 +189,6 @@ public class MainPanel extends JPanel
 
         selectionItemTypeGroup.addToolbarButtonListener(MainPanelActions.createSelectionItemTypesButtonListener(this));
 
-        //TODO stuff that should be created using functions
-        contextMenu = new JPopupMenu();
-        contextClose = new JMenuItem("Close");
-        contextClose.addActionListener(this);
-        contextMenu.add(contextClose);
-
-        contextCloseOthers = new JMenuItem("Close Others");
-        contextCloseOthers.addActionListener(e -> closeOthers(this, currentModelPanel));
-        contextMenu.add(contextCloseOthers);
-
-        contextCloseAll = new JMenuItem("Close All");
-        contextCloseAll.addActionListener(e -> closeAll(this));
-        contextMenu.add(contextCloseAll);
-
 
         final JLabel[] divider = new JLabel[3];
         for (int i = 0; i < divider.length; i++) {
@@ -227,8 +201,6 @@ public class MainPanel extends JPanel
         contentsDummy.add(new JLabel("..."));
         modelDataView = new View("Contents", null, contentsDummy);
         modelComponentView = new View("Component", null, new JPanel());
-
-        MenuBar.createMatrixEaterScriptPanel(this);
 
 
         viewportTransferHandler = new ViewportTransferHandler();
@@ -295,29 +267,6 @@ public class MainPanel extends JPanel
                         .addComponent(setTimeBounds)));
         timeSliderAndExtra.setLayout(tsaeLayout);
         timeSliderView = new View("Footer", null, timeSliderAndExtra);
-    }
-
-    private void createEditTabViews() {
-        final JPanel jPanel = new JPanel();
-        jPanel.add(new JLabel("..."));
-        viewportControllerWindowView = new View("Outliner", null, jPanel);// GlobalIcons.geoIcon
-
-        creatorView = new View("Modeling", null, creatorPanel);
-
-        leftView = new View("Side", null, new JPanel());
-        frontView = new View("Front", null, new JPanel());
-        bottomView = new View("Bottom", null, new JPanel());
-        perspectiveView = new View("Perspective", null, new JPanel());
-        previewView = new View("Preview", null, new JPanel());
-
-        toolView = new View("Tools", null, new JPanel());
-    }
-
-    UnitEditorTree createUnitEditorTree() {
-        final UnitEditorTree unitEditorTree = new UnitEditorTreeBrowser(getUnitData(), new UnitTabTreeBrowserBuilder(),
-                new UnitEditorSettings(), WorldEditorDataType.UNITS,
-                (mdxFilePath, b, c, icon) -> FileUtils.loadStreamMdx(MainPanel.this, MpqCodebase.get().getResourceAsStream(mdxFilePath), b, c, icon), prefs);
-        return unitEditorTree;
     }
 
     @Override
@@ -1122,30 +1071,6 @@ public class MainPanel extends JPanel
         }
         mouseCoordDisplay[dim1].setText((float) value1 + "");
         mouseCoordDisplay[dim2].setText((float) value2 + "");
-    }
-
-    static boolean closeAll(MainPanel mainPanel) {
-        boolean success = true;
-        final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
-        boolean closedCurrentPanel = false;
-        ModelPanel lastUnclosedModelPanel = null;
-        while (iterator.hasNext()) {
-            final ModelPanel panel = iterator.next();
-            if (success = panel.close(mainPanel)) {
-                mainPanel.windowMenu.remove(panel.getMenuItem());
-                iterator.remove();
-                if (panel == mainPanel.currentModelPanel) {
-                    closedCurrentPanel = true;
-                }
-            } else {
-                lastUnclosedModelPanel = panel;
-                break;
-            }
-        }
-        if (closedCurrentPanel) {
-            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
-        }
-        return success;
     }
 
     public static void closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
