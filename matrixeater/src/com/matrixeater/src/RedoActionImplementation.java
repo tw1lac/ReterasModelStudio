@@ -27,7 +27,7 @@ public final class RedoActionImplementation extends AbstractAction {
 				ExceptionPopup.display(exc);
 			}
 		}
-		mainPanel.refreshUndo();
+		mainPanel.menuBar.refreshUndo();
 		mainPanel.repaintSelfAndChildren(mpanel);
 	}
 }

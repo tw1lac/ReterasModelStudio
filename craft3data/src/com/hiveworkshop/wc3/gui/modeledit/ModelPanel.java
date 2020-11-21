@@ -59,26 +59,38 @@ public class ModelPanel implements ActionListener, MouseListener {
 	private final AnimationController animationController;
 	private final ComponentsPanel componentsPanel;
 
-	public ModelPanel(final JComponent parent, final File input, final ProgramPreferences prefs,
-			final UndoHandler undoHandler, final ToolbarButtonGroup<SelectionItemTypes> notifier,
-			final ToolbarButtonGroup<SelectionMode> modeNotifier,
-			final ModelStructureChangeListener modelStructureChangeListener,
-			final CoordDisplayListener coordDisplayListener, final ViewportTransferHandler viewportTransferHandler,
-			final ViewportListener viewportListener, final Icon icon, final boolean specialBLPModel,
-			final TextureExporter textureExporter) {
+	public ModelPanel(final JComponent parent,
+					  final File input,
+					  final ProgramPreferences prefs,
+					  final UndoHandler undoHandler,
+					  final ToolbarButtonGroup<SelectionItemTypes> notifier,
+					  final ToolbarButtonGroup<SelectionMode> modeNotifier,
+					  final ModelStructureChangeListener modelStructureChangeListener,
+					  final CoordDisplayListener coordDisplayListener,
+					  final ViewportTransferHandler viewportTransferHandler,
+					  final ViewportListener viewportListener,
+					  final Icon icon,
+					  final boolean specialBLPModel,
+					  final TextureExporter textureExporter) {
 		this(parent, EditableModel.read(input), prefs, undoHandler, notifier, modeNotifier,
 				modelStructureChangeListener, coordDisplayListener, viewportTransferHandler, viewportListener, icon,
 				specialBLPModel, textureExporter);
 		file = input;
 	}
 
-	public ModelPanel(final JComponent parent, final EditableModel input, final ProgramPreferences prefs,
-			final UndoHandler undoHandler, final ToolbarButtonGroup<SelectionItemTypes> notifier,
-			final ToolbarButtonGroup<SelectionMode> modeNotifier,
-			final ModelStructureChangeListener modelStructureChangeListener,
-			final CoordDisplayListener coordDisplayListener, final ViewportTransferHandler viewportTransferHandler,
-			final ViewportListener viewportListener, final Icon icon, final boolean specialBLPModel,
-			final TextureExporter textureExporter) {
+	public ModelPanel(final JComponent parent,
+					  final EditableModel input,
+					  final ProgramPreferences prefs,
+					  final UndoHandler undoHandler,
+					  final ToolbarButtonGroup<SelectionItemTypes> notifier,
+					  final ToolbarButtonGroup<SelectionMode> modeNotifier,
+					  final ModelStructureChangeListener modelStructureChangeListener,
+					  final CoordDisplayListener coordDisplayListener,
+					  final ViewportTransferHandler viewportTransferHandler,
+					  final ViewportListener viewportListener,
+					  final Icon icon,
+					  final boolean specialBLPModel,
+					  final TextureExporter textureExporter) {
 		this.parent = parent;
 		this.icon = icon;
 		viewportActivityManager = new ModelEditorViewportActivityManager(new DoNothingActivity());

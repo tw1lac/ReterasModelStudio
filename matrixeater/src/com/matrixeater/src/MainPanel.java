@@ -60,8 +60,8 @@ import java.util.List;
  * @version (a version number or a date)
  */
 public class MainPanel extends JPanel
-        implements ActionListener, UndoHandler, ModelEditorChangeActivityListener, ModelPanelCloseListener {
-    JMenuBar menuBar;
+        implements ActionListener, ModelEditorChangeActivityListener, ModelPanelCloseListener {
+//    JMenuBar menuBar;
 //    JMenu fileMenu, editMenu, mirrorSubmenu, tweaksSubmenu, importMenu, addMenu,
 //            scriptsMenu, animationMenu, singleAnimationMenu, aboutMenu, fetch, viewMenu;
     JMenu recentMenu, toolsMenu, windowMenu, addParticle;
@@ -70,12 +70,10 @@ public class MainPanel extends JPanel
 
     JMenuItem cut, copy, paste;
     final List<RecentItem> recentItems = new ArrayList<>();
-    UndoMenuItem undo;
-    RedoMenuItem redo;
+//    UndoMenuItem undo;
+//    RedoMenuItem redo;
 
-    JMenu viewMode;
     JRadioButtonMenuItem wireframe, solid;
-    ButtonGroup viewModes;
 
     File currentFile;
     ImportPanel importPanel;
@@ -85,10 +83,8 @@ public class MainPanel extends JPanel
     ModelPanel currentModelPanel;
     MainLayoutUgg mainLayoutUgg;
     ModelPanelUgg modelPanelUgg;
+    MenuBar menuBar;
 
-//    JScrollPane geoControl;
-//    JScrollPane geoControlModelData;
-//    JTextField[] mouseCoordDisplay = new JTextField[3];
     boolean cheatShift = false;
     boolean cheatAlt = false;
     SaveProfile profile = SaveProfile.get();
@@ -120,6 +116,7 @@ public class MainPanel extends JPanel
         add(toolBar.toolBar);
 
         modelPanelUgg = new ModelPanelUgg();
+        menuBar = MainFrame.getMBar();
 
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
@@ -474,7 +471,7 @@ public class MainPanel extends JPanel
     @Override
     public void actionPerformed(final ActionEvent e) {
         // Open, off of the file menu:
-        refreshUndo();
+        menuBar.refreshUndo();
     }
 
     void nullModelUgg() {
@@ -618,17 +615,6 @@ public class MainPanel extends JPanel
             modelPanel.getAnimationViewer().reloadAllTextures();
         }
         directoryChangeNotifier.dataSourcesChanged();
-    }
-
-    JSpinner getjSpinner(String title) {
-        final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
-        final JSpinner spinner = new JSpinner(sModel);
-        final int userChoice = JOptionPane.showConfirmDialog(this, spinner, title,
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (userChoice != JOptionPane.OK_OPTION) {
-            return null;
-        }
-        return spinner;
     }
 
     GameObject fetchUnit() {
@@ -789,11 +775,11 @@ public class MainPanel extends JPanel
         }
     }
 
-    @Override
-    public void refreshUndo() {
-        undo.setEnabled(undo.funcEnabled());
-        redo.setEnabled(redo.funcEnabled());
-    }
+//    @Override
+//    public void refreshUndo() {
+//        menuBar.undo.setEnabled(menuBar.undo.funcEnabled());
+//        menuBar.redo.setEnabled(menuBar.redo.funcEnabled());
+//    }
 
     public static void closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
         boolean success = true;

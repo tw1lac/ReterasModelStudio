@@ -30,17 +30,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class MenuBar {
+public class MenuBar implements UndoHandler {
 
     final MainPanel mainPanel;
     final JMenuBar menuBar;
+    UndoMenuItem undo;
+    RedoMenuItem redo;
 
     public MenuBar(MainPanel mainPanel){
         this.mainPanel = mainPanel;
         this.menuBar = createMenuBar(mainPanel);
     }
 
-    public static JMenuBar createMenuBar(final MainPanel mainPanel) {
+    public JMenuBar createMenuBar(final MainPanel mainPanel) {
         // Create top menu bar
         JMenuBar menuBar = new JMenuBar();
 
@@ -716,5 +718,11 @@ public class MenuBar {
             filepath = filepath.concat(".mdx");
         }
         return filepath;
+    }
+
+    @Override
+    public void refreshUndo() {
+        undo.setEnabled(undo.funcEnabled());
+        redo.setEnabled(redo.funcEnabled());
     }
 }

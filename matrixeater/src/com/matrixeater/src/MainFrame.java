@@ -42,11 +42,13 @@ public class MainFrame extends JFrame {
             .getImage();
     static MainFrame frame;
     static MainPanel panel;
+    static MenuBar menuBar;
 //    static JMenuBar menuBar;
 
     public static MainPanel getPanel() {
         return panel;
     }
+    public static MenuBar getMBar() { return menuBar; }
 
     public static void main(final String[] args) {
         final boolean hasArgs = args.length >= 1;
@@ -257,8 +259,9 @@ public class MainFrame extends JFrame {
         setBounds(0, 0, 1000, 650);
         panel = new MainPanel();
         setContentPane(panel);
+        menuBar = new MenuBar(panel);
 
-        setJMenuBar( MenuBar.createMenuBar(panel));// MainFrame.class.getResource("ImageBin/DDChicken2.png")
+        setJMenuBar(menuBar.createMenuBar(panel));// MainFrame.class.getResource("ImageBin/DDChicken2.png")
         setIconImage(MAIN_PROGRAM_ICON);
 
         addWindowListener(new WindowAdapter() {

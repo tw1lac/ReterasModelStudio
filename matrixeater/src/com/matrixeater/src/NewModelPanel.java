@@ -33,12 +33,12 @@ public class NewModelPanel {
         if (userDialogResult == JOptionPane.OK_OPTION) {
             final EditableModel mdl = new EditableModel(newModelNameField.getText());
             if (createBoxButton.isSelected()) {
-                final JSpinner spinner = mainPanel.getjSpinner("Box: Choose Segments");
+                final JSpinner spinner = getjSpinner(mainPanel, "Box: Choose Segments");
                 if (spinner == null) return;
                 com.hiveworkshop.wc3.util.ModelUtils.createBox(mdl, new Vertex(64, 64, 128), new Vertex(-64, -64, 0),
                         ((Number) spinner.getValue()).intValue());
             } else if (createPlaneButton.isSelected()) {
-                final JSpinner spinner = mainPanel.getjSpinner("Plane: Choose Segments");
+                final JSpinner spinner = getjSpinner(mainPanel, "Plane: Choose Segments");
                 if (spinner == null) return;
                 ModelUtils.createGroundPlane(mdl, new Vertex(64, 64, 0), new Vertex(-64, -64, 0),
                         ((Number) spinner.getValue()).intValue());
@@ -51,8 +51,20 @@ public class NewModelPanel {
 
     static ModelPanel createModelPanel(MainPanel mainPanel, EditableModel model, ImageIcon icon, boolean specialBLPModel) {
         final ViewportTransferHandler viewportTransferHandler =  new ViewportTransferHandler();
-        return new ModelPanel(mainPanel, model, mainPanel.prefs, mainPanel, mainPanel.selectionItemTypeGroup,
+        MenuBar menuBar = MainFrame.getMBar();
+        return new ModelPanel(mainPanel, model, mainPanel.prefs, menuBar, mainPanel.selectionItemTypeGroup,
                 mainPanel.selectionModeGroup, mainPanel.modelStructureChangeListener, mainPanel.mainLayoutUgg.editTab.coordDisplayListener, viewportTransferHandler,
                 mainPanel.activeViewportWatcher, icon, specialBLPModel, mainPanel.textureExporter);
+    }
+
+    static JSpinner getjSpinner(MainPanel mainPanel, String title) {
+        final SpinnerNumberModel sModel = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
+        final JSpinner spinner = new JSpinner(sModel);
+        final int userChoice = JOptionPane.showConfirmDialog(mainPanel, spinner, title,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (userChoice != JOptionPane.OK_OPTION) {
+            return null;
+        }
+        return spinner;
     }
 }
