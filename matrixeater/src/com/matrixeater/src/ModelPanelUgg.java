@@ -17,6 +17,14 @@ import javax.swing.*;
 import java.util.List;
 
 public class ModelPanelUgg {
+    JScrollPane geoControl;
+    JScrollPane geoControlModelData;
+
+    public ModelPanelUgg(){
+        geoControl = null;
+        geoControlModelData = null;
+    }
+
     /**
      * Returns the MDLDisplay associated with a given MDL, or null if one cannot be
      * found.
@@ -34,10 +42,11 @@ public class ModelPanelUgg {
         return output;
     }
 
-    public static void loadModel(MainPanel mainPanel, final boolean temporary, final boolean selectNewTab, final ModelPanel temp) {
+    public void loadModel(MainPanel mainPanel, final boolean temporary, final boolean selectNewTab, final ModelPanel temp) {
         if (temporary) {
             temp.getModelViewManager().getModel().setTemp(true);
         }
+
         final ModelPanel modelPanel = temp;
         final JMenuItem menuItem = new JMenuItem(temp.getModel().getName());
         menuItem.setIcon(temp.getIcon());
@@ -47,12 +56,12 @@ public class ModelPanelUgg {
         temp.getModelViewManager().addStateListener(new RepaintingModelStateListener(mainPanel));
         temp.changeActivity(mainPanel.currentActivity);
 
-        if (mainPanel.geoControl == null) {
-            mainPanel.geoControl = new JScrollPane(temp.getModelViewManagingTree());
-            mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.setComponent(mainPanel.geoControl);
+        if (geoControl == null) {
+            geoControl = new JScrollPane(temp.getModelViewManagingTree());
+            mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.setComponent(geoControl);
             mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.repaint();
-            mainPanel.geoControlModelData = new JScrollPane(temp.getModelComponentBrowserTree());
-            mainPanel.mainLayoutUgg.modelDataView.setComponent(mainPanel.geoControlModelData);
+            geoControlModelData = new JScrollPane(temp.getModelComponentBrowserTree());
+            mainPanel.mainLayoutUgg.modelDataView.setComponent(geoControlModelData);
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(temp.getComponentsPanel());
             mainPanel.mainLayoutUgg.modelDataView.repaint();
         }
@@ -90,13 +99,13 @@ public class ModelPanelUgg {
         }
     }
 
-    public static void setCurrentModel(MainPanel mainPanel, final ModelPanel modelContextManager) {
+    public void setCurrentModel(MainPanel mainPanel, final ModelPanel modelContextManager) {
         mainPanel.currentModelPanel = modelContextManager;
         if (mainPanel.currentModelPanel == null) {
             final JPanel jPanel = new JPanel();
             jPanel.add(new JLabel("..."));
             mainPanel.mainLayoutUgg.editTab.viewportControllerWindowView.setComponent(jPanel);
-            mainPanel.geoControl = null;
+            geoControl = null;
 
             mainPanel.mainLayoutUgg.editTab.frontView.setComponent(new JPanel());
             mainPanel.mainLayoutUgg.editTab.bottomView.setComponent(new JPanel());
@@ -124,10 +133,10 @@ public class ModelPanelUgg {
             mainPanel.mainLayoutUgg.editTab.creatorPanel.setCurrentModel(null);
             mainPanel.mainLayoutUgg.editTab.creatorPanel.setUndoManager(null);
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(new JPanel());
-            mainPanel.geoControlModelData = null;
+            geoControlModelData = null;
         } else {
-            mainPanel.geoControl.setViewportView(mainPanel.currentModelPanel.getModelViewManagingTree());
-            mainPanel.geoControl.repaint();
+            geoControl.setViewportView(mainPanel.currentModelPanel.getModelViewManagingTree());
+            geoControl.repaint();
 
             mainPanel.mainLayoutUgg.editTab.frontView.setComponent(modelContextManager.getFrontArea());
             mainPanel.mainLayoutUgg.editTab.bottomView.setComponent(modelContextManager.getBotArea());
@@ -156,9 +165,9 @@ public class ModelPanelUgg {
             mainPanel.mainLayoutUgg.editTab.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
             mainPanel.mainLayoutUgg.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
 
-            mainPanel.geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
+            geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
 
-            mainPanel.geoControlModelData.repaint();
+            geoControlModelData.repaint();
             mainPanel.currentModelPanel.getModelComponentBrowserTree().reloadFromModelView();
         }
         mainPanel.activeViewportWatcher.viewportChanged(null);
@@ -231,11 +240,11 @@ public class ModelPanelUgg {
         currentModelPanel.getEditorRenderModel().updateNodes(true, false); // update to 0 position
     }
 
-    static void reloadGeosetManagers(MainPanel mainPanel, final ModelPanel display) {
-        mainPanel.geoControl.repaint();
+    void reloadGeosetManagers(MainPanel mainPanel, final ModelPanel display) {
+        geoControl.repaint();
         display.getModelViewManagingTree().reloadFromModelView();
-        mainPanel.geoControl.setViewportView(display.getModelViewManagingTree());
-        reloadComponentBrowser(mainPanel.geoControlModelData, display);
+        geoControl.setViewportView(display.getModelViewManagingTree());
+        reloadComponentBrowser(geoControlModelData, display);
         display.getPerspArea().reloadTextures();// .mpanel.perspArea.reloadTextures();//addGeosets(newGeosets);
         display.getAnimationViewer().reload();
         display.getAnimationController().reload();
@@ -249,6 +258,15 @@ public class ModelPanelUgg {
         geoControlModelData.repaint();
         display.getModelComponentBrowserTree().reloadFromModelView();
         geoControlModelData.setViewportView(display.getModelComponentBrowserTree());
+    }
+
+    public void refreshController() {
+        if (geoControl != null) {
+            geoControl.repaint();
+        }
+        if (geoControlModelData != null) {
+            geoControlModelData.repaint();
+        }
     }
 
 }

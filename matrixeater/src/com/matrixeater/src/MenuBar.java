@@ -1,14 +1,16 @@
 package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.BLPHandler;
+import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.resources.Resources;
 import com.hiveworkshop.wc3.resources.WEString;
-import com.hiveworkshop.wc3.units.DataTable;
-import com.hiveworkshop.wc3.units.ModelOptionPanel;
-import com.hiveworkshop.wc3.units.UnitOptionPanel;
+import com.hiveworkshop.wc3.units.*;
+import com.hiveworkshop.wc3.units.fields.UnitFields;
+import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import net.infonode.docking.View;
@@ -26,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class MenuBar {
 
@@ -175,7 +178,7 @@ public class MenuBar {
 
         mainPanel.showVertexModifyControls = new JCheckBoxMenuItem("Show Viewport Buttons", true);
         // showVertexModifyControls.setMnemonic(KeyEvent.VK_V);
-        mainPanel.showVertexModifyControls.addActionListener(e -> mainPanel.showVertexModifyControls());
+        mainPanel.showVertexModifyControls.addActionListener(e -> showVertexModifyControls(mainPanel.modelPanels, mainPanel.prefs, mainPanel.showVertexModifyControls));
         viewMenu.add(mainPanel.showVertexModifyControls);
 
         viewMenu.add(new JSeparator());
@@ -185,6 +188,7 @@ public class MenuBar {
         mainPanel.showNormals.setSelected(false);
         mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
         viewMenu.add(mainPanel.showNormals);
+
 
         mainPanel.viewMode = createMenuMenu("3D View Mode", -1, viewMenu);
 
@@ -320,7 +324,7 @@ public class MenuBar {
     }
 
     private static void fillScriptsMenu(MainPanel mainPanel, JMenu scriptsMenu) {
-        createMenuItem("Oinkerwinkle-Style AnimTransfer", scriptsMenu, e -> mainPanel.importScript(), KeyEvent.VK_P, KeyStroke.getKeyStroke("control shift S"));
+        createMenuItem("Oinkerwinkle-Style AnimTransfer", scriptsMenu, e -> MenuBarActionListeners.importScript(), KeyEvent.VK_P, KeyStroke.getKeyStroke("control shift S"));
 
         createMenuItem("Oinkerwinkle-Style Merge Geoset", scriptsMenu, e -> FileUtils.mergeGeoset(mainPanel), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
 
@@ -358,11 +362,11 @@ public class MenuBar {
 
         JMenu fetch = createMenuMenu("Open Internal", KeyEvent.VK_F, fileMenu);
 
-        createMenuItem("Unit", fetch, e -> mainPanel.fetchUnitButtonResponse(), KeyEvent.VK_U, KeyStroke.getKeyStroke("control U"));
+        createMenuItem("Unit", fetch, e -> MenuBarActionListeners.fetchUnitButtonResponse(mainPanel), KeyEvent.VK_U, KeyStroke.getKeyStroke("control U"));
 
-        createMenuItem("Model", fetch, e -> mainPanel.fetchModelButtonResponse(), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
+        createMenuItem("Model", fetch, e -> MenuBarActionListeners.fetchModelButtonResponse(mainPanel), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
 
-        createMenuItem("Object Editor", fetch, e -> mainPanel.fetchObjectButtonResponse(), KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
+        createMenuItem("Object Editor", fetch, e -> MenuBarActionListeners.fetchObjectButtonResponse(mainPanel), KeyEvent.VK_O, KeyStroke.getKeyStroke("control O"));
 
         fetch.add(new JSeparator());
 
@@ -378,13 +382,13 @@ public class MenuBar {
 
         createMenuItem("From File", importMenu, e -> FileUtils.importFromFile(mainPanel), KeyEvent.VK_I, KeyStroke.getKeyStroke("control shift I"));
 
-        createMenuItem("From Unit", importMenu, e -> mainPanel.importUnit(), KeyEvent.VK_U, KeyStroke.getKeyStroke("control shift U"));
+        createMenuItem("From Unit", importMenu, e -> importUnit(mainPanel), KeyEvent.VK_U, KeyStroke.getKeyStroke("control shift U"));
 
-        createMenuItem("From WC3 Model", importMenu, e -> mainPanel.importGameModel(), KeyEvent.VK_M);
+        createMenuItem("From WC3 Model", importMenu, e -> importGameModel(mainPanel), KeyEvent.VK_M);
 
-        createMenuItem("From Object Editor", importMenu, e -> mainPanel.importGameObject(), KeyEvent.VK_O);
+        createMenuItem("From Object Editor", importMenu, e -> importGameObject(mainPanel), KeyEvent.VK_O);
 
-        createMenuItem("From Workspace", importMenu, e -> mainPanel.importFromWorkspace(), KeyEvent.VK_O);
+        createMenuItem("From Workspace", importMenu, e -> importFromWorkspace(mainPanel), KeyEvent.VK_O);
 
         createMenuItem("Save", fileMenu, e -> FileUtils.onClickSave(mainPanel), KeyEvent.VK_S, KeyStroke.getKeyStroke("control S"));
 
@@ -424,9 +428,9 @@ public class MenuBar {
 
         final JMenu optimizeMenu = createMenuMenu("Optimize", KeyEvent.VK_O, editMenu);
 
-        createMenuItem("Linearize Animations", optimizeMenu, e -> mainPanel.linearizeAnimations(), KeyEvent.VK_L);
+        createMenuItem("Linearize Animations", optimizeMenu, e -> MenuBarActionListeners.linearizeAnimations(mainPanel), KeyEvent.VK_L);
 
-        createMenuItem("Simplify Keyframes (Experimental)", optimizeMenu, e -> mainPanel.simplifyKeyframesButtonResponse(), KeyEvent.VK_K);
+        createMenuItem("Simplify Keyframes (Experimental)", optimizeMenu, e -> MenuBarActionListeners.simplifyKeyframesButtonResponse(mainPanel), KeyEvent.VK_K);
 
         final JMenuItem minimizeGeoset = createMenuItem("Minimize Geosets", optimizeMenu, MenuBarActionListeners.minimizeGeoset(mainPanel), KeyEvent.VK_K);
 
@@ -554,7 +558,7 @@ public class MenuBar {
                 mainPanel.currentModelPanel.getAnimationViewer().reloadAllTextures();
                 mainPanel.currentModelPanel.getPerspArea().reloadAllTextures();
 
-                ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, mainPanel.currentModelPanel);
+                ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, mainPanel.currentModelPanel);
             }
             mainPanel.profile.getPreferences().setTeamColor(teamColorValueNumber);
         };
@@ -570,11 +574,11 @@ public class MenuBar {
                 mainPanel.windowMenu.remove(modelPanel.getMenuItem());
                 if (mainPanel.modelPanels.size() > 0) {
                     final int newIndex = Math.min(mainPanel.modelPanels.size() - 1, oldIndex);
-                    ModelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
+                    mainPanel.modelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
                 } else {
                     // TODO remove from notifiers to fix leaks
 //                    System.out.println("(close) no more modelPanel :O");
-                    ModelPanelUgg.setCurrentModel(mainPanel, null);
+                    mainPanel.modelPanelUgg.setCurrentModel(mainPanel, null);
                 }
             }
         }
@@ -613,7 +617,7 @@ public class MenuBar {
             }
         }
         if (closedCurrentPanel) {
-            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
+            mainPanel.modelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
         }
         return success;
     }
@@ -631,5 +635,86 @@ public class MenuBar {
         JMenuItem contextCloseAll = new JMenuItem("Close All");
         contextCloseAll.addActionListener(e -> closeAll(mainPanel));
         contextMenu.add(contextCloseAll);
+    }
+
+    static void importUnit(MainPanel mainPanel) {
+        final GameObject fetchUnitResult = mainPanel.fetchUnit();
+        if (fetchUnitResult == null) {
+            return;
+        }
+        final String filepath = convertPathToMDX(fetchUnitResult.getField("file"));
+        final EditableModel current = mainPanel.currentMDL();
+        if (filepath != null) {
+            final File animationSource = MpqCodebase.get().getFile(filepath);
+            FileUtils.importFile(mainPanel, animationSource);
+        }
+        mainPanel.modelPanelUgg.refreshController();
+    }
+
+    static void importGameModel(MainPanel mainPanel) {
+        final ModelOptionPane.ModelElement fetchModelResult = mainPanel.fetchModel();
+        if (fetchModelResult == null) {
+            return;
+        }
+        final String filepath = convertPathToMDX(fetchModelResult.getFilepath());
+        final EditableModel current = mainPanel.currentMDL();
+        if (filepath != null) {
+            final File animationSource = MpqCodebase.get().getFile(filepath);
+            FileUtils.importFile(mainPanel, animationSource);
+        }
+        mainPanel.modelPanelUgg.refreshController();
+    }
+
+    static void importGameObject(MainPanel mainPanel) {
+        final MutableObjectData.MutableGameObject fetchObjectResult = mainPanel.fetchObject();
+        if (fetchObjectResult == null) {
+            return;
+        }
+        final String filepath = convertPathToMDX(fetchObjectResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
+        final EditableModel current = mainPanel.currentMDL();
+        if (filepath != null) {
+            final File animationSource = MpqCodebase.get().getFile(filepath);
+            FileUtils.importFile(mainPanel, animationSource);
+        }
+        mainPanel.modelPanelUgg.refreshController();
+    }
+
+    static void importFromWorkspace(MainPanel mainPanel) {
+        final List<EditableModel> optionNames = new ArrayList<>();
+        for (final ModelPanel modelPanel : mainPanel.modelPanels) {
+            final EditableModel model = modelPanel.getModel();
+            optionNames.add(model);
+        }
+        final EditableModel choice = (EditableModel) JOptionPane.showInputDialog(mainPanel,
+                "Choose a workspace item to import data from:", "Import from Workspace",
+                JOptionPane.OK_CANCEL_OPTION, null, optionNames.toArray(), optionNames.get(0));
+        if (choice != null) {
+            FileUtils.importFile(mainPanel, EditableModel.deepClone(choice, choice.getHeaderName()));
+        }
+        mainPanel.modelPanelUgg.refreshController();
+    }
+
+    static void showVertexModifyControls(List<ModelPanel> modelPanels, ProgramPreferences prefs, JCheckBoxMenuItem showVertexModifyControls) {
+        final boolean selected = showVertexModifyControls.isSelected();
+        prefs.setShowVertexModifierControls(selected);
+        // SaveProfile.get().setShowViewportButtons(selected);
+        for (final ModelPanel panel : modelPanels) {
+            panel.getFrontArea().setControlsVisible(selected);
+            panel.getBotArea().setControlsVisible(selected);
+            panel.getSideArea().setControlsVisible(selected);
+            final UVPanel uvPanel = panel.getEditUVPanel();
+            if (uvPanel != null) {
+                uvPanel.setControlsVisible(selected);
+            }
+        }
+    }
+
+    static String convertPathToMDX(String filepath) {
+        if (filepath.endsWith(".mdl")) {
+            filepath = filepath.replace(".mdl", ".mdx");
+        } else if (!filepath.endsWith(".mdx")) {
+            filepath = filepath.concat(".mdx");
+        }
+        return filepath;
     }
 }

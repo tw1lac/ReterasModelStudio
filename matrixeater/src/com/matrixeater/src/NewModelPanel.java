@@ -44,7 +44,7 @@ public class NewModelPanel {
                         ((Number) spinner.getValue()).intValue());
             }
             final ModelPanel temp = createModelPanel(mainPanel, mdl, GlobalIcons.MDL_ICON, false);
-            ModelPanelUgg.loadModel(mainPanel, true, true, temp);
+            mainPanel.modelPanelUgg.loadModel(mainPanel, true, true, temp);
         }
 
     }

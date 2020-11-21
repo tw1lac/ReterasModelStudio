@@ -35,7 +35,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
             for (final IdObject geoset : nodes) {
                 display.getModelViewManager().makeIdObjectNotVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
         }
     }
 
@@ -49,7 +49,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
             for (final IdObject geoset : nodes) {
                 display.getModelViewManager().makeIdObjectVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
             display.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment, MainPanel.IDENTITY, MainPanel.IDENTITY,
                     MainPanel.IDENTITY, display.getPerspArea().getViewport());
             display.getAnimationViewer().reload();
@@ -67,7 +67,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
                 display.getModelViewManager().makeGeosetNotEditable(geoset);
                 display.getModelViewManager().makeGeosetNotVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
         }
     }
 
@@ -82,7 +82,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
                 display.getModelViewManager().makeGeosetEditable(geoset);
                 // display.getModelViewManager().makeGeosetVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
         }
     }
 
@@ -97,7 +97,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
                 display.getModelViewManager().makeCameraVisible(camera);
                 // display.getModelViewManager().makeGeosetVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
         }
     }
 
@@ -112,7 +112,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
                 display.getModelViewManager().makeCameraNotVisible(camera);
                 // display.getModelViewManager().makeGeosetVisible(geoset);
             }
-            ModelPanelUgg.reloadGeosetManagers(mainPanel, display);
+            mainPanel.modelPanelUgg.reloadGeosetManagers(mainPanel, display);
         }
     }
 
@@ -143,7 +143,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
         mainPanel.mainLayoutUgg.editTab.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 
@@ -154,7 +154,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
         mainPanel.mainLayoutUgg.editTab.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 
@@ -167,7 +167,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
         }
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 
@@ -175,7 +175,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
     public void headerChanged() {
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 
@@ -186,7 +186,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
         mainPanel.mainLayoutUgg.editTab.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 
@@ -197,7 +197,7 @@ public class ModelStructureChangeListenerImplementation implements ModelStructur
         mainPanel.mainLayoutUgg.editTab.creatorPanel.reloadAnimationList();
         final ModelPanel display = ModelPanelUgg.displayFor(mainPanel.modelPanels, modelReference.getModel());
         if (display != null) {
-            ModelPanelUgg.reloadComponentBrowser(mainPanel.geoControlModelData, display);
+            ModelPanelUgg.reloadComponentBrowser(mainPanel.modelPanelUgg.geoControlModelData, display);
         }
     }
 }

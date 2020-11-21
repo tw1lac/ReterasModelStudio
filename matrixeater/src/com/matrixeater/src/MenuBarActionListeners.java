@@ -18,10 +18,14 @@ import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
 import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
+import com.hiveworkshop.wc3.units.GameObject;
+import com.hiveworkshop.wc3.units.ModelOptionPane;
+import com.hiveworkshop.wc3.units.fields.UnitFields;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.util.ModelUtils;
+import com.matrixeater.imp.AnimationTransfer;
 import com.matrixeaterhayate.TextureManager;
 import net.infonode.docking.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -47,6 +51,9 @@ import java.util.Queue;
 import java.util.*;
 
 public class MenuBarActionListeners {
+    public static final ImageIcon AnimIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/Anim.png"));
+    static final ImageIcon MDLIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/MDLIcon_16.png"));
+
     static AbstractAction inverseAllUVsAction(final MainPanel mainPanel) {
         return new AbstractAction("Swap UVs U for V") {
             @Override
@@ -235,10 +242,10 @@ public class MenuBarActionListeners {
                     mainPanel.windowMenu.remove(modelPanel.getMenuItem());
                     if (mainPanel.modelPanels.size() > 0) {
                         final int newIndex = Math.min(mainPanel.modelPanels.size() - 1, oldIndex);
-                        ModelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
+                        mainPanel.modelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
                     } else {
                         // TODO remove from notifiers to fix leaks
-                        ModelPanelUgg.setCurrentModel(mainPanel, null);
+                        mainPanel.modelPanelUgg.setCurrentModel(mainPanel, null);
                     }
                     final File fileToRevert = modelPanel.getModel().getFile();
                     FileUtils.loadFile(mainPanel, fileToRevert);
@@ -577,7 +584,7 @@ public class MenuBarActionListeners {
                                         final int numberOfVariations = obj.getFieldAsInteger(War3ID.fromString("dvar"), 0);
                                         if (numberOfVariations > 1) {
                                             for (int i = 0; i < numberOfVariations; i++) {
-                                                final String path = MainPanel.convertPathToMDX(
+                                                final String path = MenuBar.convertPathToMDX(
                                                         obj.getFieldAsString(War3ID.fromString("dfil"), 0) + i + ".mdl");
                                                 final String portrait = com.hiveworkshop.wc3.util.ModelUtils.getPortrait(path);
                                                 final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
@@ -593,7 +600,7 @@ public class MenuBarActionListeners {
                                                 }
                                             }
                                         } else {
-                                            final String path = MainPanel.convertPathToMDX(
+                                            final String path = MenuBar.convertPathToMDX(
                                                     obj.getFieldAsString(War3ID.fromString("dfil"), 0));
                                             final String portrait = ModelUtils.getPortrait(path);
                                             final ImageIcon icon = new ImageIcon(com.hiveworkshop.wc3.util.IconUtils
@@ -756,6 +763,87 @@ public class MenuBarActionListeners {
                     new Point(mainPanel.getX() + (mainPanel.getWidth() / 2), mainPanel.getY() + (mainPanel.getHeight() / 2)),
                     disp.getEditUVPanel().getSize(), disp.getEditUVPanel().getView());
             floatingWindow.getTopLevelAncestor().setVisible(true);
+        }
+    }
+
+    static void simplifyKeyframesButtonResponse(MainPanel mainPanel) {
+        final int x = JOptionPane.showConfirmDialog(mainPanel,
+                "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify keyframes?",
+                "Warning: Simplify Keyframes", JOptionPane.OK_CANCEL_OPTION);
+        if (x == JOptionPane.OK_OPTION) {
+            final EditableModel currentMDL = mainPanel.currentMDL();
+            currentMDL.simplifyKeyframes();
+        }
+    }
+
+    static void linearizeAnimations(MainPanel mainPanel) {
+        final int x = JOptionPane.showConfirmDialog(mainPanel,
+                "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify animations?",
+                "Warning: Linearize Animations", JOptionPane.OK_CANCEL_OPTION);
+        if (x == JOptionPane.OK_OPTION) {
+            final List<AnimFlag> allAnimFlags = mainPanel.currentMDL().getAllAnimFlags();
+            for (final AnimFlag flag : allAnimFlags) {
+                flag.linearize();
+            }
+        }
+    }
+
+    static void importScript() {
+        final JFrame frame = new JFrame("Animation Transferer");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setContentPane(new AnimationTransfer(frame));
+        frame.setIconImage(AnimIcon.getImage());
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    static void fetchUnitButtonResponse(MainPanel mainPanel) {
+        final GameObject unitFetched = mainPanel.fetchUnit();
+        if (unitFetched != null) {
+            ImageIcon icon = unitFetched.getScaledIcon(0.25f);
+
+            loadAsMDXAndEnableToolsMenu(mainPanel, icon, unitFetched.getField("file"));
+        }
+    }
+
+    static void fetchModelButtonResponse(MainPanel mainPanel) {
+        final ModelOptionPane.ModelElement model = mainPanel.fetchModel();
+        if (model != null) {
+            final ImageIcon icon = model.hasCachedIconPath() ?
+                    new ImageIcon(BLPHandler.get().getGameTex(model.getCachedIconPath())
+                            .getScaledInstance(16, 16, Image.SCALE_FAST)) : MDLIcon;
+
+            loadAsMDXAndEnableToolsMenu(mainPanel, icon, model.getFilepath());
+        }
+    }
+
+    static void fetchObjectButtonResponse(MainPanel mainPanel) {
+        final MutableObjectData.MutableGameObject objectFetched = mainPanel.fetchObject();
+        if (objectFetched != null) {
+            ImageIcon icon = new ImageIcon(BLPHandler.get()
+                    .getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
+                    .getScaledInstance(16, 16, Image.SCALE_FAST));
+
+            loadAsMDXAndEnableToolsMenu(mainPanel, icon, objectFetched.getFieldAsString(UnitFields.MODEL_FILE, 0));
+        }
+    }
+
+    static void loadAsMDXAndEnableToolsMenu(MainPanel mainPanel, ImageIcon icon, String path) {
+        final String filepath = MenuBar.convertPathToMDX(path);
+
+        if (filepath != null) {
+            FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get().getResourceAsStream(filepath), true, true, icon);
+
+            final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait" + filepath.substring(filepath.lastIndexOf('.'));
+
+            if (mainPanel.prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
+                FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get()
+                        .getResourceAsStream(portrait), true, false, icon);
+            }
+            mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+                    "Allows the user to control which parts of the model are displayed for editing.");
+            mainPanel.toolsMenu.setEnabled(true);
         }
     }
 }

@@ -46,7 +46,7 @@ public class FileUtils {
     }
 
     public static void loadFile(MainPanel mainPanel, final File f, final boolean temporary) {
-        loadFile(mainPanel, f, temporary, true, MainPanel.MDLIcon);
+        loadFile(mainPanel, f, temporary, true, MenuBarActionListeners.MDLIcon);
     }
 
     public static void loadFile(MainPanel mainPanel, final File f) {
@@ -404,7 +404,7 @@ public class FileUtils {
             temp = NewModelPanel.createModelPanel(mainPanel, EditableModel.read(f), icon, false);
             temp.setFile(f);
         }
-        ModelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
+        mainPanel.modelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     public static void loadStreamMdx(MainPanel mainPanel, final InputStream f, final boolean temporary, final boolean selectNewTab,
@@ -419,7 +419,9 @@ public class FileUtils {
             ExceptionPopup.display(e);
             throw new RuntimeException("Reading mdx failed");
         }
-        ModelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
+        System.out.println(mainPanel);
+        System.out.println(mainPanel.modelPanelUgg);
+        mainPanel.modelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     public static void loadBLPPathAsModel(MainPanel mainPanel, final String filepath) {
@@ -465,7 +467,7 @@ public class FileUtils {
         blankTextureModel.add(new Animation("Stand", 0, 1000));
         blankTextureModel.doSavePreps();
 
-        ModelPanelUgg.loadModel(mainPanel, workingDirectory == null, true,
+        mainPanel.modelPanelUgg.loadModel(mainPanel, workingDirectory == null, true,
                 NewModelPanel.createModelPanel(mainPanel, blankTextureModel, GlobalIcons.ORANGE_ICON, true));
     }
 
@@ -554,7 +556,7 @@ public class FileUtils {
         }
 
         fc.setSelectedFile(null);
-        mainPanel.refreshController();
+        mainPanel.modelPanelUgg.refreshController();
     }
 
     static void animFromFile(MainPanel mainPanel) {
@@ -576,7 +578,7 @@ public class FileUtils {
 
         fc.setSelectedFile(null);
 
-        mainPanel.refreshController();
+        mainPanel.modelPanelUgg.refreshController();
     }
 
     static void animFromObject(MainPanel mainPanel) {
@@ -690,7 +692,7 @@ public class FileUtils {
         } catch (final Exception exc) {
             ExceptionPopup.display(exc);
         }
-        mainPanel.refreshController();
+        mainPanel.modelPanelUgg.refreshController();
     }
 
     static void onClickSave(MainPanel mainPanel) {
@@ -704,7 +706,7 @@ public class FileUtils {
         } catch (final Exception exc) {
             ExceptionPopup.display(exc);
         }
-        mainPanel.refreshController();
+        mainPanel.modelPanelUgg.refreshController();
     }
 
     static void mergeGeoset(MainPanel mainPanel) {

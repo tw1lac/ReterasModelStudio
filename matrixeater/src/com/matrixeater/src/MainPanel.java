@@ -1,6 +1,5 @@
 package com.matrixeater.src;
 
-import com.hiveworkshop.wc3.gui.BLPHandler;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.modeledit.*;
@@ -22,7 +21,6 @@ import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ModelOptionPane;
-import com.hiveworkshop.wc3.units.ModelOptionPane.ModelElement;
 import com.hiveworkshop.wc3.units.StandardObjectData;
 import com.hiveworkshop.wc3.units.UnitOptionPane;
 import com.hiveworkshop.wc3.units.fields.UnitFields;
@@ -33,7 +31,6 @@ import com.hiveworkshop.wc3.units.objectdata.WTSFile;
 import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
-import com.matrixeater.imp.AnimationTransfer;
 import de.wc3data.stream.BlizzardDataInputStream;
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.RootWindow;
@@ -82,16 +79,15 @@ public class MainPanel extends JPanel
 
     File currentFile;
     ImportPanel importPanel;
-    static final ImageIcon MDLIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/MDLIcon_16.png"));
     static final ImageIcon POWERED_BY_HIVE = new ImageIcon(MainPanel.class.getResource("ImageBin/powered_by_hive.png"));
-    public static final ImageIcon AnimIcon = new ImageIcon(MainPanel.class.getResource("ImageBin/Anim.png"));
     protected static final boolean OLDMODE = false;
     final List<ModelPanel> modelPanels = new ArrayList<>();
     ModelPanel currentModelPanel;
     MainLayoutUgg mainLayoutUgg;
+    ModelPanelUgg modelPanelUgg;
 
-    JScrollPane geoControl;
-    JScrollPane geoControlModelData;
+//    JScrollPane geoControl;
+//    JScrollPane geoControlModelData;
 //    JTextField[] mouseCoordDisplay = new JTextField[3];
     boolean cheatShift = false;
     boolean cheatAlt = false;
@@ -122,6 +118,8 @@ public class MainPanel extends JPanel
         super();
         ToolBar toolBar = new ToolBar(this);
         add(toolBar.toolBar);
+
+        modelPanelUgg = new ModelPanelUgg();
 
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
@@ -481,7 +479,7 @@ public class MainPanel extends JPanel
 
     void nullModelUgg() {
         FileUtils.nullModelFile(this);
-        refreshController();
+        modelPanelUgg.refreshController();
     }
 
     void scaleAnimationsUgg() {
@@ -491,7 +489,7 @@ public class MainPanel extends JPanel
 
     void fetchAndAddAnimationFromFile(String filepath) {
         final EditableModel current = currentMDL();
-        final String mdxFilepath = convertPathToMDX(filepath);
+        final String mdxFilepath = MenuBar.convertPathToMDX(filepath);
         if (mdxFilepath != null) {
             final EditableModel animationSource = EditableModel.read(MpqCodebase.get().getFile(mdxFilepath));
             addSingleAnimation(current, animationSource);
@@ -612,158 +610,6 @@ public class MainPanel extends JPanel
 
     }
 
-    void simplifyKeyframesButtonResponse() {
-        final int x = JOptionPane.showConfirmDialog(this,
-                "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify keyframes?",
-                "Warning: Simplify Keyframes", JOptionPane.OK_CANCEL_OPTION);
-        if (x == JOptionPane.OK_OPTION) {
-            simplifyKeyframes();
-        }
-    }
-
-    void linearizeAnimations() {
-        final int x = JOptionPane.showConfirmDialog(this,
-                "This is an irreversible process that will lose some of your model data,\nin exchange for making it a smaller storage size.\n\nContinue and simplify animations?",
-                "Warning: Linearize Animations", JOptionPane.OK_CANCEL_OPTION);
-        if (x == JOptionPane.OK_OPTION) {
-            final List<AnimFlag> allAnimFlags = currentMDL().getAllAnimFlags();
-            for (final AnimFlag flag : allAnimFlags) {
-                flag.linearize();
-            }
-        }
-    }
-
-    void importScript() {
-        final JFrame frame = new JFrame("Animation Transferer");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setContentPane(new AnimationTransfer(frame));
-        frame.setIconImage(MainPanel.AnimIcon.getImage());
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
-    void fetchUnitButtonResponse() {
-        final GameObject unitFetched = fetchUnit();
-        if (unitFetched != null) {
-            ImageIcon icon = unitFetched.getScaledIcon(0.25f);
-
-            loadAsMDXAndEnableToolsMenu(icon, unitFetched.getField("file"));
-        }
-    }
-
-    void fetchModelButtonResponse() {
-        final ModelElement model = fetchModel();
-        if (model != null) {
-            final ImageIcon icon = model.hasCachedIconPath() ?
-                    new ImageIcon(BLPHandler.get().getGameTex(model.getCachedIconPath())
-                            .getScaledInstance(16, 16, Image.SCALE_FAST)) : MDLIcon;
-
-            loadAsMDXAndEnableToolsMenu(icon, model.getFilepath());
-        }
-    }
-
-    void fetchObjectButtonResponse() {
-        final MutableGameObject objectFetched = fetchObject();
-        if (objectFetched != null) {
-            ImageIcon icon = new ImageIcon(BLPHandler.get()
-                    .getGameTex(objectFetched.getFieldAsString(UnitFields.INTERFACE_ICON, 0))
-                    .getScaledInstance(16, 16, Image.SCALE_FAST));
-
-            loadAsMDXAndEnableToolsMenu(icon, objectFetched.getFieldAsString(UnitFields.MODEL_FILE, 0));
-        }
-    }
-
-    private void loadAsMDXAndEnableToolsMenu(ImageIcon icon, String path) {
-        final String filepath = convertPathToMDX(path);
-
-        if (filepath != null) {
-            FileUtils.loadStreamMdx(this, MpqCodebase.get().getResourceAsStream(filepath), true, true, icon);
-
-            final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait" + filepath.substring(filepath.lastIndexOf('.'));
-
-            if (prefs.isLoadPortraits() && MpqCodebase.get().has(portrait)) {
-                FileUtils.loadStreamMdx(this, MpqCodebase.get()
-                        .getResourceAsStream(portrait), true, false, icon);
-            }
-            toolsMenu.getAccessibleContext().setAccessibleDescription(
-                    "Allows the user to control which parts of the model are displayed for editing.");
-            toolsMenu.setEnabled(true);
-        }
-    }
-
-    void importUnit() {
-        final GameObject fetchUnitResult = fetchUnit();
-        if (fetchUnitResult == null) {
-            return;
-        }
-        final String filepath = convertPathToMDX(fetchUnitResult.getField("file"));
-        final EditableModel current = currentMDL();
-        if (filepath != null) {
-            final File animationSource = MpqCodebase.get().getFile(filepath);
-            FileUtils.importFile(this, animationSource);
-        }
-        refreshController();
-    }
-
-    void importGameModel() {
-        final ModelElement fetchModelResult = fetchModel();
-        if (fetchModelResult == null) {
-            return;
-        }
-        final String filepath = convertPathToMDX(fetchModelResult.getFilepath());
-        final EditableModel current = currentMDL();
-        if (filepath != null) {
-            final File animationSource = MpqCodebase.get().getFile(filepath);
-            FileUtils.importFile(this, animationSource);
-        }
-        refreshController();
-    }
-
-    void importGameObject() {
-        final MutableGameObject fetchObjectResult = fetchObject();
-        if (fetchObjectResult == null) {
-            return;
-        }
-        final String filepath = convertPathToMDX(fetchObjectResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
-        final EditableModel current = currentMDL();
-        if (filepath != null) {
-            final File animationSource = MpqCodebase.get().getFile(filepath);
-            FileUtils.importFile(this, animationSource);
-        }
-        refreshController();
-    }
-
-    void importFromWorkspace() {
-        final List<EditableModel> optionNames = new ArrayList<>();
-        for (final ModelPanel modelPanel : modelPanels) {
-            final EditableModel model = modelPanel.getModel();
-            optionNames.add(model);
-        }
-        final EditableModel choice = (EditableModel) JOptionPane.showInputDialog(this,
-                "Choose a workspace item to import data from:", "Import from Workspace",
-                JOptionPane.OK_CANCEL_OPTION, null, optionNames.toArray(), optionNames.get(0));
-        if (choice != null) {
-            FileUtils.importFile(this, EditableModel.deepClone(choice, choice.getHeaderName()));
-        }
-        refreshController();
-    }
-
-    void showVertexModifyControls() {
-        final boolean selected = showVertexModifyControls.isSelected();
-        prefs.setShowVertexModifierControls(selected);
-        // SaveProfile.get().setShowViewportButtons(selected);
-        for (final ModelPanel panel : modelPanels) {
-            panel.getFrontArea().setControlsVisible(selected);
-            panel.getBotArea().setControlsVisible(selected);
-            panel.getSideArea().setControlsVisible(selected);
-            final UVPanel uvPanel = panel.getEditUVPanel();
-            if (uvPanel != null) {
-                uvPanel.setControlsVisible(selected);
-            }
-        }
-    }
-
 
     void dataSourcesChanged() {
         for (final ModelPanel modelPanel : modelPanels) {
@@ -772,11 +618,6 @@ public class MainPanel extends JPanel
             modelPanel.getAnimationViewer().reloadAllTextures();
         }
         directoryChangeNotifier.dataSourcesChanged();
-    }
-
-    private void simplifyKeyframes() {
-        final EditableModel currentMDL = currentMDL();
-        currentMDL.simplifyKeyframes();
     }
 
     JSpinner getjSpinner(String title) {
@@ -796,7 +637,7 @@ public class MainPanel extends JPanel
             String filepath = choice.getField("file");
 
             try {
-                filepath = convertPathToMDX(filepath);
+                filepath = MenuBar.convertPathToMDX(filepath);
                 // modelDisp = new MDLDisplay(toLoad, null);
             } catch (final Exception exc) {
                 exc.printStackTrace();
@@ -811,15 +652,6 @@ public class MainPanel extends JPanel
         }
     }
 
-    static String convertPathToMDX(String filepath) {
-        if (filepath.endsWith(".mdl")) {
-            filepath = filepath.replace(".mdl", ".mdx");
-        } else if (!filepath.endsWith(".mdx")) {
-            filepath = filepath.concat(".mdx");
-        }
-        return filepath;
-    }
-
     ModelOptionPane.ModelElement fetchModel() {
         final ModelOptionPane.ModelElement model = ModelOptionPane.showAndLogIcon(this);
         if (model == null) {
@@ -828,7 +660,7 @@ public class MainPanel extends JPanel
         String filepath = model.getFilepath();
         if (filepath != null) {
             try {
-                filepath = convertPathToMDX(filepath);
+                filepath = MenuBar.convertPathToMDX(filepath);
             } catch (final Exception exc) {
                 exc.printStackTrace();
                 // bad model!
@@ -855,7 +687,7 @@ public class MainPanel extends JPanel
         String filepath = choice.getFieldAsString(UnitFields.MODEL_FILE, 0);
 
         try {
-            filepath = convertPathToMDX(filepath);
+            filepath = MenuBar.convertPathToMDX(filepath);
         } catch (final Exception exc) {
             exc.printStackTrace();
             // bad model!
@@ -963,15 +795,6 @@ public class MainPanel extends JPanel
         redo.setEnabled(redo.funcEnabled());
     }
 
-    public void refreshController() {
-        if (geoControl != null) {
-            geoControl.repaint();
-        }
-        if (geoControlModelData != null) {
-            geoControlModelData.repaint();
-        }
-    }
-
     public static void closeOthers(MainPanel mainPanel, final ModelPanel panelToKeepOpen) {
         boolean success = true;
         final Iterator<ModelPanel> iterator = mainPanel.modelPanels.iterator();
@@ -995,14 +818,14 @@ public class MainPanel extends JPanel
             }
         }
         if (closedCurrentPanel) {
-            ModelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
+            mainPanel.modelPanelUgg.setCurrentModel(mainPanel, lastUnclosedModelPanel);
         }
     }
 
     protected void repaintSelfAndChildren(final ModelPanel mpanel) {
         repaint();
-        geoControl.repaint();
-        geoControlModelData.repaint();
+        modelPanelUgg.geoControl.repaint();
+        modelPanelUgg.geoControlModelData.repaint();
         mpanel.repaintSelfAndRelatedChildren();
     }
 
