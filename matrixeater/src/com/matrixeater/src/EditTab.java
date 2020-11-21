@@ -126,12 +126,12 @@ public class EditTab {
         setKeyframe = new JButton(GlobalIcons.SET_KEYFRAME_ICON);
         setKeyframe.setMargin(new Insets(0, 0, 0, 0));
         setKeyframe.setToolTipText("Create Keyframe");
-        setKeyframe.addActionListener(MainPanelActions.createKeyframeAction(mainPanel));
+        setKeyframe.addActionListener(e -> MainPanelActions.createKeyframeAction(mainPanel));
 
         setTimeBounds = new JButton(GlobalIcons.SET_TIME_BOUNDS_ICON);
         setTimeBounds.setMargin(new Insets(0, 0, 0, 0));
         setTimeBounds.setToolTipText("Choose Time Bounds");
-        setTimeBounds.addActionListener(MainPanelActions.timeBoundChooserPanel(mainPanel));
+        setTimeBounds.addActionListener(e -> MainPanelActions.timeBoundChooserPanel(mainPanel));
 
         animationModeButton = new ModeButton("Animate");
         animationModeButton.setVisible(false);// TODO remove this if unused

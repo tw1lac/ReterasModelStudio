@@ -21,7 +21,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainPanelActions {
 
@@ -29,41 +28,49 @@ public class MainPanelActions {
     }
 
 
-    static AbstractAction cloneAction(final MainPanel mainPanel) {
+    static AbstractAction cloneActionUgg(final MainPanel mainPanel) {
         return new AbstractAction("CloneSelection") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    try {
-                        mpanel.getUndoManager().pushAction(
-                                mpanel.getModelEditorManager().getModelEditor().cloneSelectedComponents(mainPanel.namePicker));
-                    } catch (final Exception exc) {
-                        ExceptionPopup.display(exc);
-                    }
-                }
-                mainPanel.refreshUndo();
-                mainPanel.repaintSelfAndChildren(mpanel);
+                cloneAction(mainPanel);
             }
         };
     }
 
-    static AbstractAction deleteAction(final MainPanel mainPanel) {
+    static void cloneAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            try {
+                mpanel.getUndoManager().pushAction(
+                        mpanel.getModelEditorManager().getModelEditor().cloneSelectedComponents(mainPanel.namePicker));
+            } catch (final Exception exc) {
+                ExceptionPopup.display(exc);
+            }
+        }
+        mainPanel.menuBar.refreshUndo();
+        mainPanel.repaintSelfAndChildren(mpanel);
+    }
+
+    static AbstractAction deleteActionUgg(final MainPanel mainPanel) {
         return new AbstractAction("Delete") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    if (mainPanel.animationModeState) {
-                        mainPanel.mainLayoutUgg.editTab.timeSliderPanel.deleteSelectedKeyframes();
-                    } else {
-                        mpanel.getUndoManager()
-                                .pushAction(mpanel.getModelEditorManager().getModelEditor().deleteSelectedComponents());
-                    }
-                }
-                mainPanel.repaintSelfAndChildren(mpanel);
+                deleteAction(mainPanel);
             }
         };
+    }
+
+    static void deleteAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            if (mainPanel.animationModeState) {
+                mainPanel.mainLayoutUgg.editTab.timeSliderPanel.deleteSelectedKeyframes();
+            } else {
+                mpanel.getUndoManager()
+                        .pushAction(mpanel.getModelEditorManager().getModelEditor().deleteSelectedComponents());
+            }
+        }
+        mainPanel.repaintSelfAndChildren(mpanel);
     }
 
     static AbstractAction selectAllAction(final MainPanel mainPanel) {
@@ -121,132 +128,91 @@ public class MainPanelActions {
         };
     }
 
-    static AbstractAction expandSelectionAction(final MainPanel mainPanel) {
-        return new AbstractAction("Expand Selection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().expandSelection());
-                }
-                mainPanel.repaint();
-            }
-        };
+//    static AbstractAction expandSelectionActionugg(final MainPanel mainPanel) {
+//        return new AbstractAction("Expand Selection") {
+//            @Override
+//            public void actionPerformed(final ActionEvent e) {
+//                expandSelectionAction(mainPanel);
+//            }
+//        };
+//    }
+
+    static void expandSelectionAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().expandSelection());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction snapNormalsAction(final MainPanel mainPanel) {
-        return new AbstractAction("Snap Normals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().snapNormals());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void snapNormalsAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().snapNormals());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction snapVerticesAction(final MainPanel mainPanel) {
-        return new AbstractAction("Snap Vertices") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager()
-                            .pushAction(mpanel.getModelEditorManager().getModelEditor().snapSelectedVertices());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void snapVerticesAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager()
+                    .pushAction(mpanel.getModelEditorManager().getModelEditor().snapSelectedVertices());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction recalculateNormalsAction(final MainPanel mainPanel) {
-        return new AbstractAction("RecalculateNormals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().recalcNormals());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void recalculateNormalsAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().recalcNormals());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction recalculateExtentsAction(final MainPanel mainPanel) {
-        return new AbstractAction("RecalculateExtents") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    final JPanel messagePanel = new JPanel(new MigLayout());
-                    messagePanel.add(new JLabel("This will calculate the extents of all model components. Proceed?"),
-                            "wrap");
-                    messagePanel.add(new JLabel("(It may destroy existing extents)"), "wrap");
-                    final JRadioButton considerAllBtn = new JRadioButton("Consider all geosets for calculation");
-                    final JRadioButton considerCurrentBtn = new JRadioButton(
-                            "Consider current editable geosets for calculation");
-                    final ButtonGroup buttonGroup = new ButtonGroup();
-                    buttonGroup.add(considerAllBtn);
-                    buttonGroup.add(considerCurrentBtn);
-                    considerAllBtn.setSelected(true);
-                    messagePanel.add(considerAllBtn, "wrap");
-                    messagePanel.add(considerCurrentBtn, "wrap");
-                    final int userChoice = JOptionPane.showConfirmDialog(mainPanel, messagePanel, "Message",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (userChoice == JOptionPane.YES_OPTION) {
-                        mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor()
-                                .recalcExtents(considerCurrentBtn.isSelected()));
+    static void recalculateExtentsAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            final JPanel messagePanel = new JPanel(new MigLayout());
+            messagePanel.add(new JLabel("This will calculate the extents of all model components. Proceed?"),
+                    "wrap");
+            messagePanel.add(new JLabel("(It may destroy existing extents)"), "wrap");
+            final JRadioButton considerAllBtn = new JRadioButton("Consider all geosets for calculation");
+            final JRadioButton considerCurrentBtn = new JRadioButton(
+                    "Consider current editable geosets for calculation");
+            final ButtonGroup buttonGroup = new ButtonGroup();
+            buttonGroup.add(considerAllBtn);
+            buttonGroup.add(considerCurrentBtn);
+            considerAllBtn.setSelected(true);
+            messagePanel.add(considerAllBtn, "wrap");
+            messagePanel.add(considerCurrentBtn, "wrap");
+            final int userChoice = JOptionPane.showConfirmDialog(mainPanel, messagePanel, "Message",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (userChoice == JOptionPane.YES_OPTION) {
+                mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor()
+                        .recalcExtents(considerCurrentBtn.isSelected()));
+            }
+        }
+        mainPanel.repaint();
+    }
+
+    static void flipAllUVsAxisAction(MainPanel mainPanel, String s) {
+        for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
+            for (final UVLayer layer : geo.getUVLayers()) {
+                for (int i = 0; i < layer.numTVerteces(); i++) {
+                    final TVertex tvert = layer.getTVertex(i);
+                    if(s.endsWith("U")){
+                        tvert.x = 1.0 - tvert.x;
+                    }else {
+                        tvert.y = 1.0 - tvert.y;
                     }
                 }
-                mainPanel.repaint();
             }
-        };
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction flipAllUVsAxisAction(final MainPanel mainPanel, String s) {
-        return new AbstractAction(s) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
-                    for (final UVLayer layer : geo.getUVLayers()) {
-                        for (int i = 0; i < layer.numTVerteces(); i++) {
-                            final TVertex tvert = layer.getTVertex(i);
-                            if(s.endsWith("U")){
-                                tvert.x = 1.0 - tvert.x;
-                            }else {
-                                tvert.y = 1.0 - tvert.y;
-                            }
-                        }
-                    }
-                }
-                mainPanel.repaint();
-            }
-        };
-    }
-
-    static AbstractAction inverseAllUVsAction(final MainPanel mainPanel) {
-        return new AbstractAction("Swap UVs U for V") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                // TODO this should be an action
-                for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
-                    for (final UVLayer layer : geo.getUVLayers()) {
-                        for (int i = 0; i < layer.numTVerteces(); i++) {
-                            final TVertex tvert = layer.getTVertex(i);
-                            final double temp = tvert.x;
-                            tvert.x = tvert.y;
-                            tvert.y = temp;
-                        }
-                    }
-                }
-                mainPanel.repaint();
-            }
-        };
-    }
-
-    static AbstractAction mirrorAxisAction(final MainPanel mainPanel, String s) {
+    static void mirrorAxisAction(MainPanel mainPanel, String s) {
         byte i = 0;
         if(s.endsWith("Y")){
             i = 1;
@@ -254,58 +220,38 @@ public class MainPanelActions {
             i = 2;
         }
         byte finalI = i;
-        return new AbstractAction(s) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    final Vertex selectionCenter = mpanel.getModelEditorManager().getModelEditor().getSelectionCenter();
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().mirror(finalI,
-                            mainPanel.mirrorFlip.isSelected(), selectionCenter.x, selectionCenter.y, selectionCenter.z));
-                }
-                mainPanel.repaint();
-            }
-        };
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            final Vertex selectionCenter = mpanel.getModelEditorManager().getModelEditor().getSelectionCenter();
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().mirror(finalI,
+                    mainPanel.mirrorFlip.isSelected(), selectionCenter.x, selectionCenter.y, selectionCenter.z));
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction insideOutAction(final MainPanel mainPanel) {
-        return new AbstractAction("Inside Out") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedFaces());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void insideOutAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedFaces());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction insideOutNormalsAction(final MainPanel mainPanel) {
-        return new AbstractAction("Inside Out Normals") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager()
-                            .pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedNormals());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void insideOutNormalsAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager()
+                    .pushAction(mpanel.getModelEditorManager().getModelEditor().flipSelectedNormals());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction viewMatricesAction(final MainPanel mainPanel) {
-        return new AbstractAction("View Matrices") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.viewMatrices();
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void viewMatricesAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.viewMatrices();
+        }
+        mainPanel.repaint();
     }
 
     static DockingWindowListener createDockingWindowListener(final MainPanel mainPanel) {
@@ -530,33 +476,30 @@ public class MainPanelActions {
         };
     }
 
-    static ActionListener createKeyframeAction(MainPanel mainPanel) {
-        return e -> {
-            final ModelPanel mpanel = mainPanel.currentModelPanel;
-            if (mpanel != null) {
-                mpanel.getUndoManager()
-                        .pushAction(mpanel.getModelEditorManager().getModelEditor().createKeyframe(mainPanel.actionType));
-            }
-            mainPanel.repaintSelfAndChildren(mpanel);
-        };
+
+    static void createKeyframeAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager()
+                    .pushAction(mpanel.getModelEditorManager().getModelEditor().createKeyframe(mainPanel.actionType));
+        }
+        mainPanel.repaintSelfAndChildren(mpanel);
     }
 
-    static ActionListener timeBoundChooserPanel(MainPanel mainPanel) {
-        return e -> {
-            final TimeBoundChooserPanel timeBoundChooserPanel = new TimeBoundChooserPanel(
-                    mainPanel.currentModelPanel == null ? null : mainPanel.currentModelPanel.getModelViewManager(),
-                    mainPanel.modelStructureChangeListener);
-            final int confirmDialogResult = JOptionPane.showConfirmDialog(mainPanel, timeBoundChooserPanel,
-                    "Set Time Bounds", JOptionPane.OK_CANCEL_OPTION);
-            if (confirmDialogResult == JOptionPane.OK_OPTION) {
-                timeBoundChooserPanel.applyTo(mainPanel.animatedRenderEnvironment);
-                if (mainPanel.currentModelPanel != null) {
-                    mainPanel.currentModelPanel.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment,
-                            MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY, mainPanel.currentModelPanel.getPerspArea().getViewport());
-                    mainPanel.currentModelPanel.getEditorRenderModel().updateNodes(true, false);
-                }
+    static void timeBoundChooserPanel(MainPanel mainPanel) {
+        final TimeBoundChooserPanel timeBoundChooserPanel = new TimeBoundChooserPanel(
+                mainPanel.currentModelPanel == null ? null : mainPanel.currentModelPanel.getModelViewManager(),
+                mainPanel.modelStructureChangeListener);
+        final int confirmDialogResult = JOptionPane.showConfirmDialog(mainPanel, timeBoundChooserPanel,
+                "Set Time Bounds", JOptionPane.OK_CANCEL_OPTION);
+        if (confirmDialogResult == JOptionPane.OK_OPTION) {
+            timeBoundChooserPanel.applyTo(mainPanel.animatedRenderEnvironment);
+            if (mainPanel.currentModelPanel != null) {
+                mainPanel.currentModelPanel.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment,
+                        MainPanel.IDENTITY, MainPanel.IDENTITY, MainPanel.IDENTITY, mainPanel.currentModelPanel.getPerspArea().getViewport());
+                mainPanel.currentModelPanel.getEditorRenderModel().updateNodes(true, false);
             }
-        };
+        }
     }
 
     static TimeBoundChangeListener animatedRenderEnvironmentChangeListener(MainPanel mainPanel) {
@@ -621,40 +564,31 @@ public class MainPanelActions {
         };
     }
 
-    static AbstractAction getAltSelectAction(final MainPanel mainPanel, String unAltSelect, boolean b, SelectionMode select, boolean b2) {
-        return new AbstractAction(unAltSelect) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                if (b) {
-                    mainPanel.selectionModeGroup.setToolbarButtonType(select);
-                    mainPanel.cheatAlt = b2;
-                }
-            }
-        };
+
+    static void getAltSelectAction(MainPanel mainPanel, boolean b, SelectionMode select, boolean b2) {
+        if (b) {
+            mainPanel.selectionModeGroup.setToolbarButtonType(select);
+            mainPanel.cheatAlt = b2;
+        }
     }
 
-    static AbstractAction getShiftSelectAction(final MainPanel mainPanel, String shiftSelect, boolean b, SelectionMode add, boolean b2) {
-        return new AbstractAction(shiftSelect) {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = mainPanel.getFocusedComponent();
-                if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                // if (prefs.getSelectionType() == 0) {
-                // for (int b = 0; b < 3; b++) {
-                // buttons.get(b).resetColors();
-                // }
-                // addButton.setColors(prefs.getActiveColor1(),
-                // prefs.getActiveColor2());
-                // prefs.setSelectionType(1);
-                // cheatShift = true;
-                // }
-                if (b) {
-                    mainPanel.selectionModeGroup.setToolbarButtonType(add);
-                    mainPanel.cheatShift = b2;
-                }
-            }
-        };
+    static void getShiftSelectAction(MainPanel mainPanel, boolean b, SelectionMode add, boolean b2) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        // if (prefs.getSelectionType() == 0) {
+        // for (int b = 0; b < 3; b++) {
+        // buttons.get(b).resetColors();
+        // }
+        // addButton.setColors(prefs.getActiveColor1(),
+        // prefs.getActiveColor2());
+        // prefs.setSelectionType(1);
+        // cheatShift = true;
+        // }
+        if (b) {
+            mainPanel.selectionModeGroup.setToolbarButtonType(add);
+            mainPanel.cheatShift = b2;
+        }
     }
 }

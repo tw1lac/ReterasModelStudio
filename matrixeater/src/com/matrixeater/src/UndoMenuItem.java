@@ -27,6 +27,7 @@ public class UndoMenuItem extends JMenuItem {
             System.out.println(mainPanel.currentModelPanel.getUndoManager());
             return !mainPanel.currentModelPanel.getUndoManager().isUndoListEmpty();
         } catch (final NullPointerException e) {
+            System.out.println("not enabled");
             return false;
         }
     }

@@ -237,10 +237,11 @@ public class MainPanel extends JPanel
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control Y"),
                 "Redo");
 
-        root.getActionMap().put("Delete", MainPanelActions.deleteAction(this));
+        root.getActionMap().put("Delete", new FunctionalAction(e -> MainPanelActions.deleteAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("DELETE"), "Delete");
 
-        root.getActionMap().put("CloneSelection", MainPanelActions.cloneAction(this));
+//        root.getActionMap().put("CloneSelection", MainPanelActions.cloneActionUgg(this));
+        root.getActionMap().put("CloneSelection", new FunctionalAction(e -> MainPanelActions.cloneAction(this)));
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("SPACE"), "MaximizeSpacebar");
         root.getActionMap().put("MaximizeSpacebar", new AbstractAction() {
@@ -368,15 +369,15 @@ public class MainPanel extends JPanel
         // V"),
         // "CloneSelection");
 
-        root.getActionMap().put("shiftSelect", MainPanelActions.getShiftSelectAction(this, "shiftSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.ADD, true));
-        root.getActionMap().put("altSelect", MainPanelActions.getAltSelectAction(this, "altSelect", selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.DESELECT, true));
+        root.getActionMap().put("shiftSelect", new FunctionalAction(e -> MainPanelActions.getShiftSelectAction(this,  selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.ADD, true)));
+        root.getActionMap().put("altSelect", new FunctionalAction(e -> MainPanelActions.getAltSelectAction(this, selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.DESELECT, true)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) .put(KeyStroke.getKeyStroke("shift pressed SHIFT"), "shiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
         // .put(KeyStroke.getKeyStroke("control pressed CONTROL"), "shiftSelect");
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed ALT"), "altSelect");
 
-        root.getActionMap().put("unShiftSelect", MainPanelActions.getShiftSelectAction(this, "unShiftSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift, SelectionMode.SELECT, false));
-        root.getActionMap().put("unAltSelect", MainPanelActions.getAltSelectAction(this, "unAltSelect", (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false));
+        root.getActionMap().put("unShiftSelect", new FunctionalAction(e -> MainPanelActions.getShiftSelectAction(this, (selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift, SelectionMode.SELECT, false)));
+        root.getActionMap().put("unAltSelect", new FunctionalAction(e -> MainPanelActions.getAltSelectAction(this, (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released SHIFT"), "unShiftSelect");
         // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released
         // CONTROL"),
@@ -389,7 +390,7 @@ public class MainPanel extends JPanel
         root.getActionMap().put("Invert Selection", MainPanelActions.invertSelectAction(this));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control I"), "Invert Selection");
 
-        root.getActionMap().put("Expand Selection", MainPanelActions.expandSelectionAction(this));
+        root.getActionMap().put("Expand Selection", new FunctionalAction(e -> MainPanelActions.expandSelectionAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), "Expand Selection");
 
         root.getActionMap().put("RigAction", MainPanelActions.rigAction(this));
