@@ -92,14 +92,8 @@ public class MainPanel extends JPanel
     protected static final boolean OLDMODE = false;
     final List<ModelPanel> modelPanels = new ArrayList<>();
     ModelPanel currentModelPanel;
-    View frontView;
-    View leftView;
-    View bottomView;
-    View previewView;
-    View creatorView;
-    View perspectiveView;
-    View timeSliderView;
-    View animationControllerView;
+    MainLayoutUgg mainLayoutUgg;
+
     JScrollPane geoControl;
     JScrollPane geoControlModelData;
     JTextField[] mouseCoordDisplay = new JTextField[3];
@@ -108,7 +102,6 @@ public class MainPanel extends JPanel
     SaveProfile profile = SaveProfile.get();
     ProgramPreferences prefs = profile.getPreferences();
 
-//    JToolBar toolbar;
 
     TimeSliderPanel timeSliderPanel;
     JButton setKeyframe;
@@ -134,8 +127,6 @@ public class MainPanel extends JPanel
     final RootWindow rootWindow;
     View viewportControllerWindowView;
     View toolView;
-    final View modelDataView;
-    final View modelComponentView;
     ActivityDescriptor currentActivity;
 
     public MainPanel() {
@@ -151,8 +142,8 @@ public class MainPanel extends JPanel
         actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
 
-
-        MainLayoutUgg.createEditTabViews(this);
+        mainLayoutUgg = new MainLayoutUgg(this);
+        mainLayoutUgg.createEditTabViews(this);
 
 
         StringViewMap viewMap = new StringViewMap();
@@ -176,10 +167,9 @@ public class MainPanel extends JPanel
 
         createAnimationPanelStuff();
 
-
         final GroupLayout layout = new GroupLayout(this);
 
-        final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(this);
+        final TabWindow startupTabWindow = mainLayoutUgg.createMainLayout(this);
         rootWindow.setWindow(startupTabWindow);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
         startupTabWindow.setSelectedTab(0);
@@ -197,10 +187,6 @@ public class MainPanel extends JPanel
 
         BLPPanel blpPanel = new BLPPanel(null);
 
-        final JPanel contentsDummy = new JPanel();
-        contentsDummy.add(new JLabel("..."));
-        modelDataView = new View("Contents", null, contentsDummy);
-        modelComponentView = new View("Component", null, new JPanel());
 
 
         viewportTransferHandler = new ViewportTransferHandler();
@@ -233,7 +219,7 @@ public class MainPanel extends JPanel
         toolsPanel.setMaximumSize(new Dimension(30, 999999));
 
 
-        animationControllerView = new View("Animation Controller", null, new JPanel());
+        mainLayoutUgg.animationControllerView = new View("Animation Controller", null, new JPanel());
 
         for (int i = 0; i < mouseCoordDisplay.length; i++) {
             mouseCoordDisplay[i] = new JTextField("");
@@ -266,7 +252,7 @@ public class MainPanel extends JPanel
                         .addComponent(setKeyframe)
                         .addComponent(setTimeBounds)));
         timeSliderAndExtra.setLayout(tsaeLayout);
-        timeSliderView = new View("Footer", null, timeSliderAndExtra);
+        mainLayoutUgg.timeSliderView = new View("Footer", null, timeSliderAndExtra);
     }
 
     @Override

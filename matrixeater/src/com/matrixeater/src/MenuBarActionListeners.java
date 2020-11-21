@@ -264,7 +264,7 @@ public class MenuBarActionListeners {
     static ActionListener resetViewButton(MainPanel mainPanel) {
         return e -> {
             DockingWindowUtils.traverseAndReset(mainPanel.rootWindow);
-            final TabWindow startupTabWindow = MainLayoutUgg.createMainLayout(mainPanel);
+            final TabWindow startupTabWindow = mainPanel.mainLayoutUgg.createMainLayout(mainPanel);
             mainPanel.rootWindow.setWindow(startupTabWindow);
             DockingWindowUtils.traverseAndFix(mainPanel.rootWindow);
         };

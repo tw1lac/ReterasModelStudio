@@ -52,9 +52,9 @@ public class ModelPanelUgg {
             mainPanel.viewportControllerWindowView.setComponent(mainPanel.geoControl);
             mainPanel.viewportControllerWindowView.repaint();
             mainPanel.geoControlModelData = new JScrollPane(temp.getModelComponentBrowserTree());
-            mainPanel.modelDataView.setComponent(mainPanel.geoControlModelData);
-            mainPanel.modelComponentView.setComponent(temp.getComponentsPanel());
-            mainPanel.modelDataView.repaint();
+            mainPanel.mainLayoutUgg.modelDataView.setComponent(mainPanel.geoControlModelData);
+            mainPanel.mainLayoutUgg.modelComponentView.setComponent(temp.getComponentsPanel());
+            mainPanel.mainLayoutUgg.modelDataView.repaint();
         }
         addTabForView(temp, selectNewTab);
         mainPanel.modelPanels.add(temp);
@@ -98,12 +98,12 @@ public class ModelPanelUgg {
             mainPanel.viewportControllerWindowView.setComponent(jPanel);
             mainPanel.geoControl = null;
 
-            mainPanel.frontView.setComponent(new JPanel());
-            mainPanel.bottomView.setComponent(new JPanel());
-            mainPanel.leftView.setComponent(new JPanel());
-            mainPanel.perspectiveView.setComponent(new JPanel());
-            mainPanel.previewView.setComponent(new JPanel());
-            mainPanel.animationControllerView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.frontView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.bottomView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.leftView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.perspectiveView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.previewView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.animationControllerView.setComponent(new JPanel());
 
             refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
 
@@ -112,18 +112,18 @@ public class ModelPanelUgg {
             mainPanel.creatorPanel.setModelEditorManager(null);
             mainPanel.creatorPanel.setCurrentModel(null);
             mainPanel.creatorPanel.setUndoManager(null);
-            mainPanel.modelComponentView.setComponent(new JPanel());
+            mainPanel.mainLayoutUgg.modelComponentView.setComponent(new JPanel());
             mainPanel.geoControlModelData = null;
         } else {
             mainPanel.geoControl.setViewportView(mainPanel.currentModelPanel.getModelViewManagingTree());
             mainPanel.geoControl.repaint();
 
-            mainPanel.frontView.setComponent(modelContextManager.getFrontArea());
-            mainPanel.bottomView.setComponent(modelContextManager.getBotArea());
-            mainPanel.leftView.setComponent(modelContextManager.getSideArea());
-            mainPanel.perspectiveView.setComponent(modelContextManager.getPerspArea());
-            mainPanel.previewView.setComponent(modelContextManager.getAnimationViewer());
-            mainPanel.animationControllerView.setComponent(modelContextManager.getAnimationController());
+            mainPanel.mainLayoutUgg.frontView.setComponent(modelContextManager.getFrontArea());
+            mainPanel.mainLayoutUgg.bottomView.setComponent(modelContextManager.getBotArea());
+            mainPanel.mainLayoutUgg.leftView.setComponent(modelContextManager.getSideArea());
+            mainPanel.mainLayoutUgg.perspectiveView.setComponent(modelContextManager.getPerspArea());
+            mainPanel.mainLayoutUgg.previewView.setComponent(modelContextManager.getAnimationViewer());
+            mainPanel.mainLayoutUgg.animationControllerView.setComponent(modelContextManager.getAnimationController());
 
             refreshAnimationModeState(mainPanel.actionTypeGroup, mainPanel.animatedRenderEnvironment, mainPanel.animationModeButton, mainPanel.animationModeState, mainPanel.creatorPanel, mainPanel.currentModelPanel, mainPanel.prefs, mainPanel.setKeyframe, mainPanel.setTimeBounds, mainPanel.snapButton, mainPanel.timeSliderPanel);
 
@@ -132,7 +132,7 @@ public class ModelPanelUgg {
             mainPanel.creatorPanel.setModelEditorManager(mainPanel.currentModelPanel.getModelEditorManager());
             mainPanel.creatorPanel.setCurrentModel(mainPanel.currentModelPanel.getModelViewManager());
             mainPanel.creatorPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager());
-            mainPanel.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
+            mainPanel.mainLayoutUgg.modelComponentView.setComponent(mainPanel.currentModelPanel.getComponentsPanel());
 
             mainPanel.geoControlModelData.setViewportView(mainPanel.currentModelPanel.getModelComponentBrowserTree());
 
