@@ -477,10 +477,6 @@ public class FileUtils {
                 exportTextureDialog.setCurrentDirectory(new File(mainPanel.profile.getPath()));
             }
         }
-        if (exportTextureDialog.getCurrentDirectory() == null) {
-            exportTextureDialog.setSelectedFile(new File(exportTextureDialog.getCurrentDirectory()
-                    + File.separator + materialsList.getSelectedValue().getName()));
-        }
 
         exportTextureDialog.setSelectedFile(new File(materialsList.getSelectedValue().getName() + ".png"));
         final int x = exportTextureDialog.showSaveDialog(mainPanel);
@@ -693,59 +689,52 @@ public class FileUtils {
     }
 
     static void mergeGeoset(MainPanel mainPanel) {
-        fc.setDialogTitle("Merge Single Geoset (Oinker-based)");
+        fcm.setDialogTitle("Merge Single Geoset (Oinker-based)");
+
         final EditableModel current = mainPanel.currentMDL();
+
         if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-            fc.setCurrentDirectory(current.getFile().getParentFile());
+            fcm.setCurrentDirectory(current.getFile().getParentFile());
         } else if (mainPanel.profile.getPath() != null) {
-            fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+            fcm.setCurrentDirectory(new File(mainPanel.profile.getPath()));
         }
-        final int returnValue = fc.showOpenDialog(mainPanel);
+
+        final int returnValue = fcm.showOpenDialog(mainPanel);
 
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            mainPanel.currentFile = fc.getSelectedFile();
+            mainPanel.currentFile = fcm.getSelectedFile();
+
             final EditableModel geoSource = EditableModel.read(mainPanel.currentFile);
+
             mainPanel.profile.setPath(mainPanel.currentFile.getParent());
-            boolean going = true;
+
+            JSpinner geosetImport = new JSpinner(new SpinnerNumberModel(1, 1, geoSource.getGeosetsSize(), 1));
+            JSpinner geosetReceive = new JSpinner(new SpinnerNumberModel(1, 1, current.getGeosetsSize(), 1));
+            Object[] message = {
+                    "Geoset to Import:", geosetImport,
+                    "Geoset to Receive:", geosetReceive
+            };
             Geoset host = null;
-            while (going) {
-                final String s = JOptionPane.showInputDialog(mainPanel,
-                        "Geoset into which to Import: (1 to " + current.getGeosetsSize() + ")");
-                try {
-                    final int x = Integer.parseInt(s);
-                    if ((x >= 1) && (x <= current.getGeosetsSize())) {
-                        host = current.getGeoset(x - 1);
-                        going = false;
-                    }
-                } catch (final NumberFormatException ignored) {
-
-                }
-            }
             Geoset newGeoset = null;
-            going = true;
-            while (going) {
-                final String s = JOptionPane.showInputDialog(mainPanel,
-                        "Geoset to Import: (1 to " + geoSource.getGeosetsSize() + ")");
-                try {
-                    final int x = Integer.parseInt(s);
-                    if (x <= geoSource.getGeosetsSize()) {
-                        newGeoset = geoSource.getGeoset(x - 1);
-                        going = false;
-                    }
-                } catch (final NumberFormatException ignored) {
-
-                }
+            int option = JOptionPane.showConfirmDialog(mainPanel, message, "Choose Geosets", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                final int receiveValue = (Integer) geosetReceive.getValue();
+                final int importValue = (Integer) geosetImport.getValue();
+                host = current.getGeoset(receiveValue - 1);
+                newGeoset = geoSource.getGeoset(importValue - 1);
+                System.out.println("choosen values: " + receiveValue + " & " + importValue);
+            } else {
+                System.out.println("Geoset import canceled");
             }
+
             newGeoset.updateToObjects(current);
+
             System.out.println("putting " + newGeoset.numUVLayers() + " into a nice " + host.numUVLayers());
+
             for (int i = 0; i < newGeoset.numVerteces(); i++) {
                 final GeosetVertex ver = newGeoset.getVertex(i);
                 host.add(ver);
-                ver.setGeoset(host);// geoset = host;
-                // for( int z = 0; z < host.n.numUVLayers(); z++ )
-                // {
-                // host.getUVLayer(z).addTVertex(newGeoset.getVertex(i).getTVertex(z));
-                // }
+                ver.setGeoset(host);
             }
             for (int i = 0; i < newGeoset.numTriangles(); i++) {
                 final Triangle tri = newGeoset.getTriangle(i);
@@ -753,8 +742,7 @@ public class FileUtils {
                 tri.setGeoRef(host);
             }
         }
-
-        fc.setSelectedFile(null);
+        fcm.setSelectedFile(null);
     }
 
     static void fetchAndAddAnimationFromFile(MainPanel mainPanel, String filepath) {
