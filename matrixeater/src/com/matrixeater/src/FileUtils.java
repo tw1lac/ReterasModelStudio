@@ -39,8 +39,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class FileUtils {
-    public final static JFileChooser fc = new JFileChooser();
-    public final static JFileChooser exportTextureDialog = new JFileChooser();
+    public final static JFileChooser fc = createUniversalFileChooser();
+    public final static JFileChooser fcm = createModelFileChooser();
+    public final static JFileChooser exportTextureDialog = createTextureFileChooser();
 
     public FileUtils(){
         createFileChooser();
@@ -289,9 +290,7 @@ public class FileUtils {
             }
             depth++;
         }
-        if (output == null) {
-            output = "name error";
-        } else if (output.equals(name)) {
+        if (output.equals(name)) {
             output = output + "_edit";
         }
 
@@ -323,19 +322,6 @@ public class FileUtils {
                         ExceptionPopup.display("MatrixEater detected error with Java's wait function", e);
                     }
                 }
-                // if( !importPanel.getParentFrame().isVisible() &&
-                // !importPanel.importEnded() )
-                // JOptionPane.showMessageDialog(null,"bad voodoo
-                // "+importPanel.importSuccessful());
-                // else
-                // JOptionPane.showMessageDialog(null,"good voodoo
-                // "+importPanel.importSuccessful());
-                // if( importPanel.importSuccessful() )
-                // {
-                // newModel.saveFile();
-                // loadFile(newModel.getFile());
-                // }
-
                 if (mainPanel.importPanel.importStarted()) {
                     while (!mainPanel.importPanel.importEnded()) {
                         try {
@@ -371,7 +357,6 @@ public class FileUtils {
         }
     }
 
-    //TODO move this!
     public static void loadFile(MainPanel mainPanel, final File f, final boolean temporary, final boolean selectNewTab, final ImageIcon icon) {
         if (f.getPath().toLowerCase().endsWith("blp")) {
             loadBLPPathAsModel(mainPanel, f.getName(), f.getParentFile());
@@ -480,12 +465,16 @@ public class FileUtils {
         materialsList.setCellRenderer(new MaterialListRenderer(mainPanel.currentMDL()));
         JOptionPane.showMessageDialog(mainPanel, new JScrollPane(materialsList));
 
+        if (mainPanel.profile.getPath() != null) {
+            exportTextureDialog.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+        }
+
         if (exportTextureDialog.getCurrentDirectory() == null) {
             final EditableModel current = mainPanel.currentMDL();
             if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
-                fc.setCurrentDirectory(current.getFile().getParentFile());
+                exportTextureDialog.setCurrentDirectory(current.getFile().getParentFile());
             } else if (mainPanel.profile.getPath() != null) {
-                fc.setCurrentDirectory(new File(mainPanel.profile.getPath()));
+                exportTextureDialog.setCurrentDirectory(new File(mainPanel.profile.getPath()));
             }
         }
         if (exportTextureDialog.getCurrentDirectory() == null) {
@@ -493,24 +482,21 @@ public class FileUtils {
                     + File.separator + materialsList.getSelectedValue().getName()));
         }
 
+        exportTextureDialog.setSelectedFile(new File(materialsList.getSelectedValue().getName() + ".png"));
         final int x = exportTextureDialog.showSaveDialog(mainPanel);
         if (x == JFileChooser.APPROVE_OPTION) {
             final File file = exportTextureDialog.getSelectedFile();
             if (file != null) {
                 try {
-                    if (file.getName().lastIndexOf('.') >= 0) {
-                        BufferedImage bufferedImage = materialsList.getSelectedValue()
-                                .getBufferedImage(mainPanel.currentMDL().getWrappedDataSource());
-                        String fileExtension = file.getName().substring(file.getName().lastIndexOf('.') + 1)
-                                .toUpperCase();
-                        if (fileExtension.equals("BMP") || fileExtension.equals("JPG")
-                                || fileExtension.equals("JPEG")) {
+                    String fileName = file.getName().toLowerCase();
+                    if (fileName.contains(".")) {
+                        BufferedImage bufferedImage = materialsList.getSelectedValue().getBufferedImage(mainPanel.currentMDL().getWrappedDataSource());
+                        String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+                        if (fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
                             JOptionPane.showMessageDialog(mainPanel,
                                     "Warning: Alpha channel was converted to black. Some data will be lost\nif you convert this texture back to Warcraft BLP.");
                             bufferedImage = BLPHandler.removeAlphaChannel(bufferedImage);
-                        }
-                        if (fileExtension.equals("BLP")) {
-                            fileExtension = "blp";
                         }
                         final boolean write = ImageIO.write(bufferedImage, fileExtension, file);
                         if (!write) {
@@ -801,4 +787,39 @@ public class FileUtils {
             exportTextureDialog.addChoosableFileFilter(new FileNameExtensionFilter(suffix.toUpperCase() + " Image File", suffix));
         }
     }
+
+    public static JFileChooser createUniversalFileChooser() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("All Accepted FileTypes", "mdx", "blp", "png", "mdl", "obj"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Binary Model '-.mdx'", "mdx"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Model '-.mdl'", "mdl"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Texture '-.blp'", "blp"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image '-.png'", "png"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Wavefront OBJ '-.obj'", "obj"));
+        return fileChooser;
+    }
+
+    public static JFileChooser createModelFileChooser() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Models", "mdx", "mdl"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Binary Model '-.mdx'", "mdx"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Warcraft III Model '-.mdl'", "mdl"));
+        return fileChooser;
+    }
+
+    public static JFileChooser createTextureFileChooser() {
+        JFileChooser fileChooser = new JFileChooser();
+        System.out.println("dir: " + fileChooser.getCurrentDirectory());
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setDialogTitle("Export Texture");
+        final String[] imageTypes = ImageIO.getWriterFileSuffixes();
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Supported Image Files", imageTypes));
+        for (final String suffix : imageTypes) {
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(suffix.toUpperCase() + " Image File", suffix));
+        }
+        return fileChooser;
+    }
+
 }

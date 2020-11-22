@@ -48,7 +48,6 @@ public class TextureExporterImpl implements TextureExporter {
     @Override
     public void exportTexture(final String suggestedName, final TextureExporterClickListener fileHandler,
                               final Component parent) {
-
         if (FileUtils.exportTextureDialog.getCurrentDirectory() == null) {
             final EditableModel current = mainPanel.currentMDL();
             if ((current != null) && !current.isTemp() && (current.getFile() != null)) {
@@ -61,7 +60,6 @@ public class TextureExporterImpl implements TextureExporter {
             FileUtils.exportTextureDialog.setSelectedFile(
                     new File(FileUtils.exportTextureDialog.getCurrentDirectory() + File.separator + suggestedName));
         }
-
         final int x = FileUtils.exportTextureDialog.showSaveDialog(parent);
         if (x == JFileChooser.APPROVE_OPTION) {
             final File file = FileUtils.exportTextureDialog.getSelectedFile();
