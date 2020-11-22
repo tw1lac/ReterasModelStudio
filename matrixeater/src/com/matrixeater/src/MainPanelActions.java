@@ -1,6 +1,5 @@
 package com.matrixeater.src;
 
-
 import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.animedit.TimeBoundChangeListener;
 import com.hiveworkshop.wc3.gui.animedit.TimeBoundChooserPanel;
@@ -12,10 +11,7 @@ import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarActionButtonType;
 import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonListener;
 import com.hiveworkshop.wc3.mdl.*;
-import net.infonode.docking.DockingWindow;
-import net.infonode.docking.DockingWindowListener;
-import net.infonode.docking.TabWindow;
-import net.infonode.docking.View;
+import net.infonode.docking.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -255,11 +251,7 @@ public class MainPanelActions {
     }
 
     static DockingWindowListener createDockingWindowListener(final MainPanel mainPanel) {
-        return new DockingWindowListener() {
-            @Override
-            public void windowUndocking(final DockingWindow arg0) {
-            }
-
+        return new AbstractDockingWindowListener() {
             @Override
             public void windowUndocked(final DockingWindow dockingWindow) {
                 SwingUtilities.invokeLater(() -> SwingUtilities.invokeLater(() -> {
@@ -271,57 +263,11 @@ public class MainPanelActions {
                     }
                 }));
             }
-
-            @Override
-            public void windowShown(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRestoring(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRestored(final DockingWindow arg0) { }
-
-            @Override
-            public void windowRemoved(final DockingWindow arg0, final DockingWindow arg1) { }
-
-            @Override
-            public void windowMinimizing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMinimized(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMaximizing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowMaximized(final DockingWindow arg0) { }
-
-            @Override
-            public void windowHidden(final DockingWindow arg0) { }
-
-            @Override
-            public void windowDocking(final DockingWindow arg0) { }
-
-            @Override
-            public void windowDocked(final DockingWindow arg0) { }
-
-            @Override
-            public void windowClosing(final DockingWindow arg0) { }
-
-            @Override
-            public void windowClosed(final DockingWindow arg0) { }
-
-            @Override
-            public void windowAdded(final DockingWindow arg0, final DockingWindow arg1) { }
-
-            @Override
-            public void viewFocusChanged(final View arg0, final View arg1) { }
         };
     }
 
     static DockingWindowListener createDockingWindowListener(Runnable fixit) {
-        return new DockingWindowListener() {
-
+        return new AbstractDockingWindowListener() {
             @Override
             public void windowUndocking(final DockingWindow removedWindow) {
                 if (MainPanel.OLDMODE) {
@@ -335,18 +281,6 @@ public class MainPanelActions {
                     SwingUtilities.invokeLater(fixit);
                 }
             }
-
-            @Override
-            public void windowUndocked(final DockingWindow arg0) {}
-
-            @Override
-            public void windowShown(final DockingWindow arg0) {}
-
-            @Override
-            public void windowRestoring(final DockingWindow arg0) {}
-
-            @Override
-            public void windowRestored(final DockingWindow arg0) {}
 
             @Override
             public void windowRemoved(final DockingWindow removedFromWindow, final DockingWindow removedWindow) {
@@ -378,27 +312,6 @@ public class MainPanelActions {
             }
 
             @Override
-            public void windowMinimizing(final DockingWindow arg0) {}
-
-            @Override
-            public void windowMinimized(final DockingWindow arg0) {}
-
-            @Override
-            public void windowMaximizing(final DockingWindow arg0) {}
-
-            @Override
-            public void windowMaximized(final DockingWindow arg0) {}
-
-            @Override
-            public void windowHidden(final DockingWindow arg0) {}
-
-            @Override
-            public void windowDocking(final DockingWindow arg0) {}
-
-            @Override
-            public void windowDocked(final DockingWindow arg0) {}
-
-            @Override
             public void windowClosing(final DockingWindow closingWindow) {
                 if (MainPanel.OLDMODE) {
                     if (closingWindow.getWindowParent() instanceof TabWindow) {
@@ -428,10 +341,6 @@ public class MainPanelActions {
             }
 
             @Override
-            public void windowClosed(final DockingWindow closedWindow) {
-            }
-
-            @Override
             public void windowAdded(final DockingWindow addedToWindow, final DockingWindow addedWindow) {
                 if (MainPanel.OLDMODE) {
                     if (addedToWindow instanceof TabWindow) {
@@ -456,12 +365,6 @@ public class MainPanelActions {
                 } else {
                     SwingUtilities.invokeLater(fixit);
                 }
-            }
-
-            @Override
-            public void viewFocusChanged(final View arg0, final View arg1) {
-                // TODO Auto-generated method stub
-
             }
         };
     }
