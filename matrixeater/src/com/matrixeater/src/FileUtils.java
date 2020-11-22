@@ -382,35 +382,29 @@ public class FileUtils {
             return;
         }
         ModelPanel temp = null;
-        if (f.getPath().toLowerCase().endsWith("mdx")) {
-            try (BlizzardDataInputStream in = new BlizzardDataInputStream(new FileInputStream(f))) {
-                final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
-                model.setFileRef(f);
-                temp = NewModelPanel.createModelPanel(mainPanel, model, icon, false);
-            } catch (final IOException e) {
-                e.printStackTrace();
-                ExceptionPopup.display(e);
-                throw new RuntimeException("Reading mdx failed");
-            }
-        } else if (f.getPath().toLowerCase().endsWith("obj")) {
-            final Build builder = new Build();
-            try {
+        try {
+            if (f.getPath().toLowerCase().endsWith("mdx")) {
+                BlizzardDataInputStream in = new BlizzardDataInputStream(new FileInputStream(f));
+                loadStreamMdx(mainPanel, in, temporary, selectNewTab, icon);
+                return;
+            } else if (f.getPath().toLowerCase().endsWith("obj")) {
+                final Build builder = new Build();
                 final Parse obj = new Parse(builder, f.getPath());
                 temp = NewModelPanel.createModelPanel(mainPanel, builder.createMDL(), icon, false);
-            } catch (final IOException e) {
-                ExceptionPopup.display(e);
-                e.printStackTrace();
+            } else {
+                temp = NewModelPanel.createModelPanel(mainPanel, EditableModel.read(f), icon, false);
+                temp.setFile(f);
             }
-        } else {
-            temp = NewModelPanel.createModelPanel(mainPanel, EditableModel.read(f), icon, false);
-            temp.setFile(f);
+        }catch (final IOException e) {
+            ExceptionPopup.display(e);
+            e.printStackTrace();
         }
         mainPanel.modelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     public static void loadStreamMdx(MainPanel mainPanel, final InputStream f, final boolean temporary, final boolean selectNewTab,
                                      final ImageIcon icon) {
-        ModelPanel temp = null;
+        ModelPanel temp;
         try (BlizzardDataInputStream in = new BlizzardDataInputStream(f)) {
             final EditableModel model = new EditableModel(MdxUtils.loadModel(in));
             model.setFileRef(null);
@@ -420,8 +414,6 @@ public class FileUtils {
             ExceptionPopup.display(e);
             throw new RuntimeException("Reading mdx failed");
         }
-        System.out.println(mainPanel);
-        System.out.println(mainPanel.modelPanelUgg);
         mainPanel.modelPanelUgg.loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
@@ -642,16 +634,20 @@ public class FileUtils {
             File temp = fc.getSelectedFile();
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 if (temp != null) {
-                    final FileFilter ff = fc.getFileFilter();
-                    final String ext = ff.accept(new File("junk.mdl")) ? ".mdl" : ".mdx";
-                    if (ff.accept(new File("junk.obj"))) {
-                        throw new UnsupportedOperationException("OBJ saving has not been coded yet.");
-                    }
                     final String name = temp.getName();
-                    if (name.lastIndexOf('.') != -1) {
-                        if (!name.substring(name.lastIndexOf('.')).equals(ext)) {
-                            temp = new File(
-                                    temp.getAbsolutePath().substring(0, temp.getAbsolutePath().lastIndexOf('.')) + ext);
+                    String ext = ".mdl";
+                    if (name.contains(".")) {
+                        ext = name.substring(name.lastIndexOf('.'));
+                        System.out.println(ext);
+                        if (ext.equals(".obj")) {
+                            JOptionPane.showMessageDialog(MainFrame.frame, "OBJ saving has not been implemented yet.", "Unsuported File Type",
+                                    JOptionPane.ERROR_MESSAGE);
+                                return;
+                        }
+                        if (!name.endsWith(".mdl") || !name.endsWith(".mdx")) {
+                            JOptionPane.showMessageDialog(MainFrame.frame, ext + " is not a supported format to save as.", "Unsuported File Type",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
                     } else {
                         temp = new File(temp.getAbsolutePath() + ext);
