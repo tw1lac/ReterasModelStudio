@@ -5,6 +5,7 @@ import com.hiveworkshop.wc3.gui.ExceptionPopup;
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.datachooser.DataSourceDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+import com.hiveworkshop.wc3.gui.modeledit.PerspDisplayPanel;
 import com.hiveworkshop.wc3.gui.modeledit.ProgramPreferencesPanel;
 import com.hiveworkshop.wc3.gui.modeledit.UVPanel;
 import com.hiveworkshop.wc3.gui.modeledit.util.TransferActionListener;
@@ -15,6 +16,7 @@ import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorTree;
 import com.hiveworkshop.wc3.mdl.EventObject;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.ModelViewManager;
 import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
@@ -24,6 +26,7 @@ import com.hiveworkshop.wc3.units.fields.UnitFields;
 import com.hiveworkshop.wc3.units.objectdata.MutableObjectData;
 import com.hiveworkshop.wc3.units.objectdata.War3ID;
 import com.hiveworkshop.wc3.user.SaveProfile;
+import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener;
 import com.hiveworkshop.wc3.util.ModelUtils;
 import com.matrixeater.imp.AnimationTransfer;
 import com.matrixeaterhayate.TextureManager;
@@ -608,7 +611,7 @@ public class MenuBarActionListeners {
             }
             SaveProfile.save();
             if (changedDataSources) {
-                mainPanel.dataSourcesChanged();
+                dataSourcesChanged(mainPanel.directoryChangeNotifier, mainPanel.modelPanels);
             }
             mainPanel.updateUIFromProgramPreferences();
         }
@@ -782,5 +785,126 @@ public class MenuBarActionListeners {
                     "Allows the user to control which parts of the model are displayed for editing.");
             mainPanel.toolsMenu.setEnabled(true);
         }
+    }
+
+    static void riseFallBirth(MainPanel mainPanel) {
+        final int confirmed = JOptionPane.showConfirmDialog(mainPanel,
+                "This will permanently alter model. Are you sure?", "Confirmation",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (confirmed != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        final ModelView disp = mainPanel.currentModelPanel.getModelViewManager();
+        final EditableModel model = disp.getModel();
+
+        replaceOrUseOldAnimation(mainPanel, model, "Birth");
+        replaceOrUseOldAnimation(mainPanel, model, "Death");
+
+        JOptionPane.showMessageDialog(mainPanel, "Done!");
+    }
+
+    static void setAnimationVisibilityFlag(Animation animation, Animation stand, VisibilitySource source) {
+        final AnimFlag dummy = new AnimFlag("dummy");
+        final AnimFlag af = source.getVisibilityFlag();
+        dummy.copyFrom(af);
+        af.deleteAnim(animation);
+        af.copyFrom(dummy, stand.getStart(), stand.getEnd(), animation.getStart(), animation.getEnd());
+        af.setEntry(animation.getEnd(), 0);
+    }
+
+    static void addAnimationFlags(Animation animation, IdObject obj) {
+        if (obj instanceof Bone) {
+            final Bone b = (Bone) obj;
+            AnimFlag trans = null;
+            boolean globalSeq = false;
+            for (final AnimFlag af : b.getAnimFlags()) {
+                if (af.getTypeId() == AnimFlag.TRANSLATION) {
+                    if (af.hasGlobalSeq()) {
+                        globalSeq = true;
+                    } else {
+                        trans = af;
+                    }
+                }
+            }
+            if (globalSeq) {
+                return;
+            }
+            if (trans == null) {
+                final ArrayList<Integer> times = new ArrayList<>();
+                final ArrayList<Integer> values = new ArrayList<>();
+                trans = new AnimFlag("Translation", times, values);
+                trans.addTag("Linear");
+                b.getAnimFlags().add(trans);
+            }
+            trans.addEntry(animation.getStart(), new Vertex(0, 0, 0));
+            trans.addEntry(animation.getEnd(), new Vertex(0, 0, -300));
+        }
+    }
+
+    private static void replaceOrUseOldAnimation(MainPanel mainPanel, EditableModel model, String animationName) {
+        final Animation lastAnim = model.getAnim(model.getAnimsSize() - 1);
+        Animation animation = new Animation(animationName, lastAnim.getEnd() + 300, lastAnim.getEnd() + 2300);
+
+        boolean removeOldAnimation = false;
+        final Animation oldAnimation = model.findAnimByName(animationName);
+
+        if (oldAnimation != null) {
+            final String KEEP_NEW = "Keep new";
+            final String KEEP_OLD = "Keep old";
+            final String[] choices = {"Cancel operation", KEEP_OLD, KEEP_NEW};
+            final Object x = JOptionPane.showInputDialog(mainPanel,
+                    "Existing " + animationName + " detected. What should be done with it?", "Question",
+                    JOptionPane.PLAIN_MESSAGE, null, choices, choices[0]);
+            if (x == KEEP_NEW) {
+                removeOldAnimation = true;
+            } else if (x == KEEP_OLD) {
+                animation = oldAnimation;
+            }
+            else {
+                return;
+            }
+        }
+        if(removeOldAnimation){
+            model.remove(oldAnimation);
+        }
+
+        final Animation stand = model.findAnimByName("stand");
+
+        final List<IdObject> roots = new ArrayList<>();
+        for (final IdObject obj : model.getIdObjects()) {
+            if (obj.getParent() == null) {
+                roots.add(obj);
+            }
+        }
+        for (final AnimFlag af : model.getAllAnimFlags()) {
+            af.deleteAnim(animation);
+        }
+        for (final IdObject obj : roots) {
+            addAnimationFlags(animation, obj);
+        }
+
+        // visibility
+        for (final VisibilitySource source : model.getAllVisibilitySources()) {
+            setAnimationVisibilityFlag(animation, stand, source);
+        }
+
+        if (!animation.getTags().contains("NonLooping")) {
+            animation.addTag("NonLooping");
+        }
+
+        if (!model.contains(animation)) {
+            model.add(animation);
+        }
+
+    }
+
+    static void dataSourcesChanged(WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier directoryChangeNotifier, List<ModelPanel> modelPanels) {
+        for (final ModelPanel modelPanel : modelPanels) {
+            final PerspDisplayPanel pdp = modelPanel.getPerspArea();
+            pdp.reloadAllTextures();
+            modelPanel.getAnimationViewer().reloadAllTextures();
+        }
+        directoryChangeNotifier.dataSourcesChanged();
     }
 }

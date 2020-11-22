@@ -43,6 +43,16 @@ public class MenuBar implements UndoHandler {
         this.menuBar = createMenuBar(mainPanel);
     }
 
+    static void scaleAnimationsUgg(ModelPanel currentModelPanel, MainLayoutUgg mainLayoutUgg) {
+        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, mainLayoutUgg.editTab.timeSliderPanel::revalidateKeyframeDisplay);
+        aFrame.setVisible(true);
+    }
+
+    static void nullModelUgg(MainPanel mainPanel) {
+        FileUtils.nullModelFile(mainPanel);
+        mainPanel.modelPanelUgg.refreshController();
+    }
+
     public JMenuBar createMenuBar(final MainPanel mainPanel) {
         // Create top menu bar
         JMenuBar menuBar = new JMenuBar();
@@ -231,7 +241,7 @@ public class MenuBar implements UndoHandler {
 
         createMenuItem("Edit Textures", mainPanel.toolsMenu, e -> MenuBarActionListeners.editTextures(mainPanel), KeyEvent.VK_T);
 
-        createMenuItem("Rig Selection", mainPanel.toolsMenu, MainPanelActions.rigAction(mainPanel), KeyEvent.VK_R, KeyStroke.getKeyStroke("control W"));
+        createMenuItem("Rig Selection", mainPanel.toolsMenu, e-> MainPanelActions.rigAction(mainPanel), KeyEvent.VK_R, KeyStroke.getKeyStroke("control W"));
 
         JMenu tweaksSubmenu = createMenuMenu("Tweaks", KeyEvent.VK_T, "Allows the user to tweak conversion mistakes.", mainPanel.toolsMenu);
 
@@ -315,7 +325,7 @@ public class MenuBar implements UndoHandler {
 
         JMenu animationMenu = createMenuMenu("Animation", KeyEvent.VK_A, addMenu);
 
-        createMenuItem("Rising/Falling Birth/Death", animationMenu, e -> mainPanel.riseFallBirth(), KeyEvent.VK_R);
+        createMenuItem("Rising/Falling Birth/Death", animationMenu, e -> MenuBarActionListeners.riseFallBirth(mainPanel), KeyEvent.VK_R);
 
         JMenu singleAnimationMenu = createMenuMenu("Single", KeyEvent.VK_S, animationMenu);
 
@@ -333,7 +343,7 @@ public class MenuBar implements UndoHandler {
 
         createMenuItem("Oinkerwinkle-Style Merge Geoset", scriptsMenu, e -> FileUtils.mergeGeoset(mainPanel), KeyEvent.VK_M, KeyStroke.getKeyStroke("control M"));
 
-        createMenuItem("Edit/delete model components", scriptsMenu, e -> mainPanel.nullModelUgg(), KeyEvent.VK_E, KeyStroke.getKeyStroke("control E"));
+        createMenuItem("Edit/delete model components", scriptsMenu, e -> nullModelUgg(mainPanel), KeyEvent.VK_E, KeyStroke.getKeyStroke("control E"));
 
         JMenuItem exportAnimatedToStaticMesh = createMenuItem("Export Animated to Static Mesh", scriptsMenu, e -> MenuBarActionListeners.exportAnimatedToStaticMesh(mainPanel), KeyEvent.VK_E);
 
@@ -341,7 +351,7 @@ public class MenuBar implements UndoHandler {
 
         JMenuItem combineAnims = createMenuItem("Create Back2Back Animation", scriptsMenu, e -> MenuBarActionListeners.combineAnimations(mainPanel), KeyEvent.VK_P);
 
-        createMenuItem("Change Animation Lengths by Scaling", scriptsMenu, e -> mainPanel.scaleAnimationsUgg(), KeyEvent.VK_A);
+        createMenuItem("Change Animation Lengths by Scaling", scriptsMenu, e -> scaleAnimationsUgg(mainPanel.currentModelPanel, mainPanel.mainLayoutUgg), KeyEvent.VK_A);
 
         final JMenuItem version800Toggle = createMenuItem("Assign FormatVersion 800", scriptsMenu, e -> mainPanel.currentMDL().setFormatVersion(800), KeyEvent.VK_A);
 
@@ -459,7 +469,7 @@ public class MenuBar implements UndoHandler {
         mainPanel.paste = createMenuItem("Paste", editMenu, e -> MenuBarActionListeners.copyActionListener(mainPanel, e), -1, KeyStroke.getKeyStroke("control V"));
         mainPanel.paste.setActionCommand((String) TransferHandler.getPasteAction().getValue(Action.NAME));
 
-        createMenuItem("Duplicate", editMenu, MainPanelActions.cloneActionUgg(mainPanel), -1, KeyStroke.getKeyStroke("control D"));
+        createMenuItem("Duplicate", editMenu, e -> MainPanelActions.cloneAction(mainPanel), -1, KeyStroke.getKeyStroke("control D"));
 //        ModelPanelUgg.duplicateSelection(namePicker, currentModelPanel);
         editMenu.add(new JSeparator());
 
@@ -469,9 +479,9 @@ public class MenuBar implements UndoHandler {
 
         editMenu.add(new JSeparator());
 
-        createMenuItem("Select All", editMenu, MainPanelActions.selectAllAction(mainPanel), -1, KeyStroke.getKeyStroke("control A"));
+        createMenuItem("Select All", editMenu, e -> MainPanelActions.selectAllAction(mainPanel), -1, KeyStroke.getKeyStroke("control A"));
 
-        createMenuItem("Invert Selection", editMenu, MainPanelActions.invertSelectAction(mainPanel), -1, KeyStroke.getKeyStroke("control I"));
+        createMenuItem("Invert Selection", editMenu, e -> MainPanelActions.invertSelectAction(mainPanel), -1, KeyStroke.getKeyStroke("control I"));
 
         createMenuItem("Expand Selection", editMenu, e -> MainPanelActions.expandSelectionAction(mainPanel), -1, KeyStroke.getKeyStroke("control E"));
 

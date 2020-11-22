@@ -2,7 +2,10 @@ package com.matrixeater.src;
 
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
-import com.hiveworkshop.wc3.gui.modeledit.*;
+import com.hiveworkshop.wc3.gui.modeledit.ActiveViewportWatcher;
+import com.hiveworkshop.wc3.gui.modeledit.ImportPanel;
+import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
+import com.hiveworkshop.wc3.gui.modeledit.ModelPanelCloseListener;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ActivityDescriptor;
 import com.hiveworkshop.wc3.gui.modeledit.activity.ModelEditorChangeActivityListener;
@@ -16,8 +19,8 @@ import com.hiveworkshop.wc3.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.wc3.gui.mpqbrowser.BLPPanel;
 import com.hiveworkshop.wc3.jworldedit.models.BetterUnitEditorModelSelector;
 import com.hiveworkshop.wc3.jworldedit.objects.UnitEditorSettings;
-import com.hiveworkshop.wc3.mdl.*;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
+import com.hiveworkshop.wc3.mdl.Animation;
+import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ModelOptionPane;
@@ -32,9 +35,7 @@ import com.hiveworkshop.wc3.units.objectdata.War3ObjectDataChangeset;
 import com.hiveworkshop.wc3.user.SaveProfile;
 import com.hiveworkshop.wc3.user.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
 import de.wc3data.stream.BlizzardDataInputStream;
-import net.infonode.docking.DockingWindow;
 import net.infonode.docking.RootWindow;
-import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.tabbedpanel.TabAreaVisiblePolicy;
@@ -61,17 +62,12 @@ import java.util.List;
  */
 public class MainPanel extends JPanel
         implements ActionListener, ModelEditorChangeActivityListener, ModelPanelCloseListener {
-//    JMenuBar menuBar;
-//    JMenu fileMenu, editMenu, mirrorSubmenu, tweaksSubmenu, importMenu, addMenu,
-//            scriptsMenu, animationMenu, singleAnimationMenu, aboutMenu, fetch, viewMenu;
     JMenu recentMenu, toolsMenu, windowMenu, addParticle;
 
     JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
 
     JMenuItem cut, copy, paste;
     final List<RecentItem> recentItems = new ArrayList<>();
-//    UndoMenuItem undo;
-//    RedoMenuItem redo;
 
     JRadioButtonMenuItem wireframe, solid;
 
@@ -121,10 +117,7 @@ public class MainPanel extends JPanel
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
 
-//        creatorPanel = new CreatorModelingPanel(newType -> {actionTypeGroup.maybeSetButtonType(newType); MainPanel.this.changeActivity(newType);}, prefs, actionTypeGroup, activeViewportWatcher, animatedRenderEnvironment);
-
         mainLayoutUgg = new MainLayoutUgg(this);
-//        mainLayoutUgg.createEditTabViews(this);
 
         actionTypeGroup.addToolbarButtonListener(MainPanelActions.createActionTypeGroupButtonListener(this));
         actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[0]);
@@ -244,51 +237,13 @@ public class MainPanel extends JPanel
         root.getActionMap().put("CloneSelection", new FunctionalAction(e -> MainPanelActions.cloneAction(this)));
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("SPACE"), "MaximizeSpacebar");
-        root.getActionMap().put("MaximizeSpacebar", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                final View focusedView = rootWindow.getFocusedView();
-                if (focusedView != null) {
-                    if (focusedView.isMaximized()) {
-                        rootWindow.setMaximizedWindow(null);
-                    } else {
-                        focusedView.maximize();
-                    }
-                }
-            }
-        });
+        root.getActionMap().put("MaximizeSpacebar", new FunctionalAction(e -> MainPanelActions.MaximizeSpacebarAction(this)));
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("RIGHT"), "PressRight");
-        root.getActionMap().put("PressRight", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    mainLayoutUgg.editTab.timeSliderPanel.jumpRight();
-                }
-            }
-        });
+        root.getActionMap().put("PressRight", new FunctionalAction(e -> MainPanelActions.PressRightAction(MainPanel.this)));
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("LEFT"), "PressLeft");
-        root.getActionMap().put("PressLeft", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    mainLayoutUgg.editTab.timeSliderPanel.jumpLeft();
-                }
-            }
-        });
+        root.getActionMap().put("PressLeft", new FunctionalAction(e -> MainPanelActions.PressLeftAction(this)));
 
         makeTimeSliderShortcut(root, "UP", "PressUp", 1);
 
@@ -299,16 +254,7 @@ public class MainPanel extends JPanel
         makeTimeSliderShortcut(root, "shift DOWN", "PressShiftDown", -10);
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control SPACE"), "PlayKeyboardKey");
-        root.getActionMap().put("PlayKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                mainLayoutUgg.editTab.timeSliderPanel.play();
-            }
-        });
+        root.getActionMap().put("PlayKeyboardKey", new FunctionalAction(e -> MainPanelActions.PlayKeyboardKeyAction(MainPanel.this)));
 
         makeActionShortcut(root, "W", "QKeyboardKey", 0);
 
@@ -331,86 +277,48 @@ public class MainPanel extends JPanel
         makeShortCutKey(root, "G", "GKeyboardKey", 4);
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("Z"), "ZKeyboardKey");
-        root.getActionMap().put("ZKeyboardKey", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                prefs.setViewMode(prefs.getViewMode() == 1 ? 0 : 1);
-            }
-        });
+        root.getActionMap().put("ZKeyboardKey", new FunctionalAction(e -> MainPanelActions.ZKeyboardKeyAction(MainPanel.this)));
 
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control F"), "CreateFaceShortcut");
         root.getActionMap().put("CreateFaceShortcut", ModelUtils.getCreateFaceShortcut(this));
 
         for (int i = 1; i <= 9; i++) {
-            root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                    .put(KeyStroke.getKeyStroke("alt pressed " + i), i + "KeyboardKey");
+            root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed " + i), i + "KeyboardKey");
             final int index = i;
-            root.getActionMap().put(i + "KeyboardKey", new AbstractAction() {
-                @Override
-                public void actionPerformed(final ActionEvent e) {
-                    final DockingWindow window = rootWindow.getWindow();
-                    if (window instanceof TabWindow) {
-                        final TabWindow tabWindow = (TabWindow) window;
-                        final int tabCount = tabWindow.getChildWindowCount();
-                        if ((index - 1) < tabCount) {
-                            tabWindow.setSelectedTab(index - 1);
-                        }
-                    }
-                }
-            });
+            root.getActionMap().put(i + "KeyboardKey", new FunctionalAction(e -> MainPanelActions.KeyboardKeyAction(rootWindow, index)));
         }
-        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control
-        // V"), null);
-        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control
-        // V"),
-        // "CloneSelection");
+        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control V"), null);
+        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control V"), "CloneSelection");
 
         root.getActionMap().put("shiftSelect", new FunctionalAction(e -> MainPanelActions.getShiftSelectAction(this,  selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.ADD, true)));
         root.getActionMap().put("altSelect", new FunctionalAction(e -> MainPanelActions.getAltSelectAction(this, selectionModeGroup.getActiveButtonType() == SelectionMode.SELECT, SelectionMode.DESELECT, true)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) .put(KeyStroke.getKeyStroke("shift pressed SHIFT"), "shiftSelect");
-        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-        // .put(KeyStroke.getKeyStroke("control pressed CONTROL"), "shiftSelect");
+
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("alt pressed ALT"), "altSelect");
 
         root.getActionMap().put("unShiftSelect", new FunctionalAction(e -> MainPanelActions.getShiftSelectAction(this, (selectionModeGroup.getActiveButtonType() == SelectionMode.ADD) && cheatShift, SelectionMode.SELECT, false)));
-        root.getActionMap().put("unAltSelect", new FunctionalAction(e -> MainPanelActions.getAltSelectAction(this, (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released SHIFT"), "unShiftSelect");
-        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released
-        // CONTROL"),
-        // "unShiftSelect");
+        // root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released CONTROL"), "unShiftSelect");
+
+        root.getActionMap().put("unAltSelect", new FunctionalAction(e -> MainPanelActions.getAltSelectAction(this, (selectionModeGroup.getActiveButtonType() == SelectionMode.DESELECT) && cheatAlt, SelectionMode.SELECT, false)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released ALT"), "unAltSelect");
 
-        root.getActionMap().put("Select All", MainPanelActions.selectAllAction(this));
+        root.getActionMap().put("Select All", new FunctionalAction(e -> MainPanelActions.selectAllAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control A"), "Select All");
 
-        root.getActionMap().put("Invert Selection", MainPanelActions.invertSelectAction(this));
+        root.getActionMap().put("Invert Selection", new FunctionalAction(e -> MainPanelActions.invertSelectAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control I"), "Invert Selection");
 
         root.getActionMap().put("Expand Selection", new FunctionalAction(e -> MainPanelActions.expandSelectionAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), "Expand Selection");
 
-        root.getActionMap().put("RigAction", MainPanelActions.rigAction(this));
+        root.getActionMap().put("RigAction", new FunctionalAction(e -> MainPanelActions.rigAction(this)));
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"), "RigAction");
     }
 
     private void makeTimeSliderShortcut(JComponent root, String keyStroke, String actionMapKey, int deltaFrames) {
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
-        root.getActionMap().put(actionMapKey, new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (animationModeState) {
-                    mainLayoutUgg.editTab.timeSliderPanel.jumpFrames(deltaFrames);
-                }
-            }
-        });
+        root.getActionMap().put(actionMapKey, new FunctionalAction(e -> MainPanelActions.makeTimeSliderShortcutAction(this, deltaFrames)));
     }
 
     private void makeActionShortcut(JComponent root, String keyStroke, String actionMapKey, int buttonType) {
@@ -419,31 +327,12 @@ public class MainPanel extends JPanel
 
     private void makeActionShortcut(JComponent root, String keyStroke, String actionMapKey, int buttonType, boolean checkAnimationModeState) {
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
-        root.getActionMap().put(actionMapKey, new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                if (!checkAnimationModeState || !animationModeState) {
-                    actionTypeGroup.setToolbarButtonType(actionTypeGroup.getToolbarButtonTypes()[buttonType]);
-                }
-            }
-        });
+        root.getActionMap().put(actionMapKey, new FunctionalAction(e -> MainPanelActions.makeActionShortcutAction(MainPanel.this, checkAnimationModeState, buttonType)));
     }
+
     private void makeShortCutKey(JComponent root, String keyStroke, String actionMapKey, int buttonType) {
         root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(keyStroke), actionMapKey);
-        root.getActionMap().put(actionMapKey, new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final Component focusedComponent = getFocusedComponent();
-                if (focusedComponentNeedsTyping(focusedComponent)) {
-                    return;
-                }
-                selectionItemTypeGroup.setToolbarButtonType(selectionItemTypeGroup.getToolbarButtonTypes()[buttonType]);
-            }
-        });
+        root.getActionMap().put(actionMapKey, new FunctionalAction(e -> MainPanelActions.makeShortCutKeyAction(this, buttonType)));
     }
 
     void updateUIFromProgramPreferences() {
@@ -475,148 +364,6 @@ public class MainPanel extends JPanel
         menuBar.refreshUndo();
     }
 
-    void nullModelUgg() {
-        FileUtils.nullModelFile(this);
-        modelPanelUgg.refreshController();
-    }
-
-    void scaleAnimationsUgg() {
-        final AnimationFrame aFrame = new AnimationFrame(currentModelPanel, mainLayoutUgg.editTab.timeSliderPanel::revalidateKeyframeDisplay);
-        aFrame.setVisible(true);
-    }
-
-    void fetchAndAddAnimationFromFile(String filepath) {
-        final EditableModel current = currentMDL();
-        final String mdxFilepath = MenuBar.convertPathToMDX(filepath);
-        if (mdxFilepath != null) {
-            final EditableModel animationSource = EditableModel.read(MpqCodebase.get().getFile(mdxFilepath));
-            addSingleAnimation(current, animationSource);
-        }
-    }
-
-    void riseFallBirth() {
-        final int confirmed = JOptionPane.showConfirmDialog(this,
-                "This will permanently alter model. Are you sure?", "Confirmation",
-                JOptionPane.OK_CANCEL_OPTION);
-        if (confirmed != JOptionPane.OK_OPTION) {
-            return;
-        }
-
-        final ModelView disp = currentModelPanel.getModelViewManager();
-        final EditableModel model = disp.getModel();
-
-        replaceOrUseOldAnimation(model, "Birth");
-        replaceOrUseOldAnimation(model, "Death");
-
-        JOptionPane.showMessageDialog(this, "Done!");
-    }
-
-
-    private void setAnimationVisibilityFlag(Animation animation, Animation stand, VisibilitySource source) {
-        final AnimFlag dummy = new AnimFlag("dummy");
-        final AnimFlag af = source.getVisibilityFlag();
-        dummy.copyFrom(af);
-        af.deleteAnim(animation);
-        af.copyFrom(dummy, stand.getStart(), stand.getEnd(), animation.getStart(), animation.getEnd());
-        af.setEntry(animation.getEnd(), 0);
-    }
-
-    private void addAnimationFlags(Animation animation, IdObject obj) {
-        if (obj instanceof Bone) {
-            final Bone b = (Bone) obj;
-            AnimFlag trans = null;
-            boolean globalSeq = false;
-            for (final AnimFlag af : b.getAnimFlags()) {
-                if (af.getTypeId() == AnimFlag.TRANSLATION) {
-                    if (af.hasGlobalSeq()) {
-                        globalSeq = true;
-                    } else {
-                        trans = af;
-                    }
-                }
-            }
-            if (globalSeq) {
-                return;
-            }
-            if (trans == null) {
-                final ArrayList<Integer> times = new ArrayList<>();
-                final ArrayList<Integer> values = new ArrayList<>();
-                trans = new AnimFlag("Translation", times, values);
-                trans.addTag("Linear");
-                b.getAnimFlags().add(trans);
-            }
-            trans.addEntry(animation.getStart(), new Vertex(0, 0, 0));
-            trans.addEntry(animation.getEnd(), new Vertex(0, 0, -300));
-        }
-    }
-
-
-    private void replaceOrUseOldAnimation(EditableModel model, String animationName) {
-        final Animation lastAnim = model.getAnim(model.getAnimsSize() - 1);
-        Animation animation = new Animation(animationName, lastAnim.getEnd() + 300, lastAnim.getEnd() + 2300);
-
-        boolean removeOldAnimation = false;
-        final Animation oldAnimation = model.findAnimByName(animationName);
-
-        if (oldAnimation != null) {
-            final String KEEP_NEW = "Keep new";
-            final String KEEP_OLD = "Keep old";
-            final String[] choices = {"Cancel operation", KEEP_OLD, KEEP_NEW};
-            final Object x = JOptionPane.showInputDialog(this,
-                    "Existing " + animationName + " detected. What should be done with it?", "Question",
-                    JOptionPane.PLAIN_MESSAGE, null, choices, choices[0]);
-            if (x == KEEP_NEW) {
-                removeOldAnimation = true;
-            } else if (x == KEEP_OLD) {
-                animation = oldAnimation;
-            }
-            else {
-                return;
-            }
-        }
-        if(removeOldAnimation){
-            model.remove(oldAnimation);
-        }
-
-        final Animation stand = model.findAnimByName("stand");
-
-        final List<IdObject> roots = new ArrayList<>();
-        for (final IdObject obj : model.getIdObjects()) {
-            if (obj.getParent() == null) {
-                roots.add(obj);
-            }
-        }
-        for (final AnimFlag af : model.getAllAnimFlags()) {
-            af.deleteAnim(animation);
-        }
-        for (final IdObject obj : roots) {
-            addAnimationFlags(animation, obj);
-        }
-
-        // visibility
-        for (final VisibilitySource source : model.getAllVisibilitySources()) {
-            setAnimationVisibilityFlag(animation, stand, source);
-        }
-
-        if (!animation.getTags().contains("NonLooping")) {
-            animation.addTag("NonLooping");
-        }
-
-        if (!model.contains(animation)) {
-            model.add(animation);
-        }
-
-    }
-
-
-    void dataSourcesChanged() {
-        for (final ModelPanel modelPanel : modelPanels) {
-            final PerspDisplayPanel pdp = modelPanel.getPerspArea();
-            pdp.reloadAllTextures();
-            modelPanel.getAnimationViewer().reloadAllTextures();
-        }
-        directoryChangeNotifier.dataSourcesChanged();
-    }
 
     GameObject fetchUnit() {
         final GameObject choice = UnitOptionPane.show(this);

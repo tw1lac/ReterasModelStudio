@@ -16,21 +16,10 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class MainPanelActions {
 
     public MainPanelActions(MainPanel mainPanel) {
-    }
-
-
-    static AbstractAction cloneActionUgg(final MainPanel mainPanel) {
-        return new AbstractAction("CloneSelection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                cloneAction(mainPanel);
-            }
-        };
     }
 
     static void cloneAction(MainPanel mainPanel) {
@@ -47,15 +36,6 @@ public class MainPanelActions {
         mainPanel.repaintSelfAndChildren(mpanel);
     }
 
-    static AbstractAction deleteActionUgg(final MainPanel mainPanel) {
-        return new AbstractAction("Delete") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                deleteAction(mainPanel);
-            }
-        };
-    }
-
     static void deleteAction(MainPanel mainPanel) {
         final ModelPanel mpanel = mainPanel.currentModelPanel;
         if (mpanel != null) {
@@ -69,69 +49,45 @@ public class MainPanelActions {
         mainPanel.repaintSelfAndChildren(mpanel);
     }
 
-    static AbstractAction selectAllAction(final MainPanel mainPanel) {
-        return new AbstractAction("Select All") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().selectAll());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void selectAllAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().selectAll());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction invertSelectAction(final MainPanel mainPanel) {
-        return new AbstractAction("Invert Selection") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().invertSelection());
-                }
-                mainPanel.repaint();
-            }
-        };
+    static void invertSelectAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().invertSelection());
+        }
+        mainPanel.repaint();
     }
 
-    static AbstractAction rigAction(final MainPanel mainPanel) {
-        return new AbstractAction("Rig") {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final ModelPanel mpanel = mainPanel.currentModelPanel;
-                if (mpanel != null) {
-                    boolean valid = false;
-                    for (final Vertex v : mpanel.getModelEditorManager().getSelectionView().getSelectedVertices()) {
-                        final int index = mpanel.getModel().getPivots().indexOf(v);
-                        if (index != -1) {
-                            if (index < mpanel.getModel().getIdObjects().size()) {
-                                final IdObject node = mpanel.getModel().getIdObject(index);
-                                if ((node instanceof Bone) && !(node instanceof Helper)) {
-                                    valid = true;
-                                }
-                            }
+    static void rigAction(MainPanel mainPanel) {
+        final ModelPanel mpanel = mainPanel.currentModelPanel;
+        if (mpanel != null) {
+            boolean valid = false;
+            for (final Vertex v : mpanel.getModelEditorManager().getSelectionView().getSelectedVertices()) {
+                final int index = mpanel.getModel().getPivots().indexOf(v);
+                if (index != -1) {
+                    if (index < mpanel.getModel().getIdObjects().size()) {
+                        final IdObject node = mpanel.getModel().getIdObject(index);
+                        if ((node instanceof Bone) && !(node instanceof Helper)) {
+                            valid = true;
                         }
                     }
-                    if (valid) {
-                        mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().rig());
-                    } else {
-                        System.err.println("NOT RIGGING, NOT VALID");
-                    }
                 }
-                mainPanel.repaint();
             }
-        };
+            if (valid) {
+                mpanel.getUndoManager().pushAction(mpanel.getModelEditorManager().getModelEditor().rig());
+            } else {
+                System.err.println("NOT RIGGING, NOT VALID");
+            }
+        }
+        mainPanel.repaint();
     }
-
-//    static AbstractAction expandSelectionActionugg(final MainPanel mainPanel) {
-//        return new AbstractAction("Expand Selection") {
-//            @Override
-//            public void actionPerformed(final ActionEvent e) {
-//                expandSelectionAction(mainPanel);
-//            }
-//        };
-//    }
 
     static void expandSelectionAction(MainPanel mainPanel) {
         final ModelPanel mpanel = mainPanel.currentModelPanel;
@@ -493,5 +449,95 @@ public class MainPanelActions {
             mainPanel.selectionModeGroup.setToolbarButtonType(add);
             mainPanel.cheatShift = b2;
         }
+    }
+
+    static void MaximizeSpacebarAction(MainPanel mainPanel) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        final View focusedView = mainPanel.rootWindow.getFocusedView();
+        if (focusedView != null) {
+            if (focusedView.isMaximized()) {
+                mainPanel.rootWindow.setMaximizedWindow(null);
+            } else {
+                focusedView.maximize();
+            }
+        }
+    }
+
+    static void PressRightAction(MainPanel mainPanel) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        if (mainPanel.animationModeState) {
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.jumpRight();
+        }
+    }
+
+    static void PressLeftAction(MainPanel mainPanel) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        if (mainPanel.animationModeState) {
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.jumpLeft();
+        }
+    }
+
+    static void PlayKeyboardKeyAction(MainPanel mainPanel) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        mainPanel.mainLayoutUgg.editTab.timeSliderPanel.play();
+    }
+
+    static void ZKeyboardKeyAction(MainPanel mainPanel) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        mainPanel.prefs.setViewMode(mainPanel.prefs.getViewMode() == 1 ? 0 : 1);
+    }
+
+    static void KeyboardKeyAction(RootWindow rootWindow, int index) {
+        final DockingWindow window = rootWindow.getWindow();
+        if (window instanceof TabWindow) {
+            final TabWindow tabWindow = (TabWindow) window;
+            final int tabCount = tabWindow.getChildWindowCount();
+            if ((index - 1) < tabCount) {
+                tabWindow.setSelectedTab(index - 1);
+            }
+        }
+    }
+
+    static void makeTimeSliderShortcutAction(MainPanel mainPanel, int deltaFrames) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        if (mainPanel.animationModeState) {
+            mainPanel.mainLayoutUgg.editTab.timeSliderPanel.jumpFrames(deltaFrames);
+        }
+    }
+
+    static void makeActionShortcutAction(MainPanel mainPanel, boolean checkAnimationModeState, int buttonType) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        if (!checkAnimationModeState || !mainPanel.animationModeState) {
+            mainPanel.actionTypeGroup.setToolbarButtonType(mainPanel.actionTypeGroup.getToolbarButtonTypes()[buttonType]);
+        }
+    }
+
+    static void makeShortCutKeyAction(MainPanel mainPanel, int buttonType) {
+        final Component focusedComponent = mainPanel.getFocusedComponent();
+        if (mainPanel.focusedComponentNeedsTyping(focusedComponent)) {
+            return;
+        }
+        mainPanel.selectionItemTypeGroup.setToolbarButtonType(mainPanel.selectionItemTypeGroup.getToolbarButtonTypes()[buttonType]);
     }
 }

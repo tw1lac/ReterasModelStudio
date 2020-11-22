@@ -9,6 +9,7 @@ import com.hiveworkshop.wc3.gui.modeledit.ModelPanel;
 import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdx.MdxModel;
 import com.hiveworkshop.wc3.mdx.MdxUtils;
+import com.hiveworkshop.wc3.mpq.MpqCodebase;
 import com.hiveworkshop.wc3.units.GameObject;
 import com.hiveworkshop.wc3.units.ModelOptionPane;
 import com.hiveworkshop.wc3.units.fields.UnitFields;
@@ -585,7 +586,7 @@ public class FileUtils {
         fc.setDialogTitle("Animation Source");
         final MutableObjectData.MutableGameObject fetchResult = mainPanel.fetchObject();
         if (fetchResult != null) {
-            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
+            fetchAndAddAnimationFromFile(mainPanel, fetchResult.getFieldAsString(UnitFields.MODEL_FILE, 0));
         }
     }
 
@@ -593,7 +594,7 @@ public class FileUtils {
         fc.setDialogTitle("Animation Source");
         final ModelOptionPane.ModelElement fetchResult = mainPanel.fetchModel();
         if (fetchResult != null) {
-            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getFilepath());
+            fetchAndAddAnimationFromFile(mainPanel, fetchResult.getFilepath());
         }
     }
 
@@ -601,7 +602,7 @@ public class FileUtils {
         fc.setDialogTitle("Animation Source");
         final GameObject fetchResult = mainPanel.fetchUnit();
         if (fetchResult != null) {
-            mainPanel.fetchAndAddAnimationFromFile(fetchResult.getField("file"));
+            fetchAndAddAnimationFromFile(mainPanel, fetchResult.getField("file"));
         }
     }
 
@@ -772,6 +773,15 @@ public class FileUtils {
         }
 
         fc.setSelectedFile(null);
+    }
+
+    static void fetchAndAddAnimationFromFile(MainPanel mainPanel, String filepath) {
+        final EditableModel current = mainPanel.currentMDL();
+        final String mdxFilepath = MenuBar.convertPathToMDX(filepath);
+        if (mdxFilepath != null) {
+            final EditableModel animationSource = EditableModel.read(MpqCodebase.get().getFile(mdxFilepath));
+            mainPanel.addSingleAnimation(current, animationSource);
+        }
     }
 
     public void createFileChooser() {
