@@ -1,26 +1,19 @@
 package com.matrixeater.src;
 
-import java.awt.GridLayout;
+import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
+import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.EditAnimationLengthsAction;
+import com.hiveworkshop.wc3.mdl.Animation;
+import com.hiveworkshop.wc3.mdl.EditableModel;
+import com.hiveworkshop.wc3.mdl.v2.ModelView;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-
-import com.hiveworkshop.wc3.gui.modeledit.activity.UndoActionListener;
-import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.tools.EditAnimationLengthsAction;
-import com.hiveworkshop.wc3.mdl.Animation;
-import com.hiveworkshop.wc3.mdl.EditableModel;
-import com.hiveworkshop.wc3.mdl.v2.ModelView;
 
 public class AnimationPanel extends JPanel implements ActionListener {
 	final List<SliderBarHandler> bars = new ArrayList<>();
@@ -42,45 +35,13 @@ public class AnimationPanel extends JPanel implements ActionListener {
 		setLayout(layout);
 
 		for (final Animation anim : mdlDisp.getModel().getAnims()) {
-			final JLabel label = new JLabel(anim.getName() + " (" + anim.length() / 1000.00 + " s)");
-			final int maxLength = Math.max(100000, anim.length() * 4);
-			final JSlider bar = new JSlider(0, maxLength);
-			bar.setValue(anim.length());
-			final JSpinner spinner = new JSpinner(
-					new SpinnerNumberModel(anim.length() / 1000.00, 0.0, maxLength / 1000.00, 0.001));
-
-			final SliderBarHandler handler = new SliderBarHandler(bar, spinner);
-			bar.addChangeListener(handler);
-			spinner.addChangeListener(handler);
-			// defBar.addChangeListener(this);
-			// defSpinner.addChangeListener(this);
-			bars.add(handler);
-
-			add(label);
-			add(new JSeparator());
-			add(bar);
-			add(spinner);
+			String labelString = anim.getName() + " (" + anim.length() / 1000.00 + " s)";
+			addLabeledNumberAdjuster(anim.length(), labelString);
 		}
 		int i = 0;
 		for (final Integer globalSeq : mdlDisp.getModel().getGlobalSeqs()) {
-			final JLabel label = new JLabel("Global Sequence " + ++i + " (" + globalSeq / 1000.00 + " s)");
-			final int maxLength = Math.max(100000, globalSeq * 4);
-			final JSlider bar = new JSlider(0, maxLength);
-			bar.setValue(globalSeq);
-			final JSpinner spinner = new JSpinner(
-					new SpinnerNumberModel(globalSeq / 1000.00, 0.0, maxLength / 1000.00, 0.001));
-
-			final SliderBarHandler handler = new SliderBarHandler(bar, spinner);
-			bar.addChangeListener(handler);
-			spinner.addChangeListener(handler);
-			// defBar.addChangeListener(this);
-			// defSpinner.addChangeListener(this);
-			bars.add(handler);
-
-			add(label);
-			add(new JSeparator());
-			add(bar);
-			add(spinner);
+			String labelString = "Global Sequence " + ++i + " (" + globalSeq / 1000.00 + " s)";
+			addLabeledNumberAdjuster(globalSeq, labelString);
 		}
 
 		okay = new JButton("OK");
@@ -121,5 +82,25 @@ public class AnimationPanel extends JPanel implements ActionListener {
 			parentFrame.setVisible(false);
 			onFinish.run();
 		}
+	}
+
+	private void addLabeledNumberAdjuster(int length, String labelString) {
+		final JLabel label = new JLabel(labelString);
+
+		final int maxLength = Math.max(100000, length * 4);
+		final JSlider bar = new JSlider(0, maxLength);
+		bar.setValue(length);
+		final JSpinner spinner = new JSpinner(
+				new SpinnerNumberModel(length / 1000.00, 0.0, maxLength / 1000.00, 0.001));
+
+		final SliderBarHandler handler = new SliderBarHandler(bar, spinner);
+		bar.addChangeListener(handler);
+		spinner.addChangeListener(handler);
+		bars.add(handler);
+
+		add(label);
+		add(new JSeparator());
+		add(bar);
+		add(spinner);
 	}
 }

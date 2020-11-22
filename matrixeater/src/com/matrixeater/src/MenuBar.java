@@ -178,35 +178,22 @@ public class MenuBar implements UndoHandler {
     }
 
     private static void fillViewMenu(MainPanel mainPanel, JMenu viewMenu) {
-        mainPanel.textureModels = new JCheckBoxMenuItem("Texture Models", true);
-        mainPanel.textureModels.setMnemonic(KeyEvent.VK_T);
-        mainPanel.textureModels.setSelected(true);
-        mainPanel.textureModels.addActionListener(e -> mainPanel.prefs.setTextureModels(mainPanel.textureModels.isSelected()));
-        viewMenu.add(mainPanel.textureModels);
+        mainPanel.textureModels = createMenuCheckboxItem("Texture Models", viewMenu, e -> mainPanel.prefs.setTextureModels(mainPanel.textureModels.isSelected()),true, KeyEvent.VK_T);
 
         final JMenuItem newDirectory =  createMenuItem("Change Game Directory", viewMenu, mainPanel, KeyEvent.VK_D, KeyStroke.getKeyStroke("control shift D"));
         newDirectory.setToolTipText("Changes the directory from which to load texture files for the 3D display.");
 
         viewMenu.add(new JSeparator());
 
-        mainPanel.showVertexModifyControls = new JCheckBoxMenuItem("Show Viewport Buttons", true);
-        // showVertexModifyControls.setMnemonic(KeyEvent.VK_V);
-        mainPanel.showVertexModifyControls.addActionListener(e -> showVertexModifyControls(mainPanel.modelPanels, mainPanel.prefs, mainPanel.showVertexModifyControls));
-        viewMenu.add(mainPanel.showVertexModifyControls);
+        mainPanel.showVertexModifyControls = createMenuCheckboxItem("Show Viewport Buttons", viewMenu, e -> showVertexModifyControls(mainPanel.modelPanels, mainPanel.prefs, mainPanel.showVertexModifyControls), true, -1);
 
         viewMenu.add(new JSeparator());
 
-        mainPanel.showNormals = new JCheckBoxMenuItem("Show Normals", true);
-        mainPanel.showNormals.setMnemonic(KeyEvent.VK_N);
-        mainPanel.showNormals.setSelected(false);
-        mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
-        viewMenu.add(mainPanel.showNormals);
+        mainPanel.showNormals = createMenuCheckboxItem("Show Normals", viewMenu, e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()), false, -1);
 
 
         JMenu viewMode = createMenuMenu("3D View Mode", -1, viewMenu);
-        ButtonGroup viewModes;
-
-        viewModes = new ButtonGroup();
+        ButtonGroup viewModes = new ButtonGroup();
 
         mainPanel.wireframe = new JRadioButtonMenuItem("Wireframe");
         mainPanel.wireframe.addActionListener(e -> MenuBarActionListeners.repainter(mainPanel));
@@ -262,9 +249,7 @@ public class MenuBar implements UndoHandler {
 
         mirrorSubmenu.add(new JSeparator());
 
-        mainPanel.mirrorFlip = new JCheckBoxMenuItem("Automatically flip after mirror (preserves surface)", true);
-        mainPanel.mirrorFlip.setMnemonic(KeyEvent.VK_A);
-        mirrorSubmenu.add(mainPanel.mirrorFlip);
+        mainPanel.mirrorFlip = createMenuCheckboxItem("Automatically flip after mirror (preserves surface)", mirrorSubmenu, mainPanel, false, KeyEvent.VK_A);
     }
 
     private static void fillWindowMenu(MainPanel mainPanel) {
@@ -385,11 +370,7 @@ public class MenuBar implements UndoHandler {
 
         fetch.add(new JSeparator());
 
-        mainPanel.fetchPortraitsToo = new JCheckBoxMenuItem("Fetch portraits, too!", true);
-        mainPanel.fetchPortraitsToo.setMnemonic(KeyEvent.VK_P);
-        mainPanel.fetchPortraitsToo.setSelected(true);
-        mainPanel.fetchPortraitsToo.addActionListener(e -> mainPanel.prefs.setLoadPortraits(mainPanel.fetchPortraitsToo.isSelected()));
-        fetch.add(mainPanel.fetchPortraitsToo);
+        mainPanel.fetchPortraitsToo = createMenuCheckboxItem("Fetch portraits, too!", fetch, e -> mainPanel.prefs.setLoadPortraits(mainPanel.fetchPortraitsToo.isSelected()), true, KeyEvent.VK_P);
 
         fileMenu.add(new JSeparator());
 
@@ -495,6 +476,16 @@ public class MenuBar implements UndoHandler {
     }
 
 
+    private static JCheckBoxMenuItem createMenuCheckboxItem(String text, JMenu menu, ActionListener actionListener, boolean setSelected, int keyEvent) {
+        JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(text, true);
+        checkBoxMenuItem.setMnemonic(KeyEvent.VK_N);
+        checkBoxMenuItem.setSelected(setSelected);
+        checkBoxMenuItem.setMnemonic(keyEvent);
+        checkBoxMenuItem.addActionListener(actionListener);
+        menu.add(checkBoxMenuItem);
+        return checkBoxMenuItem;
+    }
+
     private static JMenu createMenuBarMenu(String menuText, JMenuBar menuBar, int keyEvent) {
         JMenu menu = new JMenu(menuText);
         menu.setMnemonic(keyEvent);
@@ -528,10 +519,6 @@ public class MenuBar implements UndoHandler {
     private static JMenuItem createMenuItem(String itemText, JMenu menu, MainPanel mainPanel, int keyEvent) {
         return createMenuItem(itemText, menu, mainPanel, keyEvent, null);
     }
-
-//    private static JMenuItem createMenuItem(String itemText, JMenu menu, MainPanel mainPanel, int keyEvent, KeyStroke keyStroke) {
-//        return createMenuItem(itemText, menu, mainPanel, keyEvent, keyStroke);
-//    }
 
     private static JMenuItem createMenuItem(String itemText, JMenu menu, ActionListener actionListener, int keyEvent) {
         return createMenuItem(itemText, menu, actionListener, keyEvent, null);
