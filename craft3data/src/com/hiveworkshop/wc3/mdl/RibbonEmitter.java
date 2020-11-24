@@ -1,16 +1,17 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.RibbonEmitterChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * RibbonEmitter class, these are the things most people would think of as a
@@ -42,7 +43,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 	int[] loneIntData = new int[loneIntNames.length];
 	Vertex staticColor;
 
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 
 	private RibbonEmitter() {
 
@@ -119,8 +120,8 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 		x.material = material;
 		x.staticColor = new Vertex(staticColor);
 
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		return x;
 	}
@@ -160,7 +161,8 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 				} else if ((line.contains("Visibility") || line.contains("Rotation") || line.contains("Translation")
 						|| line.contains("Scaling")) && !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					pe.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					pe.animFlags.put(animFlag.title, animFlag);
 					foundType = true;
 				} else if (line.contains("Color")) {
 					foundType = true;
@@ -168,7 +170,8 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 						pe.staticColor = Vertex.parseText(line);
 					} else {
 						MDLReader.reset(mdl);
-						pe.animFlags.add(AnimFlag.read(mdl));
+						AnimFlag animFlag = AnimFlag.read(mdl);
+						pe.animFlags.put(animFlag.title, animFlag);
 					}
 				}
 				for (int i = 0; (i < timeDoubleNames.length) && !foundType; i++) {
@@ -178,7 +181,8 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 							pe.timeDoubleData[i] = MDLReader.readDouble(line);
 						} else {
 							MDLReader.reset(mdl);
-							pe.animFlags.add(AnimFlag.read(mdl));
+							AnimFlag animFlag = AnimFlag.read(mdl);
+							pe.animFlags.put(animFlag.title, animFlag);
 						}
 					}
 				}
@@ -216,7 +220,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 		// -- uses objectId value of idObject superclass
 		// -- uses parentId value of idObject superclass
 		// -- uses the parent (java Object reference) of idObject superclass
-		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags);
+		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags.values());
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		if (objectId != -1) {
 			writer.println("\tObjectId " + objectId + ",");
@@ -225,62 +229,22 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 			writer.println("\tParent " + parentId + ",\t// \"" + getParent().getName() + "\"");
 		}
 		String currentFlag = "";
+		boolean set;
 		for (int i = 0; i < 3; i++) {
-			currentFlag = timeDoubleNames[i];
-			if (timeDoubleData[i] != 0) {
-				writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-			} else {
-				boolean set = false;
-				for (int a = 0; (a < pAnimFlags.size()) && !set; a++) {
-					if (pAnimFlags.get(a).getName().equals(currentFlag)) {
-						pAnimFlags.get(a).printTo(writer, 1);
-						pAnimFlags.remove(a);
-						set = true;
-					}
-				}
-				if (!set) {
-					writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-				}
-			}
+			PrivtAndRemoveMatchingStatic(writer, pAnimFlags, i);
 		}
+
 		currentFlag = "Color";
-		boolean set = false;
 		if (staticColor == null) {
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
+			set = isSet(writer, pAnimFlags, currentFlag);
 		} else {
 			writer.println("\tstatic " + currentFlag + " " + staticColor.toString() + ",");
 		}
 		for (int i = 3; i < 4; i++) {
-			currentFlag = timeDoubleNames[i];
-			if (timeDoubleData[i] != 0) {
-				writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-			} else {
-				set = false;
-				for (int a = 0; (a < pAnimFlags.size()) && !set; a++) {
-					if (pAnimFlags.get(a).getName().equals(currentFlag)) {
-						pAnimFlags.get(a).printTo(writer, 1);
-						pAnimFlags.remove(a);
-						set = true;
-					}
-				}
-				if (!set) {
-					writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-				}
-			}
+			PrivtAndRemoveMatchingStatic(writer, pAnimFlags, i);
 		}
 		currentFlag = "Visibility";
-		for (int i = 0; i < pAnimFlags.size(); i++) {
-			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, currentFlag);
 		for (int i = 0; i < 1; i++) {
 			writer.println("\t" + loneIntNames[i] + " " + loneIntData[i] + ",");
 		}
@@ -293,27 +257,47 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 			writer.println("\t" + loneIntNames[i] + " " + loneIntData[i] + ",");
 		}
 		currentFlag = "Rotation";
-		for (int i = 0; i < pAnimFlags.size(); i++) {
-			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, currentFlag);
 		currentFlag = "Translation";
-		for (int i = 0; i < pAnimFlags.size(); i++) {
-			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, currentFlag);
 		currentFlag = "Scaling";
+		printAndRemoveMatching(writer, pAnimFlags, currentFlag);
+		writer.println("}");
+	}
+
+	private void PrivtAndRemoveMatchingStatic(PrintWriter writer, ArrayList<AnimFlag> pAnimFlags, int i) {
+		String currentFlag;
+		boolean set;
+		currentFlag = timeDoubleNames[i];
+		if (timeDoubleData[i] != 0) {
+			writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
+		} else {
+			set = isSet(writer, pAnimFlags, currentFlag);
+			if (!set) {
+				writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
+			}
+		}
+	}
+
+	private boolean isSet(PrintWriter writer, ArrayList<AnimFlag> pAnimFlags, String currentFlag) {
+		boolean set = false;
+		for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
+			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
+				pAnimFlags.get(i).printTo(writer, 1);
+				pAnimFlags.remove(i);
+				set = true;
+			}
+		}
+		return set;
+	}
+
+	private void printAndRemoveMatching(PrintWriter writer, ArrayList<AnimFlag> pAnimFlags, String currentFlag) {
 		for (int i = 0; i < pAnimFlags.size(); i++) {
 			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
 				pAnimFlags.get(i).printTo(writer, 1);
 				pAnimFlags.remove(i);
 			}
 		}
-		writer.println("}");
 	}
 
 	// VisibilitySource methods
@@ -330,7 +314,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 			}
 		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.title, flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -342,7 +326,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 	public AnimFlag getVisibilityFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
 				count++;
 				output = af;
@@ -363,7 +347,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
@@ -458,7 +442,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	@Override
@@ -473,7 +457,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
@@ -499,7 +483,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -508,7 +492,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -517,7 +501,7 @@ public class RibbonEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

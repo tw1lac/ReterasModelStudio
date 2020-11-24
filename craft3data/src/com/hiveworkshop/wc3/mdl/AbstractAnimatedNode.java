@@ -1,18 +1,17 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.util.List;
-
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
-
 import com.hiveworkshop.wc3.gui.animedit.TimeEnvironmentImpl;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modeledit.actions.newsys.ModelStructureChangeListener;
 import com.hiveworkshop.wc3.gui.modeledit.newstuff.actions.animation.AddKeyframeAction;
 import com.hiveworkshop.wc3.mdl.render3d.RenderModel;
 import com.hiveworkshop.wc3.mdl.render3d.RenderNode;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
+import java.util.Map;
 
 public abstract class AbstractAnimatedNode implements AnimatedNode {
 	private static final Vector4f translationHeap = new Vector4f();
@@ -146,12 +145,9 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 		// Note to future author: the reason for saved local translation is that
 		// we would like to be able to undo the action of moving the animation data
 
-		// TODO global seqs, needs separate check on AnimRendEnv, and also we must
-		// make AnimFlag.find seek on globalSeqId
+		// TODO global seqs, needs separate check on AnimRendEnv, and also we must  make AnimFlag.find seek on globalSeqId
 		// TODO fix cast, meta knowledge: NodeAnimationModelEditor will only be
-		// constructed from
-		// a TimeEnvironmentImpl render environment, and never from the anim previewer
-		// impl
+		// constructed from a TimeEnvironmentImpl render environment, and never from the anim previewerimpl
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 				.getAnimatedRenderEnvironment();
 		final AnimFlag translationFlag = AnimFlag.find(getAnimFlags(), "Translation",
@@ -172,23 +168,17 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 			final RenderNode parentRenderNode = renderModel.getRenderNode(parent);
 			Matrix4f.invert(parentRenderNode.getWorldMatrix(), matrixHeap);
 
-			translationHeap.x = 0;
-			translationHeap.y = 0;
-			translationHeap.z = 0;
+			setHeap(translationHeap, 0, 0, 0);
 			translationHeap.w = 1;
 
 			Matrix4f.transform(parentRenderNode.getWorldMatrix(), translationHeap, translationHeap);
 
-			translationHeap.x = (float) (translationHeap.x + newDeltaX);
-			translationHeap.y = (float) (translationHeap.y + newDeltaY);
-			translationHeap.z = (float) (translationHeap.z + newDeltaZ);
+			setTranslationHeapValues((float) (translationHeap.x + newDeltaX), (float) (translationHeap.y + newDeltaY), (float) (translationHeap.z + newDeltaZ));
 			translationHeap.w = 1;
 
 			Matrix4f.transform(matrixHeap, translationHeap, translationHeap);
 		} else {
-			translationHeap.x = (float) (newDeltaX);
-			translationHeap.y = (float) (newDeltaY);
-			translationHeap.z = (float) (newDeltaZ);
+			setTranslationHeapValues((float) newDeltaX, (float) newDeltaY, (float) newDeltaZ);
 			translationHeap.w = 1;
 		}
 
@@ -196,26 +186,18 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 				&& (translationFlag.getTimes().get(floorIndex) == trackTime)) {
 			// we must change it
 			final Vertex oldTranslationValue = (Vertex) translationFlag.getValues().get(floorIndex);
-			oldTranslationValue.x += translationHeap.x;
-			oldTranslationValue.y += translationHeap.y;
-			oldTranslationValue.z += translationHeap.z;
+			addToOldOutTanValues(oldTranslationValue);
 
 			if (savedLocalTranslation != null) {
-				savedLocalTranslation.x += translationHeap.x;
-				savedLocalTranslation.y += translationHeap.y;
-				savedLocalTranslation.z += translationHeap.z;
+				addToSavedTranslationHeap(savedLocalTranslation);
 			}
 
 			if (translationFlag.tans()) {
 				final Vertex oldInTan = (Vertex) translationFlag.getInTans().get(floorIndex);
-				oldInTan.x += translationHeap.x;
-				oldInTan.y += translationHeap.y;
-				oldInTan.z += translationHeap.z;
+				addToOldOutTanValues(oldInTan);
 
 				final Vertex oldOutTan = (Vertex) translationFlag.getOutTans().get(floorIndex);
-				oldOutTan.x += translationHeap.x;
-				oldOutTan.y += translationHeap.y;
-				oldOutTan.z += translationHeap.z;
+				addToOldOutTanValues(oldOutTan);
 			}
 		}
 
@@ -254,28 +236,20 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 			final RenderNode parentRenderNode = renderModel.getRenderNode(parent);
 			Matrix4f.invert(parentRenderNode.getWorldMatrix(), matrixHeap);
 
-			axisAngleHeap.x = 0;
-			axisAngleHeap.y = 0;
-			axisAngleHeap.z = 0;
+			setHeap(axisAngleHeap, 0, 0, 0);
 			axisAngleHeap.w = 1;
 
 			Matrix4f.transform(parentRenderNode.getWorldMatrix(), axisAngleHeap, axisAngleHeap);
 
 			switch (unusedXYZ) {
 			case 0:
-				axisAngleHeap.x = axisAngleHeap.x + 1;
-				axisAngleHeap.y = axisAngleHeap.y + 0;
-				axisAngleHeap.z = axisAngleHeap.z + 0;
+				addToAxisHeap(1, 0, 0);
 				break;
 			case 1:
-				axisAngleHeap.x = axisAngleHeap.x + 0;
-				axisAngleHeap.y = axisAngleHeap.y + -1;
-				axisAngleHeap.z = axisAngleHeap.z + 0;
+				addToAxisHeap(0, -1, 0);
 				break;
 			case 2:
-				axisAngleHeap.x = axisAngleHeap.x + 0;
-				axisAngleHeap.y = axisAngleHeap.y + 0;
-				axisAngleHeap.z = axisAngleHeap.z + -1;
+				addToAxisHeap(0, 0, -1);
 				break;
 			}
 			axisAngleHeap.w = 1;
@@ -284,19 +258,13 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 		} else {
 			switch (unusedXYZ) {
 			case 0:
-				axisAngleHeap.x = 1;
-				axisAngleHeap.y = 0;
-				axisAngleHeap.z = 0;
+				setHeap(axisAngleHeap, 1, 0, 0);
 				break;
 			case 1:
-				axisAngleHeap.x = 0;
-				axisAngleHeap.y = -1;
-				axisAngleHeap.z = 0;
+				setHeap(axisAngleHeap, 0, -1, 0);
 				break;
 			case 2:
-				axisAngleHeap.x = 0;
-				axisAngleHeap.y = 0;
-				axisAngleHeap.z = -1;
+				setHeap(axisAngleHeap, 0, 0, -1);
 				break;
 			}
 		}
@@ -308,16 +276,10 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 			// we must change it
 			final QuaternionRotation oldTranslationValue = (QuaternionRotation) rotationTimeline.getValues()
 					.get(floorIndex);
-			rotationHeap.x = (float) oldTranslationValue.a;
-			rotationHeap.y = (float) oldTranslationValue.b;
-			rotationHeap.z = (float) oldTranslationValue.c;
-			rotationHeap.w = (float) oldTranslationValue.d;
+			setRotationHeapQuartValues(oldTranslationValue);
 			Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
 
-			oldTranslationValue.a = rotationHeap.x;
-			oldTranslationValue.b = rotationHeap.y;
-			oldTranslationValue.c = rotationHeap.z;
-			oldTranslationValue.d = rotationHeap.w;
+			setOuldOutTanQuart(oldTranslationValue);
 
 			if (savedLocalRotation != null) {
 				Quaternion.mul(savedLocalRotation, rotationDeltaHeap, savedLocalRotation);
@@ -325,26 +287,14 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 
 			if (rotationTimeline.tans()) {
 				final QuaternionRotation oldInTan = (QuaternionRotation) rotationTimeline.getInTans().get(floorIndex);
-				rotationHeap.x = (float) oldInTan.a;
-				rotationHeap.y = (float) oldInTan.b;
-				rotationHeap.z = (float) oldInTan.c;
-				rotationHeap.w = (float) oldInTan.d;
+				setRotationHeapQuartValues(oldInTan);
 				Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
-				oldInTan.a = rotationHeap.x;
-				oldInTan.b = rotationHeap.y;
-				oldInTan.c = rotationHeap.z;
-				oldInTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldInTan);
 
 				final QuaternionRotation oldOutTan = (QuaternionRotation) rotationTimeline.getOutTans().get(floorIndex);
-				rotationHeap.x = (float) oldOutTan.a;
-				rotationHeap.y = (float) oldOutTan.b;
-				rotationHeap.z = (float) oldOutTan.c;
-				rotationHeap.w = (float) oldOutTan.d;
+				setRotationHeapQuartValues(oldOutTan);
 				Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
-				oldOutTan.a = rotationHeap.x;
-				oldOutTan.b = rotationHeap.y;
-				oldOutTan.c = rotationHeap.z;
-				oldOutTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldOutTan);
 			}
 		}
 	}
@@ -385,9 +335,7 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 		// parentRenderNode.getInverseWorldScale().z;
 		// translationHeap.w = 1;
 		// } else {
-		translationHeap.x = (float) scaleX;
-		translationHeap.y = (float) scaleY;
-		translationHeap.z = (float) scaleZ;
+		setTranslationHeapValues((float) scaleX, (float) scaleY, (float) scaleZ);
 		// translationHeap.w = 1;
 		// }
 
@@ -395,26 +343,18 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 				&& (translationFlag.getTimes().get(floorIndex) == trackTime)) {
 			// we must change it
 			final Vertex oldTranslationValue = (Vertex) translationFlag.getValues().get(floorIndex);
-			oldTranslationValue.x *= translationHeap.x;
-			oldTranslationValue.y *= translationHeap.y;
-			oldTranslationValue.z *= translationHeap.z;
+			multiplyOldIntanValues(oldTranslationValue);
 
 			if (savedLocalScaling != null) {
-				savedLocalScaling.x *= translationHeap.x;
-				savedLocalScaling.y *= translationHeap.y;
-				savedLocalScaling.z *= translationHeap.z;
+				multiplySavedLocalScaling(savedLocalScaling);
 			}
 
 			if (translationFlag.tans()) {
 				final Vertex oldInTan = (Vertex) translationFlag.getInTans().get(floorIndex);
-				oldInTan.x *= translationHeap.x;
-				oldInTan.y *= translationHeap.y;
-				oldInTan.z *= translationHeap.z;
+				multiplyOldIntanValues(oldInTan);
 
 				final Vertex oldOutTan = (Vertex) translationFlag.getOutTans().get(floorIndex);
-				oldOutTan.x *= translationHeap.x;
-				oldOutTan.y *= translationHeap.y;
-				oldOutTan.z *= translationHeap.z;
+				multiplyOldIntanValues(oldOutTan);
 			}
 		}
 	}
@@ -438,39 +378,21 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 			// we must change it
 			final QuaternionRotation oldTranslationValue = (QuaternionRotation) rotationTimeline.getValues()
 					.get(floorIndex);
-			rotationHeap.x = (float) oldTranslationValue.a;
-			rotationHeap.y = (float) oldTranslationValue.b;
-			rotationHeap.z = (float) oldTranslationValue.c;
-			rotationHeap.w = (float) oldTranslationValue.d;
+			setRotationHeapQuartValues(oldTranslationValue);
 			Quaternion.mul(localRotation, rotationHeap, rotationHeap);
 
-			oldTranslationValue.a = rotationHeap.x;
-			oldTranslationValue.b = rotationHeap.y;
-			oldTranslationValue.c = rotationHeap.z;
-			oldTranslationValue.d = rotationHeap.w;
+			setOuldOutTanQuart(oldTranslationValue);
 
 			if (rotationTimeline.tans()) {
 				final QuaternionRotation oldInTan = (QuaternionRotation) rotationTimeline.getInTans().get(floorIndex);
-				rotationHeap.x = (float) oldInTan.a;
-				rotationHeap.y = (float) oldInTan.b;
-				rotationHeap.z = (float) oldInTan.c;
-				rotationHeap.w = (float) oldInTan.d;
+				setRotationHeapQuartValues(oldInTan);
 				Quaternion.mul(localRotation, rotationHeap, rotationHeap);
-				oldInTan.a = rotationHeap.x;
-				oldInTan.b = rotationHeap.y;
-				oldInTan.c = rotationHeap.z;
-				oldInTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldInTan);
 
 				final QuaternionRotation oldOutTan = (QuaternionRotation) rotationTimeline.getOutTans().get(floorIndex);
-				rotationHeap.x = (float) oldOutTan.a;
-				rotationHeap.y = (float) oldOutTan.b;
-				rotationHeap.z = (float) oldOutTan.c;
-				rotationHeap.w = (float) oldOutTan.d;
+				setRotationHeapQuartValues(oldOutTan);
 				Quaternion.mul(localRotation, rotationHeap, rotationHeap);
-				oldOutTan.a = rotationHeap.x;
-				oldOutTan.b = rotationHeap.y;
-				oldOutTan.c = rotationHeap.z;
-				oldOutTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldOutTan);
 			}
 		}
 	}
@@ -494,45 +416,27 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 			// we must change it
 			final QuaternionRotation oldTranslationValue = (QuaternionRotation) rotationTimeline.getValues()
 					.get(floorIndex);
-			rotationHeap.x = (float) oldTranslationValue.a;
-			rotationHeap.y = (float) oldTranslationValue.b;
-			rotationHeap.z = (float) oldTranslationValue.c;
-			rotationHeap.w = (float) oldTranslationValue.d;
+			setRotationHeapQuartValues(oldTranslationValue);
 			rotationDeltaHeap.setIdentity();
 			Quaternion.mulInverse(rotationDeltaHeap, localRotation, rotationDeltaHeap);
 			Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
 
-			oldTranslationValue.a = rotationHeap.x;
-			oldTranslationValue.b = rotationHeap.y;
-			oldTranslationValue.c = rotationHeap.z;
-			oldTranslationValue.d = rotationHeap.w;
+			setOuldOutTanQuart(oldTranslationValue);
 
 			if (rotationTimeline.tans()) {
 				final QuaternionRotation oldInTan = (QuaternionRotation) rotationTimeline.getInTans().get(floorIndex);
-				rotationHeap.x = (float) oldInTan.a;
-				rotationHeap.y = (float) oldInTan.b;
-				rotationHeap.z = (float) oldInTan.c;
-				rotationHeap.w = (float) oldInTan.d;
+				setRotationHeapQuartValues(oldInTan);
 				rotationDeltaHeap.setIdentity();
 				Quaternion.mulInverse(rotationDeltaHeap, localRotation, rotationDeltaHeap);
 				Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
-				oldInTan.a = rotationHeap.x;
-				oldInTan.b = rotationHeap.y;
-				oldInTan.c = rotationHeap.z;
-				oldInTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldInTan);
 
 				final QuaternionRotation oldOutTan = (QuaternionRotation) rotationTimeline.getOutTans().get(floorIndex);
-				rotationHeap.x = (float) oldOutTan.a;
-				rotationHeap.y = (float) oldOutTan.b;
-				rotationHeap.z = (float) oldOutTan.c;
-				rotationHeap.w = (float) oldOutTan.d;
+				setRotationHeapQuartValues(oldOutTan);
 				rotationDeltaHeap.setIdentity();
 				Quaternion.mulInverse(rotationDeltaHeap, localRotation, rotationDeltaHeap);
 				Quaternion.mul(rotationDeltaHeap, rotationHeap, rotationHeap);
-				oldOutTan.a = rotationHeap.x;
-				oldOutTan.b = rotationHeap.y;
-				oldOutTan.c = rotationHeap.z;
-				oldOutTan.d = rotationHeap.w;
+				setOuldOutTanQuart(oldOutTan);
 			}
 		}
 	}
@@ -552,20 +456,14 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 				&& (translationFlag.getTimes().get(floorIndex) == trackTime)) {
 			// we must change it
 			final Vertex oldTranslationValue = (Vertex) translationFlag.getValues().get(floorIndex);
-			oldTranslationValue.x += newDeltaX;
-			oldTranslationValue.y += newDeltaY;
-			oldTranslationValue.z += newDeltaZ;
+			addToOldOutTan(newDeltaX, newDeltaY, newDeltaZ, oldTranslationValue);
 
 			if (translationFlag.tans()) {
 				final Vertex oldInTan = (Vertex) translationFlag.getInTans().get(floorIndex);
-				oldInTan.x += newDeltaX;
-				oldInTan.y += newDeltaY;
-				oldInTan.z += newDeltaZ;
+				addToOldOutTan(newDeltaX, newDeltaY, newDeltaZ, oldInTan);
 
 				final Vertex oldOutTan = (Vertex) translationFlag.getOutTans().get(floorIndex);
-				oldOutTan.x += newDeltaX;
-				oldOutTan.y += newDeltaY;
-				oldOutTan.z += newDeltaZ;
+				addToOldOutTan(newDeltaX, newDeltaY, newDeltaZ, oldOutTan);
 			}
 		}
 
@@ -586,25 +484,81 @@ public abstract class AbstractAnimatedNode implements AnimatedNode {
 				&& (translationFlag.getTimes().get(floorIndex) == trackTime)) {
 			// we must change it
 			final Vertex oldTranslationValue = (Vertex) translationFlag.getValues().get(floorIndex);
-			oldTranslationValue.x *= localScaling.x;
-			oldTranslationValue.y *= localScaling.y;
-			oldTranslationValue.z *= localScaling.z;
+			multiplyOldOutTan(localScaling, oldTranslationValue);
 
 			if (translationFlag.tans()) {
 				final Vertex oldInTan = (Vertex) translationFlag.getInTans().get(floorIndex);
-				oldInTan.x *= localScaling.x;
-				oldInTan.y *= localScaling.y;
-				oldInTan.z *= localScaling.z;
+				multiplyOldOutTan(localScaling, oldInTan);
 
 				final Vertex oldOutTan = (Vertex) translationFlag.getOutTans().get(floorIndex);
-				oldOutTan.x *= localScaling.x;
-				oldOutTan.y *= localScaling.y;
-				oldOutTan.z *= localScaling.z;
+				multiplyOldOutTan(localScaling, oldOutTan);
 			}
 		}
 
 	}
 
-	protected abstract List<AnimFlag> getAnimFlags();
+	private void addToOldOutTanValues(Vertex oldOutTan) {
+		addToOldOutTan(translationHeap.x, translationHeap.y, translationHeap.z, oldOutTan);
+	}
+
+	private void setHeap(Vector4f axisAngleHeap, int x, int y, int z) {
+		axisAngleHeap.x = x;
+		axisAngleHeap.y = y;
+		axisAngleHeap.z = z;
+	}
+
+	private void setTranslationHeapValues(float scaleX, float scaleY, float scaleZ) {
+		setHeap(translationHeap, (int) scaleX, (int) scaleY, (int) scaleZ);
+	}
+
+	private void addToAxisHeap(int x, int y, int z) {
+		setHeap(axisAngleHeap, (int) (axisAngleHeap.x + x), (int) (axisAngleHeap.y + y), (int) (axisAngleHeap.z + z));
+	}
+
+	private void setOuldOutTanQuart(QuaternionRotation oldOutTan) {
+		oldOutTan.a = rotationHeap.x;
+		oldOutTan.b = rotationHeap.y;
+		oldOutTan.c = rotationHeap.z;
+		oldOutTan.d = rotationHeap.w;
+	}
+
+	private void addToSavedTranslationHeap(Vector3f savedLocalTranslation) {
+		savedLocalTranslation.x += translationHeap.x;
+		savedLocalTranslation.y += translationHeap.y;
+		savedLocalTranslation.z += translationHeap.z;
+	}
+
+	private void multiplySavedLocalScaling(Vector3f savedLocalScaling) {
+		savedLocalScaling.x *= translationHeap.x;
+		savedLocalScaling.y *= translationHeap.y;
+		savedLocalScaling.z *= translationHeap.z;
+	}
+
+	private void multiplyOldIntanValues(Vertex oldInTan) {
+		oldInTan.x *= translationHeap.x;
+		oldInTan.y *= translationHeap.y;
+		oldInTan.z *= translationHeap.z;
+	}
+
+	private void setRotationHeapQuartValues(QuaternionRotation oldOutTan) {
+		rotationHeap.x = (float) oldOutTan.a;
+		rotationHeap.y = (float) oldOutTan.b;
+		rotationHeap.z = (float) oldOutTan.c;
+		rotationHeap.w = (float) oldOutTan.d;
+	}
+
+	private void addToOldOutTan(double newDeltaX, double newDeltaY, double newDeltaZ, Vertex oldOutTan) {
+		oldOutTan.x += newDeltaX;
+		oldOutTan.y += newDeltaY;
+		oldOutTan.z += newDeltaZ;
+	}
+
+	private void multiplyOldOutTan(Vector3f localScaling, Vertex oldOutTan) {
+		oldOutTan.x *= localScaling.x;
+		oldOutTan.y *= localScaling.y;
+		oldOutTan.z *= localScaling.z;
+	}
+
+	protected abstract Map<String, AnimFlag> getAnimFlags();
 
 }

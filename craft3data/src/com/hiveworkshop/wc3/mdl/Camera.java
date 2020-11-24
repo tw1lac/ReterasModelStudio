@@ -1,16 +1,13 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.IdObject.NodeFlags;
 import com.hiveworkshop.wc3.mdx.CameraChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Camera class, these are the things most people would think of as a particle
@@ -29,7 +26,7 @@ public class Camera implements Named {
 	double FarClip;
 	double NearClip;
 
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 
 	Vertex targetPosition;
 	ArrayList<AnimFlag> targetAnimFlags = new ArrayList<>();
@@ -89,7 +86,8 @@ public class Camera implements Named {
 					c.Position = Vertex.parseText(line);
 				} else if (line.contains("Rotation") || line.contains("Translation")) {
 					MDLReader.reset(mdl);
-					c.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					c.animFlags.put(animFlag.title, animFlag);
 				} else if (line.contains("FieldOfView")) {
 					c.FieldOfView = MDLReader.readDouble(line);
 				} else if (line.contains("FarClip")) {
@@ -135,12 +133,12 @@ public class Camera implements Named {
 		// -- uses the parent (java Object reference) of idObject superclass
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		writer.println("\tPosition " + Position.toString() + ",");
-        for (AnimFlag flag : animFlags) {
+        for (AnimFlag flag : animFlags.values()) {
             if (flag.getName().equals("Translation")) {
                 flag.printTo(writer, 1);
             }
         }
-        for (AnimFlag animFlag : animFlags) {
+        for (AnimFlag animFlag : animFlags.values()) {
             if (animFlag.getName().equals("Rotation")) {
                 animFlag.printTo(writer, 1);
             }
@@ -158,7 +156,7 @@ public class Camera implements Named {
 	}
 
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	public Vertex getPosition() {
@@ -193,11 +191,11 @@ public class Camera implements Named {
 		NearClip = nearClip;
 	}
 
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
-	public void setAnimFlags(final ArrayList<AnimFlag> animFlags) {
+	public void setAnimFlags(final Map<String, AnimFlag> animFlags) {
 		this.animFlags = animFlags;
 	}
 
@@ -232,7 +230,7 @@ public class Camera implements Named {
 
 		@Override
 		public void add(final AnimFlag timeline) {
-			parent.animFlags.add(timeline);
+			parent.animFlags.put(timeline.title, timeline);
 		}
 
 		@Override
@@ -241,7 +239,7 @@ public class Camera implements Named {
 		}
 
 		@Override
-		public List<AnimFlag> getAnimFlags() {
+		public Map<String, AnimFlag> getAnimFlags() {
 			return parent.animFlags;
 		}
 
@@ -277,7 +275,7 @@ public class Camera implements Named {
 
 		@Override
 		public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-			final AnimFlag translationFlag = AnimFlag.find(getAnimFlags(), "Translation");
+			final AnimFlag translationFlag = getAnimFlags().get("Translation");
 			if (translationFlag != null) {
 				return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 			}
@@ -286,7 +284,7 @@ public class Camera implements Named {
 
 		@Override
 		public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-			final AnimFlag translationFlag = AnimFlag.find(getAnimFlags(), "Rotation");
+			final AnimFlag translationFlag = getAnimFlags().get("Rotation");
 			if (translationFlag != null) {
 				final Object interpolated = translationFlag.interpolateAt(animatedRenderEnvironment);
 				if (interpolated instanceof Double) {
@@ -308,7 +306,7 @@ public class Camera implements Named {
 		}
 
 		public Double getRenderRotationScalar(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-			final AnimFlag translationFlag = AnimFlag.find(getAnimFlags(), "Rotation");
+			final AnimFlag translationFlag = getAnimFlags().get("Rotation");
 			if (translationFlag != null) {
 				final Object interpolated = translationFlag.interpolateAt(animatedRenderEnvironment);
 				if (interpolated instanceof Double) {
@@ -345,7 +343,7 @@ public class Camera implements Named {
 		}
 
 		@Override
-		public List<AnimFlag> getAnimFlags() {
+		public Map<String, AnimFlag> getAnimFlags() {
 			return parent.animFlags;
 		}
 
@@ -381,7 +379,7 @@ public class Camera implements Named {
 
 		@Override
 		public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-			final AnimFlag translationFlag = AnimFlag.find(getAnimFlags(), "Translation");
+			final AnimFlag translationFlag = getAnimFlags().get("Translation");
 			if (translationFlag != null) {
 				return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 			}

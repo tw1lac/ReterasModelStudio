@@ -198,7 +198,7 @@ public class ParticleEmitterChunk {
 			} else {
 				node.flags |= Node.NodeFlag.EMITTER_USES_TGA.getValue();
 			}
-			for (final AnimFlag af : mdlEmitter.getAnimFlags()) {
+			for (final AnimFlag af : mdlEmitter.getAnimFlags().values()) {
 				switch (af.getName()) {
 					case "Visibility": {
 						particleEmitterVisibility = new ParticleEmitterVisibility();

@@ -1692,9 +1692,9 @@ public class EditableModel implements Named {
 		// Delete empty rotation/translation/scaling
 		bindPoseChunk = null;
 		for (final IdObject obj : idObjects) {
-			final List<AnimFlag> animFlags = obj.getAnimFlags();
+			final Map<String, AnimFlag> animFlags = obj.getAnimFlags();
 			final List<AnimFlag> bad = new ArrayList<>();
-			for (final AnimFlag flag : animFlags) {
+			for (final AnimFlag flag : animFlags.values()) {
 				if (flag.length() <= 0) {
 					bad.add(flag);
 				}
@@ -1816,11 +1816,11 @@ public class EditableModel implements Named {
 			}
 		}
 		for (final IdObject idObject : idObjects) {
-			allFlags.addAll(idObject.getAnimFlags());
+			allFlags.addAll(idObject.getAnimFlags().values());
 		}
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				allFlags.addAll(x.animFlags);
+				allFlags.addAll(x.animFlags.values());
 				allFlags.addAll(x.targetAnimFlags);
 			}
 		}
@@ -1854,55 +1854,55 @@ public class EditableModel implements Named {
 		final ArrayList<Bone> bones = sortedIdObjects(Bone.class);
 		bones.addAll(sortedIdObjects(Helper.class));// Hey, look at that!
 		for (final Bone b : bones) {
-			if (b.animFlags.contains(aflg)) {
+			if (b.animFlags.containsValue(aflg)) {
 				return b;
 			}
 		}
 		final ArrayList<Light> lights = sortedIdObjects(Light.class);
 		for (final Light l : lights) {
-			if (l.animFlags.contains(aflg)) {
+			if (l.animFlags.containsValue(aflg)) {
 				return l;
 			}
 		}
 		final ArrayList<Attachment> atcs = sortedIdObjects(Attachment.class);
 		for (final Attachment x : atcs) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		final ArrayList<ParticleEmitter2> pes = sortedIdObjects(ParticleEmitter2.class);
 		for (final ParticleEmitter2 x : pes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		final ArrayList<ParticleEmitter> xpes = sortedIdObjects(ParticleEmitter.class);
 		for (final ParticleEmitter x : xpes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		final ArrayList<ParticleEmitterPopcorn> pfes = sortedIdObjects(ParticleEmitterPopcorn.class);
 		for (final ParticleEmitterPopcorn x : pfes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		final ArrayList<RibbonEmitter> res = sortedIdObjects(RibbonEmitter.class);
 		for (final RibbonEmitter x : res) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		final ArrayList<CollisionShape> cs = sortedIdObjects(CollisionShape.class);
 		for (final CollisionShape x : cs) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.containsValue(aflg)) {
 				return x;
 			}
 		}
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				if (x.animFlags.contains(aflg) || x.targetAnimFlags.contains(aflg)) {
+				if (x.animFlags.containsValue(aflg) || x.targetAnimFlags.contains(aflg)) {
 					return x;
 				}
 			}
@@ -1939,56 +1939,56 @@ public class EditableModel implements Named {
 		final ArrayList<Bone> bones = sortedIdObjects(Bone.class);
 		bones.addAll(sortedIdObjects(Helper.class));// Hey, look at that!
 		for (final Bone b : bones) {
-			if (b.animFlags.contains(animFlag)) {
-				b.animFlags.add(added);
+			if (b.animFlags.containsValue(animFlag)) {
+				b.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<Light> lights = sortedIdObjects(Light.class);
 		for (final Light l : lights) {
-			if (l.animFlags.contains(animFlag)) {
-				l.animFlags.add(added);
+			if (l.animFlags.containsValue(animFlag)) {
+				l.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<Attachment> atcs = sortedIdObjects(Attachment.class);
 		for (final Attachment x : atcs) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<ParticleEmitter2> pes = sortedIdObjects(ParticleEmitter2.class);
 		for (final ParticleEmitter2 x : pes) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<ParticleEmitter> xpes = sortedIdObjects(ParticleEmitter.class);
 		for (final ParticleEmitter x : xpes) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<ParticleEmitterPopcorn> pfes = sortedIdObjects(ParticleEmitterPopcorn.class);
 		for (final ParticleEmitterPopcorn x : pfes) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<RibbonEmitter> res = sortedIdObjects(RibbonEmitter.class);
 		for (final RibbonEmitter x : res) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		final ArrayList<CollisionShape> cs = sortedIdObjects(CollisionShape.class);
 		for (final CollisionShape x : cs) {
-			if (x.animFlags.contains(animFlag)) {
-				x.animFlags.add(added);
+			if (x.animFlags.containsValue(animFlag)) {
+				x.animFlags.put(added.title, added);
 			}
 		}
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				if (x.animFlags.contains(animFlag) || x.targetAnimFlags.contains(animFlag)) {
-					x.animFlags.add(added);
+				if (x.animFlags.containsValue(animFlag) || x.targetAnimFlags.contains(animFlag)) {
+					x.animFlags.put(added.title, added);
 				}
 			}
 		}
@@ -2687,50 +2687,88 @@ public class EditableModel implements Named {
 		final ArrayList<Bone> bones = sortedIdObjects(Bone.class);
 		bones.addAll(sortedIdObjects(Helper.class));// Hey, look at that!
 		for (final Bone b : bones) {
-			b.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			b.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					b.remove(af);
+				}
+			});
 		}
 		final ArrayList<Light> lights = sortedIdObjects(Light.class);
 		for (final Light l : lights) {
-			l.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			l.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					l.remove(af);
+				}
+			});
 		}
 		final ArrayList<Attachment> atcs = sortedIdObjects(Attachment.class);
 		for (final Attachment x : atcs) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		final ArrayList<ParticleEmitter2> pes = sortedIdObjects(ParticleEmitter2.class);
 		for (final ParticleEmitter2 x : pes) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		final ArrayList<ParticleEmitter> xpes = sortedIdObjects(ParticleEmitter.class);
 		for (final ParticleEmitter x : xpes) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
+//			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
 		}
 		final ArrayList<ParticleEmitterPopcorn> pfes = sortedIdObjects(ParticleEmitterPopcorn.class);
 		for (final ParticleEmitterPopcorn x : pfes) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		final ArrayList<RibbonEmitter> res = sortedIdObjects(RibbonEmitter.class);
 		for (final RibbonEmitter x : res) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		final ArrayList<CollisionShape> cs = sortedIdObjects(CollisionShape.class);
 		for (final CollisionShape x : cs) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		final ArrayList<EventObject> evt = sortedIdObjects(EventObject.class);
 		for (final EventObject x : evt) {
-			x.animFlags.removeIf(animFlag -> selectedValue.equals(animFlag.getGlobalSeq()));
+			x.animFlags.forEach((name, af) ->{
+				if (selectedValue.equals(af.getGlobalSeq())){
+					x.remove(af);
+				}
+			});
 		}
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				Iterator<AnimFlag> iterator = x.animFlags.iterator();
-				while (iterator.hasNext()) {
-					final AnimFlag animFlag = iterator.next();
-					if (selectedValue.equals(animFlag.getGlobalSeq())) {
-						iterator.remove();
-					}
-				}
-				iterator = x.targetAnimFlags.iterator();
+				x.animFlags.values().stream().filter(animFlag -> selectedValue.equals(animFlag.globalSeq)).forEach(animFlag -> x.remove(animFlag));
+//				Iterator<AnimFlag> iterator = x.animFlags.iterator();
+//				while (iterator.hasNext()) {
+//					final AnimFlag animFlag = iterator.next();
+//					if (selectedValue.equals(animFlag.getGlobalSeq())) {
+//						iterator.remove();
+//					}
+//				}
+				Iterator<AnimFlag> iterator = x.targetAnimFlags.iterator();
 				while (iterator.hasNext()) {
 					final AnimFlag animFlag = iterator.next();
 					if (selectedValue.equals(animFlag.getGlobalSeq())) {

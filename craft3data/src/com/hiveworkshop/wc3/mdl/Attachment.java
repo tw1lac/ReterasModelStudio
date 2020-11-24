@@ -1,15 +1,16 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.AttachmentChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Write a description of class Attachment here.
@@ -19,7 +20,7 @@ import com.hiveworkshop.wc3.mdx.AttachmentChunk;
  */
 public class Attachment extends IdObject implements VisibilitySource {
 	String path = null;
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 	ArrayList<String> flags = new ArrayList<>();
 
 	int AttachmentID = 0;
@@ -71,8 +72,8 @@ public class Attachment extends IdObject implements VisibilitySource {
 		x.setParent(getParent());
 
 		x.path = path;
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		flags = new ArrayList<>(x.flags);
 		return x;
@@ -97,12 +98,12 @@ public class Attachment extends IdObject implements VisibilitySource {
 				} else if (line.contains("AttachmentID ")) {
 					at.AttachmentID = MDLReader.readInt(line);
 				} else if ((line.contains("Visibility") || line.contains("Scaling") || line.contains("Translation")
-						|| line.contains("Rotation")) && !line.contains("DontInherit"))// Visibility,
-																						// Rotation,
-																						// etc
+						|| line.contains("Rotation")) && !line.contains("DontInherit"))
 				{
+					// Visibility, Rotation, etc
 					MDLReader.reset(mdl);
-					at.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					at.animFlags.put(animFlag.title, animFlag);
 				} else {
 					at.flags.add(MDLReader.readFlag(line));
 				}
@@ -141,7 +142,7 @@ public class Attachment extends IdObject implements VisibilitySource {
         for (String flag : flags) {
             writer.println("\t" + flag + ",");
         }
-        for (AnimFlag animFlag : animFlags) {
+        for (AnimFlag animFlag : animFlags.values()) {
             animFlag.printTo(writer, 1);
         }
 		writer.println("}");
@@ -152,16 +153,18 @@ public class Attachment extends IdObject implements VisibilitySource {
 	public void setVisibilityFlag(final AnimFlag flag) {
 		int count = 0;
 		int index = 0;
-		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag af = animFlags.get(i);
-			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
-				count++;
-				index = i;
-				animFlags.remove(af);
-			}
-		}
+		animFlags.remove("Visibility");
+		animFlags.remove("Alpha");
+//		for (int i = 0; i < animFlags.size(); i++) {
+//			final AnimFlag af = animFlags.get(i);
+//			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
+//				count++;
+//				index = i;
+//				animFlags.remove(af.title);
+//			}
+//		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.getName(), flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -173,13 +176,18 @@ public class Attachment extends IdObject implements VisibilitySource {
 	public AnimFlag getVisibilityFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		if(animFlags.containsKey("Visibility")){
+			output = animFlags.get("Visibility");
+		} else if (animFlags.containsKey("Alpha")){
+			output = animFlags.get("Alpha");
+		}
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
 				count++;
 				output = af;
 			}
 		}
-		if (count > 1) {
+		if (animFlags.containsKey("Alpha") && animFlags.containsKey("Visibility")) {
 			System.err.println(
 					"Some visiblity animation data was lost unexpectedly during retrieval in " + getName() + ".");
 		}
@@ -194,7 +202,7 @@ public class Attachment extends IdObject implements VisibilitySource {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
@@ -206,7 +214,7 @@ public class Attachment extends IdObject implements VisibilitySource {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	public String getPath() {
@@ -228,11 +236,11 @@ public class Attachment extends IdObject implements VisibilitySource {
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
-	public void setAnimFlags(final ArrayList<AnimFlag> animFlags) {
+	public void setAnimFlags(final Map<String, AnimFlag> animFlags) {
 		this.animFlags = animFlags;
 	}
 
@@ -267,7 +275,7 @@ public class Attachment extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -276,7 +284,7 @@ public class Attachment extends IdObject implements VisibilitySource {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -285,7 +293,7 @@ public class Attachment extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag =animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

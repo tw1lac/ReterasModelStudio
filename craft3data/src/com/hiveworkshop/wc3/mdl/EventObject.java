@@ -10,7 +10,9 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class for EventObjects, which include such things as craters, footprints,
@@ -20,7 +22,7 @@ import java.util.List;
  */
 public class EventObject extends IdObject {
 	ArrayList<Integer> eventTrack = new ArrayList<>();
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 	Integer globalSeq;
 	int globalSeqId = -1;
 	boolean hasGlobalSeq;
@@ -85,8 +87,8 @@ public class EventObject extends IdObject {
 		x.setParent(getParent());
 
 		x.eventTrack = new ArrayList<>(eventTrack);
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		return x;
 	}
@@ -121,7 +123,8 @@ public class EventObject extends IdObject {
 				} else if (((line.contains("Visibility") || line.contains("Rotation") || line.contains("Translation")
 						|| line.contains("Scaling"))) && !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					e.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					e.animFlags.put(animFlag.title, animFlag);
 				} else if (line.contains("GlobalSeqId")) {
 					if (!e.hasGlobalSeq) {
 						e.globalSeqId = MDLReader.readInt(line);
@@ -150,7 +153,7 @@ public class EventObject extends IdObject {
 		// -- uses objectId value of idObject superclass
 		// -- uses parentId value of idObject superclass
 		// -- uses the parent (java Object reference) of idObject superclass
-		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags);
+		final Map<String, AnimFlag> pAnimFlags = new HashMap<>(this.animFlags);
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		if (objectId != -1) {
 			writer.println("\tObjectId " + objectId + ",");
@@ -174,25 +177,19 @@ public class EventObject extends IdObject {
 			}
 		}
 		writer.println("\t}");
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Translation")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Rotation")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Scaling")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, "Translation");
+		printAndRemoveMatching(writer, pAnimFlags, "Rotation");
+		printAndRemoveMatching(writer, pAnimFlags, "Scaling");
 		writer.println("}");
+	}
+
+	private void printAndRemoveMatching(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, String rotation) {
+		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
+			if (pAnimFlags.get(i).getName().equals(rotation)) {
+				pAnimFlags.get(i).printTo(writer, 1);
+				pAnimFlags.remove(i);
+			}
+		}
 	}
 
 	public void deleteAnim(final Animation anim) {
@@ -212,12 +209,12 @@ public class EventObject extends IdObject {
 	public void timeScale(final int start, final int end, final int newStart, final int newEnd) {
 		// Timescales a part of the AnimFlag from section "start" to "end" into
 		// the new time "newStart" to "newEnd"
-		for (final Integer inte : eventTrack) {
-			final int i = inte;
+		for (final Integer integer : eventTrack) {
+			final int i = integer;
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
-				eventTrack.set(eventTrack.indexOf(inte), (int) (newStart + (ratio * (newEnd - newStart))));
+				eventTrack.set(eventTrack.indexOf(integer), (int) (newStart + (ratio * (newEnd - newStart))));
 			}
 		}
 
@@ -230,8 +227,8 @@ public class EventObject extends IdObject {
 			final int newEnd) {
 		// Timescales a part of the AnimFlag from section "start" to "end" into
 		// the new time "newStart" to "newEnd"
-		for (final Integer inte : source.eventTrack) {
-			final int i = inte;
+		for (final Integer integer : source.eventTrack) {
+			final int i = integer;
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
@@ -249,13 +246,12 @@ public class EventObject extends IdObject {
 		final int high = eventTrack.size() - 1;
 
 		if (eventTrack.size() > 0) {
-			quicksort(low, high);
+			quickSort(low, high);
 		}
 	}
 
-	private void quicksort(final int low, final int high) {
-		// Thanks to Lars Vogel for the quicksort concept code (something to
-		// look at), found on google
+	private void quickSort(final int low, final int high) {
+		// Thanks to Lars Vogel for the quicksort concept code (something to look at), found on google
 		// (re-written by Eric "Retera" for use in AnimFlags)
 		int i = low, j = high;
 		final Integer pivot = eventTrack.get(low + ((high - low) / 2));
@@ -275,10 +271,10 @@ public class EventObject extends IdObject {
 		}
 
 		if (low < j) {
-			quicksort(low, j);
+			quickSort(low, j);
 		}
 		if (i < high) {
-			quicksort(i, high);
+			quickSort(i, high);
 		}
 	}
 
@@ -293,7 +289,7 @@ public class EventObject extends IdObject {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-		for (final AnimFlag flag : animFlags) {
+		for (final AnimFlag flag : animFlags.values()) {
 			flag.flipOver(axis);
 		}
 	}
@@ -312,7 +308,7 @@ public class EventObject extends IdObject {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	@Override
@@ -322,12 +318,11 @@ public class EventObject extends IdObject {
 
 	@Override
 	public List<String> getFlags() {
-		return new ArrayList<>();// Current eventobject implementation
-									// uses no flags!
+		return new ArrayList<>();// Current eventobject implementation uses no flags!
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
@@ -388,7 +383,7 @@ public class EventObject extends IdObject {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -397,7 +392,7 @@ public class EventObject extends IdObject {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -406,7 +401,7 @@ public class EventObject extends IdObject {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

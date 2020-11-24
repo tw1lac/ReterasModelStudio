@@ -1,4 +1,4 @@
-package com.matrixeater.src;
+package com.matrixeater.src.ProbablyUnused;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;

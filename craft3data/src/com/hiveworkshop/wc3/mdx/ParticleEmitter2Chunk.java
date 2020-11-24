@@ -401,7 +401,7 @@ public class ParticleEmitter2Chunk {
 			priorityPlane = mdlEmitter.getPriorityPlane();
 			replaceableId = mdlEmitter.getReplaceableId();
 
-			for (final AnimFlag af : mdlEmitter.getAnimFlags()) {
+			for (final AnimFlag af : mdlEmitter.getAnimFlags().values()) {
 				switch (af.getName()) {
 					case "Visibility": {
 						particleEmitter2Visibility = new ParticleEmitter2Visibility();

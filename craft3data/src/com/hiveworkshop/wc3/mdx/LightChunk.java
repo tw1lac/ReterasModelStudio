@@ -192,7 +192,7 @@ public class LightChunk {
 			node = new Node(light);
 			node.flags |= 0x200;
 			// more to do here
-			for (final AnimFlag af : light.getAnimFlags()) {
+			for (final AnimFlag af : light.getAnimFlags().values()) {
 				switch (af.getName()) {
 					case "Visibility": {
 						lightVisibility = new LightVisibility();

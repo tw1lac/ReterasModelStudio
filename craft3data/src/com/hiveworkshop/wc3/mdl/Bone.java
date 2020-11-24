@@ -9,7 +9,9 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Bones that make geometry animate.
@@ -25,7 +27,7 @@ public class Bone extends IdObject {
 	GeosetAnim geosetAnim;
 	boolean hasGeoAnim;// Sometimes its "None," sometimes it's not used
 
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 	ArrayList<String> flags = new ArrayList<>();
 
 	public Bone() {
@@ -50,8 +52,8 @@ public class Bone extends IdObject {
 		geosetAnimId = b.geosetAnimId;
 		geosetAnim = b.geosetAnim;
 		hasGeoAnim = b.hasGeoAnim;
-		for (final AnimFlag af : b.animFlags) {
-			animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : b.animFlags.values()) {
+			animFlags.put(af.title, new AnimFlag(af));
 		}
 		flags = new ArrayList<>(b.flags);
 	}
@@ -115,7 +117,8 @@ public class Bone extends IdObject {
 				} else if ((line.contains("Scaling") || line.contains("Rotation") || line.contains("Translation"))
 						&& !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					b.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					b.animFlags.put(animFlag.title, animFlag);
 				} else// Flags like Billboarded
 				{
 					b.flags.add(MDLReader.readFlag(line));
@@ -169,16 +172,16 @@ public class Bone extends IdObject {
 		// // writer.println("\tGeosetId Multiple,");
 		// writer.println("\tGeosetAnimId None,");
 		// }
-        for (AnimFlag animFlag : animFlags) {
+        for (AnimFlag animFlag : animFlags.values()) {
             animFlag.printTo(writer, 1);
         }
 		writer.println("}");
 	}
 
 	public void copyMotionFrom(final Bone b) {
-		for (final AnimFlag baf : b.animFlags) {
+		for (final AnimFlag baf : b.animFlags.values()) {
 			boolean foundMatch = false;
-			for (final AnimFlag af : animFlags) {
+			for (final AnimFlag af : animFlags.values()) {
 				boolean sameSeq = false;
 				if (baf.globalSeq == null && af.globalSeq == null) {
 					sameSeq = true;
@@ -192,13 +195,13 @@ public class Bone extends IdObject {
 				}
 			}
 			if (!foundMatch) {
-				animFlags.add(baf);
+				animFlags.put(baf.title, baf);
 			}
 		}
 	}
 
 	public void clearAnimation(final Animation a) {
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			af.deleteAnim(a);
 		}
 	}
@@ -209,7 +212,7 @@ public class Bone extends IdObject {
 	 *
 	 */
 	public boolean animates() {
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.size() > 1) {
 				return true;
 			}
@@ -225,7 +228,7 @@ public class Bone extends IdObject {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
@@ -237,7 +240,7 @@ public class Bone extends IdObject {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	/**
@@ -328,7 +331,7 @@ public class Bone extends IdObject {
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
@@ -352,7 +355,7 @@ public class Bone extends IdObject {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -361,7 +364,7 @@ public class Bone extends IdObject {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -370,7 +373,7 @@ public class Bone extends IdObject {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

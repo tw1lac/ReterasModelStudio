@@ -1,11 +1,10 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.HelperChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
 
 /**
  * Write a description of class Helper here.
@@ -89,7 +88,8 @@ public class Helper extends Bone// Haha blizz
 				} else if ((line.contains("Scaling") || line.contains("Rotation") || line.contains("Translation"))
 						&& !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					b.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					b.animFlags.put(animFlag.title, animFlag);
 				} else// Flags like Billboarded
 				{
 					b.flags.add(MDLReader.readFlag(line));

@@ -818,7 +818,7 @@ public class MenuBarActionListeners {
             final Bone b = (Bone) obj;
             AnimFlag trans = null;
             boolean globalSeq = false;
-            for (final AnimFlag af : b.getAnimFlags()) {
+            for (final AnimFlag af : b.getAnimFlags().values()) {
                 if (af.getTypeId() == AnimFlag.TRANSLATION) {
                     if (af.hasGlobalSeq()) {
                         globalSeq = true;
@@ -835,7 +835,7 @@ public class MenuBarActionListeners {
                 final ArrayList<Integer> values = new ArrayList<>();
                 trans = new AnimFlag("Translation", times, values);
                 trans.addTag("Linear");
-                b.getAnimFlags().add(trans);
+                b.getAnimFlags().put("Translation", trans);
             }
             trans.addEntry(animation.getStart(), new Vertex(0, 0, 0));
             trans.addEntry(animation.getEnd(), new Vertex(0, 0, -300));

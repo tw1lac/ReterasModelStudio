@@ -1,19 +1,19 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
+import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
+import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
+import com.hiveworkshop.wc3.mdx.Node;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
-import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
-import com.hiveworkshop.wc3.mdx.Node;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Write a description of class ObjectId here.
@@ -252,7 +252,7 @@ public abstract class IdObject extends AbstractAnimatedNode implements Named {
 	public abstract List<String> getFlags();
 
 	@Override
-	public abstract List<AnimFlag> getAnimFlags();
+	public abstract Map<String, AnimFlag> getAnimFlags();
 
 	public abstract void apply(IdObjectVisitor visitor);
 

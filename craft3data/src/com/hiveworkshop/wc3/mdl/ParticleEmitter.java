@@ -1,17 +1,18 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.render3d.EmitterIdObject;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.ParticleEmitterChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ParticleEmitter2 class, these are the things most people would think of as a
@@ -56,7 +57,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	double[] timeDoubleData = new double[timeDoubleNames.length];
 
 	boolean MDLEmitter = true;
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 
 	String path = null;
 	ArrayList<String> flags = new ArrayList<>();
@@ -148,8 +149,8 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 		x.path = path;
 		x.flags.addAll(flags);
 
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		return x;
 	}
@@ -180,8 +181,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 					foundType = true;
 				} else if ((line.contains("Visibility") || line.contains("Rotation") || line.contains("Translation")
 						|| line.contains("Scaling")) && !line.contains("DontInherit")) {
-					MDLReader.reset(mdl);
-					pe.animFlags.add(AnimFlag.read(mdl));
+					addAnimationFlag(mdl, pe);
 					foundType = true;
 				} else if (line.contains("Particle {")) {
 					foundType = true;
@@ -196,8 +196,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 						if (line.contains("static")) {
 							pe.timeDoubleData[i] = MDLReader.readDouble(line);
 						} else {
-							MDLReader.reset(mdl);
-							pe.animFlags.add(AnimFlag.read(mdl));
+							addAnimationFlag(mdl, pe);
 						}
 					}
 				}
@@ -215,13 +214,19 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 		return null;
 	}
 
+	private static void addAnimationFlag(BufferedReader mdl, ParticleEmitter pe) {
+		MDLReader.reset(mdl);
+		AnimFlag animFlag = AnimFlag.read(mdl);
+		pe.animFlags.put(animFlag.title, animFlag);
+	}
+
 	@Override
 	public void printTo(final PrintWriter writer) {
 		// Remember to update the ids of things before using this
 		// -- uses objectId value of idObject superclass
 		// -- uses parentId value of idObject superclass
 		// -- uses the parent (java Object reference) of idObject superclass
-		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags);
+		final Map<String, AnimFlag> pAnimFlags = new HashMap<>(this.animFlags);
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		if (objectId != -1) {
 			writer.println("\tObjectId " + objectId + ",");
@@ -236,77 +241,57 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 		}
 		String currentFlag = "";
 		for (int i = 0; i < 4; i++) {
-			currentFlag = timeDoubleNames[i];
-			if (timeDoubleData[i] != 0) {
-				writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-			} else {
-				boolean set = false;
-				for (int a = 0; (a < pAnimFlags.size()) && !set; a++) {
-					if (pAnimFlags.get(a).getName().equals(currentFlag)) {
-						pAnimFlags.get(a).printTo(writer, 1);
-						pAnimFlags.remove(a);
-						set = true;
-					}
-				}
-				if (!set) {
-					writer.println("\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-				}
-			}
+			printAndRemoveMatchingStatic(writer, pAnimFlags, i, "\tstatic ", 1);
 		}
-		currentFlag = "Visibility";
-		for (int i = 0; i < pAnimFlags.size(); i++) {
-			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, "Visibility");
+
 		writer.println("\tParticle {");
 		for (int i = 4; i < 6; i++) {
-			currentFlag = timeDoubleNames[i];
-			if (timeDoubleData[i] != 0) {
-				writer.println("\t\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-			} else {
-				boolean set = false;
-				for (int a = 0; (a < pAnimFlags.size()) && !set; a++) {
-					if (pAnimFlags.get(a).getName().equals(currentFlag)) {
-						pAnimFlags.get(a).printTo(writer, 2);
-						pAnimFlags.remove(a);
-						set = true;
-					}
-				}
-				if (!set) {
-					writer.println(
-							"\t\tstatic " + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
-				}
-			}
+			printAndRemoveMatchingStatic(writer, pAnimFlags, i, "\t\tstatic ", 2);
 		}
 		if (path != null) {
 			writer.println("\t\tPath \"" + path + "\",");
 		}
 		writer.println("\t}");
 
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Translation")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Rotation")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
-		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
-			if (pAnimFlags.get(i).getName().equals("Scaling")) {
-				pAnimFlags.get(i).printTo(writer, 1);
-				pAnimFlags.remove(i);
-			}
-		}
+		printAndRemoveMatching(writer, pAnimFlags, "Translation");
+		printAndRemoveMatching(writer, pAnimFlags, "Rotation");
+		printAndRemoveMatching(writer, pAnimFlags, "Scaling");
+
 		for (final String s : flags) {
 			writer.println("\t" + s + ",");
 		}
 		writer.println("}");
+	}
+
+	private void printAndRemoveMatchingStatic(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, int i, String s2, int i2) {
+		String currentFlag;
+		currentFlag = timeDoubleNames[i];
+		if (timeDoubleData[i] != 0) {
+			writer.println(s2 + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
+		} else {
+			boolean set = false;
+			for (int a = 0; (a < pAnimFlags.size()) && !set; a++) {
+				if (pAnimFlags.get(a).getName().equals(currentFlag)) {
+					pAnimFlags.get(a).printTo(writer, i2);
+					pAnimFlags.remove(a);
+					set = true;
+				}
+			}
+			if (!set) {
+				writer.println(
+						s2 + currentFlag + " " + MDLReader.doubleToString(timeDoubleData[i]) + ",");
+			}
+		}
+	}
+
+	private void printAndRemoveMatching(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, String name) {
+		for (int i = pAnimFlags.size() - 1; i >= 0; i--) {
+			if (pAnimFlags.get(i).getName().equals(name)) {
+				pAnimFlags.get(i).printTo(writer, 1);
+				pAnimFlags.remove(i);
+			}
+		}
 	}
 
 	// VisibilitySource methods
@@ -323,7 +308,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 			}
 		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.title, flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -335,13 +320,18 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	public AnimFlag getVisibilityFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
-			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
-				count++;
-				output = af;
-			}
+		if(animFlags.containsKey("Visibility")){
+			output = animFlags.get("Visibility");
+		} else if(animFlags.containsKey("Alpha")){
+			output = animFlags.get("Alpha");
 		}
-		if (count > 1) {
+//		for (final AnimFlag af : animFlags) {
+//			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
+//				count++;
+//				output = af;
+//			}
+//		}
+		if (animFlags.containsKey("Visibility") && animFlags.containsKey("Alpha")) {
 			JOptionPane.showMessageDialog(null,
 					"Some visiblity animation data was lost unexpectedly during retrieval in " + getName() + ".");
 		}
@@ -355,10 +345,11 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 
 	@Override
 	public void flipOver(final byte axis) {
-		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
-            flag.flipOver(axis);
-        }
+//		final String currentFlag = "Rotation";
+		animFlags.get("Rotation").flipOver(axis);
+//        for (final AnimFlag flag : animFlags) {
+//            flag.flipOver(axis);
+//        }
 	}
 
 	@Override
@@ -368,7 +359,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	public double getEmissionRate() {
@@ -441,7 +432,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
@@ -467,7 +458,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -476,7 +467,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -485,7 +476,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -493,7 +484,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderSpeed(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "InitVelocity");
+		final AnimFlag translationFlag = animFlags.get("InitVelocity");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -501,7 +492,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderLatitude(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Latitude");
+		final AnimFlag translationFlag = animFlags.get("Latitude");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -509,7 +500,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderLongitude(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Longitude");
+		final AnimFlag translationFlag = animFlags.get("Longitude");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -517,7 +508,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderLifeSpan(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "LifeSpan");
+		final AnimFlag translationFlag = animFlags.get("LifeSpan");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -525,7 +516,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderGravity(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Gravity");
+		final AnimFlag translationFlag = animFlags.get("Gravity");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -533,7 +524,7 @@ public class ParticleEmitter extends EmitterIdObject implements VisibilitySource
 	}
 
 	public double getRenderEmissionRate(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "EmissionRate");
+		final AnimFlag translationFlag = animFlags.get("EmissionRate");
 		if (translationFlag != null) {
 			return (Double) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

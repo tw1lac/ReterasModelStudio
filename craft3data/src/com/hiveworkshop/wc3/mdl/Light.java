@@ -1,15 +1,16 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.LightChunk;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Write a description of class Light here.
@@ -24,7 +25,7 @@ public class Light extends IdObject implements VisibilitySource {
 	Vertex staticColor;
 	double AmbIntensity = -1;
 	Vertex staticAmbColor;
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 	ArrayList<String> flags = new ArrayList<>();
 
 	private Light() {
@@ -115,8 +116,8 @@ public class Light extends IdObject implements VisibilitySource {
 		x.staticColor = staticColor;
 		x.AmbIntensity = AmbIntensity;
 		x.staticAmbColor = staticAmbColor;
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		flags = new ArrayList<>(x.flags);
 		return x;
@@ -138,7 +139,8 @@ public class Light extends IdObject implements VisibilitySource {
 					// lit.parent = mdlr.getIdObject(lit.parentId);
 				} else if (!line.contains("static") && line.contains("{") && !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					lit.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					lit.animFlags.put(animFlag.title, animFlag);
 				} else if (line.contains("AttenuationStart"))// These are
 																// 'static'
 																// ones, the
@@ -176,7 +178,7 @@ public class Light extends IdObject implements VisibilitySource {
 		// -- uses objectId value of idObject superclass
 		// -- uses parentId value of idObject superclass
 		// -- uses the parent (java Object reference) of idObject superclass
-		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags);
+		final Map<String, AnimFlag> pAnimFlags = new HashMap<>(this.animFlags);
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		if (objectId != -1) {
 			writer.println("\tObjectId " + objectId + ",");
@@ -196,88 +198,49 @@ public class Light extends IdObject implements VisibilitySource {
 
 		// AttenuationStart
 		String currentFlag = "AttenuationStart";
-		if (AttenuationStart != -1) {
-			writer.println("\tstatic " + currentFlag + " " + AttenuationStart + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
+		printAndRemoveMatchingStatic(writer, pAnimFlags, currentFlag, AttenuationStart);
 		currentFlag = "AttenuationEnd";
-		if (AttenuationEnd != -1) {
-			writer.println("\tstatic " + currentFlag + " " + AttenuationEnd + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
+		printAndRemoveMatchingStatic(writer, pAnimFlags, currentFlag, AttenuationEnd);
 		currentFlag = "Intensity";
-		if (Intensity != -1) {
-			writer.println("\tstatic " + currentFlag + " " + Intensity + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
+		printAndRemoveMatchingStatic(writer, pAnimFlags, currentFlag, (float) Intensity);
 		currentFlag = "Color";
-		if (staticColor != null) {
-			writer.println("\tstatic " + currentFlag + " " + staticColor.toString() + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
+		printAndRemoveMatchingStaticColor(writer, pAnimFlags, currentFlag, staticColor);
 		currentFlag = "AmbIntensity";
-		if (AmbIntensity != -1) {
-			writer.println("\tstatic " + currentFlag + " " + AmbIntensity + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
+		printAndRemoveMatchingStatic(writer, pAnimFlags, currentFlag, (float) AmbIntensity);
 		currentFlag = "AmbColor";
-		if (staticAmbColor != null) {
-			writer.println("\tstatic " + currentFlag + " " + staticAmbColor.toString() + ",");
-		} else {
-			boolean set = false;
-			for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
-				if (pAnimFlags.get(i).getName().equals(currentFlag)) {
-					pAnimFlags.get(i).printTo(writer, 1);
-					pAnimFlags.remove(i);
-					set = true;
-				}
-			}
-		}
-        for (AnimFlag pAnimFlag : pAnimFlags) {
+		printAndRemoveMatchingStaticColor(writer, pAnimFlags, currentFlag, staticAmbColor);
+		for (AnimFlag pAnimFlag : pAnimFlags.values()) {
             pAnimFlag.printTo(writer, 1);
             // This will probably just be visibility
         }
 		writer.println("}");
+	}
+
+	private void printAndRemoveMatchingStaticColor(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, String currentFlag, Vertex staticAmbColor) {
+		if (staticAmbColor != null) {
+			writer.println("\tstatic " + currentFlag + " " + staticAmbColor.toString() + ",");
+		} else {
+			removeMatchingFlags(writer, pAnimFlags, currentFlag);
+		}
+	}
+
+	private void printAndRemoveMatchingStatic(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, String currentFlag, float attenuationStart) {
+		if (attenuationStart != -1) {
+			writer.println("\tstatic " + currentFlag + " " + attenuationStart + ",");
+		} else {
+			removeMatchingFlags(writer, pAnimFlags, currentFlag);
+		}
+	}
+
+	private void removeMatchingFlags(PrintWriter writer, Map<String, AnimFlag> pAnimFlags, String currentFlag) {
+		boolean set = false;
+		for (int i = 0; (i < pAnimFlags.size()) && !set; i++) {
+			if (pAnimFlags.get(i).getName().equals(currentFlag)) {
+				pAnimFlags.get(i).printTo(writer, 1);
+				pAnimFlags.remove(i);
+				set = true;
+			}
+		}
 	}
 
 	// VisibilitySource methods
@@ -294,7 +257,7 @@ public class Light extends IdObject implements VisibilitySource {
 			}
 		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.title, flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -306,7 +269,7 @@ public class Light extends IdObject implements VisibilitySource {
 	public AnimFlag getVisibilityFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
 				count++;
 				output = af;
@@ -331,7 +294,7 @@ public class Light extends IdObject implements VisibilitySource {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
@@ -385,11 +348,11 @@ public class Light extends IdObject implements VisibilitySource {
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
-	public void setAnimFlags(final ArrayList<AnimFlag> animFlags) {
+	public void setAnimFlags(final Map<String, AnimFlag> animFlags) {
 		this.animFlags = animFlags;
 	}
 
@@ -409,7 +372,7 @@ public class Light extends IdObject implements VisibilitySource {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	@Override
@@ -434,7 +397,7 @@ public class Light extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -443,7 +406,7 @@ public class Light extends IdObject implements VisibilitySource {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -452,7 +415,7 @@ public class Light extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

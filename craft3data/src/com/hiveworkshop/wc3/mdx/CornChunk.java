@@ -175,7 +175,7 @@ public class CornChunk {
 //				node.flags |= Node.NodeFlag.TEAM_COLORED_CORN.getValue();
 //			}
 			// more to do here
-			for (final AnimFlag af : light.getAnimFlags()) {
+			for (final AnimFlag af : light.getAnimFlags().values()) {
 				if (af.getName().equals("Visibility")) {
 					cornVisibility = new CornVisibility();
 					cornVisibility.globalSequenceId = af.getGlobalSeqId();

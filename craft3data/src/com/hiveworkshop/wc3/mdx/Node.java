@@ -123,7 +123,7 @@ public class Node {
 				flags |= nodeFlag.getValue();
 			}
 		}
-		for (final AnimFlag af : mdlNode.getAnimFlags()) {
+		for (final AnimFlag af : mdlNode.getAnimFlags().values()) {
 			switch (af.getName()) {
 				case "Translation": {
 					geosetTranslation = new GeosetTranslation();

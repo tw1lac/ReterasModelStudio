@@ -1,12 +1,12 @@
 package com.matrixeater.hacks;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import com.hiveworkshop.wc3.mdl.AnimFlag;
 import com.hiveworkshop.wc3.mdl.Bone;
 import com.hiveworkshop.wc3.mdl.EditableModel;
 import com.hiveworkshop.wc3.mdl.v2.timelines.InterpolationType;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class MakeVersions {
 
@@ -22,7 +22,7 @@ public class MakeVersions {
 			final EditableModel modelData = EditableModel.read(linearModel);
 			String flagName = "None";
 			for (final Bone bone : modelData.sortedIdObjects(Bone.class)) {
-				final ArrayList<AnimFlag> flags = bone.getAnimFlags();
+				final ArrayList<AnimFlag> flags = new ArrayList<>(bone.getAnimFlags().values());
 				for (final AnimFlag flag : flags) {
 					flag.setInterpType(interpType);
 					if (flag.tans()) {

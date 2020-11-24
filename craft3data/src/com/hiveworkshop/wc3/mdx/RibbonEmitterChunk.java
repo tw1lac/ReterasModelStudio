@@ -205,7 +205,7 @@ public class RibbonEmitterChunk {
 			gravity = (float) mdlEmitter.getGravity();
 			textureSlot = (int) mdlEmitter.getTextureSlot();
 
-			for (final AnimFlag af : mdlEmitter.getAnimFlags()) {
+			for (final AnimFlag af : mdlEmitter.getAnimFlags().values()) {
 				switch (af.getName()) {
 					case "Visibility": {
 						ribbonEmitterVisibility = new RibbonEmitterVisibility();

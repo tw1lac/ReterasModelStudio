@@ -1,17 +1,18 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
 import com.hiveworkshop.wc3.mdx.CollisionShapeChunk;
 import com.hiveworkshop.wc3.mdx.Node;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class for CollisionShapes, which handle unit selection and related matters
@@ -22,7 +23,7 @@ public class CollisionShape extends IdObject {
 	ArrayList<String> flags = new ArrayList<>();
 	ExtLog extents;
 	ArrayList<Vertex> vertices = new ArrayList<>();
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 
 	public CollisionShape(final CollisionShapeChunk.CollisionShape mdxSource) {
 		this.name = mdxSource.node.name;
@@ -81,8 +82,8 @@ public class CollisionShape extends IdObject {
 		if (extents != null) {
 			x.extents = new ExtLog(extents);
 		}
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		return x;
 	}
@@ -127,7 +128,8 @@ public class CollisionShape extends IdObject {
 				} else if ((line.contains("Scaling") || line.contains("Rotation") || line.contains("Translation"))
 						&& !line.contains("DontInherit")) {
 					MDLReader.reset(mdl);
-					e.animFlags.add(AnimFlag.read(mdl));
+					AnimFlag animFlag = AnimFlag.read(mdl);
+					e.animFlags.put(animFlag.title, animFlag);
 				} else {
 					e.flags.add(MDLReader.readFlag(line));
 				}
@@ -166,7 +168,7 @@ public class CollisionShape extends IdObject {
 		if (extents != null) {
 			extents.printTo(writer, 1);
 		}
-        for (AnimFlag animFlag : animFlags) {
+        for (AnimFlag animFlag : animFlags.values()) {
             animFlag.printTo(writer, 1);
         }
 		writer.println("}");
@@ -175,14 +177,14 @@ public class CollisionShape extends IdObject {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	@Override
@@ -196,7 +198,7 @@ public class CollisionShape extends IdObject {
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
@@ -220,7 +222,7 @@ public class CollisionShape extends IdObject {
 		this.flags = flags;
 	}
 
-	public void setAnimFlags(final ArrayList<AnimFlag> animFlags) {
+	public void setAnimFlags(final Map<String, AnimFlag> animFlags) {
 		this.animFlags = animFlags;
 	}
 
@@ -266,7 +268,7 @@ public class CollisionShape extends IdObject {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -275,7 +277,7 @@ public class CollisionShape extends IdObject {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -284,7 +286,7 @@ public class CollisionShape extends IdObject {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

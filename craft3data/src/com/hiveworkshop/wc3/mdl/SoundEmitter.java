@@ -1,14 +1,15 @@
 package com.hiveworkshop.wc3.mdl;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
 import com.hiveworkshop.wc3.gui.modelviewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -39,7 +40,7 @@ SoundEmitter {
  */
 public class SoundEmitter extends IdObject implements VisibilitySource {
 	private static final ArrayList<String> EMPTY = new ArrayList<>();
-	ArrayList<AnimFlag> animFlags = new ArrayList<>();
+	Map<String, AnimFlag> animFlags = new HashMap<>();
 	ArrayList<SoundFile> soundFiles;
 
 	private SoundEmitter() {
@@ -60,8 +61,8 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 		x.parentId = parentId;
 		x.setParent(getParent());
 
-		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+		for (final AnimFlag af : animFlags.values()) {
+			x.animFlags.put(af.title, new AnimFlag(af));
 		}
 		return x;
 	}
@@ -83,7 +84,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 				} else if (!line.contains("static") && line.contains("{")) {
 					MDLReader.reset(mdl);
 					final AnimFlag flag = AnimFlag.read(mdl);
-					lit.animFlags.add(flag);
+					lit.animFlags.put(flag.title, flag);
 				}
 				MDLReader.mark(mdl);
 				line = MDLReader.nextLine(mdl);
@@ -102,7 +103,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 		// -- uses objectId value of idObject superclass
 		// -- uses parentId value of idObject superclass
 		// -- uses the parent (java Object reference) of idObject superclass
-		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags);
+		final ArrayList<AnimFlag> pAnimFlags = new ArrayList<>(this.animFlags.values());
 		writer.println(MDLReader.getClassName(this.getClass()) + " \"" + getName() + "\" {");
 		if (objectId != -1) {
 			writer.println("\tObjectId " + objectId + ",");
@@ -131,7 +132,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 			}
 		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.title, flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -143,7 +144,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 	public AnimFlag getVisibilityFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
 				count++;
 				output = af;
@@ -168,7 +169,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 			}
 		}
 		if (flag != null) {
-			animFlags.add(index, flag);
+			animFlags.put(flag.title, flag);
 		}
 		if (count > 1) {
 			JOptionPane.showMessageDialog(null,
@@ -179,7 +180,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 	public AnimFlag getSoundTrackFlag() {
 		int count = 0;
 		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag af : animFlags.values()) {
 			if (af.getName().equals("SoundTrack")) {
 				count++;
 				output = af;
@@ -204,17 +205,17 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 	@Override
 	public void flipOver(final byte axis) {
 		final String currentFlag = "Rotation";
-        for (final AnimFlag flag : animFlags) {
+        for (final AnimFlag flag : animFlags.values()) {
             flag.flipOver(axis);
         }
 	}
 
 	@Override
-	public ArrayList<AnimFlag> getAnimFlags() {
+	public Map<String, AnimFlag> getAnimFlags() {
 		return animFlags;
 	}
 
-	public void setAnimFlags(final ArrayList<AnimFlag> animFlags) {
+	public void setAnimFlags(final Map<String, AnimFlag> animFlags) {
 		this.animFlags = animFlags;
 	}
 
@@ -229,7 +230,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public void add(final AnimFlag af) {
-		animFlags.add(af);
+		animFlags.put(af.title, af);
 	}
 
 	@Override
@@ -254,7 +255,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderTranslation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Translation");
+		final AnimFlag translationFlag = animFlags.get("Translation");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -263,7 +264,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public QuaternionRotation getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Rotation");
+		final AnimFlag translationFlag = animFlags.get("Rotation");
 		if (translationFlag != null) {
 			return (QuaternionRotation) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}
@@ -272,7 +273,7 @@ public class SoundEmitter extends IdObject implements VisibilitySource {
 
 	@Override
 	public Vertex getRenderScale(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final AnimFlag translationFlag = AnimFlag.find(animFlags, "Scaling");
+		final AnimFlag translationFlag = animFlags.get("Scaling");
 		if (translationFlag != null) {
 			return (Vertex) translationFlag.interpolateAt(animatedRenderEnvironment);
 		}

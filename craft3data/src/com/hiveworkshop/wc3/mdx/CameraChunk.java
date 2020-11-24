@@ -147,7 +147,7 @@ public class CameraChunk {
 			farClippingPlane = (float) mdlCam.getFarClip();
 			nearClippingPlane = (float) mdlCam.getNearClip();
 			targetPosition = mdlCam.getTargetPosition().toFloatArray();
-			for (final AnimFlag af : mdlCam.getAnimFlags()) {
+			for (final AnimFlag af : mdlCam.getAnimFlags().values()) {
 				if (af.getName().equals("Translation") && (af.size() > 0)) {
 					cameraPositionTranslation = new CameraPositionTranslation();
 					cameraPositionTranslation.globalSequenceId = af.getGlobalSeqId();

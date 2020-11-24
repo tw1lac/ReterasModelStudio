@@ -1,16 +1,5 @@
 package com.hiveworkshop.wc3.gui.modeledit.newstuff;
 
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-
 import com.hiveworkshop.wc3.gui.ProgramPreferences;
 import com.hiveworkshop.wc3.gui.animedit.WrongModeException;
 import com.hiveworkshop.wc3.gui.modeledit.CoordinateSystem;
@@ -28,25 +17,16 @@ import com.hiveworkshop.wc3.gui.modeledit.newstuff.listener.EditabilityToggleHan
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectableComponent;
 import com.hiveworkshop.wc3.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.wc3.gui.modeledit.selection.VertexSelectionHelper;
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-import com.hiveworkshop.wc3.mdl.Attachment;
-import com.hiveworkshop.wc3.mdl.Bone;
-import com.hiveworkshop.wc3.mdl.Camera;
-import com.hiveworkshop.wc3.mdl.CollisionShape;
 import com.hiveworkshop.wc3.mdl.EventObject;
-import com.hiveworkshop.wc3.mdl.ExtLog;
-import com.hiveworkshop.wc3.mdl.Geoset;
-import com.hiveworkshop.wc3.mdl.GeosetVertex;
-import com.hiveworkshop.wc3.mdl.Helper;
-import com.hiveworkshop.wc3.mdl.IdObject;
-import com.hiveworkshop.wc3.mdl.Light;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter;
-import com.hiveworkshop.wc3.mdl.ParticleEmitter2;
-import com.hiveworkshop.wc3.mdl.ParticleEmitterPopcorn;
-import com.hiveworkshop.wc3.mdl.RibbonEmitter;
-import com.hiveworkshop.wc3.mdl.Vertex;
+import com.hiveworkshop.wc3.mdl.*;
 import com.hiveworkshop.wc3.mdl.v2.ModelView;
 import com.hiveworkshop.wc3.mdl.v2.visitor.IdObjectVisitor;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.*;
 
 public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 	private final ProgramPreferences programPreferences;
@@ -687,7 +667,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 
 					@Override
 					public void helper(final Helper object) {
-						final AnimFlag translation = AnimFlag.find(object.getAnimFlags(), "Translation");
+						final AnimFlag translation = object.getAnimFlags().get("Translation");
 						if (translation != null) {
 							for (int i = 0; i < translation.size(); i++) {
 								final Vertex scaleData = (Vertex) translation.getValues().get(i);
@@ -720,7 +700,7 @@ public class TPoseModelEditor extends AbstractModelEditor<IdObject> {
 
 					@Override
 					public void bone(final Bone object) {
-						final AnimFlag translation = AnimFlag.find(object.getAnimFlags(), "Translation");
+						final AnimFlag translation = object.getAnimFlags().get("Translation");
 						if (translation != null) {
 							for (int i = 0; i < translation.size(); i++) {
 								final Vertex scaleData = (Vertex) translation.getValues().get(i);

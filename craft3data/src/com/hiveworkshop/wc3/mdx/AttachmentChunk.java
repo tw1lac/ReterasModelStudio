@@ -1,13 +1,12 @@
 package com.hiveworkshop.wc3.mdx;
 
+import com.hiveworkshop.wc3.mdl.AnimFlag;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hiveworkshop.wc3.mdl.AnimFlag;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class AttachmentChunk {
 	public Attachment[] attachment = new Attachment[0];
@@ -105,7 +104,7 @@ public class AttachmentChunk {
 			node.flags |= 0x800;
 			unknownName_modelPath = atc.getPath();
 			attachmentId = atc.getAttachmentID();
-			for (final AnimFlag af : atc.getAnimFlags()) {
+			for (final AnimFlag af : atc.getAnimFlags().values()) {
 				if (af.getName().equals("Visibility")) {
 					attachmentVisibility = new AttachmentVisibility();
 					attachmentVisibility.globalSequenceId = af.getGlobalSeqId();
