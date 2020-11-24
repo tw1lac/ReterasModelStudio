@@ -16,6 +16,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class NewParticleEffectStuff {
+    static JMenu addParticle;
+    public NewParticleEffectStuff(JMenu menu, MainPanel mainPanel){
+        addParticle = menu;
+        fetchIncludedParticles(mainPanel);
+    }
+
+
     static void fetchIncludedParticles(final MainPanel mainPanel) {
         final File stockFolder = new File("matrixeater/stock/particles");
         final File[] stockFiles = stockFolder.listFiles((dir, name) -> name.endsWith(".mdx"));
@@ -46,7 +53,7 @@ public class NewParticleEffectStuff {
                 addParticleEmitterButtonResponse(mainPanel, file, basicName, image);
             }
         });
-        mainPanel.addParticle.add(particleItem);
+        addParticle.add(particleItem);
     }
 
     private static void addParticleEmitterButtonResponse(MainPanel mainPanel, File file, String basicName, Image image) {

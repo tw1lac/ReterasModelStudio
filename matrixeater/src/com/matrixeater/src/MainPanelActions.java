@@ -226,7 +226,7 @@ public class MainPanelActions {
         return new AbstractDockingWindowListener() {
             @Override
             public void windowUndocking(final DockingWindow removedWindow) {
-                if (MainPanel.OLDMODE) {
+                if (MainPanel.OLD_MODE) {
                     if (removedWindow instanceof View) {
                         final View view = (View) removedWindow;
                         view.getViewProperties().getViewTitleBarProperties().setVisible(true);
@@ -240,7 +240,7 @@ public class MainPanelActions {
 
             @Override
             public void windowRemoved(final DockingWindow removedFromWindow, final DockingWindow removedWindow) {
-                if (MainPanel.OLDMODE) {
+                if (MainPanel.OLD_MODE) {
                     if (removedFromWindow instanceof TabWindow) {
                         if (removedWindow instanceof View) {
                             final View view = (View) removedWindow;
@@ -269,7 +269,7 @@ public class MainPanelActions {
 
             @Override
             public void windowClosing(final DockingWindow closingWindow) {
-                if (MainPanel.OLDMODE) {
+                if (MainPanel.OLD_MODE) {
                     if (closingWindow.getWindowParent() instanceof TabWindow) {
                         if (closingWindow instanceof View) {
                             final View view = (View) closingWindow;
@@ -298,7 +298,7 @@ public class MainPanelActions {
 
             @Override
             public void windowAdded(final DockingWindow addedToWindow, final DockingWindow addedWindow) {
-                if (MainPanel.OLDMODE) {
+                if (MainPanel.OLD_MODE) {
                     if (addedToWindow instanceof TabWindow) {
                         final TabWindow tabWindow = (TabWindow) addedToWindow;
                         if (tabWindow.getChildWindowCount() == 2) {

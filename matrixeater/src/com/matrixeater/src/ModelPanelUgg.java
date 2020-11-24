@@ -50,7 +50,7 @@ public class ModelPanelUgg {
         final ModelPanel modelPanel = temp;
         final JMenuItem menuItem = new JMenuItem(temp.getModel().getName());
         menuItem.setIcon(temp.getIcon());
-        mainPanel.windowMenu.add(menuItem);
+        mainPanel.menuBar.windowMenu.add(menuItem);
         menuItem.addActionListener(e -> setCurrentModel(mainPanel, modelPanel));
         temp.setJMenuItem(menuItem);
         temp.getModelViewManager().addStateListener(new RepaintingModelStateListener(mainPanel));
@@ -77,7 +77,7 @@ public class ModelPanelUgg {
         }
         // }
         // }).start();
-        mainPanel.toolsMenu.setEnabled(true);
+        mainPanel.menuBar.toolsMenu.setEnabled(true);
 
         if (selectNewTab && (mainPanel.prefs.getQuickBrowse() != null) && mainPanel.prefs.getQuickBrowse()) {
             for (int i = (mainPanel.modelPanels.size() - 2); i >= 0; i--) {
@@ -86,7 +86,7 @@ public class ModelPanelUgg {
                         && openModelPanel.getUndoManager().isUndoListEmpty()) {
                     if (openModelPanel.close(mainPanel)) {
                         mainPanel.modelPanels.remove(openModelPanel);
-                        mainPanel.windowMenu.remove(openModelPanel.getMenuItem());
+                        mainPanel.menuBar.windowMenu.remove(openModelPanel.getMenuItem());
                     }
                 }
             }

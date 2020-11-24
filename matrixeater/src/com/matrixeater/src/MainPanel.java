@@ -62,24 +62,25 @@ import java.util.List;
  */
 public class MainPanel extends JPanel
         implements ActionListener, ModelEditorChangeActivityListener, ModelPanelCloseListener {
-    JMenu recentMenu, toolsMenu, windowMenu, addParticle;
-
-    JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
-
-    JMenuItem cut, copy, paste;
-    final List<RecentItem> recentItems = new ArrayList<>();
-
-    JRadioButtonMenuItem wireframe, solid;
 
     File currentFile;
     ImportPanel importPanel;
-    static final ImageIcon POWERED_BY_HIVE = new ImageIcon(MainPanel.class.getResource("ImageBin/powered_by_hive.png"));
-    protected static final boolean OLDMODE = false;
     final List<ModelPanel> modelPanels = new ArrayList<>();
     ModelPanel currentModelPanel;
     MainLayoutUgg mainLayoutUgg;
     ModelPanelUgg modelPanelUgg;
     MenuBar menuBar;
+
+    JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
+
+    JMenuItem cut, copy, paste;
+
+    final List<RecentItem> recentItems = new ArrayList<>();
+
+    JRadioButtonMenuItem wireframe, solid;
+
+    static final ImageIcon POWERED_BY_HIVE = new ImageIcon(MainPanel.class.getResource("ImageBin/powered_by_hive.png"));
+    protected static final boolean OLD_MODE = false;
 
     boolean cheatShift = false;
     boolean cheatAlt = false;
@@ -112,7 +113,6 @@ public class MainPanel extends JPanel
         add(toolBar.toolBar);
 
         modelPanelUgg = new ModelPanelUgg();
-        menuBar = MainFrame.getMBar();
 
         animatedRenderEnvironment = new TimeEnvironmentImpl();
         animatedRenderEnvironment.addChangeListener(MainPanelActions.animatedRenderEnvironmentChangeListener(this));
@@ -477,7 +477,7 @@ public class MainPanel extends JPanel
     public void updateRecent() {
         final List<String> recent = SaveProfile.get().getRecent();
         for (final RecentItem recentItem : recentItems) {
-            recentMenu.remove(recentItem);
+            menuBar.recentMenu.remove(recentItem);
         }
         recentItems.clear();
         for (int i = 0; i < recent.size(); i++) {
@@ -495,14 +495,14 @@ public class MainPanel extends JPanel
                     // frontArea.clearGeosets();
                     // sideArea.clearGeosets();
                     // botArea.clearGeosets();
-                    toolsMenu.getAccessibleContext().setAccessibleDescription(
+                    menuBar.toolsMenu.getAccessibleContext().setAccessibleDescription(
                             "Allows the user to control which parts of the model are displayed for editing.");
-                    toolsMenu.setEnabled(true);
+                    menuBar.toolsMenu.setEnabled(true);
                     SaveProfile.get().addRecent(currentFile.getPath());
                     updateRecent();
                     FileUtils.loadFile(this, currentFile);
                 });
-                recentMenu.add(item, recentMenu.getItemCount() - 2);
+                menuBar.recentMenu.add(item, menuBar.recentMenu.getItemCount() - 2);
             }
         }
     }
@@ -541,7 +541,7 @@ public class MainPanel extends JPanel
                 continue;
             }
             if (success = panel.close(mainPanel)) {
-                mainPanel.windowMenu.remove(panel.getMenuItem());
+                mainPanel.menuBar.windowMenu.remove(panel.getMenuItem());
                 iterator.remove();
                 if (panel == mainPanel.currentModelPanel) {
                     closedCurrentPanel = true;

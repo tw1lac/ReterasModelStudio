@@ -260,6 +260,7 @@ public class MainFrame extends JFrame {
         panel = new MainPanel();
         setContentPane(panel);
         menuBar = new MenuBar(panel);
+        panel.menuBar = menuBar;
 
         setJMenuBar(menuBar.createMenuBar(panel));// MainFrame.class.getResource("ImageBin/DDChicken2.png")
         setIconImage(MAIN_PROGRAM_ICON);
@@ -267,7 +268,7 @@ public class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                if (MenuBar.closeAll(panel)) {
+                if (MenuBar.closeAll(panel, menuBar.windowMenu)) {
                     System.exit(0);
                 }
             }
@@ -276,5 +277,6 @@ public class MainFrame extends JFrame {
 
         setLocationRelativeTo(null);
         setVisible(true);
+        panel.updateRecent();
     }
 }

@@ -211,7 +211,7 @@ public class MenuBarActionListeners {
     }
 
     static void exit(MainPanel mainPanel) {
-        if (MenuBar.closeAll(mainPanel)) {
+        if (MenuBar.closeAll(mainPanel, mainPanel.menuBar.windowMenu)) {
             MainFrame.frame.dispose();
         }
     }
@@ -222,7 +222,7 @@ public class MenuBarActionListeners {
         if (modelPanel != null) {
             if (modelPanel.close(mainPanel)) {
                 mainPanel.modelPanels.remove(modelPanel);
-                mainPanel.windowMenu.remove(modelPanel.getMenuItem());
+                mainPanel.menuBar.windowMenu.remove(modelPanel.getMenuItem());
                 if (mainPanel.modelPanels.size() > 0) {
                     final int newIndex = Math.min(mainPanel.modelPanels.size() - 1, oldIndex);
                     mainPanel.modelPanelUgg.setCurrentModel(mainPanel, mainPanel.modelPanels.get(newIndex));
@@ -576,9 +576,9 @@ public class MenuBarActionListeners {
                                                 icon);
                                     }
                                 }
-                                mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+                                mainPanel.menuBar.toolsMenu.getAccessibleContext().setAccessibleDescription(
                                         "Allows the user to control which parts of the model are displayed for editing.");
-                                mainPanel.toolsMenu.setEnabled(true);
+                                mainPanel.menuBar.toolsMenu.setEnabled(true);
                             }
                         }
                     }
@@ -781,9 +781,9 @@ public class MenuBarActionListeners {
                 FileUtils.loadStreamMdx(mainPanel, MpqCodebase.get()
                         .getResourceAsStream(portrait), true, false, icon);
             }
-            mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+            mainPanel.menuBar.toolsMenu.getAccessibleContext().setAccessibleDescription(
                     "Allows the user to control which parts of the model are displayed for editing.");
-            mainPanel.toolsMenu.setEnabled(true);
+            mainPanel.menuBar.toolsMenu.setEnabled(true);
         }
     }
 

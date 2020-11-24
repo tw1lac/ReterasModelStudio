@@ -52,9 +52,9 @@ public class FileUtils {
         // frontArea.clearGeosets();
         // sideArea.clearGeosets();
         // botArea.clearGeosets();
-        mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+        mainPanel.menuBar.toolsMenu.getAccessibleContext().setAccessibleDescription(
                 "Allows the user to control which parts of the model are displayed for editing.");
-        mainPanel.toolsMenu.setEnabled(true);
+        mainPanel.menuBar.toolsMenu.setEnabled(true);
         SaveProfile.get().addRecent(mainPanel.currentFile.getPath());
         mainPanel.updateRecent();
         loadFile(mainPanel, mainPanel.currentFile);
@@ -335,9 +335,9 @@ public class FileUtils {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             mainPanel.currentFile = fc.getSelectedFile();
             mainPanel.profile.setPath(mainPanel.currentFile.getParent());
-            mainPanel.toolsMenu.getAccessibleContext().setAccessibleDescription(
+            mainPanel.menuBar.toolsMenu.getAccessibleContext().setAccessibleDescription(
                     "Allows the user to control which parts of the model are displayed for editing.");
-            mainPanel.toolsMenu.setEnabled(true);
+            mainPanel.menuBar.toolsMenu.setEnabled(true);
             importFile(mainPanel, mainPanel.currentFile);
         }
 
