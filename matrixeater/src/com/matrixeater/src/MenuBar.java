@@ -306,7 +306,7 @@ public class MenuBar implements UndoHandler {
     private static void fillAddMenu(MainPanel mainPanel, JMenu addMenu) {
         mainPanel.addParticle = createMenuMenu("Particle", KeyEvent.VK_P, addMenu);
 
-        FileUtils.fetchIncludedParticles(mainPanel);
+        NewParticleEffectStuff.fetchIncludedParticles(mainPanel);
 
         JMenu animationMenu = createMenuMenu("Animation", KeyEvent.VK_A, addMenu);
 
