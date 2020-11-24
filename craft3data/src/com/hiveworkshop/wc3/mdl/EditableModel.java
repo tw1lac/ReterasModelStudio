@@ -53,10 +53,10 @@ public class EditableModel implements Named {
 	protected ArrayList<Vertex> pivots = new ArrayList<>();
 	protected ArrayList<Camera> cameras = new ArrayList<>();
 
-	protected ArrayList m_junkCode = new ArrayList();
+//	protected ArrayList m_junkCode = new ArrayList();
 	// A series ofUnrecognizedElements
 
-	protected ArrayList m_allParts = new ArrayList();
+//	protected ArrayList m_allParts = new ArrayList();
 	// A compilation of array list components in the model, to contain all parts
 
 	private int c;
@@ -150,10 +150,12 @@ public class EditableModel implements Named {
 		try {
 			final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			modelToClone.printTo(byteArrayOutputStream);
-			try (ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
-				final EditableModel newModel = EditableModel.read(bais);
-				newModel.setName(newName);
-				newModel.setFileRef(modelToClone.getFile());
+			try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
+				final EditableModel newModel = EditableModel.read(byteArrayInputStream);
+				if(newModel != null){
+					newModel.setName(newName);
+					newModel.setFileRef(modelToClone.getFile());
+				}
 				return newModel;
 			}
 
@@ -204,12 +206,12 @@ public class EditableModel implements Named {
 
 	public EditableModel() {
 		name = "UnnamedModel";
-		formatVersion = 800;
+//		formatVersion = 800;
 	}
 
 	public EditableModel(final String newName) {
 		name = newName;
-		formatVersion = 800;
+//		formatVersion = 800;
 	}
 
 	public EditableModel(final EditableModel other) {
@@ -386,7 +388,8 @@ public class EditableModel implements Named {
 
 		if (mdx.pivotPointChunk != null) {
 			for (int objId = 0; objId < (mdx.pivotPointChunk.pivotPoints.length / 3); objId++) {
-				addPivotPoint(new Vertex(mdx.pivotPointChunk.pivotPoints[(objId * 3) + 0],
+				addPivotPoint(new Vertex(
+						mdx.pivotPointChunk.pivotPoints[(objId * 3)],
 						mdx.pivotPointChunk.pivotPoints[(objId * 3) + 1],
 						mdx.pivotPointChunk.pivotPoints[(objId * 3) + 2]));
 			}
@@ -480,8 +483,8 @@ public class EditableModel implements Named {
 		globalSeqs.add(i);
 	}
 
-	public int getGlobalSeqId(final Integer inte) {
-		return globalSeqs.indexOf(inte);
+	public int getGlobalSeqId(final Integer integer) {
+		return globalSeqs.indexOf(integer);
 	}
 
 	public Integer getGlobalSeq(final int id) {
@@ -508,8 +511,8 @@ public class EditableModel implements Named {
 		return textures.indexOf(b);
 	}
 
-	public int getTextureAnimId(final TextureAnim texa) {
-		return texAnims.indexOf(texa);
+	public int getTextureAnimId(final TextureAnim textureAnim) {
+		return texAnims.indexOf(textureAnim);
 	}
 
 	public void addMaterial(final Material x) {
@@ -679,10 +682,12 @@ public class EditableModel implements Named {
 		other = EditableModel.deepClone(other, "animation source file");
 
 		final List<AnimFlag> flags = getAllAnimFlags();
-		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
+		final List<EventObject> eventObjects = sortedIdObjects(EventObject.class);
+
 
 		final List<AnimFlag> othersFlags = other.getAllAnimFlags();
-		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
+		final List<EventObject> othersEventObjects = other.sortedIdObjects(EventObject.class);
+
 
 		final List<Animation> newAnimations = new ArrayList<>();
 
@@ -701,7 +706,7 @@ public class EditableModel implements Named {
 			}
 		}
 		final ArrayList<EventObject> newImpEventObjs = new ArrayList<>();
-		for (final Object e : othersEventObjs) {
+		for (final Object e : othersEventObjects) {
 			newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
 		}
 
@@ -715,7 +720,7 @@ public class EditableModel implements Named {
 			final Animation newAnim = new Animation(anim);
 
 			// clone the animation from the other model
-			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
+			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjects, newImpFlags, newImpEventObjs);
 			newAnim.setInterval(newStart, newEnd);
 			add(newAnim); // add the new animation to this model
 			newAnimations.add(newAnim);
@@ -725,8 +730,8 @@ public class EditableModel implements Named {
 		for (final AnimFlag af : othersFlags) {
 			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
 		}
-		for (final Object e : othersEventObjs) {
-			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
+		for (final Object e : othersEventObjects) {
+			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjects.indexOf(e)));
 		}
 
 		// Now, map the bones in the other model onto the bones in the current model
@@ -821,19 +826,19 @@ public class EditableModel implements Named {
 			// to read file, but file was not found.");
 			// return null;
 			// }
-			final EditableModel mdlr = new EditableModel();
-			String line = "";
+			final EditableModel editableModel = new EditableModel();
+			String line;
 			while ((line = MDLReader.nextLineSpecial(mdl)).startsWith("//")) {
 				if (!line.contains("// Saved by Retera's MDL Toolkit on ")) {
-					mdlr.addToHeader(line);
+					editableModel.addToHeader(line);
 				}
 			}
 			if (!line.contains("Version")) {
 				JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(), "The file version is missing!");
 			}
 			line = MDLReader.nextLine(mdl);
-			mdlr.formatVersion = MDLReader.readInt(line);
-			if ((mdlr.formatVersion != 800) && (mdlr.formatVersion != 900) && (mdlr.formatVersion != 1000)) {
+			editableModel.formatVersion = MDLReader.readInt(line);
+			if ((editableModel.formatVersion != 800) && (editableModel.formatVersion != 900) && (editableModel.formatVersion != 1000)) {
 				JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(), "The format version was confusing!");
 			}
 			line = MDLReader.nextLine(mdl);
@@ -845,41 +850,41 @@ public class EditableModel implements Named {
 						"Model could not be understood. Program does not understand this type of file.");
 			}
 			line = MDLReader.nextLine(mdl);
-			mdlr.setName(MDLReader.readName(line));
+			editableModel.setName(MDLReader.readName(line));
 			MDLReader.mark(mdl);
 			while (!(line = MDLReader.nextLine(mdl)).startsWith("}")) {
 				if (line.contains("BlendTime")) {
-					mdlr.BlendTime = MDLReader.readInt(line);
+					editableModel.BlendTime = MDLReader.readInt(line);
 				} else if (line.contains("Extent")) {
 					MDLReader.reset(mdl);
-					mdlr.extents = ExtLog.read(mdl);
+					editableModel.extents = ExtLog.read(mdl);
 				}
 				MDLReader.mark(mdl);
 			}
 			MDLReader.mark(mdl);
-			mdlr.anims = Sequences.read(mdl);
+			editableModel.anims = Sequences.read(mdl);
 
 			// GlobalSequences
-			if (mdlr.anims.size() < 1) {
+			if (editableModel.anims.size() < 1) {
 				MDLReader.reset(mdl);
 			}
 			MDLReader.mark(mdl);
 			if ((line = MDLReader.nextLine(mdl)).contains("GlobalSequences")) {
 				while (!(line = MDLReader.nextLine(mdl)).startsWith("}")) {
 					if (line.contains("Duration")) {
-						mdlr.globalSeqs.add(MDLReader.readInt(line));
+						editableModel.globalSeqs.add(MDLReader.readInt(line));
 					}
 				}
 			} else {
 				MDLReader.reset(mdl);
 			}
-			mdlr.textures = Bitmap.readAll(mdl);
-			mdlr.materials = Material.readAll(mdl, mdlr);
-			mdlr.texAnims = TextureAnim.readAll(mdl);
-			if (mdlr.materials != null) {
-				final int sz = mdlr.materials.size();
+			editableModel.textures = Bitmap.readAll(mdl);
+			editableModel.materials = Material.readAll(mdl, editableModel);
+			editableModel.texAnims = TextureAnim.readAll(mdl);
+			if (editableModel.materials != null) {
+				final int sz = editableModel.materials.size();
 				for (int i = 0; i < sz; i++) {
-					mdlr.materials.get(i).updateTextureAnims(mdlr.texAnims);
+					editableModel.materials.get(i).updateTextureAnims(editableModel.texAnims);
 				}
 			}
 			MDLReader.mark(mdl);
@@ -888,7 +893,7 @@ public class EditableModel implements Named {
 			while (line.contains("Geoset ")) {
 				hadGeosets = true;
 				MDLReader.reset(mdl);
-				mdlr.addGeoset(Geoset.read(mdl));
+				editableModel.addGeoset(Geoset.read(mdl));
 				MDLReader.mark(mdl);
 				line = MDLReader.nextLine(mdl);
 			}
@@ -899,7 +904,7 @@ public class EditableModel implements Named {
 			while ((line = MDLReader.nextLine(mdl)).contains("GeosetAnim ")) {
 				hadGeosetAnims = true;
 				MDLReader.reset(mdl);
-				mdlr.addGeosetAnim(GeosetAnim.read(mdl));
+				editableModel.addGeosetAnim(GeosetAnim.read(mdl));
 				MDLReader.mark(mdl);
 			}
 			// if( hadGeosetAnims )
@@ -908,55 +913,55 @@ public class EditableModel implements Named {
 			while ((line.length() > 1) && !line.equals("COMPLETED PARSING")) {
 				if (line.startsWith("Bone ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(Bone.read(mdl));
+					editableModel.addIdObject(Bone.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("Light ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(Light.read(mdl));
+					editableModel.addIdObject(Light.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("Helper ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(Helper.read(mdl));
+					editableModel.addIdObject(Helper.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("Attachment ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(Attachment.read(mdl));
+					editableModel.addIdObject(Attachment.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("ParticleEmitter ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(ParticleEmitter.read(mdl));
+					editableModel.addIdObject(ParticleEmitter.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("ParticleEmitter2 ")) {
 					MDLReader.reset(mdl);
 					final ParticleEmitter2 temp = ParticleEmitter2.read(mdl);
-					mdlr.addIdObject(temp);
-					temp.updateTextureRef(mdlr.textures);
+					editableModel.addIdObject(temp);
+					temp.updateTextureRef(editableModel.textures);
 					MDLReader.mark(mdl);
 				} else if (line.contains("RibbonEmitter ")) {
 					MDLReader.reset(mdl);
 					final RibbonEmitter temp = RibbonEmitter.read(mdl);
-					mdlr.addIdObject(temp);
-					temp.updateMaterialRef(mdlr.materials);
+					editableModel.addIdObject(temp);
+					temp.updateMaterialRef(editableModel.materials);
 					MDLReader.mark(mdl);
 				} else if (line.contains("PopcornFxEmitter ") || line.contains("ParticleEmitterPopcorn ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(ParticleEmitterPopcorn.read(mdl));
+					editableModel.addIdObject(ParticleEmitterPopcorn.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("Camera ")) {
 					MDLReader.reset(mdl);
-					mdlr.addCamera(Camera.read(mdl));
+					editableModel.addCamera(Camera.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("EventObject ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(EventObject.read(mdl));
+					editableModel.addIdObject(EventObject.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("CollisionShape ")) {
 					MDLReader.reset(mdl);
-					mdlr.addIdObject(CollisionShape.read(mdl));
+					editableModel.addIdObject(CollisionShape.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("PivotPoints ")) {
 					while (!(line = MDLReader.nextLine(mdl)).startsWith("}")) {
-						mdlr.addPivotPoint(Vertex.parseText(line));
+						editableModel.addPivotPoint(Vertex.parseText(line));
 					}
 					MDLReader.mark(mdl);
 				} else if (line.contains("FaceEffects ")) {
@@ -964,7 +969,7 @@ public class EditableModel implements Named {
 					// consistent with Blizzard's format, and was invented to give us a way to edit
 					// models as text prior to obtaining the official version.
 					final FaceEffectsChunk.FaceEffect faceEffect = new FaceEffectsChunk.FaceEffect();
-					mdlr.faceEffects.add(faceEffect);
+					editableModel.faceEffects.add(faceEffect);
 					while (!(line = MDLReader.nextLine(mdl)).startsWith("}")) {
 						final String trimmedLine = line.trim();
 						if (trimmedLine.startsWith("Target")) {
@@ -976,10 +981,10 @@ public class EditableModel implements Named {
 					MDLReader.mark(mdl);
 				} else if (line.contains("FaceFX ")) {
 					MDLReader.reset(mdl);
-					mdlr.addFaceEffect(FaceEffect.read(mdl));
+					editableModel.addFaceEffect(FaceEffect.read(mdl));
 					MDLReader.mark(mdl);
 				} else if (line.contains("BindPose ")) {
-					mdlr.bindPoseChunk = new BindPoseChunk();
+					editableModel.bindPoseChunk = new BindPoseChunk();
 					final List<float[]> bindPoseElements = new ArrayList<>();
 					while (!(line = MDLReader.nextLine(mdl)).startsWith("}")) {
 						final String trimmedLine = line.trim();
@@ -1000,41 +1005,41 @@ public class EditableModel implements Named {
 							throw new IllegalStateException("Bad tokens in BindPose chunk: " + line);
 						}
 					}
-					mdlr.bindPoseChunk.bindPose = new float[bindPoseElements.size()][];
+					editableModel.bindPoseChunk.bindPose = new float[bindPoseElements.size()][];
 					for (int i = 0; i < bindPoseElements.size(); i++) {
-						mdlr.bindPoseChunk.bindPose[i] = bindPoseElements.get(i);
+						editableModel.bindPoseChunk.bindPose[i] = bindPoseElements.get(i);
 					}
 					MDLReader.mark(mdl);
 				}
 				line = MDLReader.nextLine(mdl);
 			}
-			mdlr.updateIdObjectReferences();
-			for (final Geoset geo : mdlr.geosets) {
-				geo.updateToObjects(mdlr);
+			editableModel.updateIdObjectReferences();
+			for (final Geoset geo : editableModel.geosets) {
+				geo.updateToObjects(editableModel);
 			}
-			for (final GeosetAnim geoAnim : mdlr.geosetAnims) {
+			for (final GeosetAnim geoAnim : editableModel.geosetAnims) {
 				if (geoAnim.geosetId != -1) {
-					geoAnim.geoset = mdlr.getGeoset(geoAnim.geosetId);
+					geoAnim.geoset = editableModel.getGeoset(geoAnim.geosetId);
 					geoAnim.geoset.geosetAnim = geoAnim;// YEAH THIS MAKES SENSE
 				}
 			}
-			final List<AnimFlag> animFlags = mdlr.getAllAnimFlags();// laggggg!
+			final List<AnimFlag> animFlags = editableModel.getAllAnimFlags();// laggggg!
 			for (final AnimFlag af : animFlags) {
-				af.updateGlobalSeqRef(mdlr);
+				af.updateGlobalSeqRef(editableModel);
 				if (!af.getName().equals("Scaling") && !af.getName().equals("Translation")
 						&& !af.getName().equals("Rotation")) {
 				}
 			}
-			final List<EventObject> evtObjs = mdlr.sortedIdObjects(EventObject.class);
+			final List<EventObject> evtObjs = editableModel.sortedIdObjects(EventObject.class);
 			for (final EventObject af : evtObjs) {
-				af.updateGlobalSeqRef(mdlr);
+				af.updateGlobalSeqRef(editableModel);
 			}
 			try {
 				mdl.close();
 			} catch (final Exception ignored) {
 
 			}
-			return mdlr;
+			return editableModel;
 		} catch (final Exception e) {
 			e.printStackTrace();
 			ExceptionPopup.display(e);
@@ -1178,6 +1183,9 @@ public class EditableModel implements Named {
 			writer = new PrintWriter(outputStream);
 		} catch (final Exception e) {
 			JOptionPane.showMessageDialog(null, "Unable to save MDL to file.");
+		}
+		if(writer == null){
+			return;
 		}
 
 		for (final String s : header) {
@@ -2005,8 +2013,7 @@ public class EditableModel implements Named {
 	public GeosetAnim getGeosetAnimOfGeoset(final Geoset g) {
 		if (g.geosetAnim == null) {
 			boolean noIds = true;
-			for (int i = 0; (i < geosetAnims.size()) && noIds; i++) {
-				final GeosetAnim ga = geosetAnims.get(i);
+			for (final GeosetAnim ga : geosetAnims) {
 				if (ga.geosetId != -1) {
 					noIds = false;
 					break;
@@ -2173,20 +2180,20 @@ public class EditableModel implements Named {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
 					"Added null Geoset component to model, which is really bad. Tell Retera you saw this once you have errors.");
+		} else {
+			x.parentModel = this;
+			geosets.add(x);
 		}
-		x.parentModel = this;
-		geosets.add(x);
 	}
 
 	public void add(final GeosetVertex x) {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
 					"Added null GeosetVertex component to model, which is really bad. Tell Retera you saw this once you have errors.");
-		}
-		if (!contains(x.geoset)) {
-			add(x.geoset);
-			x.geoset.add(x);
-		} else {
+		}else {
+			if (!contains(x.geoset)) {
+				add(x.geoset);
+			}
 			x.geoset.add(x);
 		}
 	}
@@ -2195,11 +2202,10 @@ public class EditableModel implements Named {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
 					"Added null Triangle component to model, which is really bad. Tell Retera you saw this once you have errors.");
-		}
-		if (!contains(x.geoset)) {
-			add(x.geoset);
-			x.geoset.add(x);
 		} else {
+			if (!contains(x.geoset)) {
+				add(x.geoset);
+			}
 			x.geoset.add(x);
 		}
 	}
@@ -2216,14 +2222,15 @@ public class EditableModel implements Named {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
 					"Added null IdObject component to model, which is really bad. Tell Retera you saw this once you have errors.");
-		}
-		idObjects.add(x);
-		if ((x.pivotPoint != null) && !pivots.contains(x.pivotPoint)) {
-			pivots.add(x.pivotPoint);
-		}
-		if (ModelUtils.isBindPoseSupported(formatVersion) && (bindPoseChunk != null)) {
-			if (x.getBindPose() == null) {
-				x.setBindPose(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 });
+		}else {
+			idObjects.add(x);
+			if ((x.pivotPoint != null) && !pivots.contains(x.pivotPoint)) {
+				pivots.add(x.pivotPoint);
+			}
+			if (ModelUtils.isBindPoseSupported(formatVersion) && (bindPoseChunk != null)) {
+				if (x.getBindPose() == null) {
+					x.setBindPose(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 });
+				}
 			}
 		}
 	}
@@ -2232,11 +2239,12 @@ public class EditableModel implements Named {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
 					"Added null Camera component to model, which is really bad. Tell Retera you saw this once you have errors.");
-		}
-		cameras.add(x);
-		if (ModelUtils.isBindPoseSupported(formatVersion) && (bindPoseChunk != null)) {
-			if (x.getBindPose() == null) {
-				x.setBindPose(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 });
+		} else {
+			cameras.add(x);
+			if (ModelUtils.isBindPoseSupported(formatVersion) && (bindPoseChunk != null)) {
+				if (x.getBindPose() == null) {
+					x.setBindPose(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 });
+				}
 			}
 		}
 	}
@@ -2485,7 +2493,7 @@ public class EditableModel implements Named {
 			Entry lastEntry = null;
 			for (int i = 0; i < flag.length(); i++) {
 				final Entry entry = flag.getEntry(i);
-				if ((lastEntry != null) && (lastEntry.time == entry.time)) {
+				if ((lastEntry != null) && (lastEntry.time.equals(entry.time))) {
 					indicesForDeletion.add(i);
 				}
 				lastEntry = entry;
@@ -2920,7 +2928,7 @@ public class EditableModel implements Named {
 				final int bones = Math.min(4, gv.getBoneAttachments().size());
 				final short weight = (short) (255 / bones);
 				final short offsetWeight = (short) (255 - (weight * bones));
-				for (int i = 0; (i < bones) && (i < 4); i++) {
+				for (int i = 0; i < bones; i++) {
 					gv.getSkinBones()[i] = gv.getBoneAttachments().get(i);
 					gv.getSkinBoneWeights()[i] = weight;
 					if (i == 0) {
