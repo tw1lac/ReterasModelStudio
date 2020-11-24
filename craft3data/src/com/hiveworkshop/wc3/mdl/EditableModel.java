@@ -53,13 +53,12 @@ public class EditableModel implements Named {
 	protected ArrayList<Vertex> pivots = new ArrayList<>();
 	protected ArrayList<Camera> cameras = new ArrayList<>();
 
-	protected ArrayList m_junkCode = new ArrayList();// A series of
-														// UnrecognizedElements
+	protected ArrayList m_junkCode = new ArrayList();
+	// A series ofUnrecognizedElements
 
-	protected ArrayList m_allParts = new ArrayList();// A compilation of array
-														// list components in
-														// the model, to contain
-														// all parts
+	protected ArrayList m_allParts = new ArrayList();
+	// A compilation of array list components in the model, to contain all parts
+
 	private int c;
 	private boolean temporary;
 
@@ -140,21 +139,21 @@ public class EditableModel implements Named {
 		name = other.name;
 	}
 
-	public static EditableModel clone(final EditableModel what, final String newName) {
-		final EditableModel newModel = new EditableModel(what);
+	public static EditableModel clone(final EditableModel modelToClone, final String newName) {
+		final EditableModel newModel = new EditableModel(modelToClone);
 		newModel.setName(newName);
 		return newModel;
 	}
 
-	public static EditableModel deepClone(final EditableModel what, final String newName) {
+	public static EditableModel deepClone(final EditableModel modelToClone, final String newName) {
 		final File temp;
 		try {
 			final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			what.printTo(byteArrayOutputStream);
+			modelToClone.printTo(byteArrayOutputStream);
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
 				final EditableModel newModel = EditableModel.read(bais);
 				newModel.setName(newName);
-				newModel.setFileRef(what.getFile());
+				newModel.setFileRef(modelToClone.getFile());
 				return newModel;
 			}
 
@@ -164,20 +163,20 @@ public class EditableModel implements Named {
 		}
 		// Write some legit deep clone code later
 
-		// MDL newModel = new MDL(what);
+		// MDL newModel = new MDL(modelToClone);
 		//
 		// newModel.m_anims.clear();
-		// for( Animation anim: what.m_anims )
+		// for( Animation anim: modelToClone.m_anims )
 		// {
 		// newModel.add(new Animation(anim));
 		// }
 		// newModel.m_textures.clear();
-		// for( Bitmap tex: what.m_textures )
+		// for( Bitmap tex: modelToClone.m_textures )
 		// {
 		// newModel.add(new Bitmap(tex));
 		// }
 		// newModel.m_materials.clear();
-		// for(Material mat: what.m_materials)
+		// for(Material mat: modelToClone.m_materials)
 		// {
 		// newModel.add(new Material(mat));
 		// }
@@ -220,16 +219,16 @@ public class EditableModel implements Named {
 		extents = new ExtLog(other.extents);
 		formatVersion = other.formatVersion;
 		header = new ArrayList<>(other.header);
-		anims = new ArrayList(other.anims);
-		globalSeqs = new ArrayList(other.globalSeqs);
-		textures = new ArrayList(other.textures);
-		materials = new ArrayList(other.materials);
-		texAnims = new ArrayList(other.texAnims);
-		geosets = new ArrayList(other.geosets);
-		geosetAnims = new ArrayList(other.geosetAnims);
-		idObjects = new ArrayList(other.idObjects);
-		pivots = new ArrayList(other.pivots);
-		cameras = new ArrayList(other.cameras);
+		anims = new ArrayList<>(other.anims);
+		globalSeqs = new ArrayList<>(other.globalSeqs);
+		textures = new ArrayList<>(other.textures);
+		materials = new ArrayList<>(other.materials);
+		texAnims = new ArrayList<>(other.texAnims);
+		geosets = new ArrayList<>(other.geosets);
+		geosetAnims = new ArrayList<>(other.geosetAnims);
+		idObjects = new ArrayList<>(other.idObjects);
+		pivots = new ArrayList<>(other.pivots);
+		cameras = new ArrayList<>(other.cameras);
 	}
 
 	/**
@@ -246,8 +245,8 @@ public class EditableModel implements Named {
 	public EditableModel(final MdxModel mdx) {
 		this();
 		// Step 1: Convert the Model Chunk
-		// For MDL api, this is currently embedded right inside the
-		// MDL class
+		// For MDL api, this is currently
+		// embedded right inside the MDL class
 		setName(mdx.modelChunk.name);
 		addToHeader("//This model was converted from MDX by ogre-lord's Java MDX API and Retera's Java MDL API");
 		setBlendTime(mdx.modelChunk.blendTime);
@@ -303,9 +302,7 @@ public class EditableModel implements Named {
 			}
 		}
 
-		// Step 9:
-		// convert "IdObjects" as I called them in my high school mdl code
-		// (nodes)
+		// Step 9: convert "IdObjects" as I called them in my high school mdl code (nodes)
 
 		// Bones
 		if (mdx.boneChunk != null) {
@@ -408,7 +405,8 @@ public class EditableModel implements Named {
 	public void parseVertex(final String input, final Geoset geoset) {
 		final String[] entries = input.split(",");
 		try {
-			geoset.addVertex(new GeosetVertex(Double.parseDouble(entries[0].substring(4)),
+			geoset.addVertex(new GeosetVertex(
+					Double.parseDouble(entries[0].substring(4)),
 					Double.parseDouble(entries[1]),
 					Double.parseDouble(entries[2].substring(0, entries[2].length() - 1))));
 		} catch (final NumberFormatException e) {
@@ -419,21 +417,19 @@ public class EditableModel implements Named {
 
 	public void parseTriangles(final String input, final Geoset g) {
 		// Loading triangles to a geoset requires verteces to be loaded first
-		final String[] s = input.split(",");
-		s[0] = s[0].substring(4);
-		final int s_size = countContainsString(input, ",");
-		s[s_size - 1] = s[s_size - 1].substring(0, s[s_size - 1].length() - 2);
-		for (int t = 0; t < (s_size - 1); t += 3)// s[t+3].equals("")||
+		final String[] s = input.split("\\{")[1].split("}")[0].split(", ");
+		for (int t = 0; t < s.length; t += 3)// s[t+3].equals("")||
 		{
-			for (int i = 0; i < 3; i++) {
-				s[t + i] = s[t + i].substring(1);
-			}
 			try {
-				g.addTriangle(new Triangle(Integer.parseInt(s[t]), Integer.parseInt(s[t + 1]),
+				g.addTriangle(new Triangle(
+						Integer.parseInt(s[t]),
+						Integer.parseInt(s[t + 1]),
 						Integer.parseInt(s[t + 2]), g));
 			} catch (final NumberFormatException e) {
 				JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
-						"Error: Unable to interpret information in Triangles: " + s[t] + ", " + s[t + 1] + ", or "
+						"Error: Unable to interpret information in Triangles: "
+								+ s[t] + ", "
+								+ s[t + 1] + ", or "
 								+ s[t + 2]);
 			}
 		}
@@ -452,33 +448,6 @@ public class EditableModel implements Named {
 			output = "COMPLETED PARSING";
 		}
 		return output;
-	}
-
-	public boolean doesContainString(final String a, final String b)// see if a
-																	// contains
-																	// b
-	{
-		final int l = a.length();
-		for (int i = 0; i < l; i++) {
-			if (a.startsWith(b, i)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public int countContainsString(final String a, final String b)// see if a
-																	// contains
-																	// b
-	{
-		final int l = a.length();
-		int x = 0;
-		for (int i = 0; i < l; i++) {
-			if (a.startsWith(b, i)) {
-				x++;
-			}
-		}
-		return x;
 	}
 
 	// INTERNAL PARTS CODING
@@ -681,12 +650,12 @@ public class EditableModel implements Named {
 			}
 		}
 		final List<AnimFlag> flags = getAllAnimFlags();
-		final List<EventObject> evts = sortedIdObjects(EventObject.class);
+		final List<EventObject> eventObjects = sortedIdObjects(EventObject.class);
 		for (final Animation anim : this.anims) {
-			anim.clearData(flags, evts);
+			anim.clearData(flags, eventObjects);
 		}
 		if (clearUnusedNodes) {
-			for (final EventObject e : evts) {
+			for (final EventObject e : eventObjects) {
 				if (e.size() <= 0) {
 					idObjects.remove(e);
 				}
@@ -706,8 +675,7 @@ public class EditableModel implements Named {
 	 */
 
 	public List<Animation> addAnimationsFrom(EditableModel other, final List<Animation> anims) {
-		// this process destroys the "other" model inside memory, so destroy
-		// a copy instead
+		// this process destroys the "other" model inside memory, so destroy a copy instead
 		other = EditableModel.deepClone(other, "animation source file");
 
 		final List<AnimFlag> flags = getAllAnimFlags();
@@ -744,17 +712,16 @@ public class EditableModel implements Named {
 			final int animTrackEnd = animTrackEnd();
 			final int newStart = animTrackEnd + 300;
 			final int newEnd = newStart + anim.length();
-			final Animation newAnim = new Animation(anim); // clone the
-															// animation from
-															// the other model
+			final Animation newAnim = new Animation(anim);
+
+			// clone the animation from the other model
 			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
 			newAnim.setInterval(newStart, newEnd);
 			add(newAnim); // add the new animation to this model
 			newAnimations.add(newAnim);
 		}
 
-		// destroy the other model's animations, filling them in with the new
-		// stuff
+		// destroy the other model's animations, filling them in with the new stuff
 		for (final AnimFlag af : othersFlags) {
 			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
 		}
@@ -762,12 +729,10 @@ public class EditableModel implements Named {
 			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
 		}
 
-		// Now, map the bones in the other model onto the bones in the current
-		// model
-		final List<Bone> leftBehind = new ArrayList<>(); // the bones that
-															// don't find
-															// matches in
-															// current model
+		// Now, map the bones in the other model onto the bones in the current model
+		final List<Bone> leftBehind = new ArrayList<>();
+		// the bones that don't find matches in current model
+
 		for (final IdObject object : other.idObjects) {
 			if (object instanceof Bone) {
 				// the bone from the other model
@@ -776,8 +741,8 @@ public class EditableModel implements Named {
 				final Object localObject = getObject(bone.getName());
 				if (localObject instanceof Bone) {
 					final Bone localBone = (Bone) localObject;
-					localBone.copyMotionFrom(bone); // if it's a match, take the
-													// data
+					localBone.copyMotionFrom(bone);
+					// if it's a match, take the data
 				} else {
 					leftBehind.add(bone);
 				}
@@ -871,9 +836,11 @@ public class EditableModel implements Named {
 			if ((mdlr.formatVersion != 800) && (mdlr.formatVersion != 900) && (mdlr.formatVersion != 1000)) {
 				JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(), "The format version was confusing!");
 			}
-			line = MDLReader.nextLine(mdl);// this is "}" for format version
-			if (!line.startsWith("}")) // now I'll prove it
-			{ // gotta have that sense of humor, right?
+			line = MDLReader.nextLine(mdl);
+			// this is "}" for format version, now I'll prove it
+			if (!line.startsWith("}"))
+			{
+				// gotta have that sense of humor, right?
 				JOptionPane.showMessageDialog(MDLReader.getDefaultContainer(),
 						"Model could not be understood. Program does not understand this type of file.");
 			}
@@ -1064,7 +1031,7 @@ public class EditableModel implements Named {
 			}
 			try {
 				mdl.close();
-			} catch (final Exception e) {
+			} catch (final Exception ignored) {
 
 			}
 			return mdlr;
@@ -1616,8 +1583,8 @@ public class EditableModel implements Named {
 						}
 					}
 				}
-				lay.updateIds(this);// keep those Ids straight, will be -1 if
-									// null
+				lay.updateIds(this);
+				// keep those Ids straight, will be -1 if  null
 			}
 		}
 		final ArrayList<ParticleEmitter2> particles = sortedIdObjects(ParticleEmitter2.class);
@@ -1936,29 +1903,27 @@ public class EditableModel implements Named {
 		return null;
 	}
 
-	public void addFlagToParent(final AnimFlag aflg, final AnimFlag added)// aflg
-																			// is
-																			// the
-																			// parent
+	// animFlag is the parent
+	public void addFlagToParent(final AnimFlag animFlag, final AnimFlag added)
 	{
-		// ADDS "added" TO THE PARENT OF "aflg"
+		// ADDS "added" TO THE PARENT OF "animFlag"
 		for (final Material m : materials) {
 			for (final Layer lay : m.layers) {
-				if (lay.anims.contains(aflg)) {
+				if (lay.anims.contains(animFlag)) {
 					lay.anims.add(added);
 				}
 			}
 		}
 		if (texAnims != null) {
 			for (final TextureAnim texa : texAnims) {
-				if (texa.animFlags.contains(aflg)) {
+				if (texa.animFlags.contains(animFlag)) {
 					texa.animFlags.add(added);
 				}
 			}
 		}
 		if (geosetAnims != null) {
 			for (final GeosetAnim ga : geosetAnims) {
-				if (ga.animFlags.contains(aflg)) {
+				if (ga.animFlags.contains(animFlag)) {
 					ga.animFlags.add(added);
 				}
 			}
@@ -1966,55 +1931,55 @@ public class EditableModel implements Named {
 		final ArrayList<Bone> bones = sortedIdObjects(Bone.class);
 		bones.addAll(sortedIdObjects(Helper.class));// Hey, look at that!
 		for (final Bone b : bones) {
-			if (b.animFlags.contains(aflg)) {
+			if (b.animFlags.contains(animFlag)) {
 				b.animFlags.add(added);
 			}
 		}
 		final ArrayList<Light> lights = sortedIdObjects(Light.class);
 		for (final Light l : lights) {
-			if (l.animFlags.contains(aflg)) {
+			if (l.animFlags.contains(animFlag)) {
 				l.animFlags.add(added);
 			}
 		}
 		final ArrayList<Attachment> atcs = sortedIdObjects(Attachment.class);
 		for (final Attachment x : atcs) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		final ArrayList<ParticleEmitter2> pes = sortedIdObjects(ParticleEmitter2.class);
 		for (final ParticleEmitter2 x : pes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		final ArrayList<ParticleEmitter> xpes = sortedIdObjects(ParticleEmitter.class);
 		for (final ParticleEmitter x : xpes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		final ArrayList<ParticleEmitterPopcorn> pfes = sortedIdObjects(ParticleEmitterPopcorn.class);
 		for (final ParticleEmitterPopcorn x : pfes) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		final ArrayList<RibbonEmitter> res = sortedIdObjects(RibbonEmitter.class);
 		for (final RibbonEmitter x : res) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		final ArrayList<CollisionShape> cs = sortedIdObjects(CollisionShape.class);
 		for (final CollisionShape x : cs) {
-			if (x.animFlags.contains(aflg)) {
+			if (x.animFlags.contains(animFlag)) {
 				x.animFlags.add(added);
 			}
 		}
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				if (x.animFlags.contains(aflg) || x.targetAnimFlags.contains(aflg)) {
+				if (x.animFlags.contains(animFlag) || x.targetAnimFlags.contains(animFlag)) {
 					x.animFlags.add(added);
 				}
 			}
