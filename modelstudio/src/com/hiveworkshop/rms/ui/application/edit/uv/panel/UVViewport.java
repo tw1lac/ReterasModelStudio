@@ -1,34 +1,5 @@
 package com.hiveworkshop.rms.ui.application.edit.uv.panel;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.Timer;
-
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.activity.CursorManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.activity.ViewportActivity;
@@ -40,6 +11,14 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditorChangeListener;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.viewport.UVViewportModelRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class UVViewport extends JPanel implements MouseListener, ActionListener, MouseWheelListener,
 		MouseMotionListener, CoordinateSystem, ViewportView, TVertexEditorChangeListener {
@@ -248,22 +227,22 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 
 	@Override
 	public double convertX(final double x) {
-		return ((x + m_a) * m_zoom * aspectRatio) + (getWidth() / 2);
+		return ((x + m_a) * m_zoom * aspectRatio) + (getWidth() / 2.0);
 	}
 
 	@Override
 	public double convertY(final double y) {
-		return ((y + m_b) * m_zoom) + (getHeight() / 2);
+		return ((y + m_b) * m_zoom) + (getHeight() / 2.0);
 	}
 
 	@Override
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / aspectRatio / m_zoom) - m_a;
+		return ((x - (getWidth() / 2.0)) / aspectRatio / m_zoom) - m_a;
 	}
 
 	@Override
 	public double geomY(final double y) {
-		return ((y - (getHeight() / 2)) / m_zoom) - m_b;
+		return ((y - (getHeight() / 2.0)) / m_zoom) - m_b;
 	}
 
 	@Override
@@ -289,8 +268,8 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 				lastClick.x = (int) mx;
 				lastClick.y = (int) my;
 			}
-			parent.setMouseCoordDisplay(((mx - (getWidth() / 2)) / aspectRatio / m_zoom) - m_a,
-					((my - (getHeight() / 2)) / m_zoom) - m_b);
+			parent.setMouseCoordDisplay(((mx - (getWidth() / 2.0)) / aspectRatio / m_zoom) - m_a,
+					((my - (getHeight() / 2.0)) / m_zoom) - m_b);
 
 			repaint();
 		} else if (e.getSource() == placeholderButton) {
@@ -402,13 +381,13 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 		}
 		for (int i = 0; i < wr; i++) {
 			if (neg) {
-				m_a -= ((mx - (getWidth() / 2)) / aspectRatio) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
-				m_b -= (my - (getHeight() / 2)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_a -= ((mx - (getWidth() / 2.0)) / aspectRatio) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
 				m_zoom *= 1.15;
 			} else {
 				m_zoom /= 1.15;
-				m_a -= ((mx - (getWidth() / 2)) / aspectRatio) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
-				m_b -= (my - (getHeight() / 2)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_a -= ((mx - (getWidth() / 2.0)) / aspectRatio) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
 			}
 		}
 	}
@@ -418,17 +397,15 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 				Math.min(geomY(a.y), geomY(b.y)));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
 				Math.max(geomY(a.y), geomY(b.y)));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	public void setAspectRatio(final double ratio) {

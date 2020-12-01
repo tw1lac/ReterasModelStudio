@@ -1,7 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv;
 
-import java.awt.geom.Point2D.Double;
-
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericScaleAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.AbstractManipulator;
@@ -9,6 +7,8 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.geom.Point2D.Double;
 
 public abstract class AbstractScaleTVertexManipulator extends AbstractManipulator {
 	private final TVertexEditor modelEditor;
@@ -57,8 +57,7 @@ public abstract class AbstractScaleTVertexManipulator extends AbstractManipulato
 		dxs = startingClick.x - center.getCoord(dim1);
 		dys = startingClick.y - center.getCoord(dim2);
 		final double startDist = Math.sqrt((dxs * dxs) + (dys * dys));
-		final double distRatio = endDist / startDist;
-		return distRatio;
+		return endDist / startDist;
 	}
 
 }

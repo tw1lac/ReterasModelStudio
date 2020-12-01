@@ -714,38 +714,37 @@ public class PerspectiveViewport extends BetterAWTGLCanvas
 		}
 		boolean depthMask = false;
 		switch (layer.getFilterMode()) {
-		case BLEND:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			break;
-		case ADDITIVE:
-		case ADDALPHA:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case MODULATE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			break;
-		case MODULATE2X:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			break;
-		case NONE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glDisable(GL11.GL_BLEND);
-			depthMask = true;
-			break;
-		case TRANSPARENT:
-			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.75f);
-			GL11.glDisable(GL11.GL_BLEND);
-			depthMask = true;
-			break;
+			case BLEND -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			}
+			case ADDITIVE, ADDALPHA -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case MODULATE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
+			}
+			case MODULATE2X -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+			}
+			case NONE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glDisable(GL11.GL_BLEND);
+				depthMask = true;
+			}
+			case TRANSPARENT -> {
+				GL11.glEnable(GL11.GL_ALPHA_TEST);
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.75f);
+				GL11.glDisable(GL11.GL_BLEND);
+				depthMask = true;
+			}
 		}
 		if (layer.getTwoSided()) {
 			GL11.glDisable(GL11.GL_CULL_FACE);
@@ -785,31 +784,31 @@ public class PerspectiveViewport extends BetterAWTGLCanvas
 					tex.isWrapHeight() ? GL11.GL_REPEAT : GL12.GL_CLAMP_TO_EDGE);
 		}
 		switch (particle2.getFilterMode()) {
-		case BLEND:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			break;
-		case ADDITIVE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case ALPHAKEY:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case MODULATE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			break;
-		case MODULATE2X:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			break;
+			case BLEND -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			}
+			case ADDITIVE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case ALPHAKEY -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case MODULATE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
+			}
+			case MODULATE2X -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+			}
 		}
 		if (particle2.getUnshaded()) {
 			GL11.glDisable(GL_LIGHTING);
@@ -1030,19 +1029,19 @@ public class PerspectiveViewport extends BetterAWTGLCanvas
 	}
 
 	public double convertX(final double x) {
-		return ((x + cameraPos.x) * m_zoom) + (getWidth() / 2);
+		return ((x + cameraPos.x) * m_zoom) + (getWidth() / 2.0);
 	}
 
 	public double convertY(final double y) {
-		return ((-y + cameraPos.y) * m_zoom) + (getHeight() / 2);
+		return ((-y + cameraPos.y) * m_zoom) + (getHeight() / 2.0);
 	}
 
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / m_zoom) - cameraPos.x;
+		return ((x - (getWidth() / 2.0)) / m_zoom) - cameraPos.x;
 	}
 
 	public double geomY(final double y) {
-		return -(((y - (getHeight() / 2)) / m_zoom) - cameraPos.y);
+		return -(((y - (getHeight() / 2.0)) / m_zoom) - cameraPos.y);
 	}
 
 	@Override
@@ -1247,17 +1246,15 @@ public class PerspectiveViewport extends BetterAWTGLCanvas
 				Math.min(geomY(a.y), geomY(b.y)));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
 				Math.max(geomY(a.y), geomY(b.y)));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	private static final int BYTES_PER_PIXEL = 4;

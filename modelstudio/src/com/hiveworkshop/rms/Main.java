@@ -225,12 +225,11 @@ public class Main {
     }
 
     private static void runAsConverter(final String arg) throws IOException {
-        final String path = arg;
-        final EditableModel model = MdxUtils.loadEditable(new File(path));
-        if (path.toLowerCase().endsWith(".mdx")) {
-            MdxUtils.saveMdl(model, new File(path.substring(0, path.lastIndexOf('.')) + ".mdl"));
-        } else if (path.toLowerCase().endsWith(".mdl")) {
-            MdxUtils.saveMdx(model, new File(path.substring(0, path.lastIndexOf('.')) + ".mdx"));
+        final EditableModel model = MdxUtils.loadEditable(new File(arg));
+        if (arg.toLowerCase().endsWith(".mdx")) {
+            MdxUtils.saveMdl(model, new File(arg.substring(0, arg.lastIndexOf('.')) + ".mdl"));
+        } else if (arg.toLowerCase().endsWith(".mdl")) {
+            MdxUtils.saveMdx(model, new File(arg.substring(0, arg.lastIndexOf('.')) + ".mdx"));
         }
     }
 }

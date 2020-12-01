@@ -32,18 +32,16 @@ public final class CharInt {
     
     /**
      * Convert an integer into a four character string.
-     * 
+     *
      * @param id the integer to convert
      * @return four character string representing the integer.
      */
-    public final static String toString(final int id) {
-        final StringBuffer result = new StringBuffer(4);
-        
-        result.append((char) ((id >> 24) & 0xFF));
-        result.append((char) ((id >> 16) & 0xFF));
-        result.append((char) ((id >> 8) & 0xFF));
-        result.append((char) ((id >> 0) & 0xFF));
-        
-        return result.toString();
+    public static String toString(final int id) {
+
+        String result = String.valueOf((char) ((id >> 24) & 0xFF)) +
+                (char) ((id >> 16) & 0xFF) +
+                (char) ((id >> 8) & 0xFF) +
+                (char) ((id >> 0) & 0xFF);
+        return result;
     }
 }

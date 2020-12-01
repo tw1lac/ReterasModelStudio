@@ -49,45 +49,71 @@ public class Vec3 {
 		}
 	}
 
-	public float getCoord(final byte dim) {
-		switch (dim) {
-		case 0:
-			return x;
-		case 1:
-			return y;
-		case 2:
-			return z;
+	public static void rotateVertex(final double centerX, final double centerY, final double centerZ,
+									final double radians, final byte firstXYZ, final byte secondXYZ, final Vec3 vertex) {
+		final double x1 = vertex.getCoord(firstXYZ);
+		final double y1 = vertex.getCoord(secondXYZ);
+		final double cx;// = coordinateSystem.geomX(centerX);
+		switch (firstXYZ) {
+			case 0:
+				cx = centerX;
+				break;
+			case 1:
+				cx = centerY;
+				break;
+			default:
+			case 2:
+				cx = centerZ;
+				break;
 		}
-		return 0;
+		final double dx = x1 - cx;
+		final double cy;// = coordinateSystem.geomY(centerY);
+		switch (secondXYZ) {
+			case 0:
+				cy = centerX;
+				break;
+			case 1:
+				cy = centerY;
+				break;
+			default:
+			case 2:
+				cy = centerZ;
+				break;
+		}
+		final double dy = y1 - cy;
+		final double r = Math.sqrt((dx * dx) + (dy * dy));
+		double verAng = Math.acos(dx / r);
+		if (dy < 0) {
+			verAng = -verAng;
+		}
+		// if( getDimEditable(dim1) )
+		double nextDim = (Math.cos(verAng + radians) * r) + cx;
+		if (!Double.isNaN(nextDim)) {
+			vertex.setCoord(firstXYZ, nextDim);
+		}
+		// if( getDimEditable(dim2) )
+		nextDim = (Math.sin(verAng + radians) * r) + cy;
+		if (!Double.isNaN(nextDim)) {
+			vertex.setCoord(secondXYZ, nextDim);
+		}
+	}
+
+	public float getCoord(final byte dim) {
+		return switch (dim) {
+			case 0 -> x;
+			case 1 -> y;
+			case 2 -> z;
+			default -> 0;
+		};
 	}
 
 	public void setCoord(final byte dim, final double value) {
 		if (!Double.isNaN(value)) {
 			switch (dim) {
-			case 0:
-				x = (float) value;
-				break;
-			case 1:
-				y = (float) value;
-				break;
-			case 2:
-				z = (float) value;
-				break;
+				case 0 -> x = (float) value;
+				case 1 -> y = (float) value;
+				case 2 -> z = (float) value;
 			}
-		}
-	}
-
-	public void translateCoord(final byte dim, final double value) {
-		switch (dim) {
-		case 0:
-			x += value;
-			break;
-		case 1:
-			y += value;
-			break;
-		case 2:
-			z += value;
-			break;
 		}
 	}
 
@@ -236,60 +262,19 @@ public class Vec3 {
 		}
 		final double cosRadians = Math.cos(radiansToApply);
 		if (radiansToApply == Math.PI) {
-			vertex.x = (float)centerX - (float)deltaX;
-			vertex.y = (float)centerY - (float)deltaY;
-			vertex.z = (float)centerY - (float)deltaZ;
+			vertex.x = (float) centerX - (float) deltaX;
+			vertex.y = (float) centerY - (float) deltaY;
+			vertex.z = (float) centerY - (float) deltaZ;
 		}
 		final double resultDeltaX = vertexX * cosRadians;
 		throw new UnsupportedOperationException("NYI");
 	}
 
-	public static void rotateVertex(final double centerX, final double centerY, final double centerZ,
-			final double radians, final byte firstXYZ, final byte secondXYZ, final Vec3 vertex) {
-		final double x1 = vertex.getCoord(firstXYZ);
-		final double y1 = vertex.getCoord(secondXYZ);
-		final double cx;// = coordinateSystem.geomX(centerX);
-		switch (firstXYZ) {
-		case 0:
-			cx = centerX;
-			break;
-		case 1:
-			cx = centerY;
-			break;
-		default:
-		case 2:
-			cx = centerZ;
-			break;
-		}
-		final double dx = x1 - cx;
-		final double cy;// = coordinateSystem.geomY(centerY);
-		switch (secondXYZ) {
-		case 0:
-			cy = centerX;
-			break;
-		case 1:
-			cy = centerY;
-			break;
-		default:
-		case 2:
-			cy = centerZ;
-			break;
-		}
-		final double dy = y1 - cy;
-		final double r = Math.sqrt((dx * dx) + (dy * dy));
-		double verAng = Math.acos(dx / r);
-		if (dy < 0) {
-			verAng = -verAng;
-		}
-		// if( getDimEditable(dim1) )
-		double nextDim = (Math.cos(verAng + radians) * r) + cx;
-		if (!Double.isNaN(nextDim)) {
-			vertex.setCoord(firstXYZ, nextDim);
-		}
-		// if( getDimEditable(dim2) )
-		nextDim = (Math.sin(verAng + radians) * r) + cy;
-		if (!Double.isNaN(nextDim)) {
-			vertex.setCoord(secondXYZ, nextDim);
+	public void translateCoord(final byte dim, final double value) {
+		switch (dim) {
+			case 0 -> x += value;
+			case 1 -> y += value;
+			case 2 -> z += value;
 		}
 	}
 

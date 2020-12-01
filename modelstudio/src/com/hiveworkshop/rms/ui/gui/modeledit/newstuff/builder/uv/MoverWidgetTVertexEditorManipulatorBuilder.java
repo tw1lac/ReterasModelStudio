@@ -1,8 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
@@ -17,12 +14,14 @@ import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec2;
 
+import java.awt.*;
+
 public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
 	private final TVertexMoverWidget moverWidget = new TVertexMoverWidget(new Vec2(0, 0));
 
 	public MoverWidgetTVertexEditorManipulatorBuilder(final TVertexEditor modelEditor,
-			final ViewportSelectionHandler viewportSelectionHandler, final ProgramPreferences programPreferences,
-			final ModelView modelView) {
+													  final ViewportSelectionHandler viewportSelectionHandler, final ProgramPreferences programPreferences,
+													  final ModelView modelView) {
 		super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
 	}
 
@@ -45,17 +44,12 @@ public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
 		}
-		switch (directionByMouse) {
-		case BOTH:
-			return new MoveTVertexManipulator(getModelEditor());
-		case RIGHT:
-			return new MoveXTVertexManipulator(getModelEditor());
-		case UP:
-			return new MoveYTVertexManipulator(getModelEditor());
-		case NONE:
-			return null;
-		}
-		return null;
+		return switch (directionByMouse) {
+			case BOTH -> new MoveTVertexManipulator(getModelEditor());
+			case RIGHT -> new MoveXTVertexManipulator(getModelEditor());
+			case UP -> new MoveYTVertexManipulator(getModelEditor());
+			case NONE -> null;
+		};
 	}
 
 	@Override

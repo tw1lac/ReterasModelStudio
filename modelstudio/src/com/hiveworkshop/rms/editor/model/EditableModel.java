@@ -1,57 +1,27 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.awt.Component;
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-
 import com.hiveworkshop.rms.editor.model.AnimFlag.Entry;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
-import com.hiveworkshop.rms.editor.model.visitor.GeosetVisitor;
-import com.hiveworkshop.rms.editor.model.visitor.MeshVisitor;
-import com.hiveworkshop.rms.editor.model.visitor.ModelVisitor;
-import com.hiveworkshop.rms.editor.model.visitor.TriangleVisitor;
-import com.hiveworkshop.rms.editor.model.visitor.VertexVisitor;
+import com.hiveworkshop.rms.editor.model.visitor.*;
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
 import com.hiveworkshop.rms.filesystem.sources.CompoundDataSource;
 import com.hiveworkshop.rms.filesystem.sources.DataSource;
 import com.hiveworkshop.rms.filesystem.sources.FolderDataSource;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxAttachment;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxBone;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxCamera;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxCollisionShape;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxEventObject;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxFaceEffect;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxGeoset;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxGeosetAnimation;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxHelper;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxLight;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxMaterial;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxModel;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxParticleEmitter;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxParticleEmitter2;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxParticleEmitterPopcorn;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxRibbonEmitter;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxSequence;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxTexture;
-import com.hiveworkshop.rms.parsers.mdlx.MdlxTextureAnimation;
+import com.hiveworkshop.rms.parsers.mdlx.*;
 import com.hiveworkshop.rms.util.MathUtils;
 import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
-import com.hiveworkshop.rms.util.Vec4;
-
 import jassimp.AiMaterial;
 import jassimp.AiMesh;
 import jassimp.AiScene;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.*;
 
 /**
  * A java object to represent and store an MDL 3d model (Warcraft III file
@@ -433,8 +403,6 @@ public class EditableModel implements Named {
 	/**
 	 * IMPORTANT: This is the only way to retrieve the true header name from the top
 	 * of the "model chunk", the same one set by {@link #setName(String)} function.
-	 *
-	 * @return
 	 */
 	public String getHeaderName() {
 		return name;
@@ -745,8 +713,6 @@ public class EditableModel implements Named {
 	 * In addition, any bones with significant amounts of motion that were not found
 	 * to correlate with the contents of this model get added to this model's list
 	 * of bones.
-	 *
-	 * @param other
 	 */
 	public void addAnimationsFrom(EditableModel other) {
 		// this process destroys the "other" model inside memory, so destroy
@@ -814,10 +780,10 @@ public class EditableModel implements Named {
 				final Bone bone = (Bone) object;
 				// the object in this model of similar name
 				final Object localObject = getObject(bone.getName());
-				if ((localObject != null) && (localObject instanceof Bone)) {
+				if ((localObject instanceof Bone)) {
 					final Bone localBone = (Bone) localObject;
 					localBone.copyMotionFrom(bone); // if it's a match, take the
-													// data
+					// data
 				} else {
 					leftBehind.add(bone);
 				}
@@ -901,10 +867,10 @@ public class EditableModel implements Named {
 				final Bone bone = (Bone) object;
 				// the object in this model of similar name
 				final Object localObject = getObject(bone.getName());
-				if ((localObject != null) && (localObject instanceof Bone)) {
+				if ((localObject instanceof Bone)) {
 					final Bone localBone = (Bone) localObject;
 					localBone.copyMotionFrom(bone); // if it's a match, take the
-													// data
+					// data
 				} else {
 					leftBehind.add(bone);
 				}
@@ -1440,8 +1406,7 @@ public class EditableModel implements Named {
 	public GeosetAnim getGeosetAnimOfGeoset(final Geoset g) {
 		if (g.geosetAnim == null) {
 			boolean noIds = true;
-			for (int i = 0; (i < geosetAnims.size()) && noIds; i++) {
-				final GeosetAnim ga = geosetAnims.get(i);
+			for (final GeosetAnim ga : geosetAnims) {
 				if (ga.geoset != null) {
 					noIds = false;
 					break;
@@ -1920,7 +1885,7 @@ public class EditableModel implements Named {
 			Entry lastEntry = null;
 			for (int i = 0; i < flag.size(); i++) {
 				final Entry entry = flag.getEntry(i);
-				if ((lastEntry != null) && (lastEntry.time == entry.time)) {
+				if ((lastEntry != null) && (lastEntry.time.equals(entry.time))) {
 					indicesForDeletion.add(i);
 				}
 				lastEntry = entry;
@@ -2164,9 +2129,6 @@ public class EditableModel implements Named {
 
 	/**
 	 * Please, for the love of Pete, don't actually do this.
-	 *
-	 * @param targetLevelOfDetail
-	 * @param model
 	 */
 	public static void convertToV800(final int targetLevelOfDetail, final EditableModel model) {
 		// Things to fix:

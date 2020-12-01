@@ -126,8 +126,7 @@ public class CascDataSource implements DataSource {
 	private ByteBuffer internalRead(final String tempFilepath) {
 		try {
 			if (rootFileSystem.isFile(tempFilepath) && rootFileSystem.isFileAvailable(tempFilepath)) {
-				final ByteBuffer buffer = rootFileSystem.readFileData(tempFilepath);
-				return buffer;
+                return rootFileSystem.readFileData(tempFilepath);
 			}
 		} catch (final IOException e) {
 			throw new RuntimeException("CASC parser error for: " + tempFilepath, e);

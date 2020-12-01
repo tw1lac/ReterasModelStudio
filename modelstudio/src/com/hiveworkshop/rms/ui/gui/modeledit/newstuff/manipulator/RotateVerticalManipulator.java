@@ -1,11 +1,11 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotateAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.geom.Point2D.Double;
 
@@ -46,8 +46,7 @@ public class RotateVerticalManipulator extends AbstractManipulator {
 		if (radius <= 0) {
 			radius = 64;
 		}
-		final double deltaAngle = (endingClick.y - startingClick.y) / radius;
-		return deltaAngle;
+		return (endingClick.y - startingClick.y) / radius;
 	}
 
 }

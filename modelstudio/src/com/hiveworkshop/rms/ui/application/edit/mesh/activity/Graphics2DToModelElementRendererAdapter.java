@@ -1,9 +1,5 @@
 package com.hiveworkshop.rms.ui.application.edit.mesh.activity;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import com.hiveworkshop.rms.editor.model.Camera;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.editor.model.IdObject;
@@ -13,6 +9,8 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSys
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.renderers.ResettableIdObjectRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
 
 public final class Graphics2DToModelElementRendererAdapter implements ModelElementRenderer {
 	private Graphics2D graphics;
@@ -74,16 +72,14 @@ public final class Graphics2DToModelElementRendererAdapter implements ModelEleme
 	public void renderCamera(final Camera camera, final Color boxColor, final Vec3 position, final Color targetColor,
 			final Vec3 targetPosition) {
 		final Graphics2D g2 = ((Graphics2D) graphics.create());
-		final Vec3 ver = position;
-		final Vec3 targ = targetPosition;
 		// final boolean verSel = selection.contains(ver);
 		// final boolean tarSel = selection.contains(targ);
 		final Point start = new Point(
-				(int) Math.round(coordinateSystem.convertX(ver.getCoord(coordinateSystem.getPortFirstXYZ()))),
-				(int) Math.round(coordinateSystem.convertY(ver.getCoord(coordinateSystem.getPortSecondXYZ()))));
+				(int) Math.round(coordinateSystem.convertX(position.getCoord(coordinateSystem.getPortFirstXYZ()))),
+				(int) Math.round(coordinateSystem.convertY(position.getCoord(coordinateSystem.getPortSecondXYZ()))));
 		final Point end = new Point(
-				(int) Math.round(coordinateSystem.convertX(targ.getCoord(coordinateSystem.getPortFirstXYZ()))),
-				(int) Math.round(coordinateSystem.convertY(targ.getCoord(coordinateSystem.getPortSecondXYZ()))));
+				(int) Math.round(coordinateSystem.convertX(targetPosition.getCoord(coordinateSystem.getPortFirstXYZ()))),
+				(int) Math.round(coordinateSystem.convertY(targetPosition.getCoord(coordinateSystem.getPortSecondXYZ()))));
 		// if (dispCameraNames) {
 		// boolean changedCol = false;
 		//

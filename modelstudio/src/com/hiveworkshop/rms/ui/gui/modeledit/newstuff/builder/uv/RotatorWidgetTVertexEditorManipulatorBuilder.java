@@ -1,8 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
@@ -16,6 +13,8 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec2;
+
+import java.awt.*;
 
 public final class RotatorWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
 	private final TVertexRotatorWidget moverWidget = new TVertexRotatorWidget(new Vec2(0, 0));
@@ -43,19 +42,13 @@ public final class RotatorWidgetTVertexEditorManipulatorBuilder extends Abstract
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
 		}
-		switch (directionByMouse) {
-			case FREE:
-				return new RotateTVertexManipulator(getModelEditor(), selectionView);
-			case HORIZONTALLY:
-				return new RotateTVertexHorizontalManipulator(getModelEditor(), selectionView);
-			case VERTICALLY:
-				return new RotateTVertexVerticalManipulator(getModelEditor(), selectionView);
-			case SPIN:
-				return new RotateTVertexManipulator(getModelEditor(), selectionView);
-			case NONE:
-				return null;
-		}
-		return null;
+		return switch (directionByMouse) {
+			case FREE -> new RotateTVertexManipulator(getModelEditor(), selectionView);
+			case HORIZONTALLY -> new RotateTVertexHorizontalManipulator(getModelEditor(), selectionView);
+			case VERTICALLY -> new RotateTVertexVerticalManipulator(getModelEditor(), selectionView);
+			case SPIN -> new RotateTVertexManipulator(getModelEditor(), selectionView);
+			case NONE -> null;
+		};
 	}
 
 	@Override

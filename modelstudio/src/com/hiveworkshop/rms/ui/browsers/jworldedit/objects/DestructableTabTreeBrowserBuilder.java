@@ -11,11 +11,10 @@ public class DestructableTabTreeBrowserBuilder implements ObjectTabTreeBrowserBu
 
 	@Override
 	public TopLevelCategoryFolder build() {
-		final TopLevelCategoryFolder root = new TopLevelCategoryFolder(
-				new SortByDoodadCategoryFolder(WEString.getString("WESTRING_BE_STANDARDDESTS"),
-						"DestructibleCategories", DEST_CATEGORY),
-				new SortByDoodadCategoryFolder(WEString.getString("WESTRING_BE_CUSTOMDESTS"), "DestructibleCategories",
-						DEST_CATEGORY));
-		return root;
-	}
+        return new TopLevelCategoryFolder(
+                new SortByDoodadCategoryFolder(WEString.getString("WESTRING_BE_STANDARDDESTS"),
+                        "DestructibleCategories", DEST_CATEGORY),
+                new SortByDoodadCategoryFolder(WEString.getString("WESTRING_BE_CUSTOMDESTS"), "DestructibleCategories",
+                        DEST_CATEGORY));
+    }
 }

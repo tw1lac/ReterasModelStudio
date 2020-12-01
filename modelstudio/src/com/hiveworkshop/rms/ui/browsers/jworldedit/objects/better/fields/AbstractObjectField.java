@@ -1,13 +1,13 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields;
 
-import java.awt.Component;
-
-import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.parsers.slk.GameObject;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.rms.util.War3ID;
+
+import java.awt.*;
 
 public abstract class AbstractObjectField implements EditableOnscreenObjectField {
 	private final String displayName;
@@ -67,31 +67,15 @@ public abstract class AbstractObjectField implements EditableOnscreenObjectField
 	@Override
 	public boolean popupEditor(final MutableGameObject gameUnit, final Component parent, final boolean editRawData,
 			final boolean disableLimits) {
-		String worldEditValueStringKey;
-		switch (dataType) {
-		case ABILITIES:
-			worldEditValueStringKey = "WESTRING_AE_DLG_EDITVALUE";
-			break;
-		case BUFFS_EFFECTS:
-			worldEditValueStringKey = "WESTRING_FE_DLG_EDITVALUE";
-			break;
-		case DESTRUCTIBLES:
-			worldEditValueStringKey = "WESTRING_BE_DLG_EDITVALUE";
-			break;
-		case DOODADS:
-			worldEditValueStringKey = "WESTRING_DE_DLG_EDITVALUE";
-			break;
-		case ITEM:
-			worldEditValueStringKey = "WESTRING_IE_DLG_EDITVALUE";
-			break;
-		case UPGRADES:
-			worldEditValueStringKey = "WESTRING_GE_DLG_EDITVALUE";
-			break;
-		default:
-		case UNITS:
-			worldEditValueStringKey = "WESTRING_UE_DLG_EDITVALUE";
-			break;
-		}
+		String worldEditValueStringKey = switch (dataType) {
+			case ABILITIES -> "WESTRING_AE_DLG_EDITVALUE";
+			case BUFFS_EFFECTS -> "WESTRING_FE_DLG_EDITVALUE";
+			case DESTRUCTIBLES -> "WESTRING_BE_DLG_EDITVALUE";
+			case DOODADS -> "WESTRING_DE_DLG_EDITVALUE";
+			case ITEM -> "WESTRING_IE_DLG_EDITVALUE";
+			case UPGRADES -> "WESTRING_GE_DLG_EDITVALUE";
+			case UNITS -> "WESTRING_UE_DLG_EDITVALUE";
+		};
 		final String defaultDialogTitle = WEString.getString(worldEditValueStringKey);
 		return popupEditor(gameUnit, parent, editRawData, disableLimits, metaKey, level, defaultDialogTitle,
 				metaDataField);

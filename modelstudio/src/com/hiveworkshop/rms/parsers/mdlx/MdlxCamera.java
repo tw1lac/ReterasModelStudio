@@ -67,18 +67,13 @@ public class MdlxCamera extends MdlxAnimatedObject {
 					break;
 				case MdlUtils.TOKEN_TARGET:
 					for (final String subToken : stream.readBlock()) {
-						switch (subToken) {
-							case MdlUtils.TOKEN_POSITION:
-								stream.readFloatArray(targetPosition);
-								break;
-							case MdlUtils.TOKEN_TRANSLATION:
-								readTimeline(stream, AnimationMap.KTTR);
-								break;
-							default:
-								throw new IllegalStateException(
-										"Unknown token in Camera " + name + "'s Target: " + subToken);
-						}
-					}
+                        switch (subToken) {
+                            case MdlUtils.TOKEN_POSITION -> stream.readFloatArray(targetPosition);
+                            case MdlUtils.TOKEN_TRANSLATION -> readTimeline(stream, AnimationMap.KTTR);
+                            default -> throw new IllegalStateException(
+                                    "Unknown token in Camera " + name + "'s Target: " + subToken);
+                        }
+                    }
 					break;
 				default:
 					throw new RuntimeException("Unknown token in Camera " + name + ": " + token);

@@ -1,10 +1,10 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotateAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.geom.Point2D.Double;
 
@@ -46,8 +46,7 @@ public class SquatToolManipulator extends AbstractManipulator {
 		final double endingDeltaY = endingClick.y - center.getCoord(portSecondXYZ);
 		final double startingAngle = Math.atan2(startingDeltaY, startingDeltaX);
 		final double endingAngle = Math.atan2(endingDeltaY, endingDeltaX);
-		final double deltaAngle = endingAngle - startingAngle;
-		return deltaAngle;
+		return endingAngle - startingAngle;
 	}
 
 }

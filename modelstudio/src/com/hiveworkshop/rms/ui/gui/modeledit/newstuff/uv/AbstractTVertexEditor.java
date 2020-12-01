@@ -1,11 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.actions.uv.UVRemapAction;
@@ -17,16 +11,14 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.selection.SetSelec
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericMoveAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotateAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericScaleAction;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.MirrorTVerticesAction;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.SimpleRotateUVAction;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.StaticMeshUVMoveAction;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.StaticMeshUVRotateAction;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.StaticMeshUVScaleAction;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.VertexSelectionHelper;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.*;
 
 public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexEditor<T> {
 	protected final ModelView model;
@@ -35,7 +27,7 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	protected int uvLayerIndex;
 
 	public AbstractTVertexEditor(final SelectionManager<T> selectionManager, final ModelView model,
-			final ModelStructureChangeListener structureChangeListener) {
+								 final ModelStructureChangeListener structureChangeListener) {
 		super(selectionManager);
 		this.model = model;
 		this.structureChangeListener = structureChangeListener;
@@ -175,9 +167,8 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	public UndoAction selectFromViewer(final SelectionView viewerSelectionView) {
 		final Set<T> previousSelection = selectionManager.getSelection();
 		selectByVertices(viewerSelectionView.getSelectedVertices());
-		final SetSelectionAction<T> setSelectionAction = new SetSelectionAction<>(selectionManager.getSelection(),
+		return new SetSelectionAction<>(selectionManager.getSelection(),
 				previousSelection, selectionManager, "select UV from viewer");
-		return setSelectionAction;
 	}
 
 	@Override

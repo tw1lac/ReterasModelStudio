@@ -208,23 +208,16 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 	}
 
 	private String raceKey(final int index) {
-		switch (index) {
-		case -1:
-			return "human";
-		case 0:
-			return "human";
-		case 1:
-			return "orc";
-		case 2:
-			return "undead";
-		case 3:
-			return "nightelf";
-		case 4:
-			return "neutrals";
-		case 5:
-			return "naga";
-		}
-		return "neutrals";
+		return switch (index) {
+			case -1 -> "human";
+			case 0 -> "human";
+			case 1 -> "orc";
+			case 2 -> "undead";
+			case 3 -> "nightelf";
+			case 4 -> "neutrals";
+			case 5 -> "naga";
+			default -> "neutrals";
+		};
 	}
 
 	class RaceData {
@@ -310,22 +303,14 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				}
 
 				switch (sortGroupId) {
-				case 0:
-					sortedRaces.get(storeKey).units.add(unit);
-					break;
-				case 1:
-					sortedRaces.get(storeKey).heroes.add(unit);
-					break;
-				case 2:
-					sortedRaces.get(storeKey).buildings.add(unit);
-					break;
-				case 3:
-					sortedRaces.get(storeKey).buildingsUprooted.add(unit);
-					sortedRaces.get(storeKey).buildings.add(unit);
-					break;
-				case 4:
-					sortedRaces.get(storeKey).special.add(unit);
-					break;
+					case 0 -> sortedRaces.get(storeKey).units.add(unit);
+					case 1 -> sortedRaces.get(storeKey).heroes.add(unit);
+					case 2 -> sortedRaces.get(storeKey).buildings.add(unit);
+					case 3 -> {
+						sortedRaces.get(storeKey).buildingsUprooted.add(unit);
+						sortedRaces.get(storeKey).buildings.add(unit);
+					}
+					case 4 -> sortedRaces.get(storeKey).special.add(unit);
 				}
 			}
 
@@ -335,102 +320,6 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 			}
 		}
 	}
-
-	class UnitButton extends JButton {
-		GameObject unit;
-
-		public UnitButton(final GameObject u) {
-			super(u.getScaledIcon(0.5));
-			setFocusable(false);
-			unit = u;
-			String uberTip = unit.getField("Ubertip");
-			if (uberTip.length() < 1) {
-				uberTip = unit.getField("UberTip");
-			}
-			if (uberTip.length() < 1) {
-				uberTip = unit.getField("uberTip");
-			}
-			uberTip = uberTip.replace("|n", "<br>");
-			uberTip = uberTip.replace("|cffffcc00", "");
-			uberTip = uberTip.replace("|r", "");
-
-			String newUberTip = "";
-			int depth = 0;
-			for (int i = 0; i < uberTip.length(); i++) {
-				final char c = uberTip.charAt(i);
-				if (c == '<' && uberTip.length() > i + 4 && uberTip.startsWith("<br>", i)) {
-					i += 3;
-					depth = 0;
-					newUberTip += "<br>";
-				} else {
-					if (depth > 80 && c == ' ') {
-						depth = 0;
-						newUberTip += "<br>";
-					}
-					newUberTip += "" + c;
-					depth++;
-				}
-			}
-
-			uberTip = newUberTip;
-			String name = unit.getName();
-			// if( unit.getField("campaign").startsWith("1") &&
-			// Character.isUpperCase(unit.getUnitId().charAt(0)) ) {
-			// name = unit.getField("Propernames");
-			// if( name.contains(",") ) {
-			// name = name.split(",")[0];
-			// }
-			// }
-			final String race = unit.getField("race");
-			boolean showLevel = true;
-			for (int i = 0; i < 6; i++) {
-				if (race.equals(raceKey(i))) {
-					showLevel = false;
-					break;
-				}
-			}
-			// if( unit.getField("EditorSuffix").length() > 0 )
-			// name += " " + unit.getField("EditorSuffix");
-			if (showLevel) {
-				name += " - " + WEString.getString("WESTRING_LEVEL") + " " + unit.getFieldValue("level");
-			} // unit.getUnitId() + "<br>" +
-			if (uberTip.length() > 0) {
-				uberTip = "<html>" + name + "<br>--<br>" + uberTip + "</html>";
-			} else {
-				uberTip = name;
-			}
-			setToolTipText(uberTip);
-			buttonGroup.add(this);
-			addActionListener(buttonListener);
-			setDisabledIcon(unit.getScaledTintedIcon(Color.green, 0.5));
-			setMargin(new Insets(0, 0, 0, 0));
-			setBorder(null);
-		}
-
-		public GameObject getUnit() {
-			return unit;
-		}
-
-		@Override
-		protected void paintComponent(final Graphics g) {
-			if (!isEnabled()) {
-				g.translate(1, 1);
-			}
-			super.paintComponent(g);
-			if (!isEnabled()) {
-				g.translate(-1, -1);
-				final Graphics2D g2 = (Graphics2D) g.create();
-				g2.setColor(Color.GRAY);
-				for (int i = 0; i < 2; i++) {
-					g2.setColor(g2.getColor().brighter());
-					g2.draw3DRect(i, i, getWidth() - i * 2 - 1, getHeight() - i * 2 - 1, false);
-				}
-				g2.dispose();
-			}
-		}
-	}
-
-	boolean firstTime = true;
 
 	public void relayout() {
 
@@ -711,7 +600,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				// continue;
 				// }
 				if (i % rowLength == 0) {
-					if (lastVertGroup != null && lastHorizGroup != null) {
+					if (lastVertGroup != null) {
 						horizontalGroup.addGroup(lastHorizGroup);
 						verticalGroup.addGroup(lastVertGroup);
 					}
@@ -724,7 +613,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				lastHorizGroup.addComponent(myButton);
 				i++;
 			}
-			if (lastVertGroup != null && lastHorizGroup != null) {
+			if (lastVertGroup != null) {
 				horizontalGroup.addGroup(lastHorizGroup);
 				verticalGroup.addGroup(lastVertGroup);
 			}
@@ -788,7 +677,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				// continue;
 				// }
 				if (i % rowLength == 0) {
-					if (lastVertGroup != null && lastHorizGroup != null) {
+					if (lastVertGroup != null) {
 						horizontalGroup.addGroup(lastHorizGroup);
 						verticalGroup.addGroup(lastVertGroup);
 					}
@@ -801,7 +690,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				lastHorizGroup.addComponent(myButton);
 				i++;
 			}
-			if (lastVertGroup != null && lastHorizGroup != null) {
+			if (lastVertGroup != null) {
 				horizontalGroup.addGroup(lastHorizGroup);
 				verticalGroup.addGroup(lastVertGroup);
 			}
@@ -855,7 +744,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				// continue;
 				// }
 				if (i % rowLength == 0) {
-					if (lastVertGroup != null && lastHorizGroup != null) {
+					if (lastVertGroup != null) {
 						horizontalGroup.addGroup(lastHorizGroup);
 						verticalGroup.addGroup(lastVertGroup);
 					}
@@ -868,7 +757,7 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 				lastHorizGroup.addComponent(myButton);
 				i++;
 			}
-			if (lastVertGroup != null && lastHorizGroup != null) {
+			if (lastVertGroup != null) {
 				horizontalGroup.addGroup(lastHorizGroup);
 				verticalGroup.addGroup(lastVertGroup);
 			}
@@ -882,6 +771,102 @@ public class UnitOptionPanel extends JPanel implements ActionListener {
 		setLayout(layout);
 
 		revalidate();
+	}
+
+	boolean firstTime = true;
+
+	class UnitButton extends JButton {
+		GameObject unit;
+
+		public UnitButton(final GameObject u) {
+			super(u.getScaledIcon(0.5));
+			setFocusable(false);
+			unit = u;
+			String uberTip = unit.getField("Ubertip");
+			if (uberTip.length() < 1) {
+				uberTip = unit.getField("UberTip");
+			}
+			if (uberTip.length() < 1) {
+				uberTip = unit.getField("uberTip");
+			}
+			uberTip = uberTip.replace("|n", "<br>");
+			uberTip = uberTip.replace("|cffffcc00", "");
+			uberTip = uberTip.replace("|r", "");
+
+			StringBuilder newUberTip = new StringBuilder();
+			int depth = 0;
+			for (int i = 0; i < uberTip.length(); i++) {
+				final char c = uberTip.charAt(i);
+				if (c == '<' && uberTip.length() > i + 4 && uberTip.startsWith("<br>", i)) {
+					i += 3;
+					depth = 0;
+					newUberTip.append("<br>");
+				} else {
+					if (depth > 80 && c == ' ') {
+						depth = 0;
+						newUberTip.append("<br>");
+					}
+					newUberTip.append("").append(c);
+					depth++;
+				}
+			}
+
+			uberTip = newUberTip.toString();
+			String name = unit.getName();
+			// if( unit.getField("campaign").startsWith("1") &&
+			// Character.isUpperCase(unit.getUnitId().charAt(0)) ) {
+			// name = unit.getField("Propernames");
+			// if( name.contains(",") ) {
+			// name = name.split(",")[0];
+			// }
+			// }
+			final String race = unit.getField("race");
+			boolean showLevel = true;
+			for (int i = 0; i < 6; i++) {
+				if (race.equals(raceKey(i))) {
+					showLevel = false;
+					break;
+				}
+			}
+			// if( unit.getField("EditorSuffix").length() > 0 )
+			// name += " " + unit.getField("EditorSuffix");
+			if (showLevel) {
+				name += " - " + WEString.getString("WESTRING_LEVEL") + " " + unit.getFieldValue("level");
+			} // unit.getUnitId() + "<br>" +
+			if (uberTip.length() > 0) {
+				uberTip = "<html>" + name + "<br>--<br>" + uberTip + "</html>";
+			} else {
+				uberTip = name;
+			}
+			setToolTipText(uberTip);
+			buttonGroup.add(this);
+			addActionListener(buttonListener);
+			setDisabledIcon(unit.getScaledTintedIcon(Color.green, 0.5));
+			setMargin(new Insets(0, 0, 0, 0));
+			setBorder(null);
+		}
+
+		public GameObject getUnit() {
+			return unit;
+		}
+
+		@Override
+		protected void paintComponent(final Graphics g) {
+			if (!isEnabled()) {
+				g.translate(1, 1);
+			}
+			super.paintComponent(g);
+			if (!isEnabled()) {
+				g.translate(-1, -1);
+				final Graphics2D g2 = (Graphics2D) g.create();
+				g2.setColor(Color.GRAY);
+				for (int i = 0; i < 2; i++) {
+					g2.setColor(g2.getColor().brighter());
+					g2.draw3DRect(i, i, getWidth() - i * 2 - 1, getHeight() - i * 2 - 1, false);
+				}
+				g2.dispose();
+			}
+		}
 	}
 
 	@Override

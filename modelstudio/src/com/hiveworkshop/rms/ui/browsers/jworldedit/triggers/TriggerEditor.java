@@ -1,14 +1,14 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.triggers;
 
 import com.hiveworkshop.rms.parsers.slk.DataTable;
-import com.hiveworkshop.rms.ui.gui.modeledit.util.TransferActionListener;
-import com.hiveworkshop.rms.ui.icons.IconUtils;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.ObjectEditorFrame;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.triggers.gui.TriggerTree;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.triggers.impl.Trigger;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.triggers.impl.TriggerCategory;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.triggers.impl.TriggerEnvironment;
+import com.hiveworkshop.rms.ui.gui.modeledit.util.TransferActionListener;
+import com.hiveworkshop.rms.ui.icons.IconUtils;
 import net.sf.image4j.codec.ico.ICODecoder;
 
 import javax.swing.*;
@@ -130,13 +130,7 @@ public class TriggerEditor extends JPanel {
 		} catch (final Exception exc) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (final ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (final InstantiationException e) {
-				e.printStackTrace();
-			} catch (final IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (final UnsupportedLookAndFeelException e) {
+			} catch (final ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException e) {
 				e.printStackTrace();
 			}
 		}

@@ -2,8 +2,8 @@ package com.hiveworkshop.rms.editor.model;
 
 import com.hiveworkshop.rms.editor.model.visitor.IdObjectVisitor;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxEventObject;
-import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
+import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,7 +203,6 @@ public class EventObject extends IdObject {
 	}
 
 	/**
-	 * @return
 	 * @deprecated Use getGlobalSeq
 	 */
 	@Deprecated
@@ -212,7 +211,6 @@ public class EventObject extends IdObject {
 	}
 
 	/**
-	 * @param globalSeqId
 	 * @deprecated Use setGlobalSeq
 	 */
 	@Deprecated

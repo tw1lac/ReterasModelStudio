@@ -2,11 +2,7 @@ package com.hiveworkshop.rms.editor.render3d;
 
 import com.hiveworkshop.rms.editor.model.ParticleEmitter2;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.rms.util.MathUtils;
-import com.hiveworkshop.rms.util.Mat4;
-import com.hiveworkshop.rms.util.Quat;
-import com.hiveworkshop.rms.util.Vec3;
-import com.hiveworkshop.rms.util.Vec4;
+import com.hiveworkshop.rms.util.*;
 
 public class RenderParticle2 extends EmittedObject<RenderParticleEmitter2View> {
 	private static final Vec4 vector4Heap = new Vec4();
@@ -125,7 +121,6 @@ public class RenderParticle2 extends EmittedObject<RenderParticleEmitter2View> {
 	public void update() {
 		final ParticleEmitter2 modelObject = emitter.modelObject;
 		final float dt = AnimatedRenderEnvironment.FRAMES_PER_UPDATE * 0.001f;
-		final Vec3 worldLocation = locationHeap;
 		final Vec4 worldLocation4f = location4Heap;
 
 		health -= dt;
@@ -136,7 +131,7 @@ public class RenderParticle2 extends EmittedObject<RenderParticleEmitter2View> {
 		location.y = location.y + (velocity.y * dt);
 		location.z = location.z + (velocity.z * dt);
 
-		worldLocation.set(location);
+		locationHeap.set(location);
 		worldLocation4f.set(location.x, location.y, location.z, 1);
 
 		final float lifeFactor = (float) ((modelObject.getLifeSpan() - health) / modelObject.getLifeSpan());

@@ -28,7 +28,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -100,14 +99,11 @@ public class BetterUnitEditorModelSelector extends JSplitPane implements TreeSel
 				modelDisp = new ModelViewManager(mdl);
 				modelPanel.setViewport(modelDisp);
 				modelPanel.setTitle(currentUnit.getName());
-			} catch (final FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (final IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// loadFile(MPQHandler.get().getGameFile(filepath), true);
+            // loadFile(MPQHandler.get().getGameFile(filepath), true);
 			// modelMenu.getAccessibleContext().setAccessibleDescription("Allows
 			// the user to control which parts of the model are displayed for
 			// editing.");

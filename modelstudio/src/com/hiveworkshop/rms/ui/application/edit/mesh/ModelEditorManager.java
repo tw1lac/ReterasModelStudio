@@ -132,9 +132,8 @@ public final class ModelEditorManager {
 			}
 			case ANIMATE -> {
 				nodeAnimationSelectionManager = new NodeAnimationSelectionManager(renderModel);
-				final NodeAnimationModelEditor nodeAnimationModelEditor = new NodeAnimationModelEditor(model,
+				modelEditor = new NodeAnimationModelEditor(model,
 						programPreferences, nodeAnimationSelectionManager, renderModel, structureChangeListener);
-				modelEditor = nodeAnimationModelEditor;
 
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
@@ -148,9 +147,8 @@ public final class ModelEditorManager {
 			case TPOSE -> {
 				final boolean moveLinked = MOVE_LINKED;// dialog == settings[0];
 				final TPoseSelectionManager tposeSelectionManager = new TPoseSelectionManager(model, moveLinked);
-				final TPoseModelEditor tPoseModelEditor = new TPoseModelEditor(model, programPreferences,
+				modelEditor = new TPoseModelEditor(model, programPreferences,
 						tposeSelectionManager, structureChangeListener);
-				modelEditor = tPoseModelEditor;
 
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);

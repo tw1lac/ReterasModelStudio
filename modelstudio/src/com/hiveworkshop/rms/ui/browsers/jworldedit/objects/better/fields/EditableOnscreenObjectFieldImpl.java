@@ -1,8 +1,8 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields;
 
-import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.parsers.slk.GameObject;
 import com.hiveworkshop.rms.parsers.slk.ObjectData;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.util.War3ID;
@@ -46,16 +46,16 @@ public final class EditableOnscreenObjectFieldImpl {
 		final GameObject metaDataFieldObject = metaData.get(cachedMetaKeyString);
 		final String metaDataType = metaDataFieldObject.getField("type");
 		switch (metaDataType) {
-		case "int":
-			return gameUnit.getFieldAsInteger(metaKey, level);
-		case "real":
-		case "unreal":
-			return gameUnit.getFieldAsFloat(metaKey, level);
-		case "bool":
-			return gameUnit.getFieldAsBoolean(metaKey, level);
-		default:
-		case "string":
-			return gameUnit.getFieldAsString(metaKey, level);
+			case "int":
+				return gameUnit.getFieldAsInteger(metaKey, level);
+			case "real":
+			case "unreal":
+				return gameUnit.getFieldAsFloat(metaKey, level);
+			case "bool":
+				return gameUnit.getFieldAsBoolean(metaKey, level);
+			default:
+			case "string":
+				return gameUnit.getFieldAsString(metaKey, level);
 		}
 	}
 
@@ -63,19 +63,10 @@ public final class EditableOnscreenObjectFieldImpl {
 		final GameObject metaDataFieldObject = metaData.get(cachedMetaKeyString);
 		final String metaDataType = metaDataFieldObject.getField("type");
 		switch (metaDataType) {
-		case "int":
-			gameUnit.setField(metaKey, level, ((Number) value).intValue());
-			break;
-		case "real":
-		case "unreal":
-			gameUnit.setField(metaKey, level, ((Number) value).floatValue());
-			break;
-		case "bool":
-			gameUnit.setField(metaKey, level, ((Boolean) value));
-			break;
-		default:
-		case "string":
-			gameUnit.setField(metaKey, level, value.toString());
+			case "int" -> gameUnit.setField(metaKey, level, ((Number) value).intValue());
+			case "real", "unreal" -> gameUnit.setField(metaKey, level, ((Number) value).floatValue());
+			case "bool" -> gameUnit.setField(metaKey, level, ((Boolean) value));
+			case "string" -> gameUnit.setField(metaKey, level, value.toString());
 		}
 	}
 

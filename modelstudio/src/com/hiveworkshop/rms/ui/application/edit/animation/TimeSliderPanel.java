@@ -717,16 +717,14 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 		final int pixelCenter = timeChooserRect.x;
 		final int widthMinusOffsets = getWidth() - (SIDE_OFFSETS * 2);
 		final double timeRatio = pixelCenter / (double) widthMinusOffsets;
-		final int computedTime = (int) (timeRatio * (end - start)) + start;
-		return computedTime;
+		return (int) (timeRatio * (end - start)) + start;
 	}
 
 	private int computeTimeFromX(final int x) {
 		final int pixelCenter = x - (timeChooserRect.width / 2);
 		final int widthMinusOffsets = getWidth() - (SIDE_OFFSETS * 2);
 		final double timeRatio = pixelCenter / (double) widthMinusOffsets;
-		final int computedTime = (int) (timeRatio * (end - start)) + start;
-		return computedTime;
+		return (int) (timeRatio * (end - start)) + start;
 	}
 
 	private int computeSliderXFromTime() {
@@ -791,17 +789,9 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 			return;
 		}
 		switch (theme) {
-		case DARK:
-		case HIFI:
-			g.setColor(Color.WHITE);
-			break;
-		case FOREST_GREEN:
-			g.setColor(Color.WHITE);
-			break;
-		default:
-			g.setColor(Color.BLACK);
-			break;
-
+			case DARK, HIFI -> g.setColor(Color.WHITE);
+			case FOREST_GREEN -> g.setColor(Color.WHITE);
+			default -> g.setColor(Color.BLACK);
 		}
 		final int timeSpan = end - start;
 		final int tickWidthPixels = widthMinusOffsets / 30;
@@ -947,9 +937,8 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 		if ((modelView == null) || (modelView.getModel() == null)) {
 			return Collections.emptySet();
 		}
-		final Collection<IdObject> selection = allKF.isSelected() ? modelView.getModel().getIdObjects()
+		return allKF.isSelected() ? modelView.getModel().getIdObjects()
 				: nodeSelectionManager.getSelection();
-		return selection;
 	}
 
 	@Override
@@ -969,43 +958,42 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 		for (final CopiedKeyFrame frame : copiedKeyframes) {
 			if (getSelectionToUse().contains(frame.node) || useAllCopiedKeyframes) {
 				// only paste to selected nodes
-				final int mouseClickAnimationTime = trackTime;// computeTimeFromX(e.getX());
-				final int flooredTimeIndex = frame.sourceTimeline.floorIndex(mouseClickAnimationTime);
+				final int flooredTimeIndex = frame.sourceTimeline.floorIndex(trackTime);
 				final Object newValue = AnimFlag.cloneValue(frame.value);
 				// tans might be null
 				final Object newInTan = AnimFlag.cloneValue(frame.inTan);
 				final Object newOutTan = AnimFlag.cloneValue(frame.outTan);
 				if ((flooredTimeIndex != -1) && (flooredTimeIndex < frame.sourceTimeline.getTimes().size())
-						&& (frame.sourceTimeline.getTimes().get(flooredTimeIndex) == mouseClickAnimationTime)) {
+						&& (frame.sourceTimeline.getTimes().get(flooredTimeIndex) == trackTime)) {
 					if (frame.sourceTimeline.tans()) {
-						final Object oldValue = frame.sourceTimeline.valueAt(mouseClickAnimationTime);
-						final Object oldInTan = frame.sourceTimeline.valueAt(mouseClickAnimationTime);
-						final Object oldOutTan = frame.sourceTimeline.valueAt(mouseClickAnimationTime);
-						frame.sourceTimeline.setKeyframe(mouseClickAnimationTime, newValue, newInTan, newOutTan);
-						actions.add(new SetKeyframeAction(frame.node, frame.sourceTimeline, mouseClickAnimationTime,
+						final Object oldValue = frame.sourceTimeline.valueAt(trackTime);
+						final Object oldInTan = frame.sourceTimeline.valueAt(trackTime);
+						final Object oldOutTan = frame.sourceTimeline.valueAt(trackTime);
+						frame.sourceTimeline.setKeyframe(trackTime, newValue, newInTan, newOutTan);
+						actions.add(new SetKeyframeAction(frame.node, frame.sourceTimeline, trackTime,
 								newValue, newInTan, newOutTan, oldValue, oldInTan, oldOutTan, () -> {
 							// TODO this is a hack to refresh screen while
 							// dragging
 							notifier.timeChanged(currentTime);
 						}));
 					} else {
-						final Object oldValue = frame.sourceTimeline.valueAt(mouseClickAnimationTime);
-						frame.sourceTimeline.setKeyframe(mouseClickAnimationTime, newValue);
-						actions.add(new SetKeyframeAction(frame.node, frame.sourceTimeline, mouseClickAnimationTime,
+						final Object oldValue = frame.sourceTimeline.valueAt(trackTime);
+						frame.sourceTimeline.setKeyframe(trackTime, newValue);
+						actions.add(new SetKeyframeAction(frame.node, frame.sourceTimeline, trackTime,
 								newValue, oldValue, () -> {
-									// TODO this is a hack to refresh screen while
-									// dragging
-									notifier.timeChanged(currentTime);
-								}));
+							// TODO this is a hack to refresh screen while
+							// dragging
+							notifier.timeChanged(currentTime);
+						}));
 					}
 				} else {
 					if (frame.sourceTimeline.tans()) {
-						frame.sourceTimeline.addKeyframe(mouseClickAnimationTime, newValue, newInTan, newOutTan);
-						actions.add(new AddKeyframeAction(frame.node, frame.sourceTimeline, mouseClickAnimationTime,
+						frame.sourceTimeline.addKeyframe(trackTime, newValue, newInTan, newOutTan);
+						actions.add(new AddKeyframeAction(frame.node, frame.sourceTimeline, trackTime,
 								newValue, newInTan, newOutTan, structureChangeListener));
 					} else {
-						frame.sourceTimeline.addKeyframe(mouseClickAnimationTime, newValue);
-						actions.add(new AddKeyframeAction(frame.node, frame.sourceTimeline, mouseClickAnimationTime,
+						frame.sourceTimeline.addKeyframe(trackTime, newValue);
+						actions.add(new AddKeyframeAction(frame.node, frame.sourceTimeline, trackTime,
 								newValue, structureChangeListener));
 					}
 				}

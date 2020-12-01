@@ -8,7 +8,7 @@ import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel;
 import com.hiveworkshop.rms.ui.application.scripts.AnimationTransfer;
 import com.hiveworkshop.rms.ui.application.tools.EditTexturesPopupPanel;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.*;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.UnitEditorTree;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
 import com.hiveworkshop.rms.ui.browsers.model.ModelOptionPanel;
 import com.hiveworkshop.rms.ui.browsers.mpq.MPQBrowser;
@@ -18,14 +18,20 @@ import com.hiveworkshop.rms.ui.gui.modeledit.util.TransferActionListener;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.ui.preferences.SaveProfile;
-import net.infonode.docking.*;
+import net.infonode.docking.DockingWindow;
+import net.infonode.docking.TabWindow;
+import net.infonode.docking.View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 import static com.hiveworkshop.rms.ui.application.MenuCreationUtils.createAndAddMenuItem;
 import static com.hiveworkshop.rms.ui.application.MenuCreationUtils.createMenu;
@@ -373,7 +379,7 @@ public class MenuBar {
         windowMenu.add(viewsMenu);
 
         final JMenuItem testItem = new JMenuItem("test");
-        testItem.addActionListener(new OpenViewAction(mainPanel.rootWindow, "Animation Preview", () -> {return MenuBarActions.testItemResponse(mainPanel);}));
+        testItem.addActionListener(new OpenViewAction(mainPanel.rootWindow, "Animation Preview", () -> MenuBarActions.testItemResponse(mainPanel)));
 
 //		viewsMenu.add(testItem);
 
@@ -488,9 +494,7 @@ public class MenuBar {
 
         final JMenuItem jokebutton = new JMenuItem("Load Retera Land");
         jokebutton.setMnemonic(KeyEvent.VK_A);
-        jokebutton.addActionListener(e -> {
-            ScriptActions.jokeButtonClickResponse(mainPanel);
-        });
+        jokebutton.addActionListener(e -> ScriptActions.jokeButtonClickResponse(mainPanel));
 //		scriptsMenu.add(jokebutton);
     }
 
@@ -720,7 +724,7 @@ public class MenuBar {
         mainPanel.recentItems.clear();
         for (int i = 0; i < recent.size(); i++) {
             final String fp = recent.get(recent.size() - i - 1);
-            if ((mainPanel.recentItems.size() <= i) || (mainPanel.recentItems.get(i).filepath != fp)) {
+            if ((mainPanel.recentItems.size() <= i) || (!mainPanel.recentItems.get(i).filepath.equals(fp))) {
                 // String[] bits = recent.get(i).split("/");
 
                 final RecentItem item = new RecentItem(new File(fp).getName());
@@ -834,7 +838,7 @@ public class MenuBar {
     }
 
     static class UndoMenuItem extends JMenuItem {
-        private MainPanel mainPanel;
+        private final MainPanel mainPanel;
 
         public UndoMenuItem(MainPanel mainPanel, final String text) {
             super(text);
@@ -861,7 +865,7 @@ public class MenuBar {
     }
 
     static class RedoMenuItem extends JMenuItem {
-        private MainPanel mainPanel;
+        private final MainPanel mainPanel;
 
         public RedoMenuItem(MainPanel mainPanel, final String text) {
             super(text);

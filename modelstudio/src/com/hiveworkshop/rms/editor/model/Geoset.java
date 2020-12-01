@@ -1,18 +1,17 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.awt.geom.Rectangle2D;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxExtent;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxGeoset;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
-
 import jassimp.AiMesh;
+
+import java.awt.geom.Rectangle2D;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Geoset implements Named, VisibilitySource {
 	ExtLog extents;
@@ -361,9 +360,6 @@ public class Geoset implements Named, VisibilitySource {
 	/**
 	 * Returns all vertices that directly inherit motion from the specified Bone, or
 	 * an empty list if no vertices reference the object.
-	 *
-	 * @param parent
-	 * @return
 	 */
 	public List<GeosetVertex> getChildrenOf(final Bone parent) {
 		final List<GeosetVertex> children = new ArrayList<>();

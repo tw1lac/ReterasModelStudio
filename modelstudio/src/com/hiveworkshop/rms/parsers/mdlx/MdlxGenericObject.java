@@ -1,13 +1,13 @@
 package com.hiveworkshop.rms.parsers.mdlx;
 
-import java.util.Iterator;
-
 import com.hiveworkshop.rms.parsers.mdlx.mdl.MdlTokenInputStream;
 import com.hiveworkshop.rms.parsers.mdlx.mdl.MdlTokenOutputStream;
 import com.hiveworkshop.rms.parsers.mdlx.mdl.MdlUtils;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.util.BinaryReader;
 import com.hiveworkshop.rms.util.BinaryWriter;
+
+import java.util.Iterator;
 
 /**
  * A generic object.
@@ -211,15 +211,9 @@ public abstract class MdlxGenericObject extends MdlxAnimatedObject {
 					case MdlUtils.TOKEN_DONT_INHERIT:
 						for (final String subToken : stream.readBlock()) {
 							switch (subToken) {
-								case MdlUtils.TOKEN_ROTATION:
-									updatingObject.flags |= 0x2;
-									break;
-								case MdlUtils.TOKEN_TRANSLATION:
-									updatingObject.flags |= 0x1;
-									break;
-								case MdlUtils.TOKEN_SCALING:
-									updatingObject.flags |= 0x0;
-									break;
+								case MdlUtils.TOKEN_ROTATION -> updatingObject.flags |= 0x2;
+								case MdlUtils.TOKEN_TRANSLATION -> updatingObject.flags |= 0x1;
+								case MdlUtils.TOKEN_SCALING -> updatingObject.flags |= 0x0;
 							}
 						}
 						token = null;

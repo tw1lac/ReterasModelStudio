@@ -22,62 +22,6 @@ public class Vec2 {
 		this.y = old.y;
 	}
 
-	public float getCoord(final int dim) {
-		switch (dim) {
-		case 0:
-			return x;
-		case 1:
-			return y;
-		}
-		return 0;
-	}
-
-	public void setCoord(final int dim, final double value) {
-		if (!Double.isNaN(value)) {
-			switch (dim) {
-			case 0:
-				x = (float) value;
-				break;
-			case 1:
-				y = (float) value;
-				break;
-			}
-		}
-	}
-
-	public void translateCoord(final byte dim, final double value) {
-		switch (dim) {
-		case 0:
-			x += value;
-			break;
-		case 1:
-			y += value;
-			break;
-		}
-	}
-
-	public void set(final Vec2 v) {
-		x = v.x;
-		y = v.y;
-	}
-
-	public void translate(final double x, final double y) {
-		this.x += x;
-		this.y += y;
-	}
-
-	public void scale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
-		final float dx = this.x - (float)centerX;
-		final float dy = this.y - (float)centerY;
-		this.x = (float)centerX + (dx * (float)scaleX);
-		this.y = (float)centerY + (dy * (float)scaleY);
-	}
-
-	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
-			final byte secondXYZ) {
-		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
-	}
-
 	public static void rotateVertex(final double centerX, final double centerY, final double radians,
 			final byte firstXYZ, final byte secondXYZ, final Vec2 vertex) {
 		final double x1 = vertex.getCoord(firstXYZ);
@@ -98,16 +42,16 @@ public class Vec2 {
 		final double dx = x1 - cx;
 		final double cy;// = coordinateSystem.geomY(centerY);
 		switch (secondXYZ) {
-		case 0:
-			cy = centerX;
-			break;
-		case 1:
-			cy = centerY;
-			break;
-		default:
-		case 2:
-			cy = 0;
-			break;
+			case 0:
+				cy = centerX;
+				break;
+			case 1:
+				cy = centerY;
+				break;
+			default:
+			case 2:
+				cy = 0;
+				break;
 		}
 		final double dy = y1 - cy;
 		final double r = Math.sqrt((dx * dx) + (dy * dy));
@@ -124,6 +68,52 @@ public class Vec2 {
 		nextDim = (Math.sin(verAng + radians) * r) + cy;
 		if (!Double.isNaN(nextDim)) {
 			vertex.setCoord(secondXYZ, (float) ((Math.sin(verAng + radians) * r) + cy));
+		}
+	}
+
+	public float getCoord(final int dim) {
+		return switch (dim) {
+			case 0 -> x;
+			case 1 -> y;
+			default -> 0;
+		};
+	}
+
+	public void setCoord(final int dim, final double value) {
+		if (!Double.isNaN(value)) {
+			switch (dim) {
+				case 0 -> x = (float) value;
+				case 1 -> y = (float) value;
+			}
+		}
+	}
+
+	public void set(final Vec2 v) {
+		x = v.x;
+		y = v.y;
+	}
+
+	public void translate(final double x, final double y) {
+		this.x += x;
+		this.y += y;
+	}
+
+	public void scale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
+		final float dx = this.x - (float) centerX;
+		final float dy = this.y - (float) centerY;
+		this.x = (float) centerX + (dx * (float) scaleX);
+		this.y = (float) centerY + (dy * (float) scaleY);
+	}
+
+	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
+					   final byte secondXYZ) {
+		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
+	}
+
+	public void translateCoord(final byte dim, final double value) {
+		switch (dim) {
+			case 0 -> x += value;
+			case 1 -> y += value;
 		}
 	}
 

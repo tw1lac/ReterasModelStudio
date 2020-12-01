@@ -1,22 +1,17 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.upgrades;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableGameObjectSortStringComparator;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.AbstractSortingFolderTreeNode;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.SortingFolderTreeNode;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.abilities.DefaultAbilityRace;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.buffs.DefaultBuffRace;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.general.BottomLevelCategoryFolder;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.general.SortRace;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableGameObjectSortStringComparator;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.util.War3ID;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.*;
 
 public final class UpgradeSortByRaceFolder extends AbstractSortingFolderTreeNode {
 
@@ -46,26 +41,18 @@ public final class UpgradeSortByRaceFolder extends AbstractSortingFolderTreeNode
 	}
 
 	private DefaultAbilityRace raceKey(final int index) {
-		switch (index) {
-		case -1:
-			return DefaultAbilityRace.HUMAN;
-		case 0:
-			return DefaultAbilityRace.HUMAN;
-		case 1:
-			return DefaultAbilityRace.ORC;
-		case 2:
-			return DefaultAbilityRace.UNDEAD;
-		case 3:
-			return DefaultAbilityRace.NIGHTELF;
-		case 4:
-			return DefaultAbilityRace.OTHER;
-		case 5:
-			return DefaultAbilityRace.NEUTRAL_HOSTILE;
-		case 6:
-			return DefaultAbilityRace.NEUTRAL_PASSIVE;
-		}
-		return DefaultAbilityRace.NEUTRAL_PASSIVE;
-	}
+		return switch (index) {
+			case -1 -> DefaultAbilityRace.HUMAN;
+			case 0 -> DefaultAbilityRace.HUMAN;
+			case 1 -> DefaultAbilityRace.ORC;
+			case 2 -> DefaultAbilityRace.UNDEAD;
+			case 3 -> DefaultAbilityRace.NIGHTELF;
+			case 4 -> DefaultAbilityRace.OTHER;
+			case 5 -> DefaultAbilityRace.NEUTRAL_HOSTILE;
+			case 6 -> DefaultAbilityRace.NEUTRAL_PASSIVE;
+			default -> DefaultAbilityRace.NEUTRAL_PASSIVE;
+		};
+    }
 
 	@Override
 	public SortingFolderTreeNode getNextNode(final MutableGameObject object) {
@@ -86,8 +73,7 @@ public final class UpgradeSortByRaceFolder extends AbstractSortingFolderTreeNode
 				raceKey = DefaultAbilityRace.OTHER;
 			}
 		}
-		final SortingFolderTreeNode sortingFolderTreeNode = raceFolders.get(raceKey.getKeyString());
-		return sortingFolderTreeNode;
+		return raceFolders.get(raceKey.getKeyString());
 	}
 
 	@Override

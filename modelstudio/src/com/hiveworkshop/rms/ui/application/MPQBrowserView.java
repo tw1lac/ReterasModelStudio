@@ -219,11 +219,10 @@ public class MPQBrowserView {
         if (temporary) {
             temp.getModelViewManager().getModel().setTemp(true);
         }
-        final ModelPanel modelPanel = temp;
         final JMenuItem menuItem = new JMenuItem(temp.getModel().getName());
         menuItem.setIcon(temp.getIcon());
         mainPanel.windowMenu.add(menuItem);
-        menuItem.addActionListener(e -> setCurrentModel(mainPanel, modelPanel));
+        menuItem.addActionListener(e -> setCurrentModel(mainPanel, temp));
         temp.setJMenuItem(menuItem);
         temp.getModelViewManager().addStateListener(new RepaintingModelStateListener(mainPanel));
         temp.changeActivity(mainPanel.currentActivity);

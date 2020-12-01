@@ -1,15 +1,15 @@
 package com.hiveworkshop.rms.ui.application.actions.mesh;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.rms.ui.application.actions.VertexActionType;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.util.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MotionAction -- something for you to undo when you screw up with motion
- *
+ * <p>
  * Eric Theller 6/8/2012
  */
 public class MoveAction implements UndoAction {
@@ -91,21 +91,13 @@ public class MoveAction implements UndoAction {
 
 	@Override
 	public String actionName() {
-		String outName = "";
-		switch (actType) {
-		case MOVE:
-			outName = "move";
-			break;
-		case ROTATE:
-			outName = "rotate";
-			break;
-		case SCALE:
-			outName = "scale";
-			break;
-		case UNKNOWN:
-			outName = "unknown error-type action";
-			break;
-		}
+		String outName = switch (actType) {
+			case MOVE -> "move";
+			case ROTATE -> "rotate";
+			case SCALE -> "scale";
+			case UNKNOWN -> "unknown error-type action";
+			default -> "";
+		};
 		if (outName.equals("")) {
 			outName = "actionType_" + actType;
 		}

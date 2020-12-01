@@ -1,16 +1,18 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better;
 
+import com.hiveworkshop.rms.parsers.slk.ObjectData;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.EditableOnscreenObjectField;
-import com.hiveworkshop.rms.parsers.slk.ObjectData;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 
 public class ObjectDataTableModel implements TableModel {
 	private final MutableGameObject gameObject;
@@ -76,13 +78,11 @@ public class ObjectDataTableModel implements TableModel {
 
 	@Override
 	public String getColumnName(final int columnIndex) {
-		switch (columnIndex) {
-		case 0:
-			return WEString.getString("WESTRING_UE_FIELDNAME");
-		case 1:
-			return WEString.getString("WESTRING_UE_FIELDVALUE");
-		}
-		return WEString.getString("WESTRING_UNKNOWN");
+		return switch (columnIndex) {
+			case 0 -> WEString.getString("WESTRING_UE_FIELDNAME");
+			case 1 -> WEString.getString("WESTRING_UE_FIELDVALUE");
+			default -> WEString.getString("WESTRING_UNKNOWN");
+		};
 	}
 
 	@Override

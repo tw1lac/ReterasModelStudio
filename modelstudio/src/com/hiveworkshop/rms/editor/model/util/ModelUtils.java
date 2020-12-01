@@ -1,18 +1,12 @@
 package com.hiveworkshop.rms.editor.model.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.hiveworkshop.rms.editor.model.Bitmap;
-import com.hiveworkshop.rms.editor.model.EditableModel;
-import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.model.Layer;
-import com.hiveworkshop.rms.editor.model.Material;
-import com.hiveworkshop.rms.editor.model.Triangle;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ModelUtils {
 	public static final class Mesh {
@@ -35,9 +29,8 @@ public final class ModelUtils {
 	}
 
 	public static String getPortrait(final String filepath) {
-		final String portrait = filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
+		return filepath.substring(0, filepath.lastIndexOf('.')) + "_portrait"
 				+ filepath.substring(filepath.lastIndexOf('.'));
-		return portrait;
 	}
 
 	public static Mesh createPlane(final byte planeDimension, final boolean outward, final double planeHeight,
@@ -53,20 +46,19 @@ public final class ModelUtils {
 		final byte firstDimension;
 		final byte secondDimension;
 		switch (planeDimension) {
-		case 0:
-			firstDimension = (byte) 1;
-			secondDimension = (byte) 2;
-			break;
-		case 1:
-			firstDimension = (byte) 0;
-			secondDimension = (byte) 2;
-			break;
-		case 2:
-			firstDimension = (byte) 0;
-			secondDimension = (byte) 1;
-			break;
-		default:
-			throw new IllegalStateException();
+			case 0 -> {
+				firstDimension = (byte) 1;
+				secondDimension = (byte) 2;
+			}
+			case 1 -> {
+				firstDimension = (byte) 0;
+				secondDimension = (byte) 2;
+			}
+			case 2 -> {
+				firstDimension = (byte) 0;
+				secondDimension = (byte) 1;
+			}
+			default -> throw new IllegalStateException();
 		}
 		boolean flipFacesForIterationDesignFlaw = false;
 		if (planeDimension == 1) {
@@ -128,48 +120,35 @@ public final class ModelUtils {
 		}
 		return new Mesh(vertices, triangles);
 	}
-
-	/**
-	 * @param model
-	 * @param max
-	 * @param min
-	 */
 	public static void createBox(final EditableModel model, final Vec3 max, final Vec3 min, final int segments) {
 		final Geoset geoset = new Geoset();
 		geoset.setMaterial(new Material(new Layer("None", new Bitmap("textures\\white.blp"))));
 
 		for (byte side = (byte) 0; side < 2; side++) {
 			for (byte dimension = (byte) 0; dimension < 3; dimension++) {
-				final Vec3 sideMaxima;
-				switch (side) {
-				case 0:
-					sideMaxima = min;
-					break;
-				case 1:
-					sideMaxima = max;
-					break;
-				default:
-					throw new IllegalStateException();
-				}
+				final Vec3 sideMaxima = switch (side) {
+					case 0 -> min;
+					case 1 -> max;
+					default -> throw new IllegalStateException();
+				};
 				final double coordinateAtSide = sideMaxima.getCoord(dimension);
 
 				final byte firstDimension;
 				final byte secondDimension;
 				switch (dimension) {
-				case 0:
-					firstDimension = (byte) 1;
-					secondDimension = (byte) 2;
-					break;
-				case 1:
-					firstDimension = (byte) 0;
-					secondDimension = (byte) 2;
-					break;
-				case 2:
-					firstDimension = (byte) 0;
-					secondDimension = (byte) 1;
-					break;
-				default:
-					throw new IllegalStateException();
+					case 0 -> {
+						firstDimension = (byte) 1;
+						secondDimension = (byte) 2;
+					}
+					case 1 -> {
+						firstDimension = (byte) 0;
+						secondDimension = (byte) 2;
+					}
+					case 2 -> {
+						firstDimension = (byte) 0;
+						secondDimension = (byte) 1;
+					}
+					default -> throw new IllegalStateException();
 				}
 				final double minFirst = min.getCoord(firstDimension);
 				final double minSecond = min.getCoord(secondDimension);
@@ -202,29 +181,17 @@ public final class ModelUtils {
 	/**
 	 * Creates a box ready to add to the dataGeoset, but does not actually modify
 	 * the geoset itself
-	 *
-	 * @param max
-	 * @param min
-	 * @param segments
-	 * @param dataGeoset
-	 * @return
 	 */
 	public static Mesh createBox(final Vec3 max, final Vec3 min, final int lengthSegs, final int widthSegs,
 			final int heightSegs, final Geoset dataGeoset) {
 		final Mesh box = new Mesh(new ArrayList<>(), new ArrayList<>());
 		for (byte side = (byte) 0; side < 2; side++) {
 			for (byte dimension = (byte) 0; dimension < 3; dimension++) {
-				final Vec3 sideMaxima;
-				switch (side) {
-				case 0:
-					sideMaxima = min;
-					break;
-				case 1:
-					sideMaxima = max;
-					break;
-				default:
-					throw new IllegalStateException();
-				}
+				final Vec3 sideMaxima = switch (side) {
+					case 0 -> min;
+					case 1 -> max;
+					default -> throw new IllegalStateException();
+				};
 				final double coordinateAtSide = sideMaxima.getCoord(dimension);
 
 				final int segsX;
@@ -232,26 +199,25 @@ public final class ModelUtils {
 				final byte firstDimension;
 				final byte secondDimension;
 				switch (dimension) {
-				case 0:
-					firstDimension = (byte) 1;
-					secondDimension = (byte) 2;
-					segsX = widthSegs;
-					segsY = heightSegs;
-					break;
-				case 1:
-					firstDimension = (byte) 0;
-					secondDimension = (byte) 2;
-					segsX = lengthSegs;
-					segsY = heightSegs;
-					break;
-				case 2:
-					firstDimension = (byte) 0;
-					secondDimension = (byte) 1;
-					segsX = lengthSegs;
-					segsY = widthSegs;
-					break;
-				default:
-					throw new IllegalStateException();
+					case 0 -> {
+						firstDimension = (byte) 1;
+						secondDimension = (byte) 2;
+						segsX = widthSegs;
+						segsY = heightSegs;
+					}
+					case 1 -> {
+						firstDimension = (byte) 0;
+						secondDimension = (byte) 2;
+						segsX = lengthSegs;
+						segsY = heightSegs;
+					}
+					case 2 -> {
+						firstDimension = (byte) 0;
+						secondDimension = (byte) 1;
+						segsX = lengthSegs;
+						segsY = widthSegs;
+					}
+					default -> throw new IllegalStateException();
 				}
 				final double minFirst = min.getCoord(firstDimension);
 				final double minSecond = min.getCoord(secondDimension);
@@ -277,11 +243,6 @@ public final class ModelUtils {
 		return box;
 	}
 
-	/**
-	 * @param model
-	 * @param max
-	 * @param min
-	 */
 	public static void createGroundPlane(final EditableModel model, final Vec3 max, final Vec3 min, final int segments) {
 		final Geoset geoset = new Geoset();
 		geoset.setMaterial(new Material(new Layer("None", new Bitmap("textures\\white.blp"))));

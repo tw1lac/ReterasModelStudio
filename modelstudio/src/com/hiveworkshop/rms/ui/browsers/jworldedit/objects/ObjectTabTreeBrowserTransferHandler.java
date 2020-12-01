@@ -13,7 +13,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
@@ -87,9 +86,6 @@ public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			try (BlizzardDataOutputStream blizzardStream = new BlizzardDataOutputStream(outputStream)) {
 				selectedUnitsAsChangeset.save(blizzardStream, false);
-			} catch (final FileNotFoundException e) {
-				System.out.println("failed to copy");
-				e.printStackTrace();
 			} catch (final IOException e) {
 				System.out.println("failed to copy");
 				e.printStackTrace();
@@ -139,9 +135,6 @@ public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 	 */
 	@Override
 	protected void exportDone(final JComponent c, final Transferable data, final int action) {
-		if (action != MOVE) {
-			return;
-		}
 		// final JList list = (JList) c;
 		// final DefaultListModel model = (DefaultListModel) list.getModel();
 		// final int index = list.getSelectedIndex();

@@ -1,75 +1,7 @@
 package com.hiveworkshop.rms.ui.gui.modeledit;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import com.hiveworkshop.rms.editor.model.AnimFlag;
-import com.hiveworkshop.rms.editor.model.Animation;
-import com.hiveworkshop.rms.editor.model.Attachment;
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.Camera;
-import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.EventObject;
-import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.GeosetAnim;
-import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.model.Helper;
-import com.hiveworkshop.rms.editor.model.IdObject;
-import com.hiveworkshop.rms.editor.model.Layer;
-import com.hiveworkshop.rms.editor.model.Light;
-import com.hiveworkshop.rms.editor.model.Material;
-import com.hiveworkshop.rms.editor.model.Matrix;
-import com.hiveworkshop.rms.editor.model.Named;
-import com.hiveworkshop.rms.editor.model.ParticleEmitter;
-import com.hiveworkshop.rms.editor.model.ParticleEmitter2;
-import com.hiveworkshop.rms.editor.model.ParticleEmitterPopcorn;
-import com.hiveworkshop.rms.editor.model.RibbonEmitter;
-import com.hiveworkshop.rms.editor.model.VisibilitySource;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelViewManager;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
@@ -78,14 +10,25 @@ import com.hiveworkshop.rms.ui.util.AbstractSnapshottingListCellRenderer2D;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
 import com.hiveworkshop.rms.util.Vec3;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.List;
+import java.util.*;
+
 /**
  * The panel to handle the import function.
- *
+ * <p>
  * Eric Theller 6/11/2012
  */
 public class ImportPanel extends JTabbedPane implements ActionListener, ListSelectionListener, ChangeListener {
 	static final ImageIcon animIcon = RMSIcons.animIcon;// new
-															// ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/anim_small.png"));
+	// ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/anim_small.png"));
 	static final ImageIcon boneIcon = RMSIcons.boneIcon;// new
 															// ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/Bone_small.png"));
 	static final ImageIcon geoIcon = RMSIcons.geoIcon;// new
@@ -1082,8 +1025,6 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 	/**
 	 * Provides a Runnable to the ImportPanel that will be run after the import has
 	 * ended successfully.
-	 *
-	 * @param callback
 	 */
 	public void setCallback(final ModelStructureChangeListener callback) {
 		this.callback = callback;
@@ -1833,26 +1774,23 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 				final BonePanel bonePanel = bonePanels.get(i);
 				final Bone b = bonePanel.bone;
 				final int type = bonePanel.importTypeBox.getSelectedIndex();
+				// b.setName(b.getName()+" "+importedModel.getName());
+				// bonePanel.boneList.getSelectedValuesList();
+				// we will go through all bone shells for this
+				// Fix cross-model referencing issue (force clean parent node's list of
+				// children)
 				switch (type) {
-				case 0:
-					currentModel.add(b);
-					objectsAdded.add(b);
-					// b.setName(b.getName()+" "+importedModel.getName());
-					final BoneShell mbs = (BoneShell) bonePanel.futureBonesList.getSelectedValue();
-					if (mbs != null) {
-						b.setParent((mbs).bone);
-					} else {
-						b.setParent(null);
+					case 0 -> {
+						currentModel.add(b);
+						objectsAdded.add(b);
+						final BoneShell mbs = (BoneShell) bonePanel.futureBonesList.getSelectedValue();
+						if (mbs != null) {
+							b.setParent((mbs).bone);
+						} else {
+							b.setParent(null);
+						}
 					}
-					break;
-				case 1: // List targets =
-						// bonePanel.boneList.getSelectedValuesList();
-					// we will go through all bone shells for this
-				case 2:
-					// Fix cross-model referencing issue (force clean parent node's list of
-					// children)
-					b.setParent(null);
-					break;
+					case 1, 2 -> b.setParent(null);
 				}
 			}
 			if (!clearBones) {

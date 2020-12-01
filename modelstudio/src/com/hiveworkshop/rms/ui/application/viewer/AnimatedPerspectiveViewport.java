@@ -1,83 +1,8 @@
 package com.hiveworkshop.rms.ui.application.viewer;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_DIFFUSE;
-import static org.lwjgl.opengl.GL11.GL_FILL;
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LIGHT0;
-import static org.lwjgl.opengl.GL11.GL_LIGHT1;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.GL_LIGHT_MODEL_AMBIENT;
-import static org.lwjgl.opengl.GL11.GL_LINE;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_NORMALIZE;
-import static org.lwjgl.opengl.GL11.GL_POSITION;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLight;
-import static org.lwjgl.opengl.GL11.glLightModel;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glPolygonMode;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.util.glu.GLU.gluPerspective;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.Timer;
-
-import com.hiveworkshop.rms.editor.model.Animation;
-import com.hiveworkshop.rms.editor.model.Bitmap;
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.CollisionShape;
-import com.hiveworkshop.rms.editor.model.ExtLog;
-import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.GeosetAnim;
-import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.model.Layer;
-import com.hiveworkshop.rms.editor.model.Material;
-import com.hiveworkshop.rms.editor.model.ParticleEmitter2;
-import com.hiveworkshop.rms.editor.model.Triangle;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
-import com.hiveworkshop.rms.editor.render3d.InternalInstance;
-import com.hiveworkshop.rms.editor.render3d.InternalResource;
-import com.hiveworkshop.rms.editor.render3d.RenderModel;
-import com.hiveworkshop.rms.editor.render3d.RenderParticleEmitter2;
-import com.hiveworkshop.rms.editor.render3d.RenderResourceAllocator;
+import com.hiveworkshop.rms.editor.render3d.*;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.filesystem.sources.DataSource;
 import com.hiveworkshop.rms.parsers.blp.BLPHandler;
@@ -92,14 +17,24 @@ import com.hiveworkshop.rms.util.Mat4;
 import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements MouseListener, ActionListener,
 		MouseWheelListener, AnimatedRenderEnvironment, RenderResourceAllocator {
@@ -284,8 +219,7 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 					inverseCameraRotationZSpin, this);
 		}
 		if (loopType == LoopType.DEFAULT_LOOP) {
-			final boolean loopingState = animation != null && !animation.isNonLooping();
-			looping = loopingState;
+			looping = animation != null && !animation.isNonLooping();
 		}
 	}
 
@@ -1171,38 +1105,37 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 		}
 		boolean depthMask = false;
 		switch (layer.getFilterMode()) {
-		case BLEND:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			break;
-		case ADDITIVE:
-		case ADDALPHA:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case MODULATE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			break;
-		case MODULATE2X:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			break;
-		case NONE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glDisable(GL11.GL_BLEND);
-			depthMask = true;
-			break;
-		case TRANSPARENT:
-			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.75f);
-			GL11.glDisable(GL11.GL_BLEND);
-			depthMask = true;
-			break;
+			case BLEND -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			}
+			case ADDITIVE, ADDALPHA -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case MODULATE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
+			}
+			case MODULATE2X -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+			}
+			case NONE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glDisable(GL11.GL_BLEND);
+				depthMask = true;
+			}
+			case TRANSPARENT -> {
+				GL11.glEnable(GL11.GL_ALPHA_TEST);
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.75f);
+				GL11.glDisable(GL11.GL_BLEND);
+				depthMask = true;
+			}
 		}
 		if (layer.getTwoSided()
 				|| ((ModelUtils.isShaderStringSupported(formatVersion)) && parent.getTwoSided())) {
@@ -1245,31 +1178,31 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 					tex.isWrapHeight() ? GL11.GL_REPEAT : GL12.GL_CLAMP_TO_EDGE);
 		}
 		switch (particle2.getFilterMode()) {
-		case BLEND:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			break;
-		case ADDITIVE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case ALPHAKEY:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			break;
-		case MODULATE:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			break;
-		case MODULATE2X:
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			break;
+			case BLEND -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			}
+			case ADDITIVE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case ALPHAKEY -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			}
+			case MODULATE -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
+			}
+			case MODULATE2X -> {
+				GL11.glDisable(GL11.GL_ALPHA_TEST);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+			}
 		}
 		if (particle2.getUnshaded()) {
 			GL11.glDisable(GL_LIGHTING);
@@ -1345,19 +1278,19 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 	// }
 	// }
 	public double convertX(final double x) {
-		return ((x + cameraPos.x) * m_zoom) + (getWidth() / 2);
+		return ((x + cameraPos.x) * m_zoom) + (getWidth() / 2.0);
 	}
 
 	public double convertY(final double y) {
-		return ((-y + cameraPos.y) * m_zoom) + (getHeight() / 2);
+		return ((-y + cameraPos.y) * m_zoom) + (getHeight() / 2.0);
 	}
 
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / m_zoom) - cameraPos.x;
+		return ((x - (getWidth() / 2.0)) / m_zoom) - cameraPos.x;
 	}
 
 	public double geomY(final double y) {
-		return -(((y - (getHeight() / 2)) / m_zoom) - cameraPos.y);
+		return -(((y - (getHeight() / 2.0)) / m_zoom) - cameraPos.y);
 	}
 
 	@Override
@@ -1517,17 +1450,15 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 				Math.min(geomY(a.y), geomY(b.y)));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
 				Math.max(geomY(a.y), geomY(b.y)));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	private static final int BYTES_PER_PIXEL = 4;
@@ -1589,16 +1520,9 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 		this.loopType = loopType;
 		final Animation currentAnimation = animation;
 		switch (loopType) {
-		case ALWAYS_LOOP:
-			looping = true;
-			break;
-		case DEFAULT_LOOP:
-			final boolean loopingState = currentAnimation != null && !currentAnimation.isNonLooping();
-			looping = loopingState;
-			break;
-		case NEVER_LOOP:
-			looping = false;
-			break;
+			case ALWAYS_LOOP -> looping = true;
+			case DEFAULT_LOOP -> looping = currentAnimation != null && !currentAnimation.isNonLooping();
+			case NEVER_LOOP -> looping = false;
 		}
 	}
 

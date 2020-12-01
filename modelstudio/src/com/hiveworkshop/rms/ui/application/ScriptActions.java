@@ -132,12 +132,9 @@ public class ScriptActions {
                     } else {
                         JOptionPane.showMessageDialog(mainPanel, "No file type was specified");
                     }
-                } catch (final IOException e1) {
+                } catch (final Exception e1) {
                     ExceptionPopup.display(e1);
                     e1.printStackTrace();
-                } catch (final Exception e2) {
-                    ExceptionPopup.display(e2);
-                    e2.printStackTrace();
                 }
             } else {
                 JOptionPane.showMessageDialog(mainPanel, "No output file was specified");
@@ -246,8 +243,7 @@ public class ScriptActions {
                 final Object visibilityValue = geosetAnim.getVisibilityFlag().interpolateAt(editorRenderModel.getAnimatedRenderEnvironment());
 
                 if (visibilityValue instanceof Float) {
-                    final Float visibility = (Float) visibilityValue;
-                    final double visvalue = visibility;
+                    final double visvalue = (Float) visibilityValue;
 
                     if (visvalue < 0.01) {
                         geosetIterator.remove();

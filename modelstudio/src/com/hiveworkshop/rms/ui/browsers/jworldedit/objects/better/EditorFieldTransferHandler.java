@@ -1,24 +1,20 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better;
 
-import java.awt.Point;
+import com.hiveworkshop.rms.parsers.w3o.War3ObjectDataChangeset;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.UnitEditorPanel;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.UnitEditorTree;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
+import de.wc3data.stream.BlizzardDataInputStream;
+import de.wc3data.stream.BlizzardDataOutputStream;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.UnitEditorPanel;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.UnitEditorTree;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
-import com.hiveworkshop.rms.parsers.w3o.War3ObjectDataChangeset;
-
-import de.wc3data.stream.BlizzardDataInputStream;
-import de.wc3data.stream.BlizzardDataOutputStream;
 
 public class EditorFieldTransferHandler extends TransferHandler {
 	private final DataFlavor dataFlavor;
@@ -81,9 +77,6 @@ public class EditorFieldTransferHandler extends TransferHandler {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (BlizzardDataOutputStream blizzardStream = new BlizzardDataOutputStream(outputStream)) {
 			selectedUnitsAsChangeset.save(blizzardStream, false);
-		} catch (final FileNotFoundException e) {
-			System.out.println("failed to copy");
-			e.printStackTrace();
 		} catch (final IOException e) {
 			System.out.println("failed to copy");
 			e.printStackTrace();
@@ -128,9 +121,6 @@ public class EditorFieldTransferHandler extends TransferHandler {
 	 */
 	@Override
 	protected void exportDone(final JComponent c, final Transferable data, final int action) {
-		if (action != MOVE) {
-			return;
-		}
 		// final JList list = (JList) c;
 		// final DefaultListModel model = (DefaultListModel) list.getModel();
 		// final int index = list.getSelectedIndex();

@@ -108,12 +108,10 @@ public class GeosetVertex extends Vec3 {
 	public Vec2 getTVertex(final int i) {
 		try {
 			return tverts.get(i);
-		} catch (final ArrayIndexOutOfBoundsException e) {
-			return null;
 		} catch (final IndexOutOfBoundsException e) {
 			return null;
 		}
-	}
+    }
 
 	public void setVertexGroup(final int k) {
 		VertexGroup = k;
@@ -184,7 +182,6 @@ public class GeosetVertex extends Vec3 {
 	}
 
 	/**
-	 * @return
 	 * @deprecated for use only with saving functionalities inside the system
 	 */
 	@Deprecated

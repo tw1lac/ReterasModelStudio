@@ -1,35 +1,12 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.util;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.dnd.InvalidDnDOperationException;
+import java.awt.dnd.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 /**
  * DnDTabbedPane.java
@@ -215,9 +192,9 @@ public class DnDTabbedPane extends JTabbedPane {
 		for (int i = 0; i < getTabCount(); i++) {
 			final Rectangle r = getBoundsAt(i);
 			if (isTB) {
-				r.setRect(r.x - r.width / 2, r.y, r.width, r.height);
+				r.setRect(r.x - r.width / 2.0, r.y, r.width, r.height);
 			} else {
-				r.setRect(r.x, r.y - r.height / 2, r.width, r.height);
+				r.setRect(r.x, r.y - r.height / 2.0, r.width, r.height);
 			}
 			if (r.contains(tabPt)) {
 				return i;
@@ -225,9 +202,9 @@ public class DnDTabbedPane extends JTabbedPane {
 		}
 		final Rectangle r = getBoundsAt(getTabCount() - 1);
 		if (isTB) {
-			r.setRect(r.x + r.width / 2, r.y, r.width, r.height);
+			r.setRect(r.x + r.width / 2.0, r.y, r.width, r.height);
 		} else {
-			r.setRect(r.x, r.y + r.height / 2, r.width, r.height);
+			r.setRect(r.x, r.y + r.height / 2.0, r.width, r.height);
 		}
 		return r.contains(tabPt) ? getTabCount() : -1;
 	}
@@ -274,13 +251,13 @@ public class DnDTabbedPane extends JTabbedPane {
 			lineRect.setRect(0, 0, 0, 0);
 		} else if (next == getTabCount()) {
 			final Rectangle rect = getBoundsAt(getTabCount() - 1);
-			lineRect.setRect(rect.x + rect.width - LINEWIDTH / 2, rect.y, LINEWIDTH, rect.height);
+			lineRect.setRect(rect.x + rect.width - LINEWIDTH / 2.0, rect.y, LINEWIDTH, rect.height);
 		} else if (next == 0) {
 			final Rectangle rect = getBoundsAt(0);
-			lineRect.setRect(-LINEWIDTH / 2, rect.y, LINEWIDTH, rect.height);
+			lineRect.setRect(-LINEWIDTH / 2.0, rect.y, LINEWIDTH, rect.height);
 		} else {
 			final Rectangle rect = getBoundsAt(next - 1);
-			lineRect.setRect(rect.x + rect.width - LINEWIDTH / 2, rect.y, LINEWIDTH, rect.height);
+			lineRect.setRect(rect.x + rect.width - LINEWIDTH / 2.0, rect.y, LINEWIDTH, rect.height);
 		}
 	}
 
@@ -289,13 +266,13 @@ public class DnDTabbedPane extends JTabbedPane {
 			lineRect.setRect(0, 0, 0, 0);
 		} else if (next == getTabCount()) {
 			final Rectangle rect = getBoundsAt(getTabCount() - 1);
-			lineRect.setRect(rect.x, rect.y + rect.height - LINEWIDTH / 2, rect.width, LINEWIDTH);
+			lineRect.setRect(rect.x, rect.y + rect.height - LINEWIDTH / 2.0, rect.width, LINEWIDTH);
 		} else if (next == 0) {
 			final Rectangle rect = getBoundsAt(0);
-			lineRect.setRect(rect.x, -LINEWIDTH / 2, rect.width, LINEWIDTH);
+			lineRect.setRect(rect.x, -LINEWIDTH / 2.0, rect.width, LINEWIDTH);
 		} else {
 			final Rectangle rect = getBoundsAt(next - 1);
-			lineRect.setRect(rect.x, rect.y + rect.height - LINEWIDTH / 2, rect.width, LINEWIDTH);
+			lineRect.setRect(rect.x, rect.y + rect.height - LINEWIDTH / 2.0, rect.width, LINEWIDTH);
 		}
 	}
 

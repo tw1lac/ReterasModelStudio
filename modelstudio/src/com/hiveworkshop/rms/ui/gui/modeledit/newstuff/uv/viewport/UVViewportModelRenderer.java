@@ -1,21 +1,6 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.viewport;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.EditableModel;
-import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.GeosetAnim;
-import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.model.Material;
-import com.hiveworkshop.rms.editor.model.Triangle;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.visitor.GeosetVisitor;
 import com.hiveworkshop.rms.editor.model.visitor.MeshVisitor;
 import com.hiveworkshop.rms.editor.model.visitor.TriangleVisitor;
@@ -26,6 +11,11 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSys
 import com.hiveworkshop.rms.ui.gui.modeledit.VertexFilter;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UVViewportModelRenderer implements MeshVisitor {
 	private Graphics2D graphics;
@@ -144,14 +134,6 @@ public class UVViewportModelRenderer implements MeshVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param model
-	 * @param g
-	 * @param bounds
-	 * @param a
-	 * @param b
-	 * @param filter
-	 * @param extraHighlightPoint
 	 */
 	public static void drawFittedTriangles(final EditableModel model, final Graphics g, final Rectangle bounds, final byte a,
 										   final byte b, final VertexFilter<? super GeosetVertex> filter, final Vec3 extraHighlightPoint) {
@@ -223,11 +205,6 @@ public class UVViewportModelRenderer implements MeshVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param g
-	 * @param a
-	 * @param b
-	 * @param t
 	 */
 	private static void drawTriangle(final Graphics g, final byte a, final byte b, final Triangle t) {
 		final double[] x = t.getCoords(a);

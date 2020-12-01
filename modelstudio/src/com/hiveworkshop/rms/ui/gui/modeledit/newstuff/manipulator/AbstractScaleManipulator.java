@@ -1,10 +1,10 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericScaleAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.geom.Point2D.Double;
 
@@ -55,8 +55,7 @@ public abstract class AbstractScaleManipulator extends AbstractManipulator {
 		dxs = startingClick.x - center.getCoord(dim1);
 		dys = startingClick.y - center.getCoord(dim2);
 		final double startDist = Math.sqrt(dxs * dxs + dys * dys);
-		final double distRatio = endDist / startDist;
-		return distRatio;
+		return endDist / startDist;
 	}
 
 }

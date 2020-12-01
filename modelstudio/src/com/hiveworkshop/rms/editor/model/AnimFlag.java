@@ -17,6 +17,7 @@ import com.hiveworkshop.rms.util.War3ID;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A java class for MDL "motion flags," such as Alpha, Translation, Scaling, or
@@ -64,13 +65,12 @@ public class AnimFlag {
 		if (!does) {
 			return false;
 		}
-		final AnimFlag af = o;
-		does = (name.equals(af.getName())) ||
-			   (hasGlobalSeq == af.hasGlobalSeq) ||
-			   (values.equals(af.values) && (globalSeq == null ? af.globalSeq == null : globalSeq.equals(af.globalSeq))
-				&& (interpolationType == af.interpolationType)
-				&& (inTans == null ? af.inTans == null : inTans.equals(af.inTans))
-				&& (outTans == null ? af.outTans == null : outTans.equals(af.outTans)) && (typeid == af.typeid));
+		does = (name.equals(o.getName())) ||
+				(hasGlobalSeq == o.hasGlobalSeq) ||
+				(values.equals(o.values) && (Objects.equals(globalSeq, o.globalSeq))
+						&& (interpolationType == o.interpolationType)
+						&& (Objects.equals(inTans, o.inTans))
+						&& (Objects.equals(outTans, o.outTans)) && (typeid == o.typeid));
 		return does;
 	}
 
@@ -641,18 +641,18 @@ public class AnimFlag {
 				final Quat rot = (Quat) value;
 				final Vec3 euler = rot.toEuler();
 				switch (axis) {
-					case 0:
+					case 0 -> {
 						euler.x = -euler.x;
 						euler.y = -euler.y;
-						break;
-					case 1:
+					}
+					case 1 -> {
 						euler.x = -euler.x;
 						euler.z = -euler.z;
-						break;
-					case 2:
+					}
+					case 2 -> {
 						euler.y = -euler.y;
 						euler.z = -euler.z;
-						break;
+					}
 				}
 				rot.set(euler);
 			}
@@ -660,18 +660,18 @@ public class AnimFlag {
 				final Quat rot = (Quat) inTan;
 				final Vec3 euler = rot.toEuler();
 				switch (axis) {
-					case 0:
+					case 0 -> {
 						euler.x = -euler.x;
 						euler.y = -euler.y;
-						break;
-					case 1:
+					}
+					case 1 -> {
 						euler.x = -euler.x;
 						euler.z = -euler.z;
-						break;
-					case 2:
+					}
+					case 2 -> {
 						euler.y = -euler.y;
 						euler.z = -euler.z;
-						break;
+					}
 				}
 				rot.set(euler);
 			}
@@ -679,18 +679,18 @@ public class AnimFlag {
 				final Quat rot = (Quat) outTan;
 				final Vec3 euler = rot.toEuler();
 				switch (axis) {
-					case 0:
+					case 0 -> {
 						euler.x = -euler.x;
 						euler.y = -euler.y;
-						break;
-					case 1:
+					}
+					case 1 -> {
 						euler.x = -euler.x;
 						euler.z = -euler.z;
-						break;
-					case 2:
+					}
+					case 2 -> {
 						euler.y = -euler.y;
 						euler.z = -euler.z;
-						break;
+					}
 				}
 				rot.set(euler);
 			}
@@ -836,8 +836,7 @@ public class AnimFlag {
 		if (!hasGlobalSeq) {
 			final boolean tans = tans();
 			for (int index = times.size() - 1; index >= 0; index--) {
-				final Integer inte = times.get(index);
-				final int i = inte;
+				final int i = times.get(index);
 				// int index = times.indexOf(inte);
 				if ((i >= anim.getStart()) && (i <= anim.getEnd())) {
 					// If this "i" is a part of the anim being removed
@@ -871,12 +870,6 @@ public class AnimFlag {
 	 * interval. The AnimFlag source of the data to copy cannot be same AnimFlag
 	 * into which the data is copied, or else a ConcurrentModificationException will
 	 * be thrown.
-	 *
-	 * @param source
-	 * @param sourceStart
-	 * @param sourceEnd
-	 * @param newStart
-	 * @param newEnd
 	 */
 	public void copyFrom(final AnimFlag source, final int sourceStart, final int sourceEnd, final int newStart,
 			final int newEnd) {
@@ -919,8 +912,7 @@ public class AnimFlag {
 		// {
 		for (int z = 0; z < times.size(); z++)// Integer inte: times )
 		{
-			final Integer inte = times.get(z);
-			final int i = inte;
+			final int i = times.get(z);
 			if ((i >= start) && (i <= end)) {
 				// If this "i" is a part of the anim being rescaled
 				final double ratio = (double) (i - start) / (double) (end - start);
@@ -1077,8 +1069,7 @@ public class AnimFlag {
 		if (times.size() == 0) {
 			return -1;
 		}
-		final int floorIndex = floorIndex(time, 0, times.size() - 1);
-		return floorIndex;
+		return floorIndex(time, 0, times.size() - 1);
 	}
 
 	/*
@@ -1139,10 +1130,6 @@ public class AnimFlag {
 	/**
 	 * Interpolates at a given time. The lack of generics on this function is
 	 * abysmal, but currently this is how the codebase is.
-	 *
-	 * @param time
-	 * @param animation
-	 * @return
 	 */
 	public Object interpolateAt(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {
@@ -1273,8 +1260,9 @@ public class AnimFlag {
 		final Integer ceilTime = ceilIndexTime;
 		final float timeFactor = (time - floorTime) / timeBetweenFrames;
 
+		// Integer
 		switch (localTypeId) {
-			case ALPHA | OTHER_TYPE: {
+			case ALPHA | OTHER_TYPE -> {
 				final Float previous = (Float) floorValue;
 				final Float next = (Float) ceilValue;
 				switch (interpolationType) {
@@ -1290,9 +1278,7 @@ public class AnimFlag {
 						throw new IllegalStateException();
 				}
 			}
-			case TRANSLATION:
-			case SCALING:
-			case COLOR: {
+			case TRANSLATION, SCALING, COLOR -> {
 				// Vertex
 				final Vec3 previous = (Vec3) floorValue;
 				final Vec3 next = (Vec3) ceilValue;
@@ -1302,47 +1288,45 @@ public class AnimFlag {
 						return previous.bezier((Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor, new Vec3());
 					case DONT_INTERP:
 						return floorValue;
-			case HERMITE: {
-				return previous.hermite((Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor, new Vec3());
+					case HERMITE: {
+						return previous.hermite((Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor, new Vec3());
+					}
+					case LINEAR:
+						return previous.lerp(next, timeFactor, new Vec3());
+					default:
+						throw new IllegalStateException();
+				}
 			}
-			case LINEAR:
-				return previous.lerp(next, timeFactor, new Vec3());
-			default:
-				throw new IllegalStateException();
-			}
-		}
-		case ROTATION: {
-			// Quat
-			final Quat previous = (Quat) floorValue;
-			final Quat next = (Quat) ceilValue;
+			case ROTATION -> {
+				// Quat
+				final Quat previous = (Quat) floorValue;
+				final Quat next = (Quat) ceilValue;
 
-			switch (interpolationType) {
-			case BEZIER:
-				return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
-			case DONT_INTERP:
-				return floorValue;
-			case HERMITE:
-				return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor,  new Quat());
-			case LINEAR:
-				return previous.slerp(next, timeFactor, new Quat());
-			default:
-				throw new IllegalStateException();
+				switch (interpolationType) {
+					case BEZIER:
+						return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
+					case DONT_INTERP:
+						return floorValue;
+					case HERMITE:
+						return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
+					case LINEAR:
+						return previous.slerp(next, timeFactor, new Quat());
+					default:
+						throw new IllegalStateException();
+				}
 			}
-		}
-		case TEXTUREID:
-		// Integer
-		{
-			final Integer previous = (Integer) floorValue;
-			switch (interpolationType) {
-			case DONT_INTERP:
-			case BEZIER: // dont use bezier on these, does that even make any sense?
-			case HERMITE: // dont use hermite on these, does that even make any sense?
-			case LINEAR: // dont use linear on these, does that even make any sense?
-				return previous;
-			default:
-				throw new IllegalStateException();
+			case TEXTUREID -> {
+				final Integer previous = (Integer) floorValue;
+				switch (interpolationType) {
+					case DONT_INTERP:
+					case BEZIER: // dont use bezier on these, does that even make any sense?
+					case HERMITE: // dont use hermite on these, does that even make any sense?
+					case LINEAR: // dont use linear on these, does that even make any sense?
+						return previous;
+					default:
+						throw new IllegalStateException();
+				}
 			}
-		}
 		}
 		throw new IllegalStateException();
 	}

@@ -14,7 +14,10 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -219,7 +222,6 @@ public final class MPQBrowser extends JPanel {
 							JOptionPane.WARNING_MESSAGE,
 							JOptionPane.OK_CANCEL_OPTION);
 					if (confirmOverwriteFile != JOptionPane.OK_OPTION) {
-						return;
 					} else {
 						selectedFile.delete();
 					}
@@ -244,9 +246,8 @@ public final class MPQBrowser extends JPanel {
 	public MPQTreeNode createMPQTree(final CompoundDataSource gameDataFileSystem) {
 		final MPQTreeNode root = new MPQTreeNode(null, "", "");
 		final Set<String> mergedListfile = gameDataFileSystem.getMergedListfile();
-		final List<String> listfile = new ArrayList<>();
 
-		listfile.addAll(mergedListfile);
+		final List<String> listfile = new ArrayList<>(mergedListfile);
 		Collections.sort(listfile);
 
 		for (String string : listfile) {

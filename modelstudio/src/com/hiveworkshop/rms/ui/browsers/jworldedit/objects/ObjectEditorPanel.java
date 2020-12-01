@@ -2,23 +2,23 @@ package com.hiveworkshop.rms.ui.browsers.jworldedit.objects;
 
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
 import com.hiveworkshop.rms.filesystem.sources.CompoundDataSource;
+import com.hiveworkshop.rms.parsers.blp.BLPHandler;
 import com.hiveworkshop.rms.parsers.slk.DataTable;
 import com.hiveworkshop.rms.parsers.slk.GameObject;
 import com.hiveworkshop.rms.parsers.slk.StandardObjectData;
-import com.hiveworkshop.rms.ui.browsers.unit.UnitOptionPanel;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.rms.parsers.w3o.WTSFile;
-import com.hiveworkshop.rms.util.War3ID;
 import com.hiveworkshop.rms.parsers.w3o.War3ObjectDataChangeset;
-import com.hiveworkshop.rms.parsers.blp.BLPHandler;
-import com.hiveworkshop.rms.ui.gui.modeledit.util.TransferActionListener;
-import com.hiveworkshop.rms.ui.icons.IconUtils;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.AbstractWorldEditorPanel;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.builders.*;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.factory.BasicSingleFieldFactory;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
+import com.hiveworkshop.rms.ui.browsers.unit.UnitOptionPanel;
+import com.hiveworkshop.rms.ui.gui.modeledit.util.TransferActionListener;
+import com.hiveworkshop.rms.ui.icons.IconUtils;
+import com.hiveworkshop.rms.util.War3ID;
 import de.wc3data.stream.BlizzardDataInputStream;
 import de.wc3data.stream.BlizzardDataOutputStream;
 
@@ -28,7 +28,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -219,12 +218,11 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		unitData = new MutableObjectData(WorldEditorDataType.UNITS, StandardObjectData.getStandardUnits(),
 				standardUnitMeta, unitDataChangeset);
 
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(unitData, standardUnitMeta, new UnitFieldBuilder(),
+		return new UnitEditorPanel(unitData, standardUnitMeta, new UnitFieldBuilder(),
 				new UnitTabTreeBrowserBuilder(), WorldEditorDataType.UNITS,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_UNIT_NEW", "ToolBarIcon_OE_NewUnit",
 						"WESTRING_MENU_OE_UNIT_COPY", "WESTRING_MENU_OE_UNIT_PASTE"),
 				new NewCustomUnitDialogRunner(unitData));
-		return unitEditorPanel;
 	}
 
 	private UnitEditorPanel createItemEditor() {
@@ -241,16 +239,15 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 			e.printStackTrace();
 		}
 		final DataTable standardUnitMeta = StandardObjectData.getStandardUnitMeta();
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.ITEM, StandardObjectData.getStandardItems(), standardUnitMeta,
 						unitDataChangeset),
 				standardUnitMeta, new ItemFieldBuilder(), new ItemTabTreeBrowserBuilder(), WorldEditorDataType.ITEM,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_ITEM_NEW", "ToolBarIcon_OE_NewItem",
 						"WESTRING_MENU_OE_ITEM_COPY", "WESTRING_MENU_OE_ITEM_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
-                });
-		return unitEditorPanel;
+				() -> {
+					// TODO Auto-generated method stub
+				});
 	}
 
 	private UnitEditorPanel createDestructibleEditor() {
@@ -267,7 +264,7 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.DESTRUCTIBLES, StandardObjectData.getStandardDestructables(),
 						standardUnitMeta, unitDataChangeset),
 				standardUnitMeta,
@@ -275,11 +272,10 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				new DestructableTabTreeBrowserBuilder(), WorldEditorDataType.DESTRUCTIBLES,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_DEST_NEW", "ToolBarIcon_OE_NewDest",
 						"WESTRING_MENU_OE_DEST_COPY", "WESTRING_MENU_OE_DEST_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
                 });
-		return unitEditorPanel;
 	}
 
 	private UnitEditorPanel createDoodadEditor() {
@@ -296,17 +292,16 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 			e.printStackTrace();
 		}
 		final DataTable standardUnitMeta = StandardObjectData.getStandardDoodadMeta();
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.DOODADS, StandardObjectData.getStandardDoodads(),
 						standardUnitMeta, unitDataChangeset),
 				standardUnitMeta, new DoodadFieldBuilder(), new DoodadTabTreeBrowserBuilder(),
 				WorldEditorDataType.DOODADS, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_DOOD_NEW",
 				"ToolBarIcon_OE_NewDood", "WESTRING_MENU_OE_DOOD_COPY", "WESTRING_MENU_OE_DOOD_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-                });
-		return unitEditorPanel;
+				});
 	}
 
 	private JComponent createAbilityEditor() {
@@ -323,17 +318,16 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 			e.printStackTrace();
 		}
 		final DataTable standardUnitMeta = StandardObjectData.getStandardAbilityMeta();
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.ABILITIES, StandardObjectData.getStandardAbilities(),
 						standardUnitMeta, unitDataChangeset),
 				standardUnitMeta, new AbilityFieldBuilder(), new AbilityTabTreeBrowserBuilder(),
 				WorldEditorDataType.ABILITIES, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_ABIL_NEW",
 				"ToolBarIcon_OE_NewAbil", "WESTRING_MENU_OE_ABIL_COPY", "WESTRING_MENU_OE_ABIL_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-                });
-		return unitEditorPanel;
+				});
 	}
 
 	private UnitEditorPanel createAbilityBuffEditor() {
@@ -350,7 +344,7 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 			e.printStackTrace();
 		}
 		final DataTable standardUnitMeta = StandardObjectData.getStandardAbilityBuffMeta();
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.BUFFS_EFFECTS, StandardObjectData.getStandardAbilityBuffs(),
 						standardUnitMeta, unitDataChangeset),
 				standardUnitMeta,
@@ -358,11 +352,10 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 				new BuffTabTreeBrowserBuilder(), WorldEditorDataType.BUFFS_EFFECTS,
 				new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_BUFF_NEW", "ToolBarIcon_OE_NewBuff",
 						"WESTRING_MENU_OE_BUFF_COPY", "WESTRING_MENU_OE_BUFF_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
                 });
-		return unitEditorPanel;
 	}
 
 	private UnitEditorPanel createUpgradeEditor() {
@@ -380,17 +373,16 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 		}
 		final DataTable standardMeta = StandardObjectData.getStandardUpgradeMeta();
 		final DataTable standardUpgradeEffectMeta = StandardObjectData.getStandardUpgradeEffectMeta();
-		final UnitEditorPanel unitEditorPanel = new UnitEditorPanel(
+		return new UnitEditorPanel(
 				new MutableObjectData(WorldEditorDataType.UPGRADES, StandardObjectData.getStandardUpgrades(),
 						standardMeta, unitDataChangeset),
 				standardMeta, new UpgradesFieldBuilder(standardUpgradeEffectMeta), new UpgradeTabTreeBrowserBuilder(),
 				WorldEditorDataType.UPGRADES, new EditorTabCustomToolbarButtonData("WESTRING_MENU_OE_UPGR_NEW",
 				"ToolBarIcon_OE_NewUpgr", "WESTRING_MENU_OE_UPGR_COPY", "WESTRING_MENU_OE_UPGR_PASTE"),
-                () -> {
-                    // TODO Auto-generated method stub
+				() -> {
+					// TODO Auto-generated method stub
 
-                });
-		return unitEditorPanel;
+				});
 	}
 
 	public void saveSpecificTabData() {
@@ -426,8 +418,6 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 					try (BlizzardDataOutputStream outputStream = new BlizzardDataOutputStream(w3uFile)) {
 						unitEditorPanel.getUnitData().getEditorData().save(outputStream, false);
 					}
-				} catch (final FileNotFoundException e1) {
-					e1.printStackTrace();
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -436,24 +426,16 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 	}
 
 	public String getFileTypeName(final WorldEditorDataType dataType) {
-		switch (dataType) {
-			case ABILITIES:
-				return WEString.getString("WESTRING_FILETYPE_ABILITYDATA");
-			case BUFFS_EFFECTS:
-				return WEString.getString("WESTRING_FILETYPE_BUFFDATA");
-			case DESTRUCTIBLES:
-				return WEString.getString("WESTRING_FILETYPE_DESTRUCTABLEDATA");
-			case DOODADS:
-				return WEString.getString("WESTRING_FILETYPE_DOODADDATA");
-			case ITEM:
-				return WEString.getString("WESTRING_FILETYPE_ITEMDATA");
-			case UNITS:
-				return WEString.getString("WESTRING_FILETYPE_UNITDATA");
-			case UPGRADES:
-				return WEString.getString("WESTRING_FILETYPE_UPGRADEDATA");
-			default:
-				return WEString.getString("WESTRING_UNKNOWN");
-		}
+		return switch (dataType) {
+			case ABILITIES -> WEString.getString("WESTRING_FILETYPE_ABILITYDATA");
+			case BUFFS_EFFECTS -> WEString.getString("WESTRING_FILETYPE_BUFFDATA");
+			case DESTRUCTIBLES -> WEString.getString("WESTRING_FILETYPE_DESTRUCTABLEDATA");
+			case DOODADS -> WEString.getString("WESTRING_FILETYPE_DOODADDATA");
+			case ITEM -> WEString.getString("WESTRING_FILETYPE_ITEMDATA");
+			case UNITS -> WEString.getString("WESTRING_FILETYPE_UNITDATA");
+			case UPGRADES -> WEString.getString("WESTRING_FILETYPE_UPGRADEDATA");
+			default -> WEString.getString("WESTRING_UNKNOWN");
+		};
 	}
 
 	public void openSpecificTabData() {
@@ -488,8 +470,6 @@ public final class ObjectEditorPanel extends AbstractWorldEditorPanel {
 						unitEditorPanel.getUnitData().getEditorData().load(inputStream, null, false);
 						unitEditorPanel.reloadAllDataVerySlowly();
 					}
-				} catch (final FileNotFoundException e1) {
-					e1.printStackTrace();
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}

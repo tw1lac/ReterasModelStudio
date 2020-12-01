@@ -341,8 +341,7 @@ public class DataTable implements ObjectData {
 				final int start = input.indexOf("[") + 1;
 				final int end = input.indexOf("]");
 				final String newKey = input.substring(start, end);
-				final String newKeyBase = newKey;
-				currentUnit = dataTable.get(new StringKey(newKey));
+                currentUnit = dataTable.get(new StringKey(newKey));
 				if (currentUnit == null) {
 					// currentUnit = dataTable.get(newKey.charAt(0) + "" +
 					// Character.toUpperCase(newKey.charAt(1)) +
@@ -464,18 +463,18 @@ public class DataTable implements ObjectData {
 				final int subXIndex = input.indexOf("X");
 				final int subYIndex = input.indexOf("Y");
 				if ((subYIndex >= 0) && (subYIndex < subXIndex)) {
-					final int eIndex = kInput.indexOf("K");
-					final int fieldIdEndIndex = kInput != input ? input.length() : eIndex - 1;
-					if ((eIndex == -1) || (kInput.charAt(eIndex - 1) != ';')) {
-						continue;
-					}
-					final int fieldId;
-					if (subXIndex < 0) {
-						if (lastFieldId == 0) {
-							rowStartCount++;
-						}
-						fieldId = lastFieldId + 1;
-					} else {
+                    final int eIndex = kInput.indexOf("K");
+                    final int fieldIdEndIndex = !kInput.equals(input) ? input.length() : eIndex - 1;
+                    if ((eIndex == -1) || (kInput.charAt(eIndex - 1) != ';')) {
+                        continue;
+                    }
+                    final int fieldId;
+                    if (subXIndex < 0) {
+                        if (lastFieldId == 0) {
+                            rowStartCount++;
+                        }
+                        fieldId = lastFieldId + 1;
+                    } else {
 						fieldId = Integer.parseInt(input.substring(subXIndex + 1, fieldIdEndIndex));
 					}
 
@@ -502,56 +501,56 @@ public class DataTable implements ObjectData {
 						}
 						fieldId = lastFieldId + 1;
 					} else {
-						if (flipMode && input.contains("Y") && (input == kInput)) {
-							eIndex = Math.min(subYIndex, eIndex);
-						}
-						final int fieldIdEndIndex = kInput != input ? input.length() : eIndex - 1;
-						fieldId = Integer.parseInt(input.substring(subXIndex + 1, fieldIdEndIndex));
-					}
+                        if (flipMode && input.contains("Y") && (input.equals(kInput))) {
+                            eIndex = Math.min(subYIndex, eIndex);
+                        }
+                        final int fieldIdEndIndex = !kInput.equals(input) ? input.length() : eIndex - 1;
+                        fieldId = Integer.parseInt(input.substring(subXIndex + 1, fieldIdEndIndex));
+                    }
 
 					final int quotationIndex = kInput.indexOf("\"");
 					if ((fieldId - 1) >= dataNames.length) {
 						dataNames = Arrays.copyOf(dataNames, fieldId);
 					}
 					if (quotationIndex == -1) {
-						dataNames[fieldId - 1] = kInput.substring(eIndex + 1);
-					} else {
-						dataNames[fieldId - 1] = kInput.substring(quotationIndex + 1, kInput.lastIndexOf("\""));
-					}
-					lastFieldId = fieldId;
-					continue;
-				}
-			}
-			// if( rowStartCount == 2)
-			// System.out.println(Arrays.toString(dataNames));
-			if (input.contains("X1;") || ((input != kInput) && input.endsWith("X1"))) {
-				final int start = kInput.indexOf("\"") + 1;
-				final int end = kInput.lastIndexOf("\"");
-				if ((start - 1) != end) {
-					final String newKey = kInput.substring(start, end);
-					currentUnit = dataTable.get(new StringKey(newKey));
-					if (currentUnit == null) {
-						currentUnit = new Element(newKey, this);
-						dataTable.put(new StringKey(newKey), currentUnit);
-					}
-				}
+                        dataNames[fieldId - 1] = kInput.substring(eIndex + 1);
+                    } else {
+                        dataNames[fieldId - 1] = kInput.substring(quotationIndex + 1, kInput.lastIndexOf("\""));
+                    }
+                    lastFieldId = fieldId;
+                    continue;
+                }
+            }
+            // if( rowStartCount == 2)
+            // System.out.println(Arrays.toString(dataNames));
+            if (input.contains("X1;") || ((!input.equals(kInput)) && input.endsWith("X1"))) {
+                final int start = kInput.indexOf("\"") + 1;
+                final int end = kInput.lastIndexOf("\"");
+                if ((start - 1) != end) {
+                    final String newKey = kInput.substring(start, end);
+                    currentUnit = dataTable.get(new StringKey(newKey));
+                    if (currentUnit == null) {
+                        currentUnit = new Element(newKey, this);
+                        dataTable.put(new StringKey(newKey), currentUnit);
+                    }
+                }
 			} else if (kInput.contains("K")) {
-				final int subXIndex = input.indexOf("X");
-				int eIndex = kInput.indexOf("K");
-				if (flipMode && kInput.contains("Y")) {
-					eIndex = Math.min(kInput.indexOf("Y"), eIndex);
-				}
-				final int fieldIdEndIndex = kInput != input ? input.length() : eIndex - 1;
-				final int fieldId = (subXIndex == -1) || (subXIndex > fieldIdEndIndex) ? 1
-						: Integer.parseInt(input.substring(subXIndex + 1, fieldIdEndIndex));
-				String fieldValue = kInput.substring(eIndex + 1);
-				if ((fieldValue.length() > 1) && fieldValue.startsWith("\"") && fieldValue.endsWith("\"")) {
-					fieldValue = fieldValue.substring(1, fieldValue.length() - 1);
-				}
-				if (dataNames[fieldId - 1] != null) {
-					currentUnit.setField(dataNames[fieldId - 1], fieldValue);
-				}
-			}
+                final int subXIndex = input.indexOf("X");
+                int eIndex = kInput.indexOf("K");
+                if (flipMode && kInput.contains("Y")) {
+                    eIndex = Math.min(kInput.indexOf("Y"), eIndex);
+                }
+                final int fieldIdEndIndex = !kInput.equals(input) ? input.length() : eIndex - 1;
+                final int fieldId = (subXIndex == -1) || (subXIndex > fieldIdEndIndex) ? 1
+                        : Integer.parseInt(input.substring(subXIndex + 1, fieldIdEndIndex));
+                String fieldValue = kInput.substring(eIndex + 1);
+                if ((fieldValue.length() > 1) && fieldValue.startsWith("\"") && fieldValue.endsWith("\"")) {
+                    fieldValue = fieldValue.substring(1, fieldValue.length() - 1);
+                }
+                if (dataNames[fieldId - 1] != null) {
+                    currentUnit.setField(dataNames[fieldId - 1], fieldValue);
+                }
+            }
 		}
 
 		reader.close();

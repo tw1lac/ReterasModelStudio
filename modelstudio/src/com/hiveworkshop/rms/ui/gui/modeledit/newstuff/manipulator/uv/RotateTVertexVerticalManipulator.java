@@ -1,7 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv;
 
-import java.awt.geom.Point2D.Double;
-
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotateAction;
@@ -9,6 +7,8 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.AbstractManipu
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.util.Vec2;
+
+import java.awt.geom.Point2D.Double;
 
 public class RotateTVertexVerticalManipulator extends AbstractManipulator {
 	private final TVertexEditor modelEditor;
@@ -47,8 +47,7 @@ public class RotateTVertexVerticalManipulator extends AbstractManipulator {
 		if (radius <= 0) {
 			radius = 64;
 		}
-		final double deltaAngle = (endingClick.y - startingClick.y) / radius;
-		return deltaAngle;
+		return (endingClick.y - startingClick.y) / radius;
 	}
 
 }
