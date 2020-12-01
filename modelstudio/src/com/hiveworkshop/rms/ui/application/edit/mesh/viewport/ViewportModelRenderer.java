@@ -37,9 +37,13 @@ public class ViewportModelRenderer implements ModelVisitor {
 		idObjectRenderer = new ResettableIdObjectRenderer(vertexSize);
 	}
 
-	public ViewportModelRenderer reset(final Graphics2D graphics, final ProgramPreferences programPreferences,
-									   final byte xDimension, final byte yDimension, final ViewportView viewportView,
-									   final CoordinateSystem coordinateSystem, final ModelView modelView) {
+	public ViewportModelRenderer reset(final Graphics2D graphics,
+									   final ProgramPreferences programPreferences,
+									   final byte xDimension,
+									   final byte yDimension,
+									   final ViewportView viewportView,
+									   final CoordinateSystem coordinateSystem,
+									   final ModelView modelView) {
 		this.graphics = graphics;
 		this.programPreferences = programPreferences;
 		this.xDimension = xDimension;
@@ -75,11 +79,12 @@ public class ViewportModelRenderer implements ModelVisitor {
 
 	private void resetIdObjectRendererWithNode(final IdObject object) {
 		idObjectRenderer.reset(coordinateSystem, graphics,
-				modelView.getHighlightedNode() == object ? programPreferences.getHighlighVertexColor()
-						: programPreferences.getLightsColor(),
-				modelView.getHighlightedNode() == object ? programPreferences.getHighlighVertexColor()
-						: programPreferences.getPivotPointsColor(),
-				modelView.getHighlightedNode() == object ? NodeIconPalette.HIGHLIGHT : NodeIconPalette.UNSELECTED,
+				modelView.getHighlightedNode() == object
+						? programPreferences.getHighlighVertexColor() : programPreferences.getLightsColor(),
+				modelView.getHighlightedNode() == object
+						? programPreferences.getHighlighVertexColor() : programPreferences.getPivotPointsColor(),
+				modelView.getHighlightedNode() == object
+						? NodeIconPalette.HIGHLIGHT : NodeIconPalette.UNSELECTED,
 				programPreferences.isUseBoxesForPivotPoints());
 	}
 
@@ -172,38 +177,24 @@ public class ViewportModelRenderer implements ModelVisitor {
 		}
 
 		@Override
-		public VertexVisitor vertex(final double x, final double y, final double z, final double normalX,
-									final double normalY, final double normalZ, final List<Bone> bones) {
+		public VertexVisitor vertex(final double x, final double y, final double z,
+									final double normalX, final double normalY, final double normalZ,
+									final List<Bone> bones) {
 			final double firstCoord;
 			final double secondCoord;
-			switch (xDimension) {
-				case 0:
-					firstCoord = x;
-					break;
-				case 1:
-					firstCoord = y;
-					break;
-				case 2:
-					firstCoord = z;
-					break;
-				default:
-					throw new IllegalStateException("Invalid x dimension");
-			}
-			switch (yDimension) {
-				case 0:
-					secondCoord = x;
-					break;
-				case 1:
-					secondCoord = y;
-					break;
-				case 2:
-					secondCoord = z;
-					break;
-				default:
-					throw new IllegalStateException("Invalid y dimension");
-			}
-			final Point point = new Point((int) coordinateSystem.convertX(firstCoord),
-					(int) coordinateSystem.convertY(secondCoord));
+			firstCoord = switch (xDimension) {
+				case 0 -> x;
+				case 1 -> y;
+				case 2 -> z;
+				default -> throw new IllegalStateException("Invalid x dimension");
+			};
+			secondCoord = switch (yDimension) {
+				case 0 -> x;
+				case 1 -> y;
+				case 2 -> z;
+				default -> throw new IllegalStateException("Invalid y dimension");
+			};
+			final Point point = new Point((int) coordinateSystem.convertX(firstCoord), (int) coordinateSystem.convertY(secondCoord));
 			if (previousVertices.size() > 0) {
 				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
 				graphics.drawLine(previousPoint.x, previousPoint.y, point.x, point.y);
@@ -217,32 +208,18 @@ public class ViewportModelRenderer implements ModelVisitor {
 				final Color triangleColor = graphics.getColor();
 				final double firstNormalCoord;
 				final double secondNormalCoord;
-				switch (xDimension) {
-					case 0:
-						firstNormalCoord = normalX;
-						break;
-					case 1:
-						firstNormalCoord = normalY;
-						break;
-					case 2:
-						firstNormalCoord = normalZ;
-						break;
-					default:
-						throw new IllegalStateException("Invalid x dimension");
-				}
-				switch (yDimension) {
-					case 0:
-						secondNormalCoord = normalX;
-						break;
-					case 1:
-						secondNormalCoord = normalY;
-						break;
-					case 2:
-						secondNormalCoord = normalZ;
-						break;
-					default:
-						throw new IllegalStateException("Invalid y dimension");
-				}
+				firstNormalCoord = switch (xDimension) {
+					case 0 -> normalX;
+					case 1 -> normalY;
+					case 2 -> normalZ;
+					default -> throw new IllegalStateException("Invalid x dimension");
+				};
+				secondNormalCoord = switch (yDimension) {
+					case 0 -> normalX;
+					case 1 -> normalY;
+					case 2 -> normalZ;
+					default -> throw new IllegalStateException("Invalid y dimension");
+				};
 				graphics.setColor(programPreferences.getNormalsColor());
 				final double zoom = CoordinateSystem.Util.getZoom(coordinateSystem);
 				final Point endPoint = new Point(
@@ -255,8 +232,9 @@ public class ViewportModelRenderer implements ModelVisitor {
 		}
 
 		@Override
-		public VertexVisitor hdVertex(final double x, final double y, final double z, final double normalX,
-									  final double normalY, final double normalZ, final Bone[] skinBones, final short[] skinBoneWeights) {
+		public VertexVisitor hdVertex(final double x, final double y, final double z,
+									  final double normalX, final double normalY, final double normalZ,
+									  final Bone[] skinBones, final short[] skinBoneWeights) {
 			return vertex(x, y, z, normalX, normalY, normalZ, null);
 		}
 
@@ -273,14 +251,6 @@ public class ViewportModelRenderer implements ModelVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param model
-	 * @param g
-	 * @param bounds
-	 * @param a
-	 * @param b
-	 * @param filter
-	 * @param extraHighlightPoint
 	 */
 	public static void drawFittedTriangles(final EditableModel model, final Graphics g, final Rectangle bounds, final byte a,
 										   final byte b, final VertexFilter<? super GeosetVertex> filter, final Vec3 extraHighlightPoint) {
@@ -302,23 +272,14 @@ public class ViewportModelRenderer implements ModelVisitor {
 					triangles.add(t);
 				}
 				final double[] x = t.getCoords(a);
-				for (final double xval : x) {
-					if (xval < minX) {
-						minX = xval;
-					}
-					if (xval > maxX) {
-						maxX = xval;
-					}
+				for (final double xVal : x) {
+					minX = Math.min(xVal, minX);
+					maxX = Math.max(xVal, maxX);
 				}
 				final double[] y = t.getCoords(b);
-				for (final double yval : y) {
-					final double yCoord = -yval;
-					if (yCoord < minY) {
-						minY = yCoord;
-					}
-					if (yCoord > maxY) {
-						maxY = yCoord;
-					}
+				for (final double yVal : y) {
+					minY = Math.min(-yVal, minY);
+					maxY = Math.max(-yVal, maxY);
 				}
 			}
 		}
@@ -352,24 +313,19 @@ public class ViewportModelRenderer implements ModelVisitor {
 
 	/**
 	 * Copied directly from MDLDisplay and then made static.
-	 *
-	 * @param g
-	 * @param a
-	 * @param b
-	 * @param t
 	 */
 	private static void drawTriangle(final Graphics g, final byte a, final byte b, final Triangle t) {
 		final double[] x = t.getCoords(a);
 		final double[] y = t.getCoords(b);
-		final int[] xint = new int[4];
-		final int[] yint = new int[4];
+		final int[] xInt = new int[4];
+		final int[] yInt = new int[4];
 		for (int ix = 0; ix < 3; ix++) {
-			xint[ix] = (int) Math.round(x[ix]);
-			yint[ix] = (int) Math.round(-y[ix]);
+			xInt[ix] = (int) Math.round(x[ix]);
+			yInt[ix] = (int) Math.round(-y[ix]);
 		}
-		xint[3] = xint[0];
-		yint[3] = yint[0];
-		g.drawPolyline(xint, yint, 4);
+		xInt[3] = xInt[0];
+		yInt[3] = yInt[0];
+		g.drawPolyline(xInt, yInt, 4);
 	}
 
 }

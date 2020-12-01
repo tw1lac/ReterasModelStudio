@@ -17,9 +17,13 @@ public class NodeIconPalette {
 	public static final NodeIconPalette UNSELECTED = createInternal("");
 	public static final NodeIconPalette HIGHLIGHT = createInternal("Highlight");
 
-	public NodeIconPalette(final Image attachmentImage, final Image eventImage, final Image lightImage,
-			final Image particleImage, final Image particle2Image, final Image ribbonImage,
-			final Image collisionImage) {
+	public NodeIconPalette(final Image attachmentImage,
+						   final Image eventImage,
+						   final Image lightImage,
+						   final Image particleImage,
+						   final Image particle2Image,
+						   final Image ribbonImage,
+						   final Image collisionImage) {
 		this.attachmentImage = attachmentImage;
 		this.eventImage = eventImage;
 		this.lightImage = lightImage;
@@ -65,8 +69,7 @@ public class NodeIconPalette {
 		final Image particle2Image = RMSIcons.loadNodeImage("particle2" + template + ".png");
 		final Image ribbonImage = RMSIcons.loadNodeImage("ribbon" + template + ".png");
 		final Image collisionImage = RMSIcons.loadNodeImage("collision" + template + ".png");
-		final NodeIconPalette palette = new NodeIconPalette(attachmentImage, eventImage, lightImage, particleImage,
+		return new NodeIconPalette(attachmentImage, eventImage, lightImage, particleImage,
 				particle2Image, ribbonImage, collisionImage);
-		return palette;
 	}
 }

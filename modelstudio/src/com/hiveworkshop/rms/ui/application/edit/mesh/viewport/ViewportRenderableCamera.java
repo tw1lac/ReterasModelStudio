@@ -88,9 +88,11 @@ public class ViewportRenderableCamera {
 		endVector.z = end.z;
 
 		delta.set(end.x, end.y, end.z);
+
 		delta.x -= start.x;
 		delta.y -= start.y;
 		delta.z -= start.z;
+
 		final float length = delta.length();
 		final double cameraModelScale = length / cameraLength;
 
@@ -127,8 +129,9 @@ public class ViewportRenderableCamera {
 		}
 	}
 
-	public void render(final double startX, final double startY, final double startZ, final double endX,
-			final double endY, final double endZ, final double rotation) {
+	public void render(final double startX, final double startY, final double startZ,
+					   final double endX, final double endY, final double endZ,
+					   final double rotation) {
 		start.set(startX, startY, startZ);
 		end.set(endX, endY, endZ);
 

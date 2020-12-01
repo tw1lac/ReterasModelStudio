@@ -127,12 +127,18 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 	private final Vec3 facingVector;
 	private final ViewportListener viewportListener;
 
-	public Viewport(final byte d1, final byte d2, final ModelView modelView,
-			final ProgramPreferences programPreferences, final ViewportActivity activityListener,
-			final ModelStructureChangeListener modelStructureChangeListener, final UndoActionListener undoListener,
-			final CoordDisplayListener coordDisplayListener, final UndoHandler undoHandler,
-			final ModelEditor modelEditor, final ViewportTransferHandler viewportTransferHandler,
-			final RenderModel renderModel, final ViewportListener viewportListener) {
+	public Viewport(final byte d1, final byte d2,
+					final ModelView modelView,
+					final ProgramPreferences programPreferences,
+					final ViewportActivity activityListener,
+					final ModelStructureChangeListener modelStructureChangeListener,
+					final UndoActionListener undoListener,
+					final CoordDisplayListener coordDisplayListener,
+					final UndoHandler undoHandler,
+					final ModelEditor modelEditor,
+					final ViewportTransferHandler viewportTransferHandler,
+					final RenderModel renderModel,
+					final ViewportListener viewportListener) {
 		// Dimension 1 and Dimension 2, these specify which dimensions to
 		// display.
 		// the d bytes can thus be from 0 to 2, specifying either the X, Y, or Z
@@ -165,45 +171,37 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		addMouseMotionListener(this);
 
 		contextMenu = new JPopupMenu();
+
 		createFace = new JMenuItem("Create Face");
 		createFace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
 		createFace.addActionListener(this);
 		contextMenu.add(createFace);
-		addTeamColor = new JMenuItem("Split Geoset and Add Team Color");
-		addTeamColor.addActionListener(this);
-		contextMenu.add(addTeamColor);
-		splitGeo = new JMenuItem("Split Geoset");
-		splitGeo.addActionListener(this);
-		contextMenu.add(splitGeo);
+
+		addTeamColor = createAndAddMenuItem("Split Geoset and Add Team Color", this);
+
+		splitGeo = createAndAddMenuItem("Split Geoset", this);
+
 		contextMenu.addSeparator();
-		manualMove = new JMenuItem("Translation Type-in");
-		manualMove.addActionListener(this);
-		contextMenu.add(manualMove);
-		manualRotate = new JMenuItem("Rotate Type-in");
-		manualRotate.addActionListener(this);
-		contextMenu.add(manualRotate);
-		manualSet = new JMenuItem("Position Type-in");
-		manualSet.addActionListener(this);
-		contextMenu.add(manualSet);
-		manualScale = new JMenuItem("Scale Type-in");
-		manualScale.addActionListener(this);
-		contextMenu.add(manualScale);
+
+		manualMove = createAndAddMenuItem("Translation Type-in", this);
+
+		manualRotate = createAndAddMenuItem("Rotate Type-in", this);
+
+		manualSet = createAndAddMenuItem("Position Type-in", this);
+
+		manualScale = createAndAddMenuItem("Scale Type-in", this);
+
 		contextMenu.addSeparator();
-		reAssignMatrix = new JMenuItem("Re-assign Matrix");
-		reAssignMatrix.addActionListener(this);
-		contextMenu.add(reAssignMatrix);
-		setParent = new JMenuItem("Set Parent");
-		setParent.addActionListener(this);
-		contextMenu.add(setParent);
-		cogBone = new JMenuItem("Auto-Center Bone(s)");
-		cogBone.addActionListener(this);
-		contextMenu.add(cogBone);
-		renameBone = new JMenuItem("Rename Bone");
-		renameBone.addActionListener(this);
-		contextMenu.add(renameBone);
-		appendBoneBone = new JMenuItem("Append Bone Suffix");
-		appendBoneBone.addActionListener(this);
-		contextMenu.add(appendBoneBone);
+
+		reAssignMatrix = createAndAddMenuItem("Re-assign Matrix", this);
+
+		setParent = createAndAddMenuItem("Set Parent", this);
+
+		cogBone = createAndAddMenuItem("Auto-Center Bone(s)", this);
+
+		renameBone = createAndAddMenuItem("Rename Bone", this);
+
+		appendBoneBone = createAndAddMenuItem("Append Bone Suffix", this);
 
 		viewportModelRenderer = new ViewportModelRenderer(programPreferences.getVertexSize());
 		animatedViewportModelRenderer = new AnimatedViewportModelRenderer(programPreferences.getVertexSize());
@@ -220,6 +218,13 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 			}
 		});
 		paintTimer.start();
+	}
+
+	private JMenuItem createAndAddMenuItem(String text, ActionListener actionListener) {
+		JMenuItem menuItem = new JMenuItem(text);
+		menuItem.addActionListener(actionListener);
+		contextMenu.add(menuItem);
+		return menuItem;
 	}
 
 	public void setupViewportBackground(final ProgramPreferences programPreferences) {
@@ -304,34 +309,19 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 				lightIncrement /= 10;
 			}
 			final float darkIncrement = increment * 10;
+
 			g.setColor(Color.DARK_GRAY);
-			for (float x = 0; ((cameraOrigin.x + x) < getWidth()) || ((cameraOrigin.x - x) >= 0); x += lightIncrement) {
-				g.drawLine((int) (cameraOrigin.x + x), 0, (int) (cameraOrigin.x + x), getHeight());
-				g.drawLine((int) (cameraOrigin.x - x), 0, (int) (cameraOrigin.x - x), getHeight());
-			}
-			for (float y = 0; ((cameraOrigin.y + y) < getHeight())
-					|| ((cameraOrigin.y - y) >= 0); y += lightIncrement) {
-				g.drawLine(0, (int) (cameraOrigin.y + y), getWidth(), (int) (cameraOrigin.y + y));
-				g.drawLine(0, (int) (cameraOrigin.y - y), getWidth(), (int) (cameraOrigin.y - y));
-			}
+			drawXLine(g, cameraOrigin, lightIncrement);
+			drawYLine(g, cameraOrigin, lightIncrement);
+
 			g.setColor(Color.GRAY);
-			for (float x = 0; ((cameraOrigin.x + x) < getWidth()) || ((cameraOrigin.x - x) >= 0); x += increment) {
-				g.drawLine((int) (cameraOrigin.x + x), 0, (int) (cameraOrigin.x + x), getHeight());
-				g.drawLine((int) (cameraOrigin.x - x), 0, (int) (cameraOrigin.x - x), getHeight());
-			}
-			for (float y = 0; ((cameraOrigin.y + y) < getHeight()) || ((cameraOrigin.y - y) >= 0); y += increment) {
-				g.drawLine(0, (int) (cameraOrigin.y + y), getWidth(), (int) (cameraOrigin.y + y));
-				g.drawLine(0, (int) (cameraOrigin.y - y), getWidth(), (int) (cameraOrigin.y - y));
-			}
+			drawXLine(g, cameraOrigin, increment);
+			drawYLine(g, cameraOrigin, increment);
+
 			g.setColor(Color.ORANGE);
-			for (float x = 0; ((cameraOrigin.x + x) < getWidth()) || ((cameraOrigin.x - x) >= 0); x += darkIncrement) {
-				g.drawLine((int) (cameraOrigin.x + x), 0, (int) (cameraOrigin.x + x), getHeight());
-				g.drawLine((int) (cameraOrigin.x - x), 0, (int) (cameraOrigin.x - x), getHeight());
-			}
-			for (float y = 0; ((cameraOrigin.y + y) < getHeight()) || ((cameraOrigin.y - y) >= 0); y += darkIncrement) {
-				g.drawLine(0, (int) (cameraOrigin.y + y), getWidth(), (int) (cameraOrigin.y + y));
-				g.drawLine(0, (int) (cameraOrigin.y - y), getWidth(), (int) (cameraOrigin.y - y));
-			}
+			drawXLine(g, cameraOrigin, darkIncrement);
+			drawYLine(g, cameraOrigin, darkIncrement);
+
 			g.setColor(Color.BLACK);
 			g.drawLine(0, (int) cameraOrigin.y, getWidth(), (int) cameraOrigin.y);
 			g.drawLine((int) cameraOrigin.x, 0, (int) cameraOrigin.x, getHeight());
@@ -359,30 +349,18 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		}
 
 		switch (m_d1) {
-		case 0:
-			g.setColor(new Color(0, 255, 0));
-			break;
-		case 1:
-			g.setColor(new Color(255, 0, 0));
-			break;
-		case 2:
-			g.setColor(new Color(0, 0, 255));
-			break;
+			case 0 -> g.setColor(new Color(0, 255, 0));
+			case 1 -> g.setColor(new Color(255, 0, 0));
+			case 2 -> g.setColor(new Color(0, 0, 255));
 		}
 		// g.setColor( new Color( 255, 0, 0 ) );
 		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(5)),
 				(int) Math.round(convertY(0)));
 
 		switch (m_d2) {
-		case 0:
-			g.setColor(new Color(0, 255, 0));
-			break;
-		case 1:
-			g.setColor(new Color(255, 0, 0));
-			break;
-		case 2:
-			g.setColor(new Color(0, 0, 255));
-			break;
+			case 0 -> g.setColor(new Color(0, 255, 0));
+			case 1 -> g.setColor(new Color(255, 0, 0));
+			case 2 -> g.setColor(new Color(0, 0, 255));
 		}
 		// g.setColor( new Color( 255, 0, 0 ) );
 		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(0)),
@@ -460,132 +438,53 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		}
 	}
 
+	private void drawYLine(Graphics g, Point2D.Double cameraOrigin, float lightIncrement) {
+		for (float y = 0; ((cameraOrigin.y + y) < getHeight()) || ((cameraOrigin.y - y) >= 0); y += lightIncrement) {
+			g.drawLine(0, (int) (cameraOrigin.y + y), getWidth(), (int) (cameraOrigin.y + y));
+			g.drawLine(0, (int) (cameraOrigin.y - y), getWidth(), (int) (cameraOrigin.y - y));
+		}
+	}
+
+	private void drawXLine(Graphics g, Point2D.Double cameraOrigin, float increment) {
+		for (float x = 0; ((cameraOrigin.x + x) < getWidth()) || ((cameraOrigin.x - x) >= 0); x += increment) {
+			g.drawLine((int) (cameraOrigin.x + x), 0, (int) (cameraOrigin.x + x), getHeight());
+			g.drawLine((int) (cameraOrigin.x - x), 0, (int) (cameraOrigin.x - x), getHeight());
+		}
+	}
+
 	@Override
 	public double convertX(final double x) {
-		return ((x + m_a) * m_zoom) + (getWidth() / 2);
+		return ((x + m_a) * m_zoom) + (getWidth() / 2.0);
 	}
 
 	@Override
 	public double convertY(final double y) {
-		return ((-y + m_b) * m_zoom) + (getHeight() / 2);
+		return ((-y + m_b) * m_zoom) + (getHeight() / 2.0);
 	}
 
 	@Override
 	public double geomX(final double x) {
-		return ((x - (getWidth() / 2)) / m_zoom) - m_a;
+		return ((x - (getWidth() / 2.0)) / m_zoom) - m_a;
 	}
 
 	@Override
 	public double geomY(final double y) {
-		return -(((y - (getHeight() / 2)) / m_zoom) - m_b);
+		return -(((y - (getHeight() / 2.0)) / m_zoom) - m_b);
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		try {
 			if (e.getSource() == clickTimer) {
-				int xoff = 0;
-				int yoff = 0;
-				Component temp = this;
-				while (temp != null) {
-					xoff += temp.getX();
-					yoff += temp.getY();
-					// if( temp.getClass() == ModelPanel.class )
-					// {
-					//// temp = MainFrame.panel;
-					// temp = null; // TODO
-					// }
-					// else
-					// {
-					temp = temp.getParent();
-					// }
-				}
-				final PointerInfo pointerInfo = MouseInfo.getPointerInfo();
-				if ((pointerInfo == null) || (pointerInfo.getLocation() == null)) {
-					return;
-				}
-				final double mx = pointerInfo.getLocation().x - xoff;// MainFrame.frame.getX()-8);
-				final double my = pointerInfo.getLocation().y - yoff;// MainFrame.frame.getY()-30);
-				// JOptionPane.showMessageDialog(null,mx+","+my+" as mouse,
-				// "+lastClick.x+","+lastClick.y+" as last.");
-				// System.out.println(xoff+" and "+mx);
-				if (lastClick != null) {
-
-					m_a += ((int) mx - lastClick.x) / m_zoom;
-					m_b += ((int) my - lastClick.y) / m_zoom;
-					lastClick.x = (int) mx;
-					lastClick.y = (int) my;
-				}
-				coordDisplayListener.notifyUpdate(m_d1, m_d2, ((mx - (getWidth() / 2)) / m_zoom) - m_a,
-						-(((my - (getHeight() / 2)) / m_zoom) - m_b));
-				// MainFrame.panel.setMouseCoordDisplay(m_d1,m_d2,((mx-getWidth()/2)/m_zoom)-m_a,-(((my-getHeight()/2)/m_zoom)-m_b));
-				// TODO update mouse coord display could be used still
-
-				// if (actStart != null) {
-				// final Point actEnd = new Point((int) mx, (int) my);
-				// final Point2D.Double convertedStart = new
-				// Point2D.Double(geomX(actStart.x), geomY(actStart.y));
-				// final Point2D.Double convertedEnd = new
-				// Point2D.Double(geomX(actEnd.x), geomY(actEnd.y));
-				// dispMDL.updateAction(convertedStart, convertedEnd, m_d1, m_d2);
-				// actStart = actEnd;
-				// }
-//				repaint();
+				clickTimerAction();
 			} else if (e.getSource() == reAssignMatrix) {
-				final MatrixPopup matrixPopup = new MatrixPopup(modelView.getModel());
-				final String[] words = { "Accept", "Cancel" };
-				final int i = JOptionPane.showOptionDialog(this, matrixPopup, "Rebuild Matrix",
-						JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION, null, words, words[1]);
-				if (i == 0) {
-					// JOptionPane.showMessageDialog(null,"action approved");
-					modelEditor.setMatrix(BoneShell.toBonesList(Collections.list(matrixPopup.newRefs.elements())));
-				}
+				reAssignMatrixAction();
 			} else if (e.getSource() == setParent) {
-				class NodeShell {
-					final IdObject node;
-
-					public NodeShell(final IdObject node) {
-						this.node = node;
-					}
-
-					public IdObject getNode() {
-						return node;
-					}
-
-					@Override
-					public String toString() {
-						if (node == null) {
-							return "(No parent)";
-						}
-						return node.getName();
-					}
-				}
-
-				final List<IdObject> idObjects = modelView.getModel().getIdObjects();
-				final NodeShell[] nodeOptions = new NodeShell[idObjects.size() + 1];
-				nodeOptions[0] = new NodeShell(null);
-				final NodeShell defaultChoice = nodeOptions[0];
-				for (int i = 0; i < idObjects.size(); i++) {
-					final IdObject node = idObjects.get(i);
-					nodeOptions[i + 1] = new NodeShell(node);
-				}
-				final NodeShell result = (NodeShell) JOptionPane.showInputDialog(this, "Choose a parent node",
-						"Set Parent Node", JOptionPane.PLAIN_MESSAGE, null, nodeOptions, defaultChoice);
-				final MatrixPopup matrixPopup = new MatrixPopup(modelView.getModel());
-				if (result != null) {
-					// JOptionPane.showMessageDialog(null,"action approved");
-					modelEditor.setParent(result.getNode());
-				}
+				setParentAction();
 			} else if (e.getSource() == renameBone) {
-				final String name = JOptionPane.showInputDialog(this, "Enter bone name:");
-				if (name != null) {
-					modelEditor.setSelectedBoneName(name);
-				}
+				reNameBoneAction();
 			} else if (e.getSource() == appendBoneBone) {
-				final String name = JOptionPane.showInputDialog(this, "Enter bone suffix:");
-				if (name != null) {
-					modelEditor.addSelectedBoneSuffix(name);
-				}
+				appendBoneBoneAction();
 			} else if (e.getSource() == cogBone) {
 				undoListener.pushAction(modelEditor.autoCenterSelectedBones());
 			} else if (e.getSource() == addTeamColor) {
@@ -601,15 +500,133 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 			} else if (e.getSource() == manualScale) {
 				manualScale();
 			} else if (e.getSource() == createFace) {
-				try {
-					undoListener.pushAction(modelEditor.createFaceFromSelection(facingVector));
-				} catch (final FaceCreationException exc) {
-					JOptionPane.showMessageDialog(this, exc.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				createFaceAction();
 			}
 		} catch (final Exception exc) {
 			ExceptionPopup.display(exc);
 		}
+	}
+
+	private void createFaceAction() {
+		try {
+			undoListener.pushAction(modelEditor.createFaceFromSelection(facingVector));
+		} catch (final FaceCreationException exc) {
+			JOptionPane.showMessageDialog(this, exc.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void appendBoneBoneAction() {
+		final String name = JOptionPane.showInputDialog(this, "Enter bone suffix:");
+		if (name != null) {
+			modelEditor.addSelectedBoneSuffix(name);
+		}
+	}
+
+	private void reNameBoneAction() {
+		final String name = JOptionPane.showInputDialog(this, "Enter bone name:");
+		if (name != null) {
+			modelEditor.setSelectedBoneName(name);
+		}
+	}
+
+	private void setParentAction() {
+		class NodeShell {
+			final IdObject node;
+
+			public NodeShell(final IdObject node) {
+				this.node = node;
+			}
+
+			public IdObject getNode() {
+				return node;
+			}
+
+			@Override
+			public String toString() {
+				if (node == null) {
+					return "(No parent)";
+				}
+				return node.getName();
+			}
+		}
+
+		final List<IdObject> idObjects = modelView.getModel().getIdObjects();
+		final NodeShell[] nodeOptions = new NodeShell[idObjects.size() + 1];
+		nodeOptions[0] = new NodeShell(null);
+		final NodeShell defaultChoice = nodeOptions[0];
+		for (int i = 0; i < idObjects.size(); i++) {
+			final IdObject node = idObjects.get(i);
+			nodeOptions[i + 1] = new NodeShell(node);
+		}
+		final NodeShell result = (NodeShell) JOptionPane.showInputDialog(this, "Choose a parent node",
+				"Set Parent Node", JOptionPane.PLAIN_MESSAGE, null, nodeOptions, defaultChoice);
+		final MatrixPopup matrixPopup = new MatrixPopup(modelView.getModel());
+		if (result != null) {
+			// JOptionPane.showMessageDialog(null,"action approved");
+			modelEditor.setParent(result.getNode());
+		}
+	}
+
+	private void reAssignMatrixAction() {
+		final MatrixPopup matrixPopup = new MatrixPopup(modelView.getModel());
+		final String[] words = { "Accept", "Cancel" };
+		final int i = JOptionPane.showOptionDialog(this, matrixPopup, "Rebuild Matrix",
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION, null, words, words[1]);
+		if (i == 0) {
+			// JOptionPane.showMessageDialog(null,"action approved");
+			modelEditor.setMatrix(BoneShell.toBonesList(Collections.list(matrixPopup.newRefs.elements())));
+		}
+	}
+
+	private boolean clickTimerAction() {
+		int xoff = 0;
+		int yoff = 0;
+		Component temp = this;
+		while (temp != null) {
+			xoff += temp.getX();
+			yoff += temp.getY();
+			// if( temp.getClass() == ModelPanel.class )
+			// {
+			//// temp = MainFrame.panel;
+			// temp = null; // TODO
+			// }
+			// else
+			// {
+			temp = temp.getParent();
+			// }
+		}
+		final PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+		if ((pointerInfo == null) || (pointerInfo.getLocation() == null)) {
+			return true;
+		}
+		final double mx = pointerInfo.getLocation().x - xoff;// MainFrame.frame.getX()-8);
+		final double my = pointerInfo.getLocation().y - yoff;// MainFrame.frame.getY()-30);
+		// JOptionPane.showMessageDialog(null,mx+","+my+" as mouse,
+		// "+lastClick.x+","+lastClick.y+" as last.");
+		// System.out.println(xoff+" and "+mx);
+		if (lastClick != null) {
+
+			m_a += ((int) mx - lastClick.x) / m_zoom;
+			m_b += ((int) my - lastClick.y) / m_zoom;
+			lastClick.x = (int) mx;
+			lastClick.y = (int) my;
+		}
+		coordDisplayListener.notifyUpdate(m_d1, m_d2, ((mx - (getWidth() / 2.0)) / m_zoom) - m_a,
+				-(((my - (getHeight() / 2.0)) / m_zoom) - m_b));
+		// MainFrame.panel.setMouseCoordDisplay(m_d1,m_d2,((mx-getWidth()/2)/m_zoom)-m_a,-(((my-getHeight()/2)/m_zoom)-m_b));
+		// TODO update mouse coord display could be used still
+
+		// if (actStart != null) {
+		// final Point actEnd = new Point((int) mx, (int) my);
+		// final Point2D.Double convertedStart = new
+		// Point2D.Double(geomX(actStart.x), geomY(actStart.y));
+		// final Point2D.Double convertedEnd = new
+		// Point2D.Double(geomX(actEnd.x), geomY(actEnd.y));
+		// dispMDL.updateAction(convertedStart, convertedEnd, m_d1, m_d2);
+		// actStart = actEnd;
+		// }
+//				repaint();
+		return false;
 	}
 
 	private void manualMove() {
@@ -852,13 +869,13 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		}
 		for (int i = 0; i < wr; i++) {
 			if (neg) {
-				m_a -= (mx - (getWidth() / 2)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
-				m_b -= (my - (getHeight() / 2)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_a -= (mx - (getWidth() / 2.0)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / m_zoom) - (1 / (m_zoom * 1.15)));
 				m_zoom *= 1.15;
 			} else {
 				m_zoom /= 1.15;
-				m_a -= (mx - (getWidth() / 2)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
-				m_b -= (my - (getHeight() / 2)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_a -= (mx - (getWidth() / 2.0)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
+				m_b -= (my - (getHeight() / 2.0)) * ((1 / (m_zoom * 1.15)) - (1 / m_zoom));
 			}
 		}
 	}
@@ -868,17 +885,15 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 				Math.min(geomY(a.y), geomY(b.y)));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
 				Math.max(geomY(a.y), geomY(b.y)));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		final Rectangle2D.Double temp = new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
-		return temp;
 	}
 
 	@Override

@@ -42,92 +42,81 @@ public class DisplayPanel extends JPanel implements ActionListener {
 	private final View view;
 	private final ViewportListener viewportListener;
 
-	public DisplayPanel(final String title, final byte a, final byte b, final ModelView modelView,
-						final ModelEditor modelEditor, final ModelStructureChangeListener modelStructureChangeListener,
-						final ViewportActivity activityListener, final ProgramPreferences preferences,
-						final UndoActionListener undoListener, final CoordDisplayListener coordDisplayListener,
-						final UndoHandler undoHandler, final ModelEditorChangeNotifier modelEditorChangeNotifier,
-						final ViewportTransferHandler viewportTransferHandler, final RenderModel renderModel,
+	public DisplayPanel(final String title, final byte a, final byte b,
+						final ModelView modelView,
+						final ModelEditor modelEditor,
+						final ModelStructureChangeListener modelStructureChangeListener,
+						final ViewportActivity activityListener,
+						final ProgramPreferences preferences,
+						final UndoActionListener undoListener,
+						final CoordDisplayListener coordDisplayListener,
+						final UndoHandler undoHandler,
+						final ModelEditorChangeNotifier modelEditorChangeNotifier,
+						final ViewportTransferHandler viewportTransferHandler,
+						final RenderModel renderModel,
 						final ViewportListener viewportListener) {
 		super();
 		this.modelStructureChangeListener = modelStructureChangeListener;
 		this.activityListener = activityListener;
 		this.modelEditorChangeNotifier = modelEditorChangeNotifier;
 		this.viewportListener = viewportListener;
-		// setBorder(BorderFactory.createTitledBorder(title));// BorderFactory.createCompoundBorder(
-		// BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title),BorderFactory.createBevelBorder(1)),BorderFactory.createEmptyBorder(1,1,1,1)
-		// ));
+
 		setOpaque(true);
 		setViewport(a, b, modelView, preferences, undoListener, coordDisplayListener, undoHandler, modelEditor,
 				viewportTransferHandler, renderModel);
 		this.title = title;
 
-		plusZoom = new JButton("");
-		Dimension dim = new Dimension(20, 20);
-		plusZoom.setMaximumSize(dim);
-		plusZoom.setMinimumSize(dim);
-		plusZoom.setPreferredSize(dim);
-		plusZoom.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("Plus.png")));
-		plusZoom.addActionListener(this);
-		add(plusZoom);
+		plusZoom = createButton(20, 20, "Plus.png", e -> ZoomAction(.15));
 
-		minusZoom = new JButton("");
-		minusZoom.setMaximumSize(dim);
-		minusZoom.setMinimumSize(dim);
-		minusZoom.setPreferredSize(dim);
-		minusZoom.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("Minus.png")));
-		minusZoom.addActionListener(this);
-		add(minusZoom);
+		minusZoom = createButton(20, 20, "Minus.png", e -> ZoomAction(-.15));
 
-		up = new JButton("");
-		dim = new Dimension(32, 16);
-		up.setMaximumSize(dim);
-		up.setMinimumSize(dim);
-		up.setPreferredSize(dim);
-		up.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("ArrowUp.png")));
-		up.addActionListener(this);
-		add(up);
+		up = createButton(32, 16, "ArrowUp.png", e -> upDownAction(20));
 
-		down = new JButton("");
-		down.setMaximumSize(dim);
-		down.setMinimumSize(dim);
-		down.setPreferredSize(dim);
-		down.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("ArrowDown.png")));
-		down.addActionListener(this);
-		add(down);
+		down = createButton(32, 16, "ArrowDown.png", e -> upDownAction(-20));
 
-		dim = new Dimension(16, 32);
-		left = new JButton("");
-		left.setMaximumSize(dim);
-		left.setMinimumSize(dim);
-		left.setPreferredSize(dim);
-		left.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("ArrowLeft.png")));
-		left.addActionListener(this);
-		add(left);
+		left = createButton(16, 32, "ArrowLeft.png", e -> leftRightAction(20));
 
-		right = new JButton("");
-		right.setMaximumSize(dim);
-		right.setMinimumSize(dim);
-		right.setPreferredSize(dim);
-		right.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage("ArrowRight.png")));
-		right.addActionListener(this);
-		add(right);
+		right = createButton(16, 32, "ArrowRight.png", e -> leftRightAction(-20));
+
 
 		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(vp)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(plusZoom)
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+				.addComponent(vp)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(plusZoom)
 						.addComponent(minusZoom)
-						.addGroup(layout.createSequentialGroup().addComponent(left).addGroup(layout
-								.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(up).addComponent(down))
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(left)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addComponent(up)
+										.addComponent(down))
 								.addComponent(right))));
-		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(vp)
-				.addGroup(layout.createSequentialGroup().addComponent(plusZoom).addGap(16).addComponent(minusZoom)
-						.addGap(16).addComponent(up).addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-								.addComponent(left).addComponent(right))
+
+		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(vp)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(plusZoom).addGap(16)
+						.addComponent(minusZoom).addGap(16)
+						.addComponent(up)
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+								.addComponent(left)
+								.addComponent(right))
 						.addComponent(down)));
 
 		setLayout(layout);
 		view = new View(title, null, this);
+	}
+
+	private JButton createButton(int width, int height, String path, ActionListener actionListener) {
+		JButton button = new JButton("");
+		Dimension dim = new Dimension(width, height);
+		button.setMaximumSize(dim);
+		button.setMinimumSize(dim);
+		button.setPreferredSize(dim);
+		button.setIcon(new ImageIcon(RMSIcons.loadDeprecatedImage(path)));
+		button.addActionListener(actionListener);
+		add(button);
+		return button;
 	}
 
 	public View getView() {
@@ -143,10 +132,14 @@ public class DisplayPanel extends JPanel implements ActionListener {
 		minusZoom.setVisible(flag);
 	}
 
-	public void setViewport(final byte a, final byte b, final ModelView modelView,
-							final ProgramPreferences programPreferences, final UndoActionListener undoListener,
-							final CoordDisplayListener coordDisplayListener, final UndoHandler undoHandler,
-							final ModelEditor modelEditor, final ViewportTransferHandler viewportTransferHandler,
+	public void setViewport(final byte a, final byte b,
+							final ModelView modelView,
+							final ProgramPreferences programPreferences,
+							final UndoActionListener undoListener,
+							final CoordDisplayListener coordDisplayListener,
+							final UndoHandler undoHandler,
+							final ModelEditor modelEditor,
+							final ViewportTransferHandler viewportTransferHandler,
 							final RenderModel renderModel) {
 		vp = new Viewport(a, b, modelView, programPreferences, activityListener, modelStructureChangeListener,
 				undoListener, coordDisplayListener, undoHandler, modelEditor, viewportTransferHandler, renderModel,
@@ -187,29 +180,38 @@ public class DisplayPanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		if (e.getSource() == up) {
-			vp.translate(0, (20 * (1 / vp.getZoomAmount())));
-			vp.repaint();
+			upDownAction(20);
 		}
 		if (e.getSource() == down) {
-			vp.translate(0, (-20 * (1 / vp.getZoomAmount())));
-			vp.repaint();
+			upDownAction(-20);
 		}
 		if (e.getSource() == left) {
-			vp.translate((20 * (1 / vp.getZoomAmount())), 0);
-			vp.repaint();
+			leftRightAction(20);
 		}
 		if (e.getSource() == right) {
-			vp.translate((-20 * (1 / vp.getZoomAmount())), 0);// *vp.getZoomAmount()
-			vp.repaint();
+			leftRightAction(-20);
 		}
 		if (e.getSource() == plusZoom) {
-			vp.zoom(.15);
-			vp.repaint();
+			ZoomAction(.15);
 		}
 		if (e.getSource() == minusZoom) {
-			vp.zoom(-.15);
-			vp.repaint();
+			ZoomAction(-.15);
 		}
+	}
+
+	private void ZoomAction(double v) {
+		vp.zoom(v);
+		vp.repaint();
+	}
+
+	private void leftRightAction(int i) {
+		vp.translate((i * (1 / vp.getZoomAmount())), 0);
+		vp.repaint();
+	}
+
+	private void upDownAction(int i) {
+		vp.translate(0, (i * (1 / vp.getZoomAmount())));
+		vp.repaint();
 	}
 
 	public ImageIcon getImageIcon() {
