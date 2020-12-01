@@ -157,17 +157,12 @@ public final class ResettableAnimatedIdObjectParentLinkRenderer implements IdObj
 		loadPivotInVertexHeap(pivotPoint, worldMatrix, vertexHeap);
 		loadPivotInVertexHeap(target, targetWorldMatrix, vertexHeap2);
 
-		final int xCoord = (int) coordinateSystem
-				.convertX(vertexHeap.getCoord(coordinateSystem.getPortFirstXYZ()));
-		final int yCoord = (int) coordinateSystem
-				.convertY(vertexHeap.getCoord(coordinateSystem.getPortSecondXYZ()));
-		final int xCoord2 = (int) coordinateSystem
-				.convertX(vertexHeap2.getCoord(coordinateSystem.getPortFirstXYZ()));
-		final int yCoord2 = (int) coordinateSystem
-				.convertY(vertexHeap2.getCoord(coordinateSystem.getPortSecondXYZ()));
+		final int xCoord = (int) coordinateSystem.convertX(vertexHeap.getCoord(coordinateSystem.getPortFirstXYZ()));
+		final int yCoord = (int) coordinateSystem.convertY(vertexHeap.getCoord(coordinateSystem.getPortSecondXYZ()));
+		final int xCoord2 = (int) coordinateSystem.convertX(vertexHeap2.getCoord(coordinateSystem.getPortFirstXYZ()));
+		final int yCoord2 = (int) coordinateSystem.convertY(vertexHeap2.getCoord(coordinateSystem.getPortSecondXYZ()));
 		// TODO resettable
-		graphics.setPaint(
-				new GradientPaint(new Point(xCoord, yCoord), Color.WHITE, new Point(xCoord2, yCoord2), Color.BLACK));
+		graphics.setPaint(new GradientPaint(new Point(xCoord, yCoord), Color.WHITE, new Point(xCoord2, yCoord2), Color.BLACK));
 
 		graphics.drawLine(xCoord, yCoord, xCoord2, yCoord2);
 	}

@@ -75,10 +75,12 @@ public final class ModelEditorManager {
 				final FaceModelEditor faceModelEditor = new FaceModelEditor(model, programPreferences, selectionManager,
 						structureChangeListener);
 				modelEditorNotifier.subscribe(faceModelEditor);
+
 				final PivotPointModelEditor pivotPointModelEditor = new PivotPointModelEditor(model, programPreferences,
 						pivotSelectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(pivotPointModelEditor);
 				modelEditor = modelEditorNotifier;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
@@ -86,10 +88,16 @@ public final class ModelEditorManager {
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = new MultiPartSelectionView(Arrays.asList(selectionManager, pivotSelectionManager));
 				selectionListener.onSelectionChanged(selectionView);
+
 				nodeAnimationSelectionManager = null;
-				modelEditorNotifier.setCloneContextHelper(new CloneContextHelper(model, structureChangeListener,
-						faceModelEditor.getVertexSelectionHelper(), pivotPointModelEditor.getVertexSelectionHelper(),
-						pivotPointModelEditor.selectionManager, faceModelEditor.selectionManager));
+				modelEditorNotifier.setCloneContextHelper(
+						new CloneContextHelper(
+								model,
+								structureChangeListener,
+								faceModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.selectionManager,
+								faceModelEditor.selectionManager));
 			}
 			case GROUP -> {
 				final VertexGroupSelectionManager selectionManager = new VertexGroupSelectionManager();
@@ -98,10 +106,12 @@ public final class ModelEditorManager {
 				final VertexGroupModelEditor vertexGroupModelEditor = new VertexGroupModelEditor(model, programPreferences,
 						selectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(vertexGroupModelEditor);
+
 				final PivotPointModelEditor pivotPointModelEditor = new PivotPointModelEditor(model, programPreferences,
 						pivotSelectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(pivotPointModelEditor);
 				modelEditor = modelEditorNotifier;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
@@ -109,19 +119,27 @@ public final class ModelEditorManager {
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = new MultiPartSelectionView(Arrays.asList(selectionManager, pivotSelectionManager));
 				selectionListener.onSelectionChanged(selectionView);
+
 				nodeAnimationSelectionManager = null;
-				modelEditorNotifier.setCloneContextHelper(new CloneContextHelper(model, structureChangeListener,
-						vertexGroupModelEditor.getVertexSelectionHelper(), pivotPointModelEditor.getVertexSelectionHelper(),
-						pivotPointModelEditor.selectionManager, vertexGroupModelEditor.selectionManager));
+				modelEditorNotifier.setCloneContextHelper(
+						new CloneContextHelper(
+								model,
+								structureChangeListener,
+								vertexGroupModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.selectionManager,
+								vertexGroupModelEditor.selectionManager));
 			}
 			case ANIMATE -> {
 				nodeAnimationSelectionManager = new NodeAnimationSelectionManager(renderModel);
 				final NodeAnimationModelEditor nodeAnimationModelEditor = new NodeAnimationModelEditor(model,
 						programPreferences, nodeAnimationSelectionManager, renderModel, structureChangeListener);
 				modelEditor = nodeAnimationModelEditor;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
+
 				viewportSelectionHandler.setSelectingEventHandler(modelEditor);
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = nodeAnimationSelectionManager;
@@ -133,9 +151,11 @@ public final class ModelEditorManager {
 				final TPoseModelEditor tPoseModelEditor = new TPoseModelEditor(model, programPreferences,
 						tposeSelectionManager, structureChangeListener);
 				modelEditor = tPoseModelEditor;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
+
 				viewportSelectionHandler.setSelectingEventHandler(modelEditor);
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = tposeSelectionManager;
@@ -150,21 +170,30 @@ public final class ModelEditorManager {
 				final VertexClusterModelEditor vertexGroupModelEditor = new VertexClusterModelEditor(model,
 						programPreferences, selectionManager, structureChangeListener, vertexClusterDefinitions);
 				modelEditorNotifier.subscribe(vertexGroupModelEditor);
+
 				final PivotPointModelEditor pivotPointModelEditor = new PivotPointModelEditor(model, programPreferences,
 						pivotSelectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(pivotPointModelEditor);
 				modelEditor = modelEditorNotifier;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
+
 				viewportSelectionHandler.setSelectingEventHandler(modelEditor);
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = new MultiPartSelectionView(Arrays.asList(selectionManager, pivotSelectionManager));
 				selectionListener.onSelectionChanged(selectionView);
+
 				nodeAnimationSelectionManager = null;
-				modelEditorNotifier.setCloneContextHelper(new CloneContextHelper(model, structureChangeListener,
-						vertexGroupModelEditor.getVertexSelectionHelper(), pivotPointModelEditor.getVertexSelectionHelper(),
-						pivotPointModelEditor.selectionManager, vertexGroupModelEditor.selectionManager));
+				modelEditorNotifier.setCloneContextHelper(
+						new CloneContextHelper(
+								model,
+								structureChangeListener,
+								vertexGroupModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.selectionManager,
+								vertexGroupModelEditor.selectionManager));
 			}
 			case VERTEX -> {
 				final GeosetVertexSelectionManager selectionManager = new GeosetVertexSelectionManager();
@@ -173,22 +202,30 @@ public final class ModelEditorManager {
 				final GeosetVertexModelEditor geosetVertexModelEditor = new GeosetVertexModelEditor(model,
 						programPreferences, selectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(geosetVertexModelEditor);
+
 				final PivotPointModelEditor pivotPointModelEditor = new PivotPointModelEditor(model, programPreferences,
 						pivotSelectionManager, structureChangeListener);
 				modelEditorNotifier.subscribe(pivotPointModelEditor);
 				modelEditor = modelEditorNotifier;
+
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}
+
 				viewportSelectionHandler.setSelectingEventHandler(modelEditor);
 				modelEditorChangeListener.modelEditorChanged(modelEditor);
 				selectionView = new MultiPartSelectionView(Arrays.asList(selectionManager, pivotSelectionManager));
 				selectionListener.onSelectionChanged(selectionView);
+
 				nodeAnimationSelectionManager = null;
-				modelEditorNotifier.setCloneContextHelper(new CloneContextHelper(model, structureChangeListener,
-						geosetVertexModelEditor.getVertexSelectionHelper(),
-						pivotPointModelEditor.getVertexSelectionHelper(), pivotPointModelEditor.selectionManager,
-						geosetVertexModelEditor.selectionManager));
+				modelEditorNotifier.setCloneContextHelper(
+						new CloneContextHelper(
+								model,
+								structureChangeListener,
+								geosetVertexModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.getVertexSelectionHelper(),
+								pivotPointModelEditor.selectionManager,
+								geosetVertexModelEditor.selectionManager));
 			}
 		}
 	}

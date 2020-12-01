@@ -38,11 +38,11 @@ public final class MoverWidget {
 		northTriangle.translate((int) x, (int) y - TRIANGLE_OFFSET);
 		MoveDirection direction = MoveDirection.NONE;
 		if (northTriangle.contains(mousePoint)
-				|| (Math.abs(x - mousePoint.getX()) <= 1 && mousePoint.y < y && mousePoint.y > y - TRIANGLE_OFFSET)) {
+				|| (Math.abs(x - mousePoint.x) <= 1 && mousePoint.y < y && mousePoint.y > y - TRIANGLE_OFFSET)) {
 			direction = MoveDirection.UP;
 		}
 		if (eastTriangle.contains(mousePoint)
-				|| (Math.abs(y - mousePoint.getY()) <= 1 && mousePoint.x > x && mousePoint.x < x + TRIANGLE_OFFSET)) {
+				|| (Math.abs(y - mousePoint.y) <= 1 && mousePoint.x > x && mousePoint.x < x + TRIANGLE_OFFSET)) {
 			direction = MoveDirection.RIGHT;
 		}
 		if (new Rectangle((int) x, (int) y - 20, 20, 20).contains(mousePoint)) {
@@ -74,84 +74,63 @@ public final class MoverWidget {
 		final byte yDimension = coordinateSystem.getPortSecondXYZ();
 		final double x = coordinateSystem.convertX(point.getCoord(xDimension));
 		final double y = coordinateSystem.convertY(point.getCoord(yDimension));
+
 		if (moveDirection != null) {
 			switch (moveDirection) {
-				case BOTH:
+				case BOTH -> {
 					graphics.setColor(new Color(255, 255, 0, 70));
 					graphics.fillRect((int) x, (int) y - 20, 20, 20);
+
 					graphics.setColor(new Color(255, 255, 0));
-					graphics.drawLine((int) x, (int) y - 15, (int) x, (int) y - 60);
-					graphics.drawLine((int) x + 15, (int) y, (int) x + 60, (int) y);
-					graphics.drawLine((int) x + 20, (int) y, (int) x + 20, (int) y - 20);
-					graphics.drawLine((int) x, (int) y - 20, (int) x + 20, (int) y - 20);
-					setColorByDimension(graphics, xDimension);
-					eastTriangle.translate((int) x + TRIANGLE_OFFSET, (int) y);
-					graphics.fill(eastTriangle);
-					eastTriangle.translate(-((int) x + TRIANGLE_OFFSET), -((int) y));
-					setColorByDimension(graphics, yDimension);
-					northTriangle.translate((int) x, (int) y - TRIANGLE_OFFSET);
-					graphics.fill(northTriangle);
-					northTriangle.translate(-(int) x, -((int) y - TRIANGLE_OFFSET));
-					break;
-				case UP:
+					drawEastArrow(graphics, xDimension, (int) x, (int) y);
 					graphics.setColor(new Color(255, 255, 0));
-					graphics.drawLine((int) x, (int) y - 15, (int) x, (int) y - 60);
+					drawNorthArrow(graphics, yDimension, (int) x, (int) y);
+				}
+				case UP -> {
 					setColorByDimension(graphics, xDimension);
-					eastTriangle.translate((int) x + TRIANGLE_OFFSET, (int) y);
-					graphics.drawLine((int) x + 15, (int) y, (int) x + 60, (int) y);
-					graphics.drawLine((int) x + 20, (int) y, (int) x + 20, (int) y - 20);
-					graphics.fill(eastTriangle);
-					eastTriangle.translate(-((int) x + TRIANGLE_OFFSET), -((int) y));
-					setColorByDimension(graphics, yDimension);
-					northTriangle.translate((int) x, (int) y - TRIANGLE_OFFSET);
-					graphics.drawLine((int) x, (int) y - 20, (int) x + 20, (int) y - 20);
-					graphics.fill(northTriangle);
-					northTriangle.translate(-(int) x, -((int) y - TRIANGLE_OFFSET));
-					break;
-				case RIGHT:
+					drawEastArrow(graphics, xDimension, (int) x, (int) y);
 					graphics.setColor(new Color(255, 255, 0));
-					graphics.drawLine((int) x + 15, (int) y, (int) x + 60, (int) y);
-					setColorByDimension(graphics, xDimension);
-					eastTriangle.translate((int) x + TRIANGLE_OFFSET, (int) y);
-					graphics.drawLine((int) x + 20, (int) y, (int) x + 20, (int) y - 20);
-					graphics.fill(eastTriangle);
-					eastTriangle.translate(-((int) x + TRIANGLE_OFFSET), -((int) y));
+					drawNorthArrow(graphics, yDimension, (int) x, (int) y);
+				}
+				case RIGHT -> {
+					graphics.setColor(new Color(255, 255, 0));
+					drawEastArrow(graphics, xDimension, (int) x, (int) y);
 					setColorByDimension(graphics, yDimension);
-					northTriangle.translate((int) x, (int) y - TRIANGLE_OFFSET);
-					graphics.drawLine((int) x, (int) y - 15, (int) x, (int) y - 60);
-					graphics.drawLine((int) x, (int) y - 20, (int) x + 20, (int) y - 20);
-					graphics.fill(northTriangle);
-					northTriangle.translate(-(int) x, -((int) y - TRIANGLE_OFFSET));
-					break;
-				case NONE:
+					drawNorthArrow(graphics, yDimension, (int) x, (int) y);
+				}
+				case NONE -> {
 					setColorByDimension(graphics, xDimension);
-					eastTriangle.translate((int) x + TRIANGLE_OFFSET, (int) y);
-					graphics.drawLine((int) x + 15, (int) y, (int) x + 60, (int) y);
-					graphics.drawLine((int) x + 20, (int) y, (int) x + 20, (int) y - 20);
-					graphics.fill(eastTriangle);
-					eastTriangle.translate(-((int) x + TRIANGLE_OFFSET), -((int) y));
+					drawEastArrow(graphics, xDimension, (int) x, (int) y);
 					setColorByDimension(graphics, yDimension);
-					northTriangle.translate((int) x, (int) y - TRIANGLE_OFFSET);
-					graphics.drawLine((int) x, (int) y - 15, (int) x, (int) y - 60);
-					graphics.drawLine((int) x, (int) y - 20, (int) x + 20, (int) y - 20);
-					graphics.fill(northTriangle);
-					northTriangle.translate(-(int) x, -((int) y - TRIANGLE_OFFSET));
-					break;
+					drawNorthArrow(graphics, yDimension, (int) x, (int) y);
+				}
 			}
 		}
 	}
 
-	private void setColorByDimension(final Graphics2D graphics, final byte xDimension) {
-		switch (xDimension) {
-			case 0:
-				graphics.setColor(new Color(0, 255, 0));
-				break;
-			case 1:
-				graphics.setColor(new Color(255, 0, 0));
-				break;
-			case 2:
-				graphics.setColor(new Color(0, 0, 255));
-				break;
+	private void drawNorthArrow(Graphics2D graphics, byte yDimension, int x, int y) {
+		graphics.drawLine(x, y - 15, x, y - 60);
+		graphics.drawLine(x, y - 20, x + 20, y - 20);
+		setColorByDimension(graphics, yDimension);
+		northTriangle.translate(x, y - TRIANGLE_OFFSET);
+		graphics.fill(northTriangle);
+		northTriangle.translate(-x, -(y - TRIANGLE_OFFSET));
+	}
+
+	private void drawEastArrow(Graphics2D graphics, byte xDimension, int x, int y) {
+		graphics.drawLine(x + 15, y, x + 60, y);
+		graphics.drawLine(x + 20, y, x + 20, y - 20);
+		setColorByDimension(graphics, xDimension);
+		eastTriangle.translate(x + TRIANGLE_OFFSET, y);
+		graphics.fill(eastTriangle);
+		eastTriangle.translate(-(x + TRIANGLE_OFFSET), -y);
+	}
+
+	private void setColorByDimension(final Graphics2D graphics, final byte dimension) {
+		switch (dimension) {
+			case 0 -> graphics.setColor(new Color(0, 255, 0));
+			case 1 -> graphics.setColor(new Color(255, 0, 0));
+			case 2 -> graphics.setColor(new Color(0, 0, 255));
 		}
 	}
 

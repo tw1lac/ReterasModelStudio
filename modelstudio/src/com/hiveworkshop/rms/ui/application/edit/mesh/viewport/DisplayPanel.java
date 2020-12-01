@@ -33,8 +33,7 @@ import net.infonode.docking.View;
  * @version (a version number or a date)
  */
 public class DisplayPanel extends JPanel implements ActionListener {
-	private Viewport vp;
-	private final String title;
+	private Viewport viewport;
 	private final JButton up, down, left, right, plusZoom, minusZoom;
 	private final ViewportActivity activityListener;
 	private final ModelEditorChangeNotifier modelEditorChangeNotifier;
@@ -64,7 +63,6 @@ public class DisplayPanel extends JPanel implements ActionListener {
 		setOpaque(true);
 		setViewport(a, b, modelView, preferences, undoListener, coordDisplayListener, undoHandler, modelEditor,
 				viewportTransferHandler, renderModel);
-		this.title = title;
 
 		plusZoom = createButton(20, 20, "Plus.png", e -> ZoomAction(.15));
 
@@ -81,7 +79,7 @@ public class DisplayPanel extends JPanel implements ActionListener {
 
 		final GroupLayout layout = new GroupLayout(this);
 		layout.setHorizontalGroup(layout.createSequentialGroup()
-				.addComponent(vp)
+				.addComponent(viewport)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(plusZoom)
 						.addComponent(minusZoom)
@@ -93,7 +91,7 @@ public class DisplayPanel extends JPanel implements ActionListener {
 								.addComponent(right))));
 
 		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(vp)
+				.addComponent(viewport)
 				.addGroup(layout.createSequentialGroup()
 						.addComponent(plusZoom).addGap(16)
 						.addComponent(minusZoom).addGap(16)
@@ -141,88 +139,47 @@ public class DisplayPanel extends JPanel implements ActionListener {
 							final ModelEditor modelEditor,
 							final ViewportTransferHandler viewportTransferHandler,
 							final RenderModel renderModel) {
-		vp = new Viewport(a, b, modelView, programPreferences, activityListener, modelStructureChangeListener,
+		viewport = new Viewport(a, b, modelView, programPreferences, activityListener, modelStructureChangeListener,
 				undoListener, coordDisplayListener, undoHandler, modelEditor, viewportTransferHandler, renderModel,
 				viewportListener);
-		modelEditorChangeNotifier.subscribe(vp);
-		add(vp);
+		modelEditorChangeNotifier.subscribe(viewport);
+		add(viewport);
 	}
 
 	@Override
 	public void paintComponent(final Graphics g) {
 		super.paintComponent(g);
 		// g.drawString(title,3,3);
-		vp.repaint();
+		viewport.repaint();
 	}
-
-	// public void addGeoset(Geoset g)
-	// {
-	// m_geosets.add(g);
-	// }
-	// public void setGeosetVisible(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setVisible(flag);
-	// }
-	// public void setGeosetHighlight(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setHighlight(flag);
-	// }
-	// public void clearGeosets()
-	// {
-	// m_geosets.clear();
-	// }
-	// public int getGeosetsSize()
-	// {
-	// return m_geosets.size();
-	// }
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		if (e.getSource() == up) {
-			upDownAction(20);
-		}
-		if (e.getSource() == down) {
-			upDownAction(-20);
-		}
-		if (e.getSource() == left) {
-			leftRightAction(20);
-		}
-		if (e.getSource() == right) {
-			leftRightAction(-20);
-		}
-		if (e.getSource() == plusZoom) {
-			ZoomAction(.15);
-		}
-		if (e.getSource() == minusZoom) {
-			ZoomAction(-.15);
-		}
 	}
 
 	private void ZoomAction(double v) {
-		vp.zoom(v);
-		vp.repaint();
+		viewport.zoom(v);
+		viewport.repaint();
 	}
 
 	private void leftRightAction(int i) {
-		vp.translate((i * (1 / vp.getZoomAmount())), 0);
-		vp.repaint();
+		viewport.translate((i * (1 / viewport.getZoomAmount())), 0);
+		viewport.repaint();
 	}
 
 	private void upDownAction(int i) {
-		vp.translate(0, (i * (1 / vp.getZoomAmount())));
-		vp.repaint();
+		viewport.translate(0, (i * (1 / viewport.getZoomAmount())));
+		viewport.repaint();
 	}
 
 	public ImageIcon getImageIcon() {
-		return new ImageIcon(vp.getBufferedImage());
+		return new ImageIcon(viewport.getBufferedImage());
 	}
 
 	public BufferedImage getBufferedImage() {
-		return vp.getBufferedImage();
+		return viewport.getBufferedImage();
 	}
 
 	public Viewport getViewport() {
-		return vp; // TODO why is this named vp is it the vice president
+		return viewport;
 	}
 }
