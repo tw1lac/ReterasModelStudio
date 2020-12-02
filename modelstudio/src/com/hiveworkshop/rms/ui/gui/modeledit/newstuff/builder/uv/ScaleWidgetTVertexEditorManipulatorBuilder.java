@@ -10,12 +10,12 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
 public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
-	private final ScalerWidget moverWidget = new ScalerWidget(new Vec2(0, 0));
+	private final ScalerWidget moverWidget = new ScalerWidget(new Vec3(0, 0, 0));
 
 	public ScaleWidgetTVertexEditorManipulatorBuilder(final TVertexEditor modelEditor,
 													  final ViewportSelectionHandler viewportSelectionHandler,
@@ -25,7 +25,7 @@ public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 	}
 
 	@Override
-	protected boolean widgetOffersEdit(final Vec2 selectionCenter,
+	protected boolean widgetOffersEdit(final Vec3 selectionCenter,
 									   final Point mousePoint,
 									   final CoordinateSystem coordinateSystem,
 									   final SelectionView selectionView) {
@@ -37,7 +37,7 @@ public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 	}
 
 	@Override
-	protected Manipulator createManipulatorFromWidget(final Vec2 selectionCenter,
+	protected Manipulator createManipulatorFromWidget(final Vec3 selectionCenter,
 													  final Point mousePoint,
 													  final CoordinateSystem coordinateSystem,
 													  final SelectionView selectionView) {
@@ -60,7 +60,7 @@ public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 	}
 
 	@Override
-	protected Manipulator createDefaultManipulator(final Vec2 selectionCenter,
+	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter,
 												   final Point mousePoint,
 												   final CoordinateSystem coordinateSystem,
 												   final SelectionView selectionView) {

@@ -11,7 +11,7 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.Graphics2DToTVertexMode
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
@@ -24,15 +24,15 @@ public abstract class AbstractSelectAndEditTVertexEditorManipulatorBuilder imple
 	private final ModelView modelView;
 
 	public AbstractSelectAndEditTVertexEditorManipulatorBuilder(final ViewportSelectionHandler viewportSelectionHandler,
-			final ProgramPreferences programPreferences, final TVertexEditor modelEditor, final ModelView modelView) {
+																final ProgramPreferences programPreferences,
+																final TVertexEditor modelEditor,
+																final ModelView modelView) {
 		this.viewportSelectionHandler = viewportSelectionHandler;
 		this.programPreferences = programPreferences;
 		this.modelEditor = modelEditor;
 		this.modelView = modelView;
 		graphics2dToModelElementRendererAdapter = new Graphics2DToTVertexModelElementRendererAdapter(
 				programPreferences.getVertexSize(), programPreferences);
-//		graphics2dToAnimatedModelElementRendererAdapter = new Graphics2DToAnimatedModelElementRendererAdapter(
-//				programPreferences.getVertexSize());
 	}
 
 	@Override
@@ -45,11 +45,12 @@ public abstract class AbstractSelectAndEditTVertexEditorManipulatorBuilder imple
 	}
 
 	@Override
-	public final Cursor getCursorAt(final int x, final int y, final CoordinateSystem coordinateSystem,
-			final SelectionView selectionView) {
+	public final Cursor getCursorAt(final int x, final int y,
+									final CoordinateSystem coordinateSystem,
+									final SelectionView selectionView) {
 		final Point mousePoint = new Point(x, y);
-		if (!selectionView.isEmpty() && widgetOffersEdit(selectionView.getUVCenter(modelEditor.getUVLayerIndex()),
-				mousePoint, coordinateSystem, selectionView)) {
+		if (!selectionView.isEmpty() && widgetOffersEdit(
+				selectionView.getUVCenter(modelEditor.getUVLayerIndex()), mousePoint, coordinateSystem, selectionView)) {
 			return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
 		} else if (viewportSelectionHandler.canSelectAt(mousePoint, coordinateSystem)) {
 			return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
@@ -58,8 +59,10 @@ public abstract class AbstractSelectAndEditTVertexEditorManipulatorBuilder imple
 	}
 
 	@Override
-	public final Manipulator buildActivityListener(final int x, final int y, final ButtonType clickedButton,
-                                                   final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+	public final Manipulator buildActivityListener(final int x, final int y,
+												   final ButtonType clickedButton,
+												   final CoordinateSystem coordinateSystem,
+												   final SelectionView selectionView) {
 		final Point mousePoint = new Point(x, y);
 		if (clickedButton == ButtonType.RIGHT_MOUSE) {
 			return createDefaultManipulator(selectionView.getUVCenter(modelEditor.getUVLayerIndex()), mousePoint,
@@ -89,24 +92,26 @@ public abstract class AbstractSelectAndEditTVertexEditorManipulatorBuilder imple
 	}
 
 	@Override
-	public final void renderStatic(final Graphics2D graphics, final CoordinateSystem coordinateSystem,
-			final SelectionView selectionView) {
-		selectionView.renderUVSelection(graphics2dToModelElementRendererAdapter.reset(graphics, coordinateSystem),
+	public final void renderStatic(final Graphics2D graphics,
+								   final CoordinateSystem coordinateSystem,
+								   final SelectionView selectionView) {
+		selectionView.renderUVSelection(
+				graphics2dToModelElementRendererAdapter.reset(graphics, coordinateSystem),
 				modelView, programPreferences, modelEditor.getUVLayerIndex());
 		if (!selectionView.isEmpty()) {
 			renderWidget(graphics, coordinateSystem, selectionView);
 		}
 	}
 
-	protected abstract boolean widgetOffersEdit(Vec2 selectionCenter, Point mousePoint,
-			CoordinateSystem coordinateSystem, SelectionView selectionView);
+	protected abstract boolean widgetOffersEdit(Vec3 selectionCenter, Point mousePoint,
+												CoordinateSystem coordinateSystem, SelectionView selectionView);
 
-	protected abstract Manipulator createManipulatorFromWidget(Vec2 selectionCenter, Point mousePoint,
-			CoordinateSystem coordinateSystem, SelectionView selectionView);
+	protected abstract Manipulator createManipulatorFromWidget(Vec3 selectionCenter, Point mousePoint,
+															   CoordinateSystem coordinateSystem, SelectionView selectionView);
 
-	protected abstract Manipulator createDefaultManipulator(Vec2 selectionCenter, Point mousePoint,
-			CoordinateSystem coordinateSystem, SelectionView selectionView);
+	protected abstract Manipulator createDefaultManipulator(Vec3 selectionCenter, Point mousePoint,
+															CoordinateSystem coordinateSystem, SelectionView selectionView);
 
 	protected abstract void renderWidget(final Graphics2D graphics, final CoordinateSystem coordinateSystem,
-			final SelectionView selectionView);
+										 final SelectionView selectionView);
 }

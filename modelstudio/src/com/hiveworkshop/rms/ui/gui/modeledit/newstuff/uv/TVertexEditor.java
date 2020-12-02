@@ -1,9 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv;
 
-import java.awt.Point;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
@@ -12,15 +8,18 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotate
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericScaleAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.listener.ComponentVisibilityListener;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 /**
  * So, in some ideal future this would be an implementation of the ModelEditor
  * interface, I believe, and the editor would be operating on an interface who
  * could capture clicks and convert them into 2D operations regardless of
  * whether the underlying thing being editor was UV or Mesh.
- *
+ * <p>
  * It isn't like that right now, though, so this is just going to be a 2D copy
  * pasta.
  */
@@ -29,9 +28,9 @@ public interface TVertexEditor extends ComponentVisibilityListener {
 	// knowledge of center point from state holders
 	UndoAction translate(double x, double y);
 
-	UndoAction setPosition(Vec2 center, double x, double y);
+	UndoAction setPosition(Vec3 center, double x, double y);
 
-	UndoAction rotate(Vec2 center, double rotateRadians);
+	UndoAction rotate(Vec3 center, double rotateRadians);
 
 	UndoAction mirror(byte dim, double centerX, double centerY);
 
@@ -67,7 +66,7 @@ public interface TVertexEditor extends ComponentVisibilityListener {
 
 	void rawRotate2d(double centerX, double centerY, double radians, byte firstXYZ, byte secondXYZ);
 
-	Vec2 getSelectionCenter();
+	Vec3 getSelectionCenter();
 
 	void setUVLayerIndex(int uvLayerIndex);
 

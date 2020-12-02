@@ -203,11 +203,11 @@ public class Geoset implements Named, VisibilitySource {
 			geoset.normals[(vId * 3) + 2] = norm.z;
 
 			for (int uvLayerIndex = 0; uvLayerIndex < nrOfTextureVertexGroups; uvLayerIndex++) {
-				final Vec2 uv = vertex.getTVertex(uvLayerIndex);
+                final Vec3 uv = vertex.getTVertex(uvLayerIndex);
 
-				geoset.uvSets[uvLayerIndex][(vId * 2) + 0] = uv.x;
-				geoset.uvSets[uvLayerIndex][(vId * 2) + 1] = uv.y;
-			}
+                geoset.uvSets[uvLayerIndex][(vId * 2) + 0] = uv.x;
+                geoset.uvSets[uvLayerIndex][(vId * 2) + 1] = uv.y;
+            }
 
 			geoset.vertexGroups[vId] = (byte) vertex.getVertexGroup();
 		}
@@ -415,28 +415,28 @@ public class Geoset implements Named, VisibilitySource {
 
 	public void add(final Animation a) {
 		anims.add(a);
-	}
+    }
 
-	public Animation getAnim(final int id) {
-		return anims.get(id);
-	}
+    public Animation getAnim(final int id) {
+        return anims.get(id);
+    }
 
-	public int numAnims() {
-		return anims.size();
-	}
+    public int numAnims() {
+        return anims.size();
+    }
 
-	public List<Vec2> getTVertecesInArea(final Rectangle2D.Double area, final int layerId) {
-		final List<Vec2> temp = new ArrayList<>();
-		for (GeosetVertex vertex : vertices) {
-			final Vec2 ver = vertex.getTVertex(layerId);
-			// Point2D.Double p = new
-			// Point(ver.getCoords(dim1),ver.getCoords(dim2))
-			if (area.contains(ver.x, ver.y)) {
-				temp.add(ver);
-			}
-		}
-		return temp;
-	}
+    public List<Vec3> getTVertecesInArea(final Rectangle2D.Double area, final int layerId) {
+        final List<Vec3> temp = new ArrayList<>();
+        for (GeosetVertex vertex : vertices) {
+            final Vec3 ver = vertex.getTVertex(layerId);
+            // Point2D.Double p = new
+            // Point(ver.getCoords(dim1),ver.getCoords(dim2))
+            if (area.contains(ver.x, ver.y)) {
+                temp.add(ver);
+            }
+        }
+        return temp;
+    }
 
 	public List<Vec3> getVertecesInArea(final Rectangle2D.Double area, final byte dim1, final byte dim2) {
 		final List<Vec3> temp = new ArrayList<>();

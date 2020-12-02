@@ -5,7 +5,7 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericRotate
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.AbstractManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
-import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.geom.Point2D.Double;
 
@@ -19,18 +19,22 @@ public class RotateTVertexManipulator extends AbstractManipulator {
 		this.selectionView = selectionView;
 	}
 
-	@Override
-	protected void onStart(final Double mouseStart, final byte dim1, final byte dim2) {
-		super.onStart(mouseStart, dim1, dim2);
-		final Vec2 center = selectionView.getUVCenter(modelEditor.getUVLayerIndex());
-		rotationAction = modelEditor.beginRotation(center.x, center.y, dim1, dim2);
+	private static double computeRotateRadians(final Double startingClick, final Double endingClick,
+											   final Vec3 center, final byte portFirstXYZ, final byte portSecondXYZ) {
+		final double startingDeltaX = startingClick.x - center.getCoord(portFirstXYZ);
+		final double startingDeltaY = startingClick.y - center.getCoord(portSecondXYZ);
+		final double endingDeltaX = endingClick.x - center.getCoord(portFirstXYZ);
+		final double endingDeltaY = endingClick.y - center.getCoord(portSecondXYZ);
+		final double startingAngle = Math.atan2(startingDeltaY, startingDeltaX);
+		final double endingAngle = Math.atan2(endingDeltaY, endingDeltaX);
+		return endingAngle - startingAngle;
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
-		final Vec2 center = selectionView.getUVCenter(modelEditor.getUVLayerIndex());
-		final double radians = computeRotateRadians(mouseStart, mouseEnd, center, dim1, dim2);
-		rotationAction.updateRotation(radians);
+	protected void onStart(final Double mouseStart, final byte dim1, final byte dim2) {
+		super.onStart(mouseStart, dim1, dim2);
+		final Vec3 center = selectionView.getUVCenter(modelEditor.getUVLayerIndex());
+		rotationAction = modelEditor.beginRotation(center.x, center.y, dim1, dim2);
 	}
 
 	@Override
@@ -39,15 +43,11 @@ public class RotateTVertexManipulator extends AbstractManipulator {
 		return rotationAction;
 	}
 
-	private static double computeRotateRadians(final Double startingClick, final Double endingClick,
-			final Vec2 center, final byte portFirstXYZ, final byte portSecondXYZ) {
-		final double startingDeltaX = startingClick.x - center.getCoord(portFirstXYZ);
-		final double startingDeltaY = startingClick.y - center.getCoord(portSecondXYZ);
-		final double endingDeltaX = endingClick.x - center.getCoord(portFirstXYZ);
-		final double endingDeltaY = endingClick.y - center.getCoord(portSecondXYZ);
-		final double startingAngle = Math.atan2(startingDeltaY, startingDeltaX);
-		final double endingAngle = Math.atan2(endingDeltaY, endingDeltaX);
-		return endingAngle - startingAngle;
+	@Override
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+		final Vec3 center = selectionView.getUVCenter(modelEditor.getUVLayerIndex());
+		final double radians = computeRotateRadians(mouseStart, mouseEnd, center, dim1, dim2);
+		rotationAction.updateRotation(radians);
 	}
 
 }

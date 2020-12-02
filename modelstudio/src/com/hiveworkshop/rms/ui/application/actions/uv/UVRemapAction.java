@@ -1,21 +1,21 @@
 package com.hiveworkshop.rms.ui.application.actions.uv;
 
-import java.util.List;
-
 import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel;
 import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel.UnwrapDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
-import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.List;
 
 public class UVRemapAction implements UndoAction {
 
-	private final List<Vec2> tVertices;
-	private final List<Vec2> newValueHolders;
-	private final List<Vec2> oldValueHolders;
+	private final List<Vec3> tVertices;
+	private final List<Vec3> newValueHolders;
+	private final List<Vec3> oldValueHolders;
 	private final UnwrapDirection direction;
 
-	public UVRemapAction(final List<Vec2> tVertices, final List<Vec2> newValueHolders,
-			final List<Vec2> oldValueHolders, final UVPanel.UnwrapDirection direction) {
+	public UVRemapAction(final List<Vec3> tVertices, final List<Vec3> newValueHolders,
+						 final List<Vec3> oldValueHolders, final UVPanel.UnwrapDirection direction) {
 		this.tVertices = tVertices;
 		this.newValueHolders = newValueHolders;
 		this.oldValueHolders = oldValueHolders;

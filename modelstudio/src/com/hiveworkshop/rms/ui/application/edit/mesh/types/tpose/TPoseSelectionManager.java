@@ -8,7 +8,6 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.NodeIconPalette;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 
@@ -154,17 +153,17 @@ public final class TPoseSelectionManager extends AbstractSelectionManager<IdObje
 	}
 
 	@Override
-	public Vec2 getUVCenter(final int tvertexLayerId) {
-		return Vec2.ORIGIN;
+	public Vec3 getUVCenter(final int tvertexLayerId) {
+		return Vec3.ORIGIN;
 	}
 
 	@Override
-	public Collection<? extends Vec2> getSelectedTVertices(final int tvertexLayerId) {
+	public Collection<? extends Vec3> getSelectedTVertices(final int tvertexLayerId) {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public double getCircumscribedSphereRadius(final Vec2 center, final int tvertexLayerId) {
+	public double getCircumscribedSphereRadius(final Vec3 center, final int tvertexLayerId) {
 		return 0;
 	}
 

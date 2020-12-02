@@ -2,7 +2,6 @@ package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv;
 
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 public final class ScaleYTVertexManipulator extends AbstractScaleTVertexManipulator {
@@ -14,8 +13,8 @@ public final class ScaleYTVertexManipulator extends AbstractScaleTVertexManipula
 	}
 
 	@Override
-	protected final void scaleWithFactor(final TVertexEditor modelEditor, final Vec2 center,
-			final double scaleFactor, final byte dim1, final byte dim2) {
+	protected final void scaleWithFactor(final TVertexEditor modelEditor, final Vec3 center,
+										 final double scaleFactor, final byte dim1, final byte dim2) {
 		resettableScaleFactors.x = 1;
 		resettableScaleFactors.y = 1;
 		resettableScaleFactors.z = 1;

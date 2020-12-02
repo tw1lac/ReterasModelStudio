@@ -5,7 +5,6 @@ import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.ui.gui.modeledit.ModelPanel;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 import net.miginfocom.swing.MigLayout;
 
@@ -40,7 +39,7 @@ public class ModelEditActions {
     static void inverseAllUVs(MainPanel mainPanel) {
         for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
             for (final GeosetVertex vertex : geo.getVertices()) {
-                for (final Vec2 tvert : vertex.getTverts()) {
+                for (final Vec3 tvert : vertex.getTverts()) {
                     final float temp = tvert.x;
                     tvert.x = tvert.y;
                     tvert.y = temp;
@@ -53,7 +52,7 @@ public class ModelEditActions {
     static void flipAllUVsV(MainPanel mainPanel) {
         for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
             for (final GeosetVertex vertex : geo.getVertices()) {
-                for (final Vec2 tvert : vertex.getTverts()) {
+                for (final Vec3 tvert : vertex.getTverts()) {
                     tvert.y = 1.0f - tvert.y;
                 }
             }
@@ -64,7 +63,7 @@ public class ModelEditActions {
     static void flipAllUVsU(MainPanel mainPanel) {
         for (final Geoset geo : mainPanel.currentMDL().getGeosets()) {
             for (final GeosetVertex vertex : geo.getVertices()) {
-                for (final Vec2 tvert : vertex.getTverts()) {
+                for (final Vec3 tvert : vertex.getTverts()) {
                     tvert.x = 1.0f - tvert.x;
                 }
             }

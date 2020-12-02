@@ -9,7 +9,6 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.selection.AbstractSelection
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.Collection;
@@ -83,13 +82,13 @@ public final class GeosetVertexSelectionManager extends AbstractSelectionManager
 	}
 
 	@Override
-	public Vec2 getUVCenter(final int tvertexLayerId) {
-		return Vec2.centerOfGroup(getSelectedTVertices(tvertexLayerId));
+	public Vec3 getUVCenter(final int tvertexLayerId) {
+		return Vec3.centerOfGroup(getSelectedTVertices(tvertexLayerId));
 	}
 
 	@Override
-	public Collection<? extends Vec2> getSelectedTVertices(final int tvertexLayerId) {
-		final Set<Vec2> selectedTVertices = new HashSet<>();
+	public Collection<? extends Vec3> getSelectedTVertices(final int tvertexLayerId) {
+		final Set<Vec3> selectedTVertices = new HashSet<>();
 		for (final GeosetVertex vertex : selection) {
 			if (tvertexLayerId < vertex.getTverts().size()) {
 				selectedTVertices.add(vertex.getTVertex(tvertexLayerId));
@@ -99,7 +98,7 @@ public final class GeosetVertexSelectionManager extends AbstractSelectionManager
 	}
 
 	@Override
-	public double getCircumscribedSphereRadius(final Vec2 center, final int tvertexLayerId) {
+	public double getCircumscribedSphereRadius(final Vec3 center, final int tvertexLayerId) {
 		double radius = 0;
 		for (final GeosetVertex item : selection) {
 			if (tvertexLayerId < item.getTverts().size()) {

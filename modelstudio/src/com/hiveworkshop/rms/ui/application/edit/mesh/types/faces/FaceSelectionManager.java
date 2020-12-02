@@ -9,7 +9,6 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.selection.AbstractSelection
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
@@ -86,8 +85,8 @@ public final class FaceSelectionManager extends AbstractSelectionManager<Triangl
 	}
 
 	@Override
-	public Vec2 getUVCenter(final int tvertexLayerId) {
-		final Set<Vec2> selectedVertices = new HashSet<>();
+	public Vec3 getUVCenter(final int tvertexLayerId) {
+		final Set<Vec3> selectedVertices = new HashSet<>();
 		for (final Triangle triangle : selection) {
 			for (final GeosetVertex geosetVertex : triangle.getVerts()) {
 				if (tvertexLayerId < geosetVertex.getTverts().size()) {
@@ -95,12 +94,12 @@ public final class FaceSelectionManager extends AbstractSelectionManager<Triangl
 				}
 			}
 		}
-		return Vec2.centerOfGroup(selectedVertices);
+		return Vec3.centerOfGroup(selectedVertices);
 	}
 
 	@Override
-	public Collection<? extends Vec2> getSelectedTVertices(final int tvertexLayerId) {
-		final Set<Vec2> selectedVertices = new HashSet<>();
+	public Collection<? extends Vec3> getSelectedTVertices(final int tvertexLayerId) {
+		final Set<Vec3> selectedVertices = new HashSet<>();
 		for (final Triangle triangle : selection) {
 			for (final GeosetVertex geosetVertex : triangle.getVerts()) {
 				if (tvertexLayerId < geosetVertex.getTverts().size()) {
@@ -112,7 +111,7 @@ public final class FaceSelectionManager extends AbstractSelectionManager<Triangl
 	}
 
 	@Override
-	public double getCircumscribedSphereRadius(final Vec2 center, final int tvertexLayerId) {
+	public double getCircumscribedSphereRadius(final Vec3 center, final int tvertexLayerId) {
 		double radius = 0;
 		for (final Triangle item : selection) {
 			for (final GeosetVertex geosetVertex : item.getVerts()) {

@@ -1,12 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv;
 
-import java.awt.Point;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.hiveworkshop.rms.ui.application.edit.mesh.CloneContextHelper;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel;
@@ -22,8 +15,14 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.listener.EditabilityToggle
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectableComponent;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.util.SubscriberSetNotifier;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> implements TVertexEditor {
 	private CloneContextHelper cloneContextHelper;
@@ -131,7 +130,7 @@ public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> 
 	}
 
 	@Override
-	public UndoAction setPosition(final Vec2 center, final double x, final double y) {
+	public UndoAction setPosition(final Vec3 center, final double x, final double y) {
 		final List<UndoAction> actions = new ArrayList<>();
 		for (final TVertexEditor handler : set) {
 			actions.add(handler.setPosition(center, x, y));
@@ -140,7 +139,7 @@ public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> 
 	}
 
 	@Override
-	public UndoAction rotate(final Vec2 center, final double rotateRadians) {
+	public UndoAction rotate(final Vec3 center, final double rotateRadians) {
 		final List<UndoAction> actions = new ArrayList<>();
 		for (final TVertexEditor handler : set) {
 			actions.add(handler.rotate(center, rotateRadians));
@@ -198,16 +197,16 @@ public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> 
 	}
 
 	@Override
-	public Vec2 getSelectionCenter() {
-		final Set<Vec2> centers = new HashSet<>();
+	public Vec3 getSelectionCenter() {
+		final Set<Vec3> centers = new HashSet<>();
 		for (final TVertexEditor handler : set) {
-			final Vec2 selectionCenter = handler.getSelectionCenter();
+			final Vec3 selectionCenter = handler.getSelectionCenter();
 			if (Double.isNaN(selectionCenter.x) || Double.isNaN(selectionCenter.y)) {
 				continue;
 			}
 			centers.add(selectionCenter);
 		}
-		return Vec2.centerOfGroup(centers);
+		return Vec3.centerOfGroup(centers);
 	}
 
 	@Override

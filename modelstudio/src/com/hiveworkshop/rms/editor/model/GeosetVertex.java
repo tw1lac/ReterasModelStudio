@@ -20,7 +20,7 @@ public class GeosetVertex extends Vec3 {
 	Matrix matrixRef;
 	private Vec3 normal = new Vec3();
 	public int VertexGroup = -1;
-	List<Vec2> tverts = new ArrayList<>();
+	List<Vec3> tverts = new ArrayList<>();
 	List<Bone> bones = new ArrayList<>();
 	List<Triangle> triangles = new ArrayList<>();
 	private byte[] skinBoneIndexes;
@@ -81,8 +81,8 @@ public class GeosetVertex extends Vec3 {
 		normal = new Vec3(old.normal);
 		bones = new ArrayList<>(old.bones);
 		tverts = new ArrayList<>();
-		for (final Vec2 tv : old.tverts) {
-			tverts.add(new Vec2(tv));
+		for (final Vec3 tv : old.tverts) {
+			tverts.add(new Vec3(tv));
 		}
 		// odd, but when writing
 		geoset = old.geoset;
@@ -102,16 +102,20 @@ public class GeosetVertex extends Vec3 {
 	}
 
 	public void addTVertex(final Vec2 v) {
+		tverts.add(new Vec3(v.x, v.y, 0));
+	}
+
+	public void addTVertex(final Vec3 v) {
 		tverts.add(v);
 	}
 
-	public Vec2 getTVertex(final int i) {
+	public Vec3 getTVertex(final int i) {
 		try {
 			return tverts.get(i);
 		} catch (final IndexOutOfBoundsException e) {
 			return null;
 		}
-    }
+	}
 
 	public void setVertexGroup(final int k) {
 		VertexGroup = k;
@@ -153,11 +157,11 @@ public class GeosetVertex extends Vec3 {
 		return normal;
 	}
 
-	public List<Vec2> getTverts() {
+	public List<Vec3> getTverts() {
 		return tverts;
 	}
 
-	public void setTverts(final List<Vec2> tverts) {
+	public void setTverts(final List<Vec3> tverts) {
 		this.tverts = tverts;
 	}
 

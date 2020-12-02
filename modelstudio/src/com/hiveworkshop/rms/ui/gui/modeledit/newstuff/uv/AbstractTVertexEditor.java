@@ -15,7 +15,6 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.actions.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionManager;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.VertexSelectionHelper;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.*;
@@ -47,9 +46,9 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 
 	@Override
 	public UndoAction remap(final byte xDim, final byte yDim, final UVPanel.UnwrapDirection unwrapDirection) {
-		final List<Vec2> tVertices = new ArrayList<>();
-		final List<Vec2> newValueHolders = new ArrayList<>();
-		final List<Vec2> oldValueHolders = new ArrayList<>();
+		final List<Vec3> tVertices = new ArrayList<>();
+		final List<Vec3> newValueHolders = new ArrayList<>();
+		final List<Vec3> oldValueHolders = new ArrayList<>();
 		float minX = Float.MAX_VALUE;
 		float minY = Float.MAX_VALUE;
 		float maxX = -Float.MAX_VALUE;
@@ -58,10 +57,10 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 			if (vertex instanceof GeosetVertex) {
 				final GeosetVertex geosetVertex = (GeosetVertex) vertex;
 				if (uvLayerIndex < geosetVertex.getTverts().size()) {
-					final Vec2 modelDataTVertex = geosetVertex.getTVertex(uvLayerIndex);
+					final Vec3 modelDataTVertex = geosetVertex.getTVertex(uvLayerIndex);
 					tVertices.add(modelDataTVertex);
-					oldValueHolders.add(new Vec2(modelDataTVertex.x, modelDataTVertex.y));
-					final Vec2 newCoordValue = new Vec2(vertex.getCoord(xDim), vertex.getCoord(yDim));
+					oldValueHolders.add(new Vec3(modelDataTVertex.x, modelDataTVertex.y, 0));
+					final Vec3 newCoordValue = new Vec3(vertex.getCoord(xDim), vertex.getCoord(yDim), 0);
 					if (newCoordValue.x > maxX) {
 						maxX = newCoordValue.x;
 					}
@@ -86,7 +85,7 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 		if (widthY == 0) {
 			widthY = 0.01f;
 		}
-		for (final Vec2 tv : newValueHolders) {
+		for (final Vec3 tv : newValueHolders) {
 			tv.x = (tv.x - minX) / widthX;
 			tv.y = (tv.y - minY) / widthY;
 		}
@@ -98,12 +97,12 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 
 	@Override
 	public UndoAction snapSelectedVertices() {
-		final Collection<? extends Vec2> selection = TVertexUtils
+		final Collection<? extends Vec3> selection = TVertexUtils
 				.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex);
-		final List<Vec2> oldLocations = new ArrayList<>();
-		final Vec2 cog = Vec2.centerOfGroup(selection);
-		for (final Vec2 vertex : selection) {
-			oldLocations.add(new Vec2(vertex));
+		final List<Vec3> oldLocations = new ArrayList<>();
+		final Vec3 cog = Vec3.centerOfGroup(selection);
+		for (final Vec3 vertex : selection) {
+			oldLocations.add(new Vec3(vertex));
 		}
 		final UVSnapAction temp = new UVSnapAction(selection, oldLocations, cog);
 		temp.redo();// a handy way to do the snapping!
@@ -112,55 +111,55 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 
 	@Override
 	public void rawTranslate(final double x, final double y) {
-		for (final Vec2 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
-			vertex.translate(x, y);
+		for (final Vec3 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
+			vertex.translate(x, y, 0);
 		}
 	}
 
 	@Override
 	public void rawScale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
-		for (final Vec2 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
-			vertex.scale(centerX, centerY, scaleX, scaleY);
+		for (final Vec3 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
+			vertex.scale(centerX, centerY, 0, scaleX, scaleY, 1);
 		}
 	}
 
 	@Override
 	public void rawRotate2d(final double centerX, final double centerY, final double radians, final byte firstXYZ,
 			final byte secondXYZ) {
-		for (final Vec2 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
-			vertex.rotate(centerX, centerY, radians, firstXYZ, secondXYZ);
+		for (final Vec3 vertex : TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex)) {
+			vertex.rotate(centerX, centerY, 0, radians, firstXYZ, secondXYZ);
 		}
 	}
 
 	@Override
 	public UndoAction translate(final double x, final double y) {
-		final Vec2 delta = new Vec2(x, y);
+		final Vec3 delta = new Vec3(x, y, 0);
 		final StaticMeshUVMoveAction moveAction = new StaticMeshUVMoveAction(this, delta);
 		moveAction.redo();
 		return moveAction;
 	}
 
 	@Override
-	public UndoAction setPosition(final Vec2 center, final double x, final double y) {
-		final Vec2 delta = new Vec2(x - center.x, y - center.y);
+	public UndoAction setPosition(final Vec3 center, final double x, final double y) {
+		final Vec3 delta = new Vec3(x - center.x, y - center.y, 0);
 		final StaticMeshUVMoveAction moveAction = new StaticMeshUVMoveAction(this, delta);
 		moveAction.redo();
 		return moveAction;
 	}
 
 	@Override
-	public UndoAction rotate(final Vec2 center, final double rotateRadians) {
+	public UndoAction rotate(final Vec3 center, final double rotateRadians) {
 		final SimpleRotateUVAction compoundAction = new SimpleRotateUVAction(this, center, rotateRadians);
 		compoundAction.redo();
 		return compoundAction;
 	}
 
 	@Override
-	public Vec2 getSelectionCenter() {
+	public Vec3 getSelectionCenter() {
 //		return selectionManager.getCenter();
-        final Set<Vec2> tvertices = new HashSet<>(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
-        return Vec2.centerOfGroup(tvertices); // TODO is this correct?
-    }
+		final Set<Vec3> tvertices = new HashSet<>(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
+		return Vec3.centerOfGroup(tvertices); // TODO is this correct?
+	}
 
 	@Override
 	public UndoAction selectFromViewer(final SelectionView viewerSelectionView) {
@@ -172,13 +171,13 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 
 	@Override
 	public GenericMoveAction beginTranslation() {
-		return new StaticMeshUVMoveAction(this, Vec2.ORIGIN);
+		return new StaticMeshUVMoveAction(this, Vec3.ORIGIN);
 	}
 
 	@Override
 	public GenericRotateAction beginRotation(final double centerX, final double centerY, final byte dim1,
                                              final byte dim2) {
-		return new StaticMeshUVRotateAction(this, new Vec2(centerX, centerY), dim1, dim2);
+		return new StaticMeshUVRotateAction(this, new Vec3(centerX, centerY, 0), dim1, dim2);
 	}
 
 	@Override

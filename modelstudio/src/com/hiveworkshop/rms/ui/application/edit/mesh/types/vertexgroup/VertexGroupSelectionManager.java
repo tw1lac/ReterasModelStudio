@@ -10,7 +10,6 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.types.geosetvertex.GeosetVe
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
@@ -101,17 +100,17 @@ public final class VertexGroupSelectionManager extends AbstractSelectionManager<
 	}
 
 	@Override
-	public Vec2 getUVCenter(final int tvertexLayerId) {
+	public Vec3 getUVCenter(final int tvertexLayerId) {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	@Override
-	public Collection<? extends Vec2> getSelectedTVertices(final int tvertexLayerId) {
+	public Collection<? extends Vec3> getSelectedTVertices(final int tvertexLayerId) {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	@Override
-	public double getCircumscribedSphereRadius(final Vec2 center, final int tvertexLayerId) {
+	public double getCircumscribedSphereRadius(final Vec3 center, final int tvertexLayerId) {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
