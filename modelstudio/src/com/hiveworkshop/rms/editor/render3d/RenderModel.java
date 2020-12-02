@@ -9,10 +9,7 @@ import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * For rendering. Copied from ghostwolf's stuff
@@ -109,26 +106,26 @@ public final class RenderModel {
 		for (final Camera camera : model.getCameras()) {
 			final TargetNode object = camera.getTargetNode();
 			sortedNodes.add(object);
-			RenderNode renderNode = objectToRenderNode.get(object);
-			if (renderNode == null) {
-				renderNode = new RenderNode(this, object);
-				objectToRenderNode.put(object, renderNode);
-			}
-		}
-		for (final ParticleEmitter2 particleEmitter : model.sortedIdObjects(ParticleEmitter2.class)) {
-			particleEmitters2.add(new RenderParticleEmitter2(particleEmitter,
-					renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
-		}
-		particleEmitters2.sort((o1, o2) -> Integer.compare(o1.getPriorityPlane(), o2.getPriorityPlane()));
-		for (final RenderParticleEmitter2 particleEmitter : particleEmitters2) {
-			final RenderParticleEmitter2View emitterView = new RenderParticleEmitter2View(this, particleEmitter);
-			particleEmitterViews2.add(emitterView);
-			emitterToRenderer.put(emitterView.getEmitter(), emitterView);
-		}
-		for (final AnimatedNode node : sortedNodes) {
-			getRenderNode(node).refreshFromEditor();
-		}
-	}
+            RenderNode renderNode = objectToRenderNode.get(object);
+            if (renderNode == null) {
+                renderNode = new RenderNode(this, object);
+                objectToRenderNode.put(object, renderNode);
+            }
+        }
+        for (final ParticleEmitter2 particleEmitter : model.sortedIdObjects(ParticleEmitter2.class)) {
+            particleEmitters2.add(new RenderParticleEmitter2(particleEmitter,
+                    renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
+        }
+        particleEmitters2.sort(Comparator.comparingInt(RenderParticleEmitter2::getPriorityPlane));
+        for (final RenderParticleEmitter2 particleEmitter : particleEmitters2) {
+            final RenderParticleEmitter2View emitterView = new RenderParticleEmitter2View(this, particleEmitter);
+            particleEmitterViews2.add(emitterView);
+            emitterToRenderer.put(emitterView.getEmitter(), emitterView);
+        }
+        for (final AnimatedNode node : sortedNodes) {
+            getRenderNode(node).refreshFromEditor();
+        }
+    }
 
 	private void setupHierarchy(final IdObject parent) {
 		for (final IdObject object : model.getIdObjects()) {

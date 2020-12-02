@@ -850,7 +850,6 @@ public class DataSourceChooserPanel extends JPanel {
 						// We used to have this, maybe some people still do?
 						final String[] prefixes = {"war3.mpq", "deprecated.mpq", lowerLocale + "-war3local.mpq"};
 						defaultPrefixes = Arrays.asList(prefixes);
-						break;
 					}
 					case PATCH131 -> {
 						System.out.println("Detected Patch 1.31");
@@ -858,7 +857,6 @@ public class DataSourceChooserPanel extends JPanel {
 						final String[] prefixes = {"war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
 								"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod"};
 						defaultPrefixes = Arrays.asList(prefixes);
-						break;
 					}
 					case PATCH132 -> {
 						System.out.println("Detected Patch 1.32+");
@@ -867,7 +865,6 @@ public class DataSourceChooserPanel extends JPanel {
 								"war3.w3mod\\_locales\\" + lowerLocale + ".w3mod", "war3.w3mod\\_hd.w3mod",
 								"war3.w3mod\\_hd.w3mod\\_locales\\" + lowerLocale + ".w3mod"};
 						defaultPrefixes = Arrays.asList(prefixes);
-						break;
 					}
 					case UNKNOWN_FUTURE_PATCH -> {
 						final String[] prefixes = {"war3.w3mod", "war3.w3mod", "war3.w3mod\\_deprecated.w3mod",
@@ -876,7 +873,6 @@ public class DataSourceChooserPanel extends JPanel {
 								"The Warcraft III Installation you have selected seems to be too new, or is not a supported version. The suggested prefix list from Patch 1.31 will be used.\nThis will probably fail, and you will need more advanced configuration.",
 								"Error", JOptionPane.ERROR_MESSAGE);
 						defaultPrefixes = Arrays.asList(prefixes);
-						break;
 					}
 					default -> defaultPrefixes = new ArrayList<>();
 				}

@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class TriggerTree extends JTree {
 	private final TriggerEnvironment triggerEnvironment;
@@ -118,19 +119,15 @@ public class TriggerTree extends JTree {
 
 		@Override
 		public void moveTrigger(final Trigger trigger, final TriggerCategory triggerCategory, final int index) {
-			final TriggerTreeNode triggerNode = root.getNode(trigger.getCategory()) == null ? null
-					: root.getNode(trigger.getCategory()).getNode(trigger);
-			delegate.moveTrigger(trigger, triggerCategory, index);
-			if (triggerNode != null) {
-				treeModel.removeNodeFromParent(triggerNode);
-			}
-			final TriggerCategoryTreeNode categoryNode = root.getNode(triggerCategory);
-			if (triggerNode != null) {
-				treeModel.insertNodeInto(triggerNode, categoryNode, index);
-			} else {
-				treeModel.insertNodeInto(new TriggerTreeNode(trigger), categoryNode, index);
-			}
-		}
+            final TriggerTreeNode triggerNode = root.getNode(trigger.getCategory()) == null ? null
+                    : root.getNode(trigger.getCategory()).getNode(trigger);
+            delegate.moveTrigger(trigger, triggerCategory, index);
+            if (triggerNode != null) {
+                treeModel.removeNodeFromParent(triggerNode);
+            }
+            final TriggerCategoryTreeNode categoryNode = root.getNode(triggerCategory);
+            treeModel.insertNodeInto(Objects.requireNonNullElseGet(triggerNode, () -> new TriggerTreeNode(trigger)), categoryNode, index);
+        }
 
 		@Override
 		public void toggleCategoryIsComment(final TriggerCategory triggerCategory) {

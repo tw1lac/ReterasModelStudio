@@ -21,11 +21,11 @@ public final class StringKey {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((string.toLowerCase() == null) ? 0 : string.toLowerCase().hashCode());
-		return result;
-	}
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + string.toLowerCase().hashCode();
+        return result;
+    }
 
 	@Override
 	public boolean equals(final Object obj) {

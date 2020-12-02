@@ -3,14 +3,15 @@ package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields;
 import com.hiveworkshop.rms.parsers.slk.DataTable;
 import com.hiveworkshop.rms.parsers.slk.Element;
 import com.hiveworkshop.rms.parsers.slk.GameObject;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
 import com.hiveworkshop.rms.util.War3ID;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GameEnumObjectField extends AbstractObjectField {
@@ -58,7 +59,7 @@ public class GameEnumObjectField extends AbstractObjectField {
 				selectedItemClass = itemClass;
 			}
 		}
-		itemClassesList.sort((a, b) -> a.getCategoryDisplay().compareTo(b.getCategoryDisplay()));
+		itemClassesList.sort(Comparator.comparing(GameEnumChoice::getCategoryDisplay));
 
 		final JPanel popupPanel = new JPanel();
 		popupPanel.add(new JLabel(getDisplayName(gameUnit)));
@@ -75,7 +76,7 @@ public class GameEnumObjectField extends AbstractObjectField {
 			}
 		} else {
 			final JComboBox<GameEnumChoice> itemClassCombo = new JComboBox<>(
-					itemClassesList.toArray(new GameEnumChoice[itemClassesList.size()]));
+					itemClassesList.toArray(new GameEnumChoice[0]));
 			itemClassCombo.setEditable(false);
 			if (selectedItemClass != null) {
 				itemClassCombo.setSelectedItem(selectedItemClass);

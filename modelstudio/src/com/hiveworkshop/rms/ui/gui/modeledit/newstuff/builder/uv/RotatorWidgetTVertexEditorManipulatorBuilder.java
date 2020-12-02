@@ -1,10 +1,10 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.RotatorWidget;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.RotatorWidget.RotateDirection;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
-import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexRotatorWidget;
-import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexRotatorWidget.RotateDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.RotateTVertexHorizontalManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.RotateTVertexManipulator;
@@ -17,7 +17,7 @@ import com.hiveworkshop.rms.util.Vec2;
 import java.awt.*;
 
 public final class RotatorWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
-	private final TVertexRotatorWidget moverWidget = new TVertexRotatorWidget(new Vec2(0, 0));
+	private final RotatorWidget moverWidget = new RotatorWidget(new Vec2(0, 0));
 
 	public RotatorWidgetTVertexEditorManipulatorBuilder(final TVertexEditor modelEditor,
 														final ViewportSelectionHandler viewportSelectionHandler, final ProgramPreferences programPreferences,

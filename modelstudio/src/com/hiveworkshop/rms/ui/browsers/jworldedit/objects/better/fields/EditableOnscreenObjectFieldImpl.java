@@ -43,21 +43,16 @@ public final class EditableOnscreenObjectFieldImpl {
 	}
 
 	public Object getValue(final ObjectData metaData, final MutableGameObject gameUnit) {
-		final GameObject metaDataFieldObject = metaData.get(cachedMetaKeyString);
-		final String metaDataType = metaDataFieldObject.getField("type");
-		switch (metaDataType) {
-			case "int":
-				return gameUnit.getFieldAsInteger(metaKey, level);
-			case "real":
-			case "unreal":
-				return gameUnit.getFieldAsFloat(metaKey, level);
-			case "bool":
-				return gameUnit.getFieldAsBoolean(metaKey, level);
-			default:
-			case "string":
-				return gameUnit.getFieldAsString(metaKey, level);
-		}
-	}
+        final GameObject metaDataFieldObject = metaData.get(cachedMetaKeyString);
+        final String metaDataType = metaDataFieldObject.getField("type");
+        return switch (metaDataType) {
+            case "int" -> gameUnit.getFieldAsInteger(metaKey, level);
+            case "real", "unreal" -> gameUnit.getFieldAsFloat(metaKey, level);
+            case "bool" -> gameUnit.getFieldAsBoolean(metaKey, level);
+            case "string" -> gameUnit.getFieldAsString(metaKey, level);
+            default -> throw new IllegalStateException("Unexpected value: " + metaDataType);
+        };
+    }
 
 	public void setValue(final ObjectData metaData, final MutableGameObject gameUnit, final Object value) {
 		final GameObject metaDataFieldObject = metaData.get(cachedMetaKeyString);

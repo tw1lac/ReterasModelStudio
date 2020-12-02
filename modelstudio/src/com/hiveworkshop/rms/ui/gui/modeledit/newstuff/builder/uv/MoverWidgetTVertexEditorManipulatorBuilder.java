@@ -1,10 +1,10 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.MoverWidget;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
-import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexMoverWidget;
-import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexMoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.MoveTVertexManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.MoveXTVertexManipulator;
@@ -17,18 +17,22 @@ import com.hiveworkshop.rms.util.Vec2;
 import java.awt.*;
 
 public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
-	private final TVertexMoverWidget moverWidget = new TVertexMoverWidget(new Vec2(0, 0));
+	private final MoverWidget moverWidget = new MoverWidget(new Vec2(0, 0));
 
 	public MoverWidgetTVertexEditorManipulatorBuilder(final TVertexEditor modelEditor,
-													  final ViewportSelectionHandler viewportSelectionHandler, final ProgramPreferences programPreferences,
+													  final ViewportSelectionHandler viewportSelectionHandler,
+													  final ProgramPreferences programPreferences,
 													  final ModelView modelView) {
 		super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
 	}
 
 	@Override
-	protected boolean widgetOffersEdit(final Vec2 selectionCenter, final Point mousePoint,
-			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+	protected boolean widgetOffersEdit(final Vec2 selectionCenter,
+									   final Point mousePoint,
+									   final CoordinateSystem coordinateSystem,
+									   final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getUVCenter(getModelEditor().getUVLayerIndex()));
+
 		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem,
 				coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		moverWidget.setMoveDirection(directionByMouse);

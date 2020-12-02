@@ -788,11 +788,8 @@ public class AnimFlag {
 						}
 					}
 				}
-				if (mostVisible == null) {
-					return partner;// partner has priority!
-				} else {
-					return mostVisible;
-				}
+				// partner has priority!
+				return Objects.requireNonNullElse(mostVisible, partner);
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"Error: Program attempted to compare visibility with non-visibility animation component.\nThis... probably means something is horribly wrong. Save your work, if you can.");
@@ -1265,18 +1262,12 @@ public class AnimFlag {
 			case ALPHA | OTHER_TYPE -> {
 				final Float previous = (Float) floorValue;
 				final Float next = (Float) ceilValue;
-				switch (interpolationType) {
-					case BEZIER:
-						return MathUtils.bezier(previous, (Float) floorOutTan, (Float) inTans.get(ceilIndex), next, timeFactor);
-					case DONT_INTERP:
-						return floorValue;
-					case HERMITE:
-						return MathUtils.hermite(previous, (Float) floorOutTan, (Float) inTans.get(ceilIndex), next, timeFactor);
-					case LINEAR:
-						return MathUtils.lerp(previous, next, timeFactor);
-					default:
-						throw new IllegalStateException();
-				}
+				return switch (interpolationType) {
+					case BEZIER -> MathUtils.bezier(previous, (Float) floorOutTan, (Float) inTans.get(ceilIndex), next, timeFactor);
+					case DONT_INTERP -> floorValue;
+					case HERMITE -> MathUtils.hermite(previous, (Float) floorOutTan, (Float) inTans.get(ceilIndex), next, timeFactor);
+					case LINEAR -> MathUtils.lerp(previous, next, timeFactor);
+				};
 			}
 			case TRANSLATION, SCALING, COLOR -> {
 				// Vertex
@@ -1302,30 +1293,21 @@ public class AnimFlag {
 				final Quat previous = (Quat) floorValue;
 				final Quat next = (Quat) ceilValue;
 
-				switch (interpolationType) {
-					case BEZIER:
-						return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
-					case DONT_INTERP:
-						return floorValue;
-					case HERMITE:
-						return previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
-					case LINEAR:
-						return previous.slerp(next, timeFactor, new Quat());
-					default:
-						throw new IllegalStateException();
-				}
+				return switch (interpolationType) {
+					case BEZIER -> previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
+					case DONT_INTERP -> floorValue;
+					case HERMITE -> previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
+					case LINEAR -> previous.slerp(next, timeFactor, new Quat());
+				};
 			}
 			case TEXTUREID -> {
 				final Integer previous = (Integer) floorValue;
-				switch (interpolationType) {
-					case DONT_INTERP:
-					case BEZIER: // dont use bezier on these, does that even make any sense?
-					case HERMITE: // dont use hermite on these, does that even make any sense?
-					case LINEAR: // dont use linear on these, does that even make any sense?
-						return previous;
-					default:
-						throw new IllegalStateException();
-				}
+				return switch (interpolationType) {
+					// dont use linear on these, does that even make any sense?
+					// dont use hermite on these, does that even make any sense?
+					// dont use bezier on these, does that even make any sense?
+					case DONT_INTERP, BEZIER, HERMITE, LINEAR -> previous;
+				};
 			}
 		}
 		throw new IllegalStateException();

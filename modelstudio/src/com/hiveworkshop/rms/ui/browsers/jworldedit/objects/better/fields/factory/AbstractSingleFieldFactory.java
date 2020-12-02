@@ -1,14 +1,9 @@
 package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.factory;
 
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.BooleanObjectField;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.EditableOnscreenObjectField;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.FloatObjectField;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.GameEnumObjectField;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.IntegerObjectField;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.StringObjectField;
 import com.hiveworkshop.rms.parsers.slk.GameObject;
 import com.hiveworkshop.rms.parsers.slk.ObjectData;
 import com.hiveworkshop.rms.parsers.slk.StandardObjectData;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.better.fields.*;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.WorldEditorDataType;
@@ -25,33 +20,20 @@ public abstract class AbstractSingleFieldFactory implements SingleFieldFactory {
 		final String displayPrefix = getDisplayPrefix(metaData, metaKey, hasMoreThanOneLevel ? level : 0, gameObject);
 		final String rawDataName = getRawDataName(metaData, metaKey, hasMoreThanOneLevel ? level : 0);
 		final String metaDataType = metaField.getField("type");
-		switch (metaDataType) {
-		case "attackBits":
-		case "teamColor":
-		case "deathType":
-		case "versionFlags":
-		case "channelFlags":
-		case "channelType":
-		case "int":
-			return new IntegerObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
+		return switch (metaDataType) {
+			case "attackBits", "teamColor", "deathType", "versionFlags", "channelFlags", "channelType", "int" -> new IntegerObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
 					metaKey, level, worldEditorDataType, metaField);
-		case "real":
-		case "unreal":
-			return new FloatObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
+			case "real", "unreal" -> new FloatObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
 					metaKey, level, worldEditorDataType, metaField);
-		case "bool":
-			return new BooleanObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
+			case "bool" -> new BooleanObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
 					metaKey, level, worldEditorDataType, metaField);
-		case "unitRace":
-			return new GameEnumObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
+			case "unitRace" -> new GameEnumObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
 					metaKey, level, worldEditorDataType, metaField, "unitRace", "WESTRING_COD_TYPE_UNITRACE",
 					StandardObjectData.getUnitEditorData());
-
-		default:
-		case "string":
-			return new StringObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
+			case "string" -> new StringObjectField(displayPrefix + displayName, displayName, rawDataName, hasMoreThanOneLevel,
 					metaKey, level, worldEditorDataType, metaField);
-		}
+			default -> throw new IllegalStateException("Unexpected value: " + metaDataType);
+		};
 	}
 
 	protected abstract String getDisplayName(final ObjectData metaData, final War3ID metaKey, final int level,

@@ -1,9 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.activity.ButtonType;
@@ -17,12 +13,14 @@ import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec2;
 
+import java.awt.*;
+
 public abstract class AbstractSelectAndEditTVertexEditorManipulatorBuilder implements TVertexEditorManipulatorBuilder {
 	private final ViewportSelectionHandler viewportSelectionHandler;
 	private final ProgramPreferences programPreferences;
 	private TVertexEditor modelEditor;
 	private final Graphics2DToTVertexModelElementRendererAdapter graphics2dToModelElementRendererAdapter;
-//	private final Graphics2DToAnimatedModelElementRendererAdapter graphics2dToAnimatedModelElementRendererAdapter;
+	//	private final Graphics2DToAnimatedModelElementRendererAdapter graphics2dToAnimatedModelElementRendererAdapter;
 	private final ModelView modelView;
 
 	public AbstractSelectAndEditTVertexEditorManipulatorBuilder(final ViewportSelectionHandler viewportSelectionHandler,

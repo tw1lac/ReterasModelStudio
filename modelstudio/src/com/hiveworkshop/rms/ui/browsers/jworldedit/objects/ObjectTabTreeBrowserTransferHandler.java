@@ -52,23 +52,21 @@ public class ObjectTabTreeBrowserTransferHandler extends TransferHandler {
 				ExceptionPopup.display(ufe);
 				return false;
 			} catch (final IOException ioe) {
-				System.out.println("importData: I/O exception");
-				ioe.printStackTrace();
-				ExceptionPopup.display(ioe);
-				return false;
-			}
+                System.out.println("importData: I/O exception");
+                ioe.printStackTrace();
+                ExceptionPopup.display(ioe);
+                return false;
+            }
 
-			if (info.isDrop()) { // This is a drop
-				final UnitEditorPanel.DropLocation dl = (UnitEditorPanel.DropLocation) info.getDropLocation();
-				final Point dropPoint = dl.getDropPoint();
-				// discard drop point, unit location is based on tree sorter folders
-				editorPanel.acceptPastedObjectData(pastedObjects);
-				return true;
-			} else { // This is a paste
-				editorPanel.acceptPastedObjectData(pastedObjects);
-				return true;
-			}
-		} catch (final Throwable th) {
+            if (info.isDrop()) { // This is a drop
+                final UnitEditorPanel.DropLocation dl = (UnitEditorPanel.DropLocation) info.getDropLocation();
+                final Point dropPoint = dl.getDropPoint();
+                // discard drop point, unit location is based on tree sorter folders
+            }  // This is a paste
+
+            editorPanel.acceptPastedObjectData(pastedObjects);
+            return true;
+        } catch (final Throwable th) {
 			th.printStackTrace();
 			ExceptionPopup.display(th);
 			return false;

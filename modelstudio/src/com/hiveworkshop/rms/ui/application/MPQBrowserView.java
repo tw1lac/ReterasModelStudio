@@ -37,7 +37,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -352,7 +352,7 @@ public class MPQBrowserView {
             }
         } else if (pathLow.endsWith("obj") || pathLow.endsWith("fbx")) {
             try {
-                AiScene scene = Jassimp.importFile(f.getPath(), new HashSet<>(Arrays.asList(AiPostProcessSteps.TRIANGULATE)));
+                AiScene scene = Jassimp.importFile(f.getPath(), new HashSet<>(Collections.singletonList(AiPostProcessSteps.TRIANGULATE)));
 
                 final EditableModel model = new EditableModel(scene);
                 model.setFileRef(f);

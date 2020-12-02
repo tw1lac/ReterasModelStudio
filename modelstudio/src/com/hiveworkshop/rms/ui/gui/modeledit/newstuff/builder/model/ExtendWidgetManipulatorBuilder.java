@@ -1,18 +1,18 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.model;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.MoverWidget;
+import com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
-import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget;
-import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtendManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtendXManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtendYManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 

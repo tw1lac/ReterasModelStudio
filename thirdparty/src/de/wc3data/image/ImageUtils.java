@@ -67,15 +67,15 @@ public class ImageUtils {
 
 
             BufferedImage tmp;
-            if(img.getColorModel().hasAlpha() == false){
-                tmp= new BufferedImage(w, h, type);
+            if (!img.getColorModel().hasAlpha()) {
+                tmp = new BufferedImage(w, h, type);
                 final Graphics2D g2 = tmp.createGraphics();
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
                 g2.drawImage(ret, 0, 0, w, h, null);
                 g2.dispose();
-            }else{
+            } else {
                 //Necessary because otherwise Bilinear resize would couse transparent pixel to change color
-                tmp = resizeWorkAround(ret,w,h, hint);
+                tmp = resizeWorkAround(ret, w, h, hint);
             }
 
             ret = tmp;
@@ -148,7 +148,7 @@ public class ImageUtils {
             return src;
         }
 
-        if (useAlpha == false && src.getType() == BufferedImage.TYPE_INT_RGB) {
+        if (!useAlpha && src.getType() == BufferedImage.TYPE_INT_RGB) {
             return src;
         }
 

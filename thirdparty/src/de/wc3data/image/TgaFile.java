@@ -19,8 +19,8 @@ public class TgaFile {
     /**
      * Read a TGA image from a file
      */
-    public static BufferedImage readTGA(File file) throws FileNotFoundException, IOException{
-        return readTGA(file.getName(),new FileInputStream(file));
+    public static BufferedImage readTGA(File file) throws IOException {
+        return readTGA(file.getName(), new FileInputStream(file));
 
     }
     

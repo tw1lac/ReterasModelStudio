@@ -1,24 +1,14 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.util;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.tree.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.HashSet;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.event.EventListenerList;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  * This code is taken from a Stack Overflow post:
@@ -97,7 +87,7 @@ public class JCheckBoxTree extends JTree {
 	// New method that returns only the checked paths (totally ignores original
 	// "selection" mechanism)
 	public TreeNode[] getCheckedPaths() {
-		return checkedPaths.toArray(new TreeNode[checkedPaths.size()]);
+		return checkedPaths.toArray(new TreeNode[0]);
 	}
 
 	// Returns true in case that the node is selected, has children but not all

@@ -906,14 +906,14 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 				boolean set = false;
 				boolean selectedt = false;
 				for (int i = 0; (i < selected.length) && !dif; i++) {
-					final ObjectPanel temp = (ObjectPanel) selected[i];
-					if (set == false) {
-						set = true;
-						selectedt = temp.doImport.isSelected();
-					} else if (selectedt != temp.doImport.isSelected()) {
-						dif = true;
-					}
-				}
+                    final ObjectPanel temp = (ObjectPanel) selected[i];
+                    if (!set) {
+                        set = true;
+                        selectedt = temp.doImport.isSelected();
+                    } else if (selectedt != temp.doImport.isSelected()) {
+                        dif = true;
+                    }
+                }
 				if (!dif) {
 					multiObjectPane.doImport.setSelected(selectedt);
 				}
@@ -937,18 +937,18 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 				int tempIndexNew = -99;
 
 				for (int i = 0; (i < selected.length) && !dif; i++) {
-					final VisibilityPane temp = (VisibilityPane) selected[i];
-					if (set == false) {
-						set = true;
-						selectedt = temp.favorOld.isSelected();
-					} else if (selectedt != temp.favorOld.isSelected()) {
-						dif = true;
-					}
+                    final VisibilityPane temp = (VisibilityPane) selected[i];
+                    if (!set) {
+                        set = true;
+                        selectedt = temp.favorOld.isSelected();
+                    } else if (selectedt != temp.favorOld.isSelected()) {
+                        dif = true;
+                    }
 
-					if (tempIndexOld == -99) {
-						tempIndexOld = temp.oldSourcesBox.getSelectedIndex();
-					}
-					if (tempIndexOld != temp.oldSourcesBox.getSelectedIndex()) {
+                    if (tempIndexOld == -99) {
+                        tempIndexOld = temp.oldSourcesBox.getSelectedIndex();
+                    }
+                    if (tempIndexOld != temp.oldSourcesBox.getSelectedIndex()) {
 						difBoxOld = true;
 					}
 
@@ -1810,26 +1810,18 @@ public class ImportPanel extends JTabbedPane implements ActionListener, ListSele
 				if (geosetAnimTabs.isEnabledAt(i)) {
 					final BoneAttachmentPane bap = (BoneAttachmentPane) geosetAnimTabs.getComponentAt(i);
 					for (int l = 0; l < bap.oldBoneRefs.size(); l++) {
-						final MatrixShell ms = bap.oldBoneRefs.get(l);
-						if (ms.newBones.size() > 0) {
-							ms.matrix.getBones().clear();
-						} else {
-							// JOptionPane.showMessageDialog(null,"Warning: You
-							// left some matrices empty. Zero values will be
-							// inserted.");
-							ms.matrix.getBones().clear();
-							// ms.matrix.bones.add(bap.model.getBone(0));
-						}
-						for (final BoneShell bs : ms.newBones) {
-							if (currentModel.contains(bs.bone)) {
-								if (bs.bone.getClass() == Helper.class) {
-									JOptionPane.showMessageDialog(null,
-											"Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
-								}
-								ms.matrix.add(bs.bone);
-							} else {
-								System.out.println("Boneshaving " + bs.bone.getName() + " out of use");
-							}
+                        final MatrixShell ms = bap.oldBoneRefs.get(l);
+                        ms.matrix.getBones().clear();
+                        for (final BoneShell bs : ms.newBones) {
+                            if (currentModel.contains(bs.bone)) {
+                                if (bs.bone.getClass() == Helper.class) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
+                                }
+                                ms.matrix.add(bs.bone);
+                            } else {
+                                System.out.println("Boneshaving " + bs.bone.getName() + " out of use");
+                            }
 						}
 						if (ms.matrix.size() == 0) {
 							JOptionPane.showMessageDialog(null,

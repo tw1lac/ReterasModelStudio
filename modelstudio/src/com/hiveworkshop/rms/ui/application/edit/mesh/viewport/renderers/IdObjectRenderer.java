@@ -1,28 +1,14 @@
 package com.hiveworkshop.rms.ui.application.edit.mesh.viewport.renderers;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.util.List;
-
-import com.hiveworkshop.rms.editor.model.Attachment;
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.Camera;
-import com.hiveworkshop.rms.editor.model.CollisionShape;
-import com.hiveworkshop.rms.editor.model.EventObject;
-import com.hiveworkshop.rms.editor.model.Helper;
-import com.hiveworkshop.rms.editor.model.IdObject;
-import com.hiveworkshop.rms.editor.model.Light;
-import com.hiveworkshop.rms.editor.model.ParticleEmitter;
-import com.hiveworkshop.rms.editor.model.ParticleEmitter2;
-import com.hiveworkshop.rms.editor.model.ParticleEmitterPopcorn;
-import com.hiveworkshop.rms.editor.model.RibbonEmitter;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.visitor.IdObjectVisitor;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxCollisionShape;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.NodeIconPalette;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.util.List;
 
 public final class IdObjectRenderer implements IdObjectVisitor {
 	private CoordinateSystem coordinateSystem;
@@ -183,7 +169,7 @@ public final class IdObjectRenderer implements IdObjectVisitor {
 		// g2.setColor(Color.orange.darker());
 		// }
 		// Cam
-		g2.fillRect((int) dist - vertexSize, 0 - vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
+		g2.fillRect((int) dist - vertexSize, -vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
 		g2.drawRect((int) dist - size, -size, size * 2, size * 2);
 
 		// if (tarSel) {
@@ -192,11 +178,11 @@ public final class IdObjectRenderer implements IdObjectVisitor {
 		// g2.setColor(Color.green.darker());
 		// }
 		// Target
-		g2.fillRect(0 - vertexSize, 0 - vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
+		g2.fillRect(-vertexSize, -vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
 		g2.drawLine(0, 0, size, size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())+5)),
-										// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())+5)));
+		// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())+5)));
 		g2.drawLine(0, 0, size, -size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())-5)),
-										// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())-5)));
+		// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())-5)));
 
 		// if (!verSel && tarSel) {
 		// g2.setColor(Color.green.darker());

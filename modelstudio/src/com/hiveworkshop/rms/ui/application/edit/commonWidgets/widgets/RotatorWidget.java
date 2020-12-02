@@ -1,19 +1,25 @@
-package com.hiveworkshop.rms.ui.application.edit.uv.widgets;
+package com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets;
 
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
-public final class TVertexRotatorWidget {
+public final class RotatorWidget {
 	private static final int ROTATOR_RADIUS = 60;
 	private static final int ROTATOR_RADIUS_SQUARED = ROTATOR_RADIUS * ROTATOR_RADIUS;
-	private final Vec2 point;
+	private final Vec3 point;
 	private RotateDirection moveDirection = RotateDirection.NONE;
 
-	public TVertexRotatorWidget(final Vec2 point) {
-		this.point = new Vec2(0, 0);
+	public RotatorWidget(final Vec3 point) {
+		this.point = new Vec3(0, 0, 0);
 		this.point.set(point);
+	}
+
+	public RotatorWidget(final Vec2 point) {
+		this.point = new Vec3(0, 0, 0);
+		this.point.set(point.x, point.y, 0);
 	}
 
 	public RotateDirection getDirectionByMouse(final Point mousePoint, final CoordinateSystem coordinateSystem) {
@@ -22,13 +28,13 @@ public final class TVertexRotatorWidget {
 
 		final double deltaY = y - mousePoint.getY();
 		final double deltaX = x - mousePoint.getX();
-		if ((Math.abs(deltaX) <= 3) && (Math.abs(deltaY) <= ROTATOR_RADIUS)) {
+		if (Math.abs(deltaX) <= 3 && Math.abs(deltaY) <= ROTATOR_RADIUS) {
 			return RotateDirection.VERTICALLY;
 		}
-		if ((Math.abs(deltaX) <= ROTATOR_RADIUS) && (Math.abs(deltaY) <= 3)) {
+		if (Math.abs(deltaX) <= ROTATOR_RADIUS && Math.abs(deltaY) <= 3) {
 			return RotateDirection.HORIZONTALLY;
 		}
-		final double dstSquared = (deltaY * deltaY) + (deltaX * deltaX);
+		final double dstSquared = deltaY * deltaY + deltaX * deltaX;
 		if (Math.abs(Math.sqrt(dstSquared) - ROTATOR_RADIUS) <= 3) {
 			return RotateDirection.SPIN;
 		}
@@ -39,12 +45,16 @@ public final class TVertexRotatorWidget {
 		return RotateDirection.NONE;
 	}
 
-	public Vec2 getPoint() {
+	public Vec3 getPoint() {
 		return point;
 	}
 
-	public void setPoint(final Vec2 point) {
+	public void setPoint(final Vec3 point) {
 		this.point.set(point);
+	}
+
+	public void setPoint(final Vec2 point) {
+		this.point.set(point.x, point.y, 0);
 	}
 
 	public RotateDirection getMoveDirection() {

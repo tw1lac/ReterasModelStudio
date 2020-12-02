@@ -2,12 +2,12 @@ package com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.items;
 
 import com.hiveworkshop.rms.parsers.slk.DataTable;
 import com.hiveworkshop.rms.parsers.slk.Element;
-import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
-import com.hiveworkshop.rms.util.War3ID;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.WEString;
+import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.datamodel.MutableObjectData.MutableGameObject;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.AbstractSortingFolderTreeNode;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.SortingFolderTreeNode;
 import com.hiveworkshop.rms.ui.browsers.jworldedit.objects.sorting.general.BottomLevelCategoryFolder;
+import com.hiveworkshop.rms.util.War3ID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
@@ -18,7 +18,7 @@ public final class ItemSortByClassFolder extends AbstractSortingFolderTreeNode {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final War3ID ITEM_CLASS_FIELD = War3ID.fromString("icla");
-	private static final Comparator<MutableGameObject> ITEM_NAME_COMPARATOR = (o1, o2) -> o1.getName().compareTo(o2.getName());
+	private static final Comparator<MutableGameObject> ITEM_NAME_COMPARATOR = Comparator.comparing(MutableGameObject::getName);
 	private final Map<String, BottomLevelCategoryFolder> itemClassToTreeNode;
 	private final List<BottomLevelCategoryFolder> itemClassesList;
 

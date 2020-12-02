@@ -1,55 +1,64 @@
-package com.hiveworkshop.rms.ui.application.edit.uv.widgets;
+package com.hiveworkshop.rms.ui.application.edit.commonWidgets.widgets;
 
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec2;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
-public final class TVertexScalerWidget {
+public final class ScalerWidget {
 	private static final int LINE_LEN = 80;
 	private static final int EXTERIOR_TRIANGLE_OFFSET = LINE_LEN - 16;
 	private static final int INTERIOR_TRIANGLE_OFFSET = LINE_LEN - 32;
-	private final Vec2 point;
-	private ScaleDirection moveDirection = ScaleDirection.NONE;
+	private final Vec3 point;
 	private final int[] recycleXPoints = new int[3];
 	private final int[] recycleYPoints = new int[3];
 	private final int[] recycleXPoints4 = new int[4];
 	private final int[] recycleYPoints4 = new int[4];
+	private ScaleDirection moveDirection = ScaleDirection.NONE;
 
-	public TVertexScalerWidget(final Vec2 point) {
-		this.point = new Vec2(0, 0);
+	public ScalerWidget(final Vec3 point) {
+		this.point = new Vec3(0, 0, 0);
 		this.point.set(point);
 	}
 
+	public ScalerWidget(final Vec2 point) {
+		this.point = new Vec3(0, 0, 0);
+		this.point.set(point.x, point.y, 0);
+	}
+
 	public ScaleDirection getDirectionByMouse(final Point mousePoint, final CoordinateSystem coordinateSystem,
-			final byte dim1, final byte dim2) {
+											  final byte dim1, final byte dim2) {
 		final double x = coordinateSystem.convertX(point.getCoord(dim1));
 		final double y = coordinateSystem.convertY(point.getCoord(dim2));
 		ScaleDirection direction = ScaleDirection.NONE;
-		if ((mousePoint.x > x) && (mousePoint.y < y)
-				&& ((mousePoint.y - y) > (mousePoint.x - x - INTERIOR_TRIANGLE_OFFSET))) {
+
+		if (mousePoint.x > x && mousePoint.y < y && mousePoint.y - y > mousePoint.x - x - INTERIOR_TRIANGLE_OFFSET) {
 			return ScaleDirection.XYZ;
 		}
-		if (((Math.abs(x - mousePoint.getX()) <= 4) && (mousePoint.y < y) && (mousePoint.y > (y - LINE_LEN)))) {
+		if ((Math.abs(x - mousePoint.getX()) <= 4 && mousePoint.y < y && mousePoint.y > y - LINE_LEN)) {
 			direction = ScaleDirection.UP;
 		}
-		if (((Math.abs(y - mousePoint.getY()) <= 4) && (mousePoint.x > x) && (mousePoint.x < (x + LINE_LEN)))) {
+		if ((Math.abs(y - mousePoint.getY()) <= 4 && mousePoint.x > x && mousePoint.x < x + LINE_LEN)) {
 			direction = ScaleDirection.RIGHT;
 		}
-		if ((mousePoint.x > x) && (mousePoint.y < y)
-				&& ((mousePoint.y - y) > (mousePoint.x - x - EXTERIOR_TRIANGLE_OFFSET))
-				&& ((mousePoint.y - y) < (mousePoint.x - x - INTERIOR_TRIANGLE_OFFSET))) {
+		if (mousePoint.x > x && mousePoint.y < y && mousePoint.y - y > mousePoint.x - x - EXTERIOR_TRIANGLE_OFFSET
+				&& mousePoint.y - y < mousePoint.x - x - INTERIOR_TRIANGLE_OFFSET) {
 			return ScaleDirection.FLAT_XY;
 		}
 		return direction;
 	}
 
-	public Vec2 getPoint() {
+	public Vec3 getPoint() {
 		return point;
 	}
 
-	public void setPoint(final Vec2 point) {
+	public void setPoint(final Vec3 point) {
 		this.point.set(point);
+	}
+
+	public void setPoint(final Vec2 point) {
+		this.point.set(point.x, point.y, 0);
 	}
 
 	public ScaleDirection getMoveDirection() {
@@ -82,25 +91,25 @@ public final class TVertexScalerWidget {
 							(int) y - EXTERIOR_TRIANGLE_OFFSET);
 					setColorByDimension(graphics, xDimension);
 					graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
-					graphics.drawRect(((int) x + LINE_LEN) - 2, (int) y - 2, 4, 4);
+					graphics.drawRect((int) x + LINE_LEN - 2, (int) y - 2, 4, 4);
 					setColorByDimension(graphics, yDimension);
 					graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
 					graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
 				}
 				case UP -> {
 					setColorByDimension(graphics, xDimension);
-					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + (EXTERIOR_TRIANGLE_OFFSET / 2),
-							(int) y - (EXTERIOR_TRIANGLE_OFFSET / 2));
-					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + (INTERIOR_TRIANGLE_OFFSET / 2),
-							(int) y - (INTERIOR_TRIANGLE_OFFSET / 2));
+					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + EXTERIOR_TRIANGLE_OFFSET / 2,
+							(int) y - EXTERIOR_TRIANGLE_OFFSET / 2);
+					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + INTERIOR_TRIANGLE_OFFSET / 2,
+							(int) y - INTERIOR_TRIANGLE_OFFSET / 2);
 					graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
-					graphics.drawRect(((int) x + LINE_LEN) - 2, (int) y - 2, 4, 4);
+					graphics.drawRect((int) x + LINE_LEN - 2, (int) y - 2, 4, 4);
 					graphics.setColor(new Color(255, 255, 0));
 					graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
 					setColorByDimension(graphics, yDimension);
-					graphics.drawLine((int) x + (EXTERIOR_TRIANGLE_OFFSET / 2), (int) y - (EXTERIOR_TRIANGLE_OFFSET / 2),
+					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET / 2, (int) y - EXTERIOR_TRIANGLE_OFFSET / 2,
 							(int) x, (int) y - EXTERIOR_TRIANGLE_OFFSET);
-					graphics.drawLine((int) x + (INTERIOR_TRIANGLE_OFFSET / 2), (int) y - (INTERIOR_TRIANGLE_OFFSET / 2),
+					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET / 2, (int) y - INTERIOR_TRIANGLE_OFFSET / 2,
 							(int) x, (int) y - INTERIOR_TRIANGLE_OFFSET);
 					graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
 				}
@@ -108,16 +117,16 @@ public final class TVertexScalerWidget {
 					graphics.setColor(new Color(255, 255, 0));
 					graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
 					setColorByDimension(graphics, xDimension);
-					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + (EXTERIOR_TRIANGLE_OFFSET / 2),
-							(int) y - (EXTERIOR_TRIANGLE_OFFSET / 2));
-					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + (INTERIOR_TRIANGLE_OFFSET / 2),
-							(int) y - (INTERIOR_TRIANGLE_OFFSET / 2));
-					graphics.drawRect(((int) x + LINE_LEN) - 2, (int) y - 2, 4, 4);
+					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + EXTERIOR_TRIANGLE_OFFSET / 2,
+							(int) y - EXTERIOR_TRIANGLE_OFFSET / 2);
+					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET, (int) y, (int) x + INTERIOR_TRIANGLE_OFFSET / 2,
+							(int) y - INTERIOR_TRIANGLE_OFFSET / 2);
+					graphics.drawRect((int) x + LINE_LEN - 2, (int) y - 2, 4, 4);
 					setColorByDimension(graphics, yDimension);
 					graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
-					graphics.drawLine((int) x + (EXTERIOR_TRIANGLE_OFFSET / 2), (int) y - (EXTERIOR_TRIANGLE_OFFSET / 2),
+					graphics.drawLine((int) x + EXTERIOR_TRIANGLE_OFFSET / 2, (int) y - EXTERIOR_TRIANGLE_OFFSET / 2,
 							(int) x, (int) y - EXTERIOR_TRIANGLE_OFFSET);
-					graphics.drawLine((int) x + (INTERIOR_TRIANGLE_OFFSET / 2), (int) y - (INTERIOR_TRIANGLE_OFFSET / 2),
+					graphics.drawLine((int) x + INTERIOR_TRIANGLE_OFFSET / 2, (int) y - INTERIOR_TRIANGLE_OFFSET / 2,
 							(int) x, (int) y - INTERIOR_TRIANGLE_OFFSET);
 					graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
 				}
@@ -136,7 +145,7 @@ public final class TVertexScalerWidget {
 							(int) y - EXTERIOR_TRIANGLE_OFFSET);
 					setColorByDimension(graphics, xDimension);
 					graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
-					graphics.drawRect(((int) x + LINE_LEN) - 2, (int) y - 2, 4, 4);
+					graphics.drawRect((int) x + LINE_LEN - 2, (int) y - 2, 4, 4);
 					setColorByDimension(graphics, yDimension);
 					graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
 					graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
@@ -155,25 +164,25 @@ public final class TVertexScalerWidget {
 					graphics.setColor(new Color(255, 255, 0));
 					graphics.drawPolygon(recycleXPoints4, recycleYPoints4, 4);
 					setColorByDimension(graphics, xDimension);
-                    graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
-                    graphics.drawRect(((int) x + LINE_LEN) - 2, (int) y - 2, 4, 4);
-                    setColorByDimension(graphics, yDimension);
-                    graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
-                    graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
-                }
-            }
-        }
-    }
+					graphics.drawLine((int) x, (int) y, (int) x + LINE_LEN, (int) y);
+					graphics.drawRect((int) x + LINE_LEN - 2, (int) y - 2, 4, 4);
+					setColorByDimension(graphics, yDimension);
+					graphics.drawLine((int) x, (int) y, (int) x, (int) y - LINE_LEN);
+					graphics.drawRect((int) x - 2, (int) y - LINE_LEN - 2, 4, 4);
+				}
+			}
+		}
+	}
 
-    private void setColorByDimension(final Graphics2D graphics, final byte dimension) {
-        switch (dimension) {
-            case 0 -> graphics.setColor(new Color(0, 255, 0));
-            case 1 -> graphics.setColor(new Color(255, 0, 0));
-            case 2 -> graphics.setColor(new Color(0, 0, 255));
-        }
-    }
+	private void setColorByDimension(final Graphics2D graphics, final byte dimension) {
+		switch (dimension) {
+			case 0 -> graphics.setColor(new Color(0, 255, 0));
+			case 1 -> graphics.setColor(new Color(255, 0, 0));
+			case 2 -> graphics.setColor(new Color(0, 0, 255));
+		}
+	}
 
-    public enum ScaleDirection {
-        UP, RIGHT, FLAT_XY, XYZ, NONE
-    }
+	public enum ScaleDirection {
+		UP, RIGHT, FLAT_XY, XYZ, NONE
+	}
 }

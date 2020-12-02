@@ -208,20 +208,15 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 	}
 
 	public void setAnimation(final Animation animation) {
-		this.animation = animation;
-		animationTime = 0;
-		lastUpdateMillis = System.currentTimeMillis();
-		if (animation != null) {
-			renderModel.refreshFromEditor(this, inverseCameraRotationQuat, inverseCameraRotationYSpin,
-					inverseCameraRotationZSpin, this);
-		} else {
-			renderModel.refreshFromEditor(this, inverseCameraRotationQuat, inverseCameraRotationYSpin,
-					inverseCameraRotationZSpin, this);
-		}
-		if (loopType == LoopType.DEFAULT_LOOP) {
-			looping = animation != null && !animation.isNonLooping();
-		}
-	}
+        this.animation = animation;
+        animationTime = 0;
+        lastUpdateMillis = System.currentTimeMillis();
+        renderModel.refreshFromEditor(this, inverseCameraRotationQuat, inverseCameraRotationYSpin,
+                inverseCameraRotationZSpin, this);
+        if (loopType == LoopType.DEFAULT_LOOP) {
+            looping = animation != null && !animation.isNonLooping();
+        }
+    }
 
 	public void setWireframeHandler(final JCheckBox nwireframe) {
 		wireframe = nwireframe;

@@ -31,18 +31,17 @@ public class Vec4 {
 	}
 
 	public Vec4(final float[] data, final boolean flip) {
-		if (flip) {
-			z = data[0];
-			y = data[1];
-			x = data[2];
-			w = data[3];
-		} else {
-			x = data[0];
-			y = data[1];
-			z = data[2];
-			w = data[3];
-		}
-	}
+        if (flip) {
+            z = data[0];
+            y = data[1];
+            x = data[2];
+        } else {
+            x = data[0];
+            y = data[1];
+            z = data[2];
+        }
+        w = data[3];
+    }
 
 	public float getCoord(final byte dim) {
 		return switch (dim) {

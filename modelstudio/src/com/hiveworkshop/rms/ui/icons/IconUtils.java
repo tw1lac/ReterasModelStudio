@@ -68,8 +68,7 @@ public final class IconUtils {
 				if (!iconPath.toLowerCase().endsWith(".blp")) {
 					iconPath += ".blp";
 				}
-				break;
-			}
+            }
 			case DOODADS -> {
 				final DataTable unitEditorData = DataTable.getWorldEditorData();
 				final String category = gameObject.getFieldAsString(War3ID.fromString("dcat"), 0);
@@ -82,8 +81,7 @@ public final class IconUtils {
 				if (!iconPath.toLowerCase().endsWith(".blp")) {
 					iconPath += ".blp";
 				}
-				break;
-			}
+            }
 			case ITEM -> iconPath = gameObject.getFieldAsString(War3ID.fromString("iico"), 0);
 			case UPGRADES -> iconPath = gameObject.getFieldAsString(War3ID.fromString("gar1"), 1);
 			case UNITS -> iconPath = gameObject.getFieldAsString(War3ID.fromString("uico"), 0);

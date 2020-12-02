@@ -112,35 +112,35 @@ public final class Graphics2DToAnimatedModelElementRendererAdapter implements Mo
 		// (int) Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ()))));
 		// if (changedCol) {
 		// g2.setColor(Color.green.darker());
-		// }
-		// }
+        // }
+        // }
 
-		g2.translate(end.x, end.y);
-		g2.rotate(-((Math.PI / 2) + Math.atan2(end.x - start.x, end.y - start.y)));
-		final double zoom = CoordinateSystem.Util.getZoom(coordinateSystem);
-		final int size = (int) (20 * zoom);
-		final double dist = start.distance(end);
+        g2.translate(end.x, end.y);
+        g2.rotate(-((Math.PI / 2) + Math.atan2(end.x - start.x, end.y - start.y)));
+        final double zoom = CoordinateSystem.Util.getZoom(coordinateSystem);
+        final int size = (int) (20 * zoom);
+        final double dist = start.distance(end);
 
-		g2.setColor(boxColor);
-		g2.fillRect((int) dist - vertexSize, 0 - vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
-		g2.drawRect((int) dist - size, -size, size * 2, size * 2);
+        g2.setColor(boxColor);
+        g2.fillRect((int) dist - vertexSize, -vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
+        g2.drawRect((int) dist - size, -size, size * 2, size * 2);
 
-		// if (tarSel) {
-		// g2.setColor(Color.orange.darker());
-		// } else if (verSel) {
-		g2.setColor(targetColor);
-		// }
-		// Target
-		g2.fillRect(0 - vertexSize, 0 - vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
-		g2.drawLine(0, 0, size, size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())+5)),
-										// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())+5)));
-		g2.drawLine(0, 0, size, -size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())-5)),
-										// (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())-5)));
+        // if (tarSel) {
+        // g2.setColor(Color.orange.darker());
+        // } else if (verSel) {
+        g2.setColor(targetColor);
+        // }
+        // Target
+        g2.fillRect(-vertexSize, -vertexSize, 1 + (vertexSize * 2), 1 + (vertexSize * 2));
+        g2.drawLine(0, 0, size, size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())+5)),
+        // (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())+5)));
+        g2.drawLine(0, 0, size, -size);// (int)Math.round(vp.convertX(targ.getCoord(vp.getPortFirstXYZ())-5)),
+        // (int)Math.round(vp.convertY(targ.getCoord(vp.getPortSecondXYZ())-5)));
 
-		// if (!verSel && tarSel) {
-		// g2.setColor(Color.green.darker());
-		// }
-		g2.drawLine(0, 0, (int) dist, 0);
-	}
+        // if (!verSel && tarSel) {
+        // g2.setColor(Color.green.darker());
+        // }
+        g2.drawLine(0, 0, (int) dist, 0);
+    }
 
 }

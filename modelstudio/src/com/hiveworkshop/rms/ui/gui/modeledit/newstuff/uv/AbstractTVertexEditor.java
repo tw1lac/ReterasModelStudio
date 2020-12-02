@@ -158,10 +158,9 @@ public abstract class AbstractTVertexEditor<T> extends AbstractSelectingTVertexE
 	@Override
 	public Vec2 getSelectionCenter() {
 //		return selectionManager.getCenter();
-		final Set<Vec2> tvertices = new HashSet<>();
-		tvertices.addAll(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
-		return Vec2.centerOfGroup(tvertices); // TODO is this correct?
-	}
+        final Set<Vec2> tvertices = new HashSet<>(TVertexUtils.getTVertices(selectionManager.getSelectedVertices(), uvLayerIndex));
+        return Vec2.centerOfGroup(tvertices); // TODO is this correct?
+    }
 
 	@Override
 	public UndoAction selectFromViewer(final SelectionView viewerSelectionView) {

@@ -153,49 +153,49 @@ public class ModelOptionPanel extends JPanel {
 					if (filepath.contains(",")) {
 						filepath = filepath.split(",")[0];
 					}
-					NamedList<String> unitList = abilityModelData.get(filepath.toLowerCase());
-					if (unitList == null) {
-						unitList = new NamedList<>(filepath);
-						unitList.setCachedIconPath(unit.getIconPath());
-						abilityModelData.put(filepath.toLowerCase(), unitList);
-					}
-					unitList.add(unit.getName() + " " + WEString.getString("WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT"));
-				}
-				getUnitByField(abilityModelData, unit, "areaeffectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
-				getUnitByField(abilityModelData, unit, "AreaEffectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
-				getUnitByField(abilityModelData, unit, "AreaEffectArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
-				getUnitByField(abilityModelData, unit, "AreaeffectArt", filepath.toLowerCase(), "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
+                    NamedList<String> unitList = abilityModelData.get(filepath.toLowerCase());
+                    if (unitList == null) {
+                        unitList = new NamedList<>(filepath);
+                        unitList.setCachedIconPath(unit.getIconPath());
+                        abilityModelData.put(filepath.toLowerCase(), unitList);
+                    }
+                    unitList.add(unit.getName() + " " + WEString.getString("WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT"));
+                }
+//				getUnitByField(abilityModelData, unit, "areaeffectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
+                getUnitByField(abilityModelData, unit, "AreaEffectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
+//				getUnitByField(abilityModelData, unit, "AreaEffectArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
+//				getUnitByField(abilityModelData, unit, "AreaeffectArt", filepath.toLowerCase(), "WESTRING_OE_TYPECAT_SUFFIX_AREAEFFECT");
 
-				getUnitByField(abilityModelData, unit, "CasterArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
-				getUnitByField(abilityModelData, unit, "Casterart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
-				getUnitByField(abilityModelData, unit, "casterart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
+//				getUnitByField(abilityModelData, unit, "CasterArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
+                getUnitByField(abilityModelData, unit, "Casterart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
+//				getUnitByField(abilityModelData, unit, "casterart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_CASTER");
 
-				getUnitByField(abilityModelData, unit, "EffectArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
-				getUnitByField(abilityModelData, unit, "Effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
-				getUnitByField(abilityModelData, unit, "effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
+//				getUnitByField(abilityModelData, unit, "EffectArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
+                getUnitByField(abilityModelData, unit, "Effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
+//				getUnitByField(abilityModelData, unit, "effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
 
-				getUnitByField(abilityModelData, unit, "Missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
-				getUnitByField(abilityModelData, unit, "missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
-				getUnitByField(abilityModelData, unit, "MissileArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+                getUnitByField(abilityModelData, unit, "Missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+//				getUnitByField(abilityModelData, unit, "missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+//				getUnitByField(abilityModelData, unit, "MissileArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
 
-				getUnitByField(abilityModelData, unit, "SpecialArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
-				getUnitByField(abilityModelData, unit, "Specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
-				getUnitByField(abilityModelData, unit, "specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+//				getUnitByField(abilityModelData, unit, "SpecialArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+                getUnitByField(abilityModelData, unit, "Specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+//				getUnitByField(abilityModelData, unit, "specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
 
-				getUnitByField(abilityModelData, unit, "TargetArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-				getUnitByField(abilityModelData, unit, "Targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-				getUnitByField(abilityModelData, unit, "targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-			} else if (str.startsWith("B") || str.startsWith("X") || str.startsWith("A")) {
-				// BUFF
-			} else {
-				// UNIT
-				final Element unit = unitData.get(str);
-				String filepath = unit.getField("file");
+//				getUnitByField(abilityModelData, unit, "TargetArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+                getUnitByField(abilityModelData, unit, "Targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+//				getUnitByField(abilityModelData, unit, "targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+            } else if (str.startsWith("B") || str.startsWith("X")) {
+                // BUFF
+            } else {
+                // UNIT
+                final Element unit = unitData.get(str);
+                String filepath = unit.getField("file");
 
-				filepath = unit.getField("file");
-				if (filepath.length() > 0) {
-					NamedList<String> unitList = unitsModelData.get(filepath.toLowerCase());
-					if (unitList == null) {
+                filepath = unit.getField("file");
+                if (filepath.length() > 0) {
+                    NamedList<String> unitList = unitsModelData.get(filepath.toLowerCase());
+                    if (unitList == null) {
 						unitList = new NamedList<>(filepath);
 						unitList.setCachedIconPath(unit.getIconPath());
 						unitsModelData.put(filepath.toLowerCase(), unitList);
@@ -247,28 +247,28 @@ public class ModelOptionPanel extends JPanel {
 				NamedList<String> unitList = buffModelData.get(filepath.toLowerCase());
 				if (unitList == null) {
 					unitList = new NamedList<>(filepath);
-					unitList.setCachedIconPath(unit.getIconPath());
-					buffModelData.put(filepath.toLowerCase(), unitList);
-				}
-				unitList.add(unit.getName() + " " + WEString.getString("WESTRING_OE_TYPECAT_SUFFIX_EFFECT"));
-			}
+                    unitList.setCachedIconPath(unit.getIconPath());
+                    buffModelData.put(filepath.toLowerCase(), unitList);
+                }
+                unitList.add(unit.getName() + " " + WEString.getString("WESTRING_OE_TYPECAT_SUFFIX_EFFECT"));
+            }
 
-			getUnitByField(buffModelData, unit, "Effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
-			getUnitByField(buffModelData, unit, "effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
+//			getUnitByField(buffModelData, unit, "Effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
+            getUnitByField(buffModelData, unit, "effectart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_EFFECT");
 
-			getUnitByField(buffModelData, unit, "Missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
-			getUnitByField(buffModelData, unit, "MissileArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
-			getUnitByField(buffModelData, unit, "missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+            getUnitByField(buffModelData, unit, "Missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+//			getUnitByField(buffModelData, unit, "MissileArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
+//			getUnitByField(buffModelData, unit, "missileart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_MISSILE");
 
-			getUnitByField((Map<String, NamedList<String>>) buffModelData, unit, "SpecialArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+            getUnitByField((Map<String, NamedList<String>>) buffModelData, unit, "SpecialArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
 
-			getUnitByField(buffModelData, unit, "Specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
-			getUnitByField(buffModelData, unit, "specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+            getUnitByField(buffModelData, unit, "Specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
+//			getUnitByField(buffModelData, unit, "specialart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_SPECIAL");
 
-			getUnitByField(buffModelData, unit, "TargetArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-			getUnitByField(buffModelData, unit, "Targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-			getUnitByField(buffModelData, unit, "targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
-		}
+//			getUnitByField(buffModelData, unit, "TargetArt", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+            getUnitByField(buffModelData, unit, "Targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+//			getUnitByField(buffModelData, unit, "targetart", filepath, "WESTRING_OE_TYPECAT_SUFFIX_TARGET");
+        }
 
 		for (final String str : itemData.keySet()) {
 			// ITEMS

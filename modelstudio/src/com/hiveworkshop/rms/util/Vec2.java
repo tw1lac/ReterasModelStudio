@@ -24,45 +24,31 @@ public class Vec2 {
 
 	public static void rotateVertex(final double centerX, final double centerY, final double radians,
 			final byte firstXYZ, final byte secondXYZ, final Vec2 vertex) {
-		final double x1 = vertex.getCoord(firstXYZ);
-		final double y1 = vertex.getCoord(secondXYZ);
-		final double cx;// = coordinateSystem.geomX(centerX);
-		switch (firstXYZ) {
-		case 0:
-			cx = centerX;
-			break;
-		case 1:
-			cx = centerY;
-			break;
-		default:
-		case 2:
-			cx = 0;
-			break;
-		}
-		final double dx = x1 - cx;
-		final double cy;// = coordinateSystem.geomY(centerY);
-		switch (secondXYZ) {
-			case 0:
-				cy = centerX;
-				break;
-			case 1:
-				cy = centerY;
-				break;
-			default:
-			case 2:
-				cy = 0;
-				break;
-		}
-		final double dy = y1 - cy;
-		final double r = Math.sqrt((dx * dx) + (dy * dy));
-		double verAng = Math.acos(dx / r);
-		if (dy < 0) {
-			verAng = -verAng;
-		}
-		// if( getDimEditable(dim1) )
-		double nextDim = (Math.cos(verAng + radians) * r) + cx;
-		if (!Double.isNaN(nextDim)) {
-			vertex.setCoord(firstXYZ, (float) nextDim);
+        final double x1 = vertex.getCoord(firstXYZ);
+        final double y1 = vertex.getCoord(secondXYZ);
+        final double cx = switch (firstXYZ) {
+            case 0 -> centerX;
+            case 1 -> centerY;
+            case 2 -> 0;
+            default -> 0;
+        };// = coordinateSystem.geomX(centerX);
+        final double dx = x1 - cx;
+        final double cy = switch (secondXYZ) {
+            case 0 -> centerX;
+            case 1 -> centerY;
+            case 2 -> 0;
+            default -> 0;
+        };// = coordinateSystem.geomY(centerY);
+        final double dy = y1 - cy;
+        final double r = Math.sqrt((dx * dx) + (dy * dy));
+        double verAng = Math.acos(dx / r);
+        if (dy < 0) {
+            verAng = -verAng;
+        }
+        // if( getDimEditable(dim1) )
+        double nextDim = (Math.cos(verAng + radians) * r) + cx;
+        if (!Double.isNaN(nextDim)) {
+            vertex.setCoord(firstXYZ, (float) nextDim);
 		}
 		// if( getDimEditable(dim2) )
 		nextDim = (Math.sin(verAng + radians) * r) + cy;

@@ -9,11 +9,11 @@ public final class CharInt {
     /**
      * Convert a four character string into an integer.<br>
      * Do not use characters outside the ASCII character set.
-     * 
+     *
      * @param id the string to convert
      * @return integer representation of the string.
      */
-    public final static int toInt(final String id) {
+    public static int toInt(final String id) {
         final byte[] bytes = id.getBytes(StandardCharsets.US_ASCII);
         int result = 0;
         if (bytes.length >= 4) {
@@ -38,10 +38,9 @@ public final class CharInt {
      */
     public static String toString(final int id) {
 
-        String result = String.valueOf((char) ((id >> 24) & 0xFF)) +
+        return String.valueOf((char) ((id >> 24) & 0xFF)) +
                 (char) ((id >> 16) & 0xFF) +
                 (char) ((id >> 8) & 0xFF) +
                 (char) ((id >> 0) & 0xFF);
-        return result;
     }
 }

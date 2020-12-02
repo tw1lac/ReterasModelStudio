@@ -64,27 +64,27 @@ public class Quat extends Vec4 {
 		// new test
 		// double c1 = Math.cos(eulerRotation.x / 2);
 		// double c2 = Math.cos(eulerRotation.y / 2);
-		// double c3 = Math.cos(eulerRotation.z / 2);
-		// double s1 = Math.sin(eulerRotation.x / 2);
-		// double s2 = Math.sin(eulerRotation.y / 2);
-		// double s3 = Math.sin(eulerRotation.z / 2);
-		//
-		// a = c1 * c2 * c3 - s1 * s2 * s3;
-		// b = s1 * s2 * c3 + c1 * c2 * s3;
-		// c = s1 * c2 * c3 + c1 * s2 * s3;
-		// d = c1 * s2 * c3 - s1 * c2 * s3;
+        // double c3 = Math.cos(eulerRotation.z / 2);
+        // double s1 = Math.sin(eulerRotation.x / 2);
+        // double s2 = Math.sin(eulerRotation.y / 2);
+        // double s3 = Math.sin(eulerRotation.z / 2);
+        //
+        // a = c1 * c2 * c3 - s1 * s2 * s3;
+        // b = s1 * s2 * c3 + c1 * c2 * s3;
+        // c = s1 * c2 * c3 + c1 * s2 * s3;
+        // d = c1 * s2 * c3 - s1 * c2 * s3;
 
-		/**
-		 * double heading = eulerRotation.x; double attitude = eulerRotation.y; double
-		 * bank = eulerRotation.z; double c1 = Math.cos(heading); double s1 =
-		 * Math.sin(heading); double c2 = Math.cos(attitude); double s2 =
-		 * Math.sin(attitude); double c3 = Math.cos(bank); double s3 = Math.sin(bank); a
-		 * = Math.sqrt(1.0 + c1 * c2 + c1*c3 - s1 * s2 * s3 + c2*c3) / 2.0; double w4 =
-		 * (4.0 * a); b = (c2 * s3 + c1 * s3 + s1 * s2 * c3) / w4 ; c = (s1 * c2 + s1 *
-		 * c3 + c1 * s2 * s3) / w4 ; d = (-s1 * s3 + c1 * s2 * c3 +s2) / w4 ;
-		 */
+        /* *
+         * double heading = eulerRotation.x; double attitude = eulerRotation.y; double
+         * bank = eulerRotation.z; double c1 = Math.cos(heading); double s1 =
+         * Math.sin(heading); double c2 = Math.cos(attitude); double s2 =
+         * Math.sin(attitude); double c3 = Math.cos(bank); double s3 = Math.sin(bank); a
+         * = Math.sqrt(1.0 + c1 * c2 + c1*c3 - s1 * s2 * s3 + c2*c3) / 2.0; double w4 =
+         * (4.0 * a); b = (c2 * s3 + c1 * s3 + s1 * s2 * c3) / w4 ; c = (s1 * c2 + s1 *
+         * c3 + c1 * s2 * s3) / w4 ; d = (-s1 * s3 + c1 * s2 * c3 +s2) / w4 ;
+         */
 
-		// Now Quaternions can go burn and die.
+        // Now Quaternions can go burn and die.
 	}
 
 	public Quat(final float[] data) {

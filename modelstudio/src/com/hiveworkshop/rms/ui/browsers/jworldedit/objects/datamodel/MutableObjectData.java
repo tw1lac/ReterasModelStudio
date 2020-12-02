@@ -119,18 +119,18 @@ public final class MutableObjectData {
 						resultingTechList.add(tech);
 					}
 				}
-				final StringBuilder sb = new StringBuilder();
-				for (final String tech : resultingTechList) {
-					if (sb.length() > 0) {
-						sb.append(",");
-					}
-					sb.append(tech);
-				}
-				unit.setField(field, 0, sb.toString());
-			}
-		}
-		changeNotifier.objectsCreated(newObjects.toArray(new War3ID[newObjects.size()]));
-	}
+                final StringBuilder sb = new StringBuilder();
+                for (final String tech : resultingTechList) {
+                    if (sb.length() > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(tech);
+                }
+                unit.setField(field, 0, sb.toString());
+            }
+        }
+        changeNotifier.objectsCreated(newObjects.toArray(new War3ID[0]));
+    }
 
 	public War3ObjectDataChangeset copySelectedObjects(final List<MutableGameObject> objectsToCopy) {
 		final War3ObjectDataChangeset changeset = new War3ObjectDataChangeset(editorData.getExpectedKind());
@@ -283,15 +283,15 @@ public final class MutableObjectData {
 	}
 
 	public void remove(final List<MutableGameObject> objects) {
-		final List<War3ID> removedIds = new ArrayList<>();
-		for (final MutableGameObject object : objects) {
-			if (object.isCustom()) {
-				remove(object.getAlias(), false);
-				removedIds.add(object.getAlias());
-			}
-		}
-		changeNotifier.objectsRemoved(removedIds.toArray(new War3ID[removedIds.size()]));
-	}
+        final List<War3ID> removedIds = new ArrayList<>();
+        for (final MutableGameObject object : objects) {
+            if (object.isCustom()) {
+                remove(object.getAlias(), false);
+                removedIds.add(object.getAlias());
+            }
+        }
+        changeNotifier.objectsRemoved(removedIds.toArray(new War3ID[0]));
+    }
 
 	private MutableGameObject remove(final War3ID id, final boolean fireListeners) {
 		final ObjectDataChangeEntry removedObject = editorData.getCustom().remove(id);

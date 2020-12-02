@@ -73,7 +73,6 @@ public class MdlxMaterial implements MdlxBlock, MdlxChunk {
                     final MdlxLayer layer = new MdlxLayer();
                     layer.readMdl(stream, version);
                     layers.add(layer);
-                    break;
                 }
                 default -> throw new RuntimeException("Unknown token in Material: " + token);
             }

@@ -1,18 +1,18 @@
 package com.hiveworkshop.rms.ui.application.actions.mesh;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.editor.model.Triangle;
 import com.hiveworkshop.rms.ui.application.actions.VertexActionType;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.util.Vec3;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * CloneAction -- allowing you to undo clone!
- *
+ * <p>
  * Eric Theller 'Retera' 6/11/2012
  */
 public class CloneAction implements UndoAction {
@@ -209,10 +209,6 @@ public class CloneAction implements UndoAction {
 
 	@Override
 	public String actionName() {
-		if (type) {
-			return "extrude";
-		} else {
-			return "extrude";
-		}
+		return "extrude";
 	}
 }
