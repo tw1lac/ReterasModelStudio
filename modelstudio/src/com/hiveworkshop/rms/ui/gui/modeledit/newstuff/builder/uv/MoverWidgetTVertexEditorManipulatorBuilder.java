@@ -19,51 +19,61 @@ import java.awt.*;
 public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
 	private final MoverWidget moverWidget = new MoverWidget(new Vec3(0, 0, 0));
 
-	public MoverWidgetTVertexEditorManipulatorBuilder(final TVertexEditor modelEditor,
-													  final ViewportSelectionHandler viewportSelectionHandler,
-													  final ProgramPreferences programPreferences,
-													  final ModelView modelView) {
+	public MoverWidgetTVertexEditorManipulatorBuilder(
+			final TVertexEditor modelEditor,
+			final ViewportSelectionHandler viewportSelectionHandler,
+			final ProgramPreferences programPreferences,
+			final ModelView modelView) {
 		super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
 	}
 
 	@Override
-	protected boolean widgetOffersEdit(final Vec3 selectionCenter,
-									   final Point mousePoint,
-									   final CoordinateSystem coordinateSystem,
-									   final SelectionView selectionView) {
+	protected boolean widgetOffersEdit(
+			final Vec3 selectionCenter,
+			final Point mousePoint,
+			final CoordinateSystem coordinateSystem,
+			final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getUVCenter(getModelEditor().getUVLayerIndex()));
-
-		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem,
-				coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(
+				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		moverWidget.setMoveDirection(directionByMouse);
 		return directionByMouse != MoveDirection.NONE;
 	}
 
 	@Override
-	protected Manipulator createManipulatorFromWidget(final Vec3 selectionCenter, final Point mousePoint,
-													  final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+	protected Manipulator createManipulatorFromWidget(
+			final Vec3 selectionCenter,
+			final Point mousePoint,
+			final CoordinateSystem coordinateSystem,
+			final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getUVCenter(getModelEditor().getUVLayerIndex()));
 		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem,
 				coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
+			return switch (directionByMouse) {
+				case BOTH -> new MoveTVertexManipulator(getModelEditor());
+				case RIGHT -> new MoveXTVertexManipulator(getModelEditor());
+				case UP -> new MoveYTVertexManipulator(getModelEditor());
+				case NONE -> null;
+			};
 		}
-		return switch (directionByMouse) {
-			case BOTH -> new MoveTVertexManipulator(getModelEditor());
-			case RIGHT -> new MoveXTVertexManipulator(getModelEditor());
-			case UP -> new MoveYTVertexManipulator(getModelEditor());
-			case NONE -> null;
-		};
+		return null;
 	}
 
 	@Override
-	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter, final Point mousePoint,
-												   final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+	protected Manipulator createDefaultManipulator(
+			final Vec3 selectionCenter,
+			final Point mousePoint,
+			final CoordinateSystem coordinateSystem,
+			final SelectionView selectionView) {
 		return new MoveTVertexManipulator(getModelEditor());
 	}
 
 	@Override
-	protected void renderWidget(final Graphics2D graphics, final CoordinateSystem coordinateSystem,
+	protected void renderWidget(
+			final Graphics2D graphics,
+			final CoordinateSystem coordinateSystem,
 			final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getUVCenter(getModelEditor().getUVLayerIndex()));
 		moverWidget.render(graphics, coordinateSystem);

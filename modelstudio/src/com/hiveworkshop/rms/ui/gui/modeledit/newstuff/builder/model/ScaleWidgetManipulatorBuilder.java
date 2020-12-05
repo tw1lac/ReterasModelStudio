@@ -14,42 +14,45 @@ import com.hiveworkshop.rms.util.Vec3;
 import java.awt.*;
 
 public final class ScaleWidgetManipulatorBuilder extends AbstractSelectAndEditModelEditorManipulatorBuilder {
-	private final ScalerWidget moverWidget = new ScalerWidget(new Vec3(0, 0, 0));
+    private final ScalerWidget moverWidget = new ScalerWidget(new Vec3(0, 0, 0));
 
-	public ScaleWidgetManipulatorBuilder(final ModelEditor modelEditor,
-										 final ViewportSelectionHandler viewportSelectionHandler,
-										 final ProgramPreferences programPreferences,
-										 final ModelView modelView) {
-		super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
-	}
+    public ScaleWidgetManipulatorBuilder(
+            final ModelEditor modelEditor,
+            final ViewportSelectionHandler viewportSelectionHandler,
+            final ProgramPreferences programPreferences,
+            final ModelView modelView) {
+        super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
+    }
 
-	@Override
-	protected boolean widgetOffersEdit(final Vec3 selectionCenter,
-									   final Point mousePoint,
-									   final CoordinateSystem coordinateSystem,
-									   final SelectionView selectionView) {
-		moverWidget.setPoint(selectionView.getCenter());
-		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
-		moverWidget.setMoveDirection(directionByMouse);
-		return directionByMouse != ScaleDirection.NONE;
-	}
+    @Override
+    protected boolean widgetOffersEdit(
+            final Vec3 selectionCenter,
+            final Point mousePoint,
+            final CoordinateSystem coordinateSystem,
+            final SelectionView selectionView) {
+        moverWidget.setPoint(selectionView.getCenter());
+        final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
+                mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+        moverWidget.setMoveDirection(directionByMouse);
+        return directionByMouse != ScaleDirection.NONE;
+    }
 
-	@Override
-	protected Manipulator createManipulatorFromWidget(final Vec3 selectionCenter,
-													  final Point mousePoint,
-                                                      final CoordinateSystem coordinateSystem,
-													  final SelectionView selectionView) {
-		moverWidget.setPoint(selectionView.getCenter());
-		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
-		if (directionByMouse != null) {
-			moverWidget.setMoveDirection(directionByMouse);
-		}
-		if (directionByMouse != null) {
-			return switch (directionByMouse) {
-				case XYZ -> new ScaleManipulatorUsesYMouseDrag(getModelEditor(), selectionView);
-				case FLAT_XY -> new ScaleXYManipulator(getModelEditor(), selectionView);
+    @Override
+    protected Manipulator createManipulatorFromWidget(
+            final Vec3 selectionCenter,
+            final Point mousePoint,
+            final CoordinateSystem coordinateSystem,
+            final SelectionView selectionView) {
+        moverWidget.setPoint(selectionView.getCenter());
+        final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
+                mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+        if (directionByMouse != null) {
+            moverWidget.setMoveDirection(directionByMouse);
+        }
+        if (directionByMouse != null) {
+            return switch (directionByMouse) {
+                case XYZ -> new ScaleManipulatorUsesYMouseDrag(getModelEditor(), selectionView);
+                case FLAT_XY -> new ScaleXYManipulator(getModelEditor(), selectionView);
 				case RIGHT -> new ScaleXManipulator(getModelEditor(), selectionView);
 				case UP -> new ScaleYManipulator(getModelEditor(), selectionView);
 				case NONE -> null;
@@ -58,20 +61,22 @@ public final class ScaleWidgetManipulatorBuilder extends AbstractSelectAndEditMo
 		return null;
 	}
 
-	@Override
-	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter,
-												   final Point mousePoint,
-												   final CoordinateSystem coordinateSystem,
-												   final SelectionView selectionView) {
-		return new ScaleManipulator(getModelEditor(), selectionView);
-	}
+    @Override
+    protected Manipulator createDefaultManipulator(
+            final Vec3 selectionCenter,
+            final Point mousePoint,
+            final CoordinateSystem coordinateSystem,
+            final SelectionView selectionView) {
+        return new ScaleManipulator(getModelEditor(), selectionView);
+    }
 
-	@Override
-	protected void renderWidget(final Graphics2D graphics,
-								final CoordinateSystem coordinateSystem,
-								final SelectionView selectionView) {
-		moverWidget.setPoint(selectionView.getCenter());
-		moverWidget.render(graphics, coordinateSystem);
-	}
+    @Override
+    protected void renderWidget(
+            final Graphics2D graphics,
+            final CoordinateSystem coordinateSystem,
+            final SelectionView selectionView) {
+        moverWidget.setPoint(selectionView.getCenter());
+        moverWidget.render(graphics, coordinateSystem);
+    }
 
 }

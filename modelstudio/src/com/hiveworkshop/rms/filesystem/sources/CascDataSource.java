@@ -50,7 +50,8 @@ public class CascDataSource implements DataSource {
 								dest.toLowerCase(Locale.US).replace('/', '\\'));
 						if ((src.toLowerCase(Locale.US).contains(".blp")
 								|| dest.toLowerCase(Locale.US).contains(".blp"))
-								&& (!alias.has("assetType") || "Texture".equals(alias.getString("assetType")))) {
+								&& (!alias.has("assetType")
+								|| "Texture".equals(alias.getString("assetType")))) {
 							// This case: I saw a texture that resolves in game but was failing in our code
 							// here, because of this entry:
 							// {"src":"Units/Human/WarWagon/SiegeEngine.blp",

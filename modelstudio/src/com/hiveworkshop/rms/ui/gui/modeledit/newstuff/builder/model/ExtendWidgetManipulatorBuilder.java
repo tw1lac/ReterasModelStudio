@@ -51,8 +51,7 @@ public final class ExtendWidgetManipulatorBuilder extends AbstractSelectAndEditM
 				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
-		}
-		if (directionByMouse != null) {
+
 			return switch (directionByMouse) {
 				case BOTH -> new ExtendManipulator(getModelEditor());
 				case RIGHT -> new ExtendXManipulator(getModelEditor());
@@ -64,13 +63,18 @@ public final class ExtendWidgetManipulatorBuilder extends AbstractSelectAndEditM
 	}
 
 	@Override
-	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter, final Point mousePoint,
-			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+	protected Manipulator createDefaultManipulator(
+			final Vec3 selectionCenter,
+			final Point mousePoint,
+			final CoordinateSystem coordinateSystem,
+			final SelectionView selectionView) {
 		return new ExtendManipulator(getModelEditor());
 	}
 
 	@Override
-	protected void renderWidget(final Graphics2D graphics, final CoordinateSystem coordinateSystem,
+	protected void renderWidget(
+			final Graphics2D graphics,
+			final CoordinateSystem coordinateSystem,
 			final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
 		moverWidget.render(graphics, coordinateSystem);

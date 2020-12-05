@@ -63,8 +63,11 @@ public class MultiPartSelectionView implements SelectionView {
 	}
 
 	@Override
-	public void renderSelection(final ModelElementRenderer renderer, final CoordinateSystem coordinateSystem,
-								final ModelView modelView, final ProgramPreferences programPreferences) {
+	public void renderSelection(
+			final ModelElementRenderer renderer,
+			final CoordinateSystem coordinateSystem,
+			final ModelView modelView,
+			final ProgramPreferences programPreferences) {
 		for (final SelectionView selectionView : selectionViews) {
 			selectionView.renderSelection(renderer, coordinateSystem, modelView, programPreferences);
 		}
@@ -115,8 +118,11 @@ public class MultiPartSelectionView implements SelectionView {
 	}
 
 	@Override
-	public void renderUVSelection(final TVertexModelElementRenderer renderer, final ModelView modelView,
-                                  final ProgramPreferences programPreferences, final int tvertexLayerId) {
+	public void renderUVSelection(
+			final TVertexModelElementRenderer renderer,
+			final ModelView modelView,
+			final ProgramPreferences programPreferences,
+			final int tvertexLayerId) {
 		for (final SelectionView selectionView : selectionViews) {
 			selectionView.renderUVSelection(renderer, modelView, programPreferences, tvertexLayerId);
 		}

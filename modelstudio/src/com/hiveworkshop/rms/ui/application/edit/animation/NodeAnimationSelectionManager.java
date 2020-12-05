@@ -76,8 +76,11 @@ public final class NodeAnimationSelectionManager extends AbstractSelectionManage
 	private final Bone renderBoneDummy = new Bone();
 
 	@Override
-	public void renderSelection(final ModelElementRenderer renderer, final CoordinateSystem coordinateSystem,
-                                final ModelView model, final ProgramPreferences programPreferences) {
+	public void renderSelection(
+			final ModelElementRenderer renderer,
+			final CoordinateSystem coordinateSystem,
+			final ModelView model,
+			final ProgramPreferences programPreferences) {
 		// TODO !!! apply rendering
 		final Set<IdObject> drawnSelection = new HashSet<>();
 		final Set<IdObject> parentedNonSelection = new HashSet<>();
@@ -144,8 +147,11 @@ public final class NodeAnimationSelectionManager extends AbstractSelectionManage
 	}
 
 	@Override
-	public void renderUVSelection(final TVertexModelElementRenderer renderer, final ModelView modelView,
-                                  final ProgramPreferences programPreferences, final int tvertexLayerId) {
+	public void renderUVSelection(
+			final TVertexModelElementRenderer renderer,
+			final ModelView modelView,
+			final ProgramPreferences programPreferences,
+			final int tvertexLayerId) {
 
 	}
 }

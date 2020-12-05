@@ -3,11 +3,11 @@ package com.hiveworkshop.rms.ui.gui.modeledit.creator.actions;
 import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.editor.model.Triangle;
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils.Mesh;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericMoveAction;
+import com.hiveworkshop.rms.util.Vec3;
 
 public class DrawBoxAction implements GenericMoveAction {
 

@@ -22,20 +22,25 @@ public class ColorValuePanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(title));
 		setLayout(new MigLayout());
 		final ButtonGroup staticDynamicGroup = new ButtonGroup();
+
 		staticButton = new JRadioButton("Static");
-		dynamicButton = new JRadioButton("Dynamic");
 		staticDynamicGroup.add(staticButton);
-		staticDynamicGroup.add(dynamicButton);
 		add(staticButton);
+
 		staticColorButton = new JButton("Choose Color");
 		add(staticColorButton, "wrap");
+
+		dynamicButton = new JRadioButton("Dynamic");
+		staticDynamicGroup.add(dynamicButton);
 		add(dynamicButton);
+
 		interpTypeBox = new JComboBox<>(InterpolationType.values());
 		add(interpTypeBox, "wrap");
 
 		floatTrackTableModel = new FloatTrackTableModel(null);
 		final JTable keyframeTable = new JTable(floatTrackTableModel);
 		add(keyframeTable, "span 2, wrap, grow");
+
 		final ChangeListener l = e -> {
             staticColorButton.setEnabled(staticButton.isSelected());
             interpTypeBox.setEnabled(dynamicButton.isSelected());

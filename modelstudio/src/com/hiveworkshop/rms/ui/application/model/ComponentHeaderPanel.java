@@ -37,7 +37,8 @@ public class ComponentHeaderPanel extends JPanel implements ComponentPanel {
                 undoActionListener.pushAction(action);
             }
         });
-		final JLabel versionLabel = new JLabel("Format Version:");
+
+        final JLabel versionLabel = new JLabel("Format Version:");
 		formatVersionSpinner = new ComponentEditorJSpinner(
 				new SpinnerNumberModel(800, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
 		formatVersionSpinner.setMaximumSize(MAXIMUM_SIZE);
@@ -50,7 +51,8 @@ public class ComponentHeaderPanel extends JPanel implements ComponentPanel {
                 undoActionListener.pushAction(setFormatVersionAction);
             }
         });
-		final JLabel blendTimeLabel = new JLabel("Blend Time:");
+
+        final JLabel blendTimeLabel = new JLabel("Blend Time:");
 		blendTimeSpinner = new ComponentEditorJSpinner(
 				new SpinnerNumberModel(150, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
 		blendTimeSpinner.setMaximumSize(MAXIMUM_SIZE);

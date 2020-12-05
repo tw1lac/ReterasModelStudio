@@ -43,23 +43,12 @@ public final class ModelUtils {
 	public static Mesh createPlane(final byte planeDimension, final boolean outward, final double planeHeight,
 			final double minFirst, final double minSecond, final double maxFirst, final double maxSecond,
 			final int numberOfSegmentsX, final int numberOfSegmentsY) {
-		final byte firstDimension;
-		final byte secondDimension;
-		switch (planeDimension) {
-			case 0 -> {
-				firstDimension = (byte) 1;
-				secondDimension = (byte) 2;
-			}
-			case 1 -> {
-				firstDimension = (byte) 0;
-				secondDimension = (byte) 2;
-			}
-			case 2 -> {
-				firstDimension = (byte) 0;
-				secondDimension = (byte) 1;
-			}
-			default -> throw new IllegalStateException();
-		}
+
+		final byte[] dimensions = getByteDimensions(planeDimension);
+
+		final byte firstDimension = dimensions[0];
+		final byte secondDimension = dimensions[1];
+
 		boolean flipFacesForIterationDesignFlaw = false;
 		if (planeDimension == 1) {
 			flipFacesForIterationDesignFlaw = true;
@@ -133,23 +122,12 @@ public final class ModelUtils {
 				};
 				final double coordinateAtSide = sideMaxima.getCoord(dimension);
 
-				final byte firstDimension;
-				final byte secondDimension;
-				switch (dimension) {
-					case 0 -> {
-						firstDimension = (byte) 1;
-						secondDimension = (byte) 2;
-					}
-					case 1 -> {
-						firstDimension = (byte) 0;
-						secondDimension = (byte) 2;
-					}
-					case 2 -> {
-						firstDimension = (byte) 0;
-						secondDimension = (byte) 1;
-					}
-					default -> throw new IllegalStateException();
-				}
+
+				final byte[] dimensions = getByteDimensions(dimension);
+
+				final byte firstDimension = dimensions[0];
+				final byte secondDimension = dimensions[1];
+
 				final double minFirst = min.getCoord(firstDimension);
 				final double minSecond = min.getCoord(secondDimension);
 				final double maxFirst = max.getCoord(firstDimension);
@@ -196,29 +174,14 @@ public final class ModelUtils {
 
 				final int segsX;
 				final int segsY;
-				final byte firstDimension;
-				final byte secondDimension;
-				switch (dimension) {
-					case 0 -> {
-						firstDimension = (byte) 1;
-						secondDimension = (byte) 2;
-						segsX = widthSegs;
-						segsY = heightSegs;
-					}
-					case 1 -> {
-						firstDimension = (byte) 0;
-						secondDimension = (byte) 2;
-						segsX = lengthSegs;
-						segsY = heightSegs;
-					}
-					case 2 -> {
-						firstDimension = (byte) 0;
-						secondDimension = (byte) 1;
-						segsX = lengthSegs;
-						segsY = widthSegs;
-					}
-					default -> throw new IllegalStateException();
-				}
+
+				final byte[] dimensions = getByteDimensions(dimension);
+
+				final byte firstDimension = dimensions[0];
+				final byte secondDimension = dimensions[1];
+				segsX = firstDimension == 0 ? lengthSegs : widthSegs;
+				segsY = secondDimension == 2 ? heightSegs : widthSegs;
+
 				final double minFirst = min.getCoord(firstDimension);
 				final double minSecond = min.getCoord(secondDimension);
 				final double maxFirst = max.getCoord(firstDimension);
@@ -226,8 +189,8 @@ public final class ModelUtils {
 
 				final Mesh sidedPlane = createPlane(dimension, side != 1, coordinateAtSide, minFirst, minSecond,
 						maxFirst, maxSecond, segsX, segsY);
-                box.vertices.addAll(sidedPlane.vertices);
-                box.triangles.addAll(sidedPlane.triangles);
+				box.vertices.addAll(sidedPlane.vertices);
+				box.triangles.addAll(sidedPlane.triangles);
 			}
 		}
 		for (final GeosetVertex vertex : box.getVertices()) {
@@ -265,6 +228,26 @@ public final class ModelUtils {
 			}
 		}
 		model.add(geoset);
+	}
+
+	private static byte[] getByteDimensions(byte dimension) {
+		final byte[] dimensions = new byte[2];
+		switch (dimension) {
+			case 0 -> {
+				dimensions[0] = (byte) 1;
+				dimensions[1] = (byte) 2;
+			}
+			case 1 -> {
+				dimensions[0] = (byte) 0;
+				dimensions[1] = (byte) 2;
+			}
+			case 2 -> {
+				dimensions[0] = (byte) 0;
+				dimensions[1] = (byte) 1;
+			}
+			default -> throw new IllegalStateException();
+		}
+		return dimensions;
 	}
 
 	public static float[] flipRGBtoBGR(final float[] rgb) {

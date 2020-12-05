@@ -94,32 +94,30 @@ public class AnimatedPerspectiveViewport extends BetterAWTGLCanvas implements Mo
 		// setLayout( new BoxLayout(this,BoxLayout.LINE_AXIS));
 		this.modelView = modelView;
 		if (loadDefaultCamera) {
-			loadDefaultCameraFor(modelView);
-		}
-		renderModel = new RenderModel(modelView.getModel(), null);
-		renderModel.setSpawnParticles(
-				(programPreferences.getRenderParticles() == null) || programPreferences.getRenderParticles());
-		renderModel.refreshFromEditor(this, inverseCameraRotationQuat, inverseCameraRotationYSpin,
-				inverseCameraRotationZSpin, this);
-		addMouseListener(this);
-		addMouseWheelListener(this);
+            loadDefaultCameraFor(modelView);
+        }
+        renderModel = new RenderModel(modelView.getModel(), null);
+        renderModel.setSpawnParticles(
+                (programPreferences.getRenderParticles() == null) || programPreferences.getRenderParticles());
+        renderModel.refreshFromEditor(this, inverseCameraRotationQuat, inverseCameraRotationYSpin,
+                inverseCameraRotationZSpin, this);
+        addMouseListener(this);
+        addMouseWheelListener(this);
 
-		if (programPreferences != null) {
-			programPreferences.addChangeListener(() -> {
-				setBackground(programPreferences.getPerspectiveBackgroundColor() == null ? new Color(80, 80, 80)
-						: programPreferences.getPerspectiveBackgroundColor());
-				loadBackgroundColors();
-			});
-		}
-		loadBackgroundColors();
-		paintTimer = new Timer(16, e -> {
-			repaint();
-			if (!isShowing()) {
-				paintTimer.stop();
-			}
-		});
-		paintTimer.start();
-	}
+        programPreferences.addChangeListener(() -> {
+            setBackground(programPreferences.getPerspectiveBackgroundColor() == null ? new Color(80, 80, 80)
+                    : programPreferences.getPerspectiveBackgroundColor());
+            loadBackgroundColors();
+        });
+        loadBackgroundColors();
+        paintTimer = new Timer(16, e -> {
+            repaint();
+            if (!isShowing()) {
+                paintTimer.stop();
+            }
+        });
+        paintTimer.start();
+    }
 
 	private void loadDefaultCameraFor(final ModelView modelView) {
 		ExtLog extents = null;

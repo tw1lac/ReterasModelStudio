@@ -1,8 +1,8 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.geom.Point2D.Double;
 
@@ -32,7 +32,10 @@ public final class ScaleManipulatorUsesYMouseDrag extends AbstractScaleManipulat
 	}
 
 	@Override
-	protected Vec3 buildScaleVector(final double scaleFactor, final byte dim1, final byte dim2) {
+	protected Vec3 buildScaleVector(
+			final double scaleFactor,
+			final byte dim1,
+			final byte dim2) {
 		return new Vec3(scaleFactor, scaleFactor, scaleFactor);
 	}
 
