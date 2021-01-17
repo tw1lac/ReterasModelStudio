@@ -435,7 +435,7 @@ public abstract class AnimFlag2<T> {
 		return times.size();
 	}
 
-	public abstract MdlxTimeline<T> toMdlx(final TimelineContainer container);
+	public abstract MdlxTimeline<?> toMdlx(final TimelineContainer container);
 
 	public int getGlobalSeqId() {
 		return globalSeqId;
