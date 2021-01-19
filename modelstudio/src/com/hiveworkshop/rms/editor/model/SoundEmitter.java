@@ -1,13 +1,13 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.visitor.IdObjectVisitor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec3;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <pre>
@@ -60,7 +60,7 @@ public class SoundEmitter extends IdObject {
 		x.setParent(getParent());
 
 		for (final AnimFlag af : animFlags) {
-			x.animFlags.add(new AnimFlag(af));
+			x.animFlags.add(AnimFlag.createFromAnimFlag(af));
 		}
 		return x;
 	}

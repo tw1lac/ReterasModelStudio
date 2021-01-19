@@ -1,7 +1,9 @@
 package com.hiveworkshop.rms.ui.application.edit.animation;
 
 import com.hiveworkshop.rms.editor.model.Animation;
+import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.EventObject;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
 import net.miginfocom.swing.MigLayout;
@@ -13,6 +15,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.Collections;
+import java.util.List;
 
 public class TimeBoundChooserPanel extends JPanel {
 	private final JRadioButton animationTimeButton;
@@ -312,13 +315,14 @@ public class TimeBoundChooserPanel extends JPanel {
 				"Choose new animation name:", selectedAnimation.getName() + " Second");
 		if (userChosenName != null) {
 			final Animation copyAnimation = new Animation(selectedAnimation);
-			final Animation lastAnim = modelView.getModel().getAnim(modelView.getModel().getAnimsSize() - 1);
+			EditableModel model = modelView.getModel();
+			final Animation lastAnim = model.getAnim(model.getAnimsSize() - 1);
 			copyAnimation.setInterval(lastAnim.getEnd() + 300, lastAnim.getEnd() + 300 + selectedAnimation.length());
 			copyAnimation.setName(userChosenName);
-			modelView.getModel().add(copyAnimation);
-			selectedAnimation.copyToInterval(copyAnimation.getStart(), copyAnimation.getEnd(),
-					modelView.getModel().getAllAnimFlags(),
-					modelView.getModel().sortedIdObjects(EventObject.class));
+			model.add(copyAnimation);
+			List<AnimFlag<?>> animFlags = model.getAllAnimFlags();
+			selectedAnimation.copyToInterval(copyAnimation.getStart(), copyAnimation.getEnd(), animFlags, model.sortedIdObjects(EventObject.class));
+
 			animations.addElement(copyAnimation);
 			structureChangeListener.animationsAdded(Collections.singletonList(copyAnimation));
 		}

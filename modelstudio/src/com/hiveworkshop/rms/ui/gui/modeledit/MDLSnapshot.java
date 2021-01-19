@@ -1,7 +1,8 @@
 package com.hiveworkshop.rms.ui.gui.modeledit;
 
 import com.hiveworkshop.rms.editor.model.*;
-import com.hiveworkshop.rms.editor.model.AnimFlag.Entry;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag.Entry;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelViewManager;
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
@@ -119,10 +120,9 @@ public class MDLSnapshot {
 						exc.printStackTrace();
 						final BufferedImage customTex = BLPHandler.get().getCustomTex(
 								dispMDL.getModel().getWorkingDirectory().getPath() + "\\" + path + ".blp");
-						texture = loadTexture(layer, customTex);// TextureLoader.getTexture("TGA",
-																// new
-																// FileInputStream(new
-																// File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
+						texture = loadTexture(layer, customTex);
+						// TextureLoader.getTexture("TGA", new FileInputStream(
+						// new File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
 
 						// try { } catch (FileNotFoundException e) {
 						// // Auto-generated catch block
@@ -166,10 +166,9 @@ public class MDLSnapshot {
 					exc.printStackTrace();
 					final BufferedImage customTex = BLPHandler.get()
 							.getCustomTex(dispMDL.getModel().getWorkingDirectory().getPath() + "\\" + path + ".blp");
-					texture = loadTexture(layer, customTex);// TextureLoader.getTexture("TGA",
-															// new
-															// FileInputStream(new
-															// File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
+					texture = loadTexture(layer, customTex);
+					// TextureLoader.getTexture("TGA", new FileInputStream(
+					// new File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
 
 					// try { } catch (FileNotFoundException e) {
 					// // Auto-generated catch block
@@ -217,10 +216,9 @@ public class MDLSnapshot {
 							exc.printStackTrace();
 							final BufferedImage customTex = BLPHandler.get().getCustomTex(
 									dispMDL.getModel().getWorkingDirectory().getPath() + "\\" + path + ".blp");
-							texture = loadTexture(layer, customTex);// TextureLoader.getTexture("TGA",
-																	// new
-																	// FileInputStream(new
-																	// File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
+							texture = loadTexture(layer, customTex);
+							// TextureLoader.getTexture("TGA", new FileInputStream(
+							// new File(dispMDL.getModel().getFile().getParent()+"\\"+path+".tga"))).getTextureID();
 
 							// try { } catch (FileNotFoundException e) {
 							// // Auto-generated catch block
@@ -315,11 +313,7 @@ public class MDLSnapshot {
 			Animation bestStandAnim = null;
 			for (final Animation anim : model.getAnims()) {
 				if (anim.getName().toLowerCase().contains("stand")) {
-					final String animProps = unit.getField("Animprops");// should
-																		// not
-																		// be
-																		// case
-																		// sensitive!
+					final String animProps = unit.getField("Animprops");// should not be case sensitive!
 					final String[] animationNames = animProps.split(",");
 					boolean isGoodAnimation = true;
 					for (final String name : animationNames) {

@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.editor.model;
 
-import com.hiveworkshop.rms.editor.model.AnimFlag.Entry;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag.Entry;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.model.visitor.*;
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
@@ -265,7 +266,7 @@ public class EditableModel implements Named {
 		// (this is so that you can write a program that does something like
 		// "mdl.add(new Bone())" without a problem, or even
 		// "mdl.add(otherMdl.getGeoset(5))" and have the geoset's textures and
-		// materials  all be carried over with it via object references in java
+		// materials all be carried over with it via object references in java
 
 		// also this re-creates all matrices, which are consumed by the
 		// MatrixEater at runtime in doPostRead() in favor of each vertex
@@ -674,7 +675,7 @@ public class EditableModel implements Named {
 			for (final IdObject emitter : emitters) {
 				int talliesFor = 0;
 				int talliesAgainst = 0;
-				final AnimFlag visibility = ((VisibilitySource) emitter).getVisibilityFlag();
+				final AnimFlag<?> visibility = ((VisibilitySource) emitter).getVisibilityFlag();
 				for (final Animation anim : anims) {
 					final Integer animStartTime = anim.getStart();
 					final Number visible = (Number) visibility.valueAt(animStartTime);
@@ -689,7 +690,7 @@ public class EditableModel implements Named {
 				}
 			}
 		}
-		final List<AnimFlag> flags = getAllAnimFlags();
+		final List<AnimFlag<?>> flags = getAllAnimFlags();
 		final List<EventObject> evts = sortedIdObjects(EventObject.class);
 		for (final Animation anim : anims) {
 			anim.clearData(flags, evts);
@@ -718,10 +719,10 @@ public class EditableModel implements Named {
 		// a copy instead
 		other = EditableModel.deepClone(other, "animation source file");
 
-		final List<AnimFlag> flags = getAllAnimFlags();
+		final List<AnimFlag<?>> flags = getAllAnimFlags();
 		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
 
-		final List<AnimFlag> othersFlags = other.getAllAnimFlags();
+		final List<AnimFlag<?>> othersFlags = other.getAllAnimFlags();
 		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
 
 		// ------ Duplicate the time track in the other model -------------
@@ -730,12 +731,12 @@ public class EditableModel implements Named {
 		// the information specific to each node about how it will
 		// move if it gets translated into or onto the current model
 
-		final List<AnimFlag> newImpFlags = new ArrayList<>();
-		for (final AnimFlag af : othersFlags) {
+		final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
+		for (final AnimFlag<?> af : othersFlags) {
 			if (!af.hasGlobalSeq) {
 				newImpFlags.add(AnimFlag.buildEmptyFrom(af));
 			} else {
-				newImpFlags.add(new AnimFlag(af));
+				newImpFlags.add(AnimFlag.createFromAnimFlag(af));
 			}
 		}
 		final List<EventObject> newImpEventObjs = new ArrayList<>();
@@ -797,10 +798,10 @@ public class EditableModel implements Named {
 		// a copy instead
 		other = EditableModel.deepClone(other, "animation source file");
 
-		final List<AnimFlag> flags = getAllAnimFlags();
+		final List<AnimFlag<?>> flags = getAllAnimFlags();
 		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
 
-		final List<AnimFlag> othersFlags = other.getAllAnimFlags();
+		final List<AnimFlag<?>> othersFlags = other.getAllAnimFlags();
 		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
 
 		final List<Animation> newAnimations = new ArrayList<>();
@@ -811,12 +812,12 @@ public class EditableModel implements Named {
 		// the information specific to each node about how it will
 		// move if it gets translated into or onto the current model
 
-		final List<AnimFlag> newImpFlags = new ArrayList<>();
-		for (final AnimFlag af : othersFlags) {
+		final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
+		for (final AnimFlag<?> af : othersFlags) {
 			if (!af.hasGlobalSeq) {
 				newImpFlags.add(AnimFlag.buildEmptyFrom(af));
 			} else {
-				newImpFlags.add(new AnimFlag(af));
+				newImpFlags.add(AnimFlag.createFromAnimFlag(af));
 			}
 		}
 		final List<EventObject> newImpEventObjs = new ArrayList<>();
@@ -883,7 +884,7 @@ public class EditableModel implements Named {
 		final List<VisibilitySource> allVisibilitySources = getAllVisibilitySources();
 		for (final VisibilitySource source : allVisibilitySources) {
 			final AnimFlag visibilityFlag = source.getVisibilityFlag();
-			final AnimFlag copyFlag = new AnimFlag(visibilityFlag);
+			final AnimFlag copyFlag = AnimFlag.createFromAnimFlag(visibilityFlag);
 			visibilityFlag.deleteAnim(target);
 			visibilityFlag.copyFrom(copyFlag, visibilitySource.getStart(), visibilitySource.getEnd(), target.getStart(),
 					target.getEnd());
@@ -923,8 +924,8 @@ public class EditableModel implements Named {
 		for (final ParticleEmitter2 temp : sortedIdObjects(ParticleEmitter2.class)) {
 			temp.updateTextureRef(textures);
 		}
-		final List<AnimFlag> animFlags = getAllAnimFlags();// laggggg!
-		for (final AnimFlag af : animFlags) {
+		final List<AnimFlag<?>> animFlags = getAllAnimFlags();// laggggg!
+		for (final AnimFlag<?> af : animFlags) {
 			af.updateGlobalSeqRef(this);
 			if (!af.getName().equals("Scaling") && !af.getName().equals("Translation")
 					&& !af.getName().equals("Rotation")) {
@@ -1085,9 +1086,9 @@ public class EditableModel implements Named {
 
 	public void rebuildGlobalSeqList() {
 		globalSeqs.clear();
-		final List<AnimFlag> animFlags = getAllAnimFlags();// laggggg!
+		final List<AnimFlag<?>> animFlags = getAllAnimFlags();// laggggg!
 		final List<EventObject> evtObjs = sortedIdObjects(EventObject.class);
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag<?> af : animFlags) {
 			if (!globalSeqs.contains(af.globalSeq) && (af.globalSeq != null)) {
 				globalSeqs.add(af.globalSeq);
 			}
@@ -1163,14 +1164,14 @@ public class EditableModel implements Named {
 		// Delete empty rotation/translation/scaling
 		bindPose = null;
 		for (final IdObject obj : idObjects) {
-			final Collection<AnimFlag> animFlags = obj.getAnimFlags();
-			final List<AnimFlag> bad = new ArrayList<>();
-			for (final AnimFlag flag : animFlags) {
+			final Collection<AnimFlag<?>> animFlags = obj.getAnimFlags();
+			final List<AnimFlag<?>> bad = new ArrayList<>();
+			for (final AnimFlag<?> flag : animFlags) {
 				if (flag.size() <= 0) {
 					bad.add(flag);
 				}
 			}
-			for (final AnimFlag badFlag : bad) {
+			for (final AnimFlag<?> badFlag : bad) {
 				System.err.println("Gleaning out " + badFlag.getName() + " chunk with size of 0");
 				animFlags.remove(badFlag);
 			}
@@ -1244,9 +1245,9 @@ public class EditableModel implements Named {
 		return objects;
 	}
 
-	public List<AnimFlag> getAllAnimFlags() {
+	public List<AnimFlag<?>> getAllAnimFlags() {
 		// Probably will cause a bunch of lag, be wary
-		final List<AnimFlag> allFlags = Collections.synchronizedList(new ArrayList<>());
+		final List<AnimFlag<?>> allFlags = Collections.synchronizedList(new ArrayList<>());
 		for (final Material m : materials) {
 			for (final Layer lay : m.layers) {
 				allFlags.addAll(lay.animFlags.values());
@@ -1285,11 +1286,11 @@ public class EditableModel implements Named {
 		return allFlags;
 	}
 
-	public Object getAnimFlagSource(final AnimFlag aflg) {
+	public Object getAnimFlagSource(final AnimFlag<?> aflg) {
 		// Probably will cause a bunch of lag, be wary
 		for (final Material m : materials) {
 			for (final Layer lay : m.layers) {
-				final AnimFlag timeline = lay.find(aflg.getName());
+				final AnimFlag<?> timeline = lay.find(aflg.getName());
 				if (timeline != null) {
 					return lay;
 				}
@@ -1297,7 +1298,7 @@ public class EditableModel implements Named {
 		}
 		if (texAnims != null) {
 			for (final TextureAnim texa : texAnims) {
-				final AnimFlag timeline = texa.find(aflg.getName());
+				final AnimFlag<?> timeline = texa.find(aflg.getName());
 				if (timeline != null) {
 					return texa;
 				}
@@ -1305,7 +1306,7 @@ public class EditableModel implements Named {
 		}
 		if (geosetAnims != null) {
 			for (final GeosetAnim ga : geosetAnims) {
-				final AnimFlag timeline = ga.find(aflg.getName());
+				final AnimFlag<?> timeline = ga.find(aflg.getName());
 				if (timeline != null) {
 					return ga;
 				}
@@ -1313,7 +1314,7 @@ public class EditableModel implements Named {
 		}
 
 		for (final IdObject object : idObjects) {
-			final AnimFlag timeline = object.find(aflg.getName());
+			final AnimFlag<?> timeline = object.find(aflg.getName());
 			if (timeline != null) {
 				return object;
 			}
@@ -1321,7 +1322,7 @@ public class EditableModel implements Named {
 
 		if (cameras != null) {
 			for (final Camera x : cameras) {
-				AnimFlag timeline = x.getSourceNode().find(aflg.getName());
+				AnimFlag<?> timeline = x.getSourceNode().find(aflg.getName());
 				if (timeline != null) {
 					return x;
 				}
@@ -1336,7 +1337,7 @@ public class EditableModel implements Named {
 		return null;
 	}
 
-	public void addFlagToParent(final AnimFlag aflg, final AnimFlag added)
+	public void addFlagToParent(final AnimFlag<?> aflg, final AnimFlag<?> added)
 	// aflg is the parent
 	{
 		// ADDS "added" TO THE PARENT OF "aflg"
@@ -1379,11 +1380,11 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public void buildGlobSeqFrom(final Animation anim, final List<AnimFlag> flags) {
+	public void buildGlobSeqFrom(final Animation anim, final List<AnimFlag<?>> flags) {
 		final Integer newSeq = anim.length();
-		for (final AnimFlag af : flags) {
+		for (final AnimFlag<?> af : flags) {
 			if (!af.hasGlobalSeq) {
-				final AnimFlag copy = new AnimFlag(af);
+				final AnimFlag copy = AnimFlag.createFromAnimFlag(af);
 				copy.setGlobSeq(newSeq);
 				copy.copyFrom(af, anim.getStart(), anim.getEnd(), 0, anim.length());
 				addFlagToParent(af, copy);
@@ -1498,9 +1499,9 @@ public class EditableModel implements Named {
 	}
 
 	public List<VisibilitySource> getAllVisibilitySources() {
-		final List<AnimFlag> animFlags = getAllAnimFlags();// laggggg!
+		final List<AnimFlag<?>> animFlags = getAllAnimFlags();// laggggg!
 		final List<VisibilitySource> out = new ArrayList<>();
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag<?> af : animFlags) {
 			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
 				out.add((VisibilitySource) getAnimFlagSource(af));
 			}
@@ -1870,10 +1871,10 @@ public class EditableModel implements Named {
 
 	public void simplifyKeyframes() {
 		final EditableModel currentMDL = this;
-		final List<AnimFlag> allAnimFlags = currentMDL.getAllAnimFlags();
+		final List<AnimFlag<?>> allAnimFlags = currentMDL.getAllAnimFlags();
 		final List<Animation> anims = currentMDL.getAnims();
 
-		for (final AnimFlag flag : allAnimFlags) {
+		for (final AnimFlag<?> flag : allAnimFlags) {
 			final List<Integer> indicesForDeletion = new ArrayList<>();
 			Entry lastEntry = null;
 			for (int i = 0; i < flag.size(); i++) {
@@ -1888,7 +1889,7 @@ public class EditableModel implements Named {
 			}
 		}
 		for (final Animation anim : anims) {
-			for (final AnimFlag flag : allAnimFlags) {
+			for (final AnimFlag<?> flag : allAnimFlags) {
 				if (!flag.hasGlobalSeq()) {
 					Object olderKeyframe = null;
 					Object oldKeyframe = null;
@@ -2426,7 +2427,7 @@ public class EditableModel implements Named {
 	public void setGlobalSequenceLength(final int globalSequenceId, final Integer newLength) {
 		if (globalSequenceId < globalSeqs.size()) {
 			final Integer prevLength = globalSeqs.get(globalSequenceId);
-			final List<AnimFlag> allAnimFlags = getAllAnimFlags();
+			final List<AnimFlag<?>> allAnimFlags = getAllAnimFlags();
 			for (final AnimFlag af : allAnimFlags) {
 				if ((af.getGlobalSeq() != null) && af.hasGlobalSeq()) {// TODO eliminate redundant structure
 					if (af.getGlobalSeq().equals(prevLength)) {

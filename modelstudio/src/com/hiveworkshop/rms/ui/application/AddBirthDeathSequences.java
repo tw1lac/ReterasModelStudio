@@ -2,6 +2,10 @@ package com.hiveworkshop.rms.ui.application;
 
 import com.hiveworkshop.rms.editor.model.EventObject;
 import com.hiveworkshop.rms.editor.model.*;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.FloatAnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.IntAnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.Vec3AnimFlag;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
@@ -122,7 +126,7 @@ public class AddBirthDeathSequences {
             if (trans == null) {
                 final List<Integer> times = new ArrayList<>();
                 final List<Integer> values = new ArrayList<>();
-                trans = new AnimFlag("Translation", times, values);
+                trans = new IntAnimFlag("Translation", times, values);
                 trans.setInterpType(InterpolationType.LINEAR);
 //                trans = AnimFlag.createEmpty2018(name, InterpolationType.HERMITE, timeEnvironmentImpl.getGlobalSeq());
                 System.out.println(trans + " " + trans.getTimes() + " " + trans.getValues() + " " + trans.getInterpolationType());
@@ -136,7 +140,7 @@ public class AddBirthDeathSequences {
 
     private static void setAnimationVisibilityFlag(EditableModel model, Animation stand, Animation animation) {
         for (final VisibilitySource source : model.getAllVisibilitySources()) {
-            final AnimFlag dummy = new AnimFlag("dummy");
+            final AnimFlag dummy = new FloatAnimFlag("dummy");
             final AnimFlag af = source.getVisibilityFlag();
             dummy.copyFrom(af);
             af.deleteAnim(animation);
@@ -172,7 +176,7 @@ public class AddBirthDeathSequences {
             AnimFlag translationTimeline = node.find(name, timeEnvironmentImpl.getGlobalSeq());
 
             if (translationTimeline == null) {
-                translationTimeline = AnimFlag.createEmpty2018(name, InterpolationType.HERMITE, timeEnvironmentImpl.getGlobalSeq());
+                translationTimeline = Vec3AnimFlag.createEmpty2018(name, InterpolationType.HERMITE, timeEnvironmentImpl.getGlobalSeq());
                 node.add(translationTimeline);
 
                 final AddTimelineAction addTimelineAction = new AddTimelineAction(node, translationTimeline, structureChangeListener);
@@ -192,7 +196,7 @@ public class AddBirthDeathSequences {
         // TODO global seqs, needs separate check on AnimRendEnv, and also we must make AnimFlag.find seek on globalSeqId
         final int floorIndex = translationFlag.floorIndex(trackTime);
 
-        if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+        if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
             return null;
         } else {
             return getAddKeyframeAction(idObject, translationFlag, structureChangeListener, trackTime, floorIndex, vec3);

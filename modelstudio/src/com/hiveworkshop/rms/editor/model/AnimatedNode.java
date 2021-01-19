@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.render3d.RenderNode;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
@@ -48,7 +49,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		final int floorIndex = translationFlag.floorIndex(trackTime);
 		final RenderNode renderNode = renderModel.getRenderNode(this);
 
-		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
 			return null;
 		} else {
 			final Vec3 localLocation = renderNode.getLocalLocation();
@@ -63,7 +64,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		final int floorIndex = rotationTimeline.floorIndex(trackTime);
 		final RenderNode renderNode = renderModel.getRenderNode(this);
 
-		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex).equals(trackTime))) {
 			return null;
 		} else {
 			final Quat localRotation = renderNode.getLocalRotation();
@@ -96,7 +97,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		final int floorIndex = scalingTimeline.floorIndex(trackTime);
 		final RenderNode renderNode = renderModel.getRenderNode(this);
 
-		if ((floorIndex != -1) && (scalingTimeline.getTimes().size() > 0) && (scalingTimeline.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (scalingTimeline.getTimes().size() > 0) && (scalingTimeline.getTimes().get(floorIndex).equals(trackTime))) {
 			return null;
 		} else {
 			final Vec3 localScale = renderNode.getLocalScale();
@@ -175,7 +176,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 			setFloat(newDeltaX, newDeltaY, newDeltaZ);
 		}
 
-		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Vec3 oldTranslationValue = (Vec3) translationFlag.getValues().get(floorIndex);
 			addTo(oldTranslationValue, translationHeap.x, translationHeap.y, translationHeap.z);
@@ -248,7 +249,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		axisAngleHeap.w = (float) radians;
 		rotationDeltaHeap.setFromAxisAngle(axisAngleHeap);
 
-		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Quat oldTranslationValue = (Quat) rotationTimeline.getValues()
 					.get(floorIndex);
@@ -293,7 +294,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 
 		setXYZ(translationHeap, (float) scaleX, (float) scaleY, (float) scaleZ);
 
-		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Vec3 oldTranslationValue = (Vec3) translationFlag.getValues().get(floorIndex);
 			scaleBy(oldTranslationValue, translationHeap.x, translationHeap.y, translationHeap.z);
@@ -323,7 +324,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 		final int floorIndex = rotationTimeline.floorIndex(trackTime);
 
-		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Quat oldTranslationValue = (Quat) rotationTimeline.getValues().get(floorIndex);
 			setStuff(oldTranslationValue, localRotation);
@@ -349,7 +350,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 		final int floorIndex = rotationTimeline.floorIndex(trackTime);
 
-		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (rotationTimeline.getTimes().size() > 0) && (rotationTimeline.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Quat oldTranslationValue = (Quat) rotationTimeline.getValues().get(floorIndex);
 			rotateStuff(localRotation, oldTranslationValue);
@@ -373,7 +374,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 		final int floorIndex = translationFlag.floorIndex(trackTime);
 
-		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Vec3 oldTranslationValue = (Vec3) translationFlag.getValues().get(floorIndex);
 			addTo(oldTranslationValue, newDeltaX, newDeltaY, newDeltaZ);
@@ -398,7 +399,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 		final int floorIndex = translationFlag.floorIndex(trackTime);
 
-		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex) == trackTime)) {
+		if ((floorIndex != -1) && (translationFlag.getTimes().size() > 0) && (translationFlag.getTimes().get(floorIndex).equals(trackTime))) {
 			// we must change it
 			final Vec3 oldTranslationValue = (Vec3) translationFlag.getValues().get(floorIndex);
 			scaleBy(oldTranslationValue, localScaling.x, localScaling.y, localScaling.z);

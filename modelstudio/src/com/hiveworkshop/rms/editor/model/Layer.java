@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer.FilterMode;
@@ -214,7 +215,7 @@ public class Layer extends TimelineContainer implements Named {
 		unlit = other.unlit;
 
 		for (AnimFlag animFlag : other.getAnimFlags()) {
-			add(new AnimFlag(animFlag));
+			add(AnimFlag.createFromAnimFlag(animFlag));
 		}
 
 		textures = new ArrayList<>();

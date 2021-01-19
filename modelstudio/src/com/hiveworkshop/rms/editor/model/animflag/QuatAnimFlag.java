@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
+import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.util.Quat;
 
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * Eric Theller 11/5/2011
  */
-public class QuatAnimFlag extends AnimFlag2<Quat> {
+public class QuatAnimFlag extends AnimFlag<Quat> {
 
 
 	public QuatAnimFlag(MdlxTimeline<Float[]> timeline) {
@@ -28,8 +29,17 @@ public class QuatAnimFlag extends AnimFlag2<Quat> {
 		super(title);
 	}
 
-	public QuatAnimFlag(AnimFlag2<Quat> af) {
+	public QuatAnimFlag(AnimFlag<Quat> af) {
 		super(af);
+	}
+
+	public static QuatAnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
+		final QuatAnimFlag flag = new QuatAnimFlag(title);
+//		flag.name = title;
+		flag.interpolationType = interpolationType;
+		flag.generateTypeId();
+		flag.setGlobSeq(globalSeq);
+		return flag;
 	}
 
 	@Override

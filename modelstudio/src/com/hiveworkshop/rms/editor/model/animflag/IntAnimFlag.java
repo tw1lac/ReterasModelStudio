@@ -12,10 +12,10 @@ import java.util.List;
  *
  * Eric Theller 11/5/2011
  */
-public class IntAnimFlag extends AnimFlag2<Integer> {
+public class IntAnimFlag extends AnimFlag<Integer> {
 
 
-	public IntAnimFlag(MdlxTimeline<Integer> timeline) {
+	public IntAnimFlag(MdlxTimeline<Long[]> timeline) {
 		super(timeline);
 	}
 
@@ -27,12 +27,12 @@ public class IntAnimFlag extends AnimFlag2<Integer> {
 		super(title);
 	}
 
-	public IntAnimFlag(AnimFlag2<Integer> af) {
+	public IntAnimFlag(AnimFlag<Integer> af) {
 		super(af);
 	}
 
 	@Override
-	public MdlxTimeline<Integer> toMdlx(TimelineContainer container) {
+	public MdlxTimeline<Long[]> toMdlx(TimelineContainer container) {
 		return null;
 	}
 }

@@ -1,9 +1,9 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.animation;
 
-import java.util.List;
-
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
-import com.hiveworkshop.rms.editor.model.AnimFlag;
+
+import java.util.List;
 
 public class SlideKeyframeAction implements UndoAction {
 	private final int startTrackTime;

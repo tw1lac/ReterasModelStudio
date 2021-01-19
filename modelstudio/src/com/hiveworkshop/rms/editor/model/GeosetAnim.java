@@ -1,5 +1,7 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.FloatAnimFlag;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxGeosetAnimation;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
@@ -18,11 +20,11 @@ public class GeosetAnim extends TimelineContainer implements Named {
 	Geoset geoset;
 	boolean dropShadow = false;
 
-	public GeosetAnim(final AnimFlag flag) {
+	public GeosetAnim(final AnimFlag<?> flag) {
 		add(flag);
 	}
 
-	public GeosetAnim(final List<AnimFlag> flags) {
+	public GeosetAnim(final List<AnimFlag<?>> flags) {
 		setAnimFlags(flags);
 	}
 
@@ -79,7 +81,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 
 	public GeosetAnim getMostVisible(final GeosetAnim partner) {
 		if ((getVisibilityFlag() != null) && (partner != null)) {
-			final AnimFlag thisFlag = getVisibilityFlag();
+			final AnimFlag<?> thisFlag = getVisibilityFlag();
 			final AnimFlag thatFlag = partner.getVisibilityFlag();
 			if (thatFlag != null) {
 				final AnimFlag result = thisFlag.getMostVisible(thatFlag);
@@ -157,7 +159,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 			newVisFlag = AnimFlag.buildEmptyFrom(visFlag);
 			tans = visFlag.tans();
 		} else {
-			newVisFlag = new AnimFlag(temp.visFlagName());
+			newVisFlag = new FloatAnimFlag(temp.visFlagName());
 		}
 		// newVisFlag = new AnimFlag(temp.visFlagName());
 		final AnimFlag flagNew = other.getVisibilityFlag();

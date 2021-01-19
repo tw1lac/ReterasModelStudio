@@ -21,7 +21,7 @@ import java.util.Objects;
  *
  * Eric Theller 11/5/2011
  */
-public abstract class AnimFlag2<T> {
+public abstract class AnimFlag<T> {
 	// Types of AnimFlags:
 	// 0 Alpha
 	public static final int ALPHA = 0;
@@ -45,19 +45,19 @@ public abstract class AnimFlag2<T> {
 	public static final Vec3 SCALE_IDENTITY = new Vec3(1, 1, 1);
 	public static final Vec3 TRANSLATE_IDENTITY = new Vec3(0, 0, 0);
 	String name;
-	InterpolationType interpolationType = InterpolationType.DONT_INTERP;
-	Integer globalSeq;
+	public InterpolationType interpolationType = InterpolationType.DONT_INTERP;
+	public Integer globalSeq;
 	int globalSeqId = -1;
-	boolean hasGlobalSeq = false;
-	List<Integer> times = new ArrayList<>();
-	List<T> values = new ArrayList<>();
-	List<T> inTans = new ArrayList<>();
-	List<T> outTans = new ArrayList<>();
+	public boolean hasGlobalSeq = false;
+	public List<Integer> times = new ArrayList<>();
+	public List<T> values = new ArrayList<>();
+	public List<T> inTans = new ArrayList<>();
+	public List<T> outTans = new ArrayList<>();
 	int typeid = 0;
 	int vectorSize = 1;
 	boolean isFloat = true;
 
-	public AnimFlag2(final MdlxTimeline<?> timeline) {
+	public AnimFlag(final MdlxTimeline<?> timeline) {
 		name = AnimationMap.ID_TO_TAG.get(timeline.name).getMdlToken();
 		generateTypeId();
 
@@ -124,6 +124,49 @@ public abstract class AnimFlag2<T> {
 		}
 	}
 
+	public static AnimFlag<?> createFromTimeline(final MdlxTimeline<?> timeline){
+		Object firstValue = timeline.values[0];
+		if (firstValue instanceof float[]){
+			if(((float[]) firstValue).length == 1){
+				return new FloatAnimFlag((MdlxTimeline<Float[]>) timeline);
+			} else if(((float[]) firstValue).length == 3){
+				return new Vec3AnimFlag((MdlxTimeline<Float[]>) timeline);
+			} else if (((float[]) firstValue).length == 4){
+				return new QuatAnimFlag((MdlxTimeline<Float[]>) timeline);
+			}
+		} else if (firstValue instanceof long[]){
+			return new IntAnimFlag((MdlxTimeline<Long[]>) timeline);
+		}
+		return null;
+	}
+
+	public static AnimFlag<?> createFromAnimFlag(final AnimFlag<?> af) {
+		if(af instanceof IntAnimFlag){
+			return new IntAnimFlag((IntAnimFlag) af);
+		}else if(af instanceof FloatAnimFlag){
+			return new FloatAnimFlag((FloatAnimFlag) af);
+		}else if(af instanceof Vec3AnimFlag){
+			return new Vec3AnimFlag((Vec3AnimFlag) af);
+		}else if(af instanceof QuatAnimFlag){
+			return new QuatAnimFlag((QuatAnimFlag) af);
+		}
+		else return null;
+	}
+
+//	public static AnimFlag<?> createFromName(final AnimFlag<?> af) {
+//		if(af instanceof IntAnimFlag){
+//			return new IntAnimFlag((IntAnimFlag) af);
+//		}else if(af instanceof FloatAnimFlag){
+//			return new FloatAnimFlag((FloatAnimFlag) af);
+//		}else if(af instanceof Vec3AnimFlag){
+//			return new Vec3AnimFlag((Vec3AnimFlag) af);
+//		}else if(af instanceof QuatAnimFlag){
+//			return new QuatAnimFlag((QuatAnimFlag) af);
+//		}
+//		else return null;
+//	}
+
+
 //	public static AnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
 //		final AnimFlag flag = new AnimFlag();
 //		flag.name = title;
@@ -134,19 +177,19 @@ public abstract class AnimFlag2<T> {
 //	}
 
 	// end special constructors
-	public AnimFlag2(final String title, final List<Integer> times, final List<T> values) {
+	public AnimFlag(final String title, final List<Integer> times, final List<T> values) {
 		name = title;
 		this.times = times;
 		this.values = values;
 		generateTypeId();
 	}
 
-	public AnimFlag2(final String title) {
+	public AnimFlag(final String title) {
 		name = title;
 		generateTypeId();
 	}
 
-	public AnimFlag2(final AnimFlag2<T> af) {
+	public AnimFlag(final AnimFlag<T> af) {
 		name = af.name;
 		globalSeq = af.globalSeq;
 		globalSeqId = af.globalSeqId;
@@ -161,11 +204,11 @@ public abstract class AnimFlag2<T> {
 		isFloat = af.isFloat;
 	}
 
-	private AnimFlag2() {
+	private AnimFlag() {
 
 	}
 
-	private static AnimFlag2 getMostVis(AnimFlag2 flag1, AnimFlag2 flag2, AnimFlag2 mostVisible) {
+	private static AnimFlag getMostVis(AnimFlag flag1, AnimFlag flag2, AnimFlag mostVisible) {
 		if (mostVisible == null) {
 			mostVisible = flag1;
 		} else if (mostVisible == flag2) {
@@ -208,7 +251,7 @@ public abstract class AnimFlag2<T> {
 		}
 	}
 
-	public boolean equals(final AnimFlag2<T> animFlag) {
+	public boolean equals(final AnimFlag<T> animFlag) {
 		boolean does = animFlag != null;
 		if (!does) {
 			return false;
@@ -237,15 +280,26 @@ public abstract class AnimFlag2<T> {
 		hasGlobalSeq = integer != null;
 	}
 
-//	public static AnimFlag buildEmptyFrom(final AnimFlag<T> af) {
-//		final AnimFlag na = new AnimFlag(af.name);
+	public static AnimFlag<?> buildEmptyFrom(final AnimFlag<?> af) {
+
+		if(af instanceof IntAnimFlag){
+			return IntAnimFlag.buildEmptyFrom(af);
+		}else if(af instanceof FloatAnimFlag){
+			return FloatAnimFlag.buildEmptyFrom(af);
+		}else if(af instanceof Vec3AnimFlag){
+			return Vec3AnimFlag.buildEmptyFrom(af);
+		}else if(af instanceof QuatAnimFlag){
+			return QuatAnimFlag.buildEmptyFrom(af);
+		}
+		else return null;
+//			final AnimFlag na = new AnimFlag<?>(af.name);
 //		na.globalSeq = af.globalSeq;
 //		na.globalSeqId = af.globalSeqId;
 //		na.hasGlobalSeq = af.hasGlobalSeq;
 //		na.typeid = af.typeid;
 //		na.interpolationType = af.interpolationType;
 //		return na;
-//	}
+	}
 
 	public War3ID getWar3ID(final TimelineContainer container) {
 		final AnimationMap id = getAnimationMap(container);
@@ -551,7 +605,7 @@ public abstract class AnimFlag2<T> {
 		return null;
 	}
 
-	public void setValuesTo(final AnimFlag2<T> af) {
+	public void setValuesTo(final AnimFlag<T> af) {
 		name = af.name;
 		globalSeq = af.globalSeq;
 		globalSeqId = af.globalSeqId;
@@ -666,7 +720,7 @@ public abstract class AnimFlag2<T> {
 		}
 	}
 
-	public AnimFlag2<T> getMostVisible(final AnimFlag2<T> partner) {
+	public AnimFlag<T> getMostVisible(final AnimFlag<T> partner) {
 		if (partner != null) {
 			if ((typeid == 0) && (partner.typeid == 0)) {
 				final List<Integer> atimes = new ArrayList<>(times);
@@ -674,7 +728,7 @@ public abstract class AnimFlag2<T> {
 				final List<T> avalues = new ArrayList<>(values);
 				final List<T> bvalues = new ArrayList<>(partner.values);
 
-				AnimFlag2<T> mostVisible = null;
+				AnimFlag<T> mostVisible = null;
 				mostVisible = getMostVissibleAnimFlag(atimes, btimes, avalues, bvalues, mostVisible, partner, this);
 				if (mostVisible == null) return null;
 
@@ -691,7 +745,7 @@ public abstract class AnimFlag2<T> {
 		return null;
 	}
 
-	private AnimFlag2<T> getMostVissibleAnimFlag(List<Integer> atimes, List<Integer> btimes, List<T> avalues, List<T> bvalues, AnimFlag2<T> mostVisible, AnimFlag2<T> flag1, AnimFlag2<T> flag2) {
+	private AnimFlag<T> getMostVissibleAnimFlag(List<Integer> atimes, List<Integer> btimes, List<T> avalues, List<T> bvalues, AnimFlag<T> mostVisible, AnimFlag<T> flag1, AnimFlag<T> flag2) {
 		for (int i = atimes.size() - 1; i >= 0; i--)
 		// count down from top, meaning that removing the current value causes no harm
 		{
@@ -727,7 +781,7 @@ public abstract class AnimFlag2<T> {
 		}
 	}
 
-	public void copyFrom(final AnimFlag2<T> source) {
+	public void copyFrom(final AnimFlag<T> source) {
 		times.addAll(source.times);
 		values.addAll(source.values);
 		final boolean stans = source.tans();
@@ -776,7 +830,7 @@ public abstract class AnimFlag2<T> {
 	 * The AnimFlag source of the data to copy cannot be same AnimFlag into which the
 	 * data is copied, or else a ConcurrentModificationException will be thrown.
 	 */
-	public void copyFrom(final AnimFlag2<T> source, final int sourceStart, final int sourceEnd, final int newStart,
+	public void copyFrom(final AnimFlag<T> source, final int sourceStart, final int sourceEnd, final int newStart,
 	                     final int newEnd) {
 		// Timescales a part of the AnimFlag from the source into the new time "newStart" to "newEnd"
 		boolean tans = source.tans();
@@ -1266,7 +1320,7 @@ public abstract class AnimFlag2<T> {
 	/**
 	 * This class is a small shell of an example for how my "AnimFlag" class
 	 * should've been implemented. It's currently only used for the
-	 * {@link AnimFlag2#getEntry(int)} function.
+	 * {@link AnimFlag#getEntry(int)} function.
 	 *
 	 * @author Eric
 	 */

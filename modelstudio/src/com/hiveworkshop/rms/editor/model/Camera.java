@@ -1,15 +1,16 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxCamera;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Camera class, these are the things most people would think of as a particle
@@ -26,7 +27,7 @@ public class Camera implements Named {
 	double farClip;
 	double nearClip;
 	Vec3 targetPosition;
-	List<AnimFlag> targetAnimFlags = new ArrayList<>();
+	List<AnimFlag<Vec3>> targetAnimFlags = new ArrayList<>();
 	final SourceNode sourceNode = new SourceNode(this);
 	final TargetNode targetNode = new TargetNode(this);
 	float[] bindPose;
@@ -41,9 +42,9 @@ public class Camera implements Named {
 
 		for (final MdlxTimeline<?> timeline : camera.timelines) {
 			if (timeline.name == AnimationMap.KTTR.getWar3id()) {
-				targetNode.add(new AnimFlag(timeline));
+				targetNode.add(AnimFlag.createFromTimeline(timeline));
 			} else {
-				sourceNode.add(new AnimFlag(timeline));
+				sourceNode.add(AnimFlag.createFromTimeline(timeline));
 			}
 		}
 	}

@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Eric Theller 11/5/2011
  */
-public class FloatAnimFlag extends AnimFlag2<Float> {
+public class FloatAnimFlag extends AnimFlag<Float> {
 
 
 	public FloatAnimFlag(MdlxTimeline<Float[]> timeline) {
@@ -27,7 +27,7 @@ public class FloatAnimFlag extends AnimFlag2<Float> {
 		super(title);
 	}
 
-	public FloatAnimFlag(AnimFlag2<Float> af) {
+	public FloatAnimFlag(AnimFlag<Float> af) {
 		super(af);
 	}
 

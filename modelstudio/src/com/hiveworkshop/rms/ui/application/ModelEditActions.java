@@ -1,9 +1,9 @@
 package com.hiveworkshop.rms.ui.application;
 
-import com.hiveworkshop.rms.editor.model.AnimFlag;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.ui.gui.modeledit.ModelPanel;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
@@ -141,7 +141,7 @@ public class ModelEditActions {
                         "\n\nContinue and simplify animations?",
                 "Warning: Linearize Animations", JOptionPane.OK_CANCEL_OPTION);
         if (x == JOptionPane.OK_OPTION) {
-            final List<AnimFlag> allAnimFlags = mainPanel.currentMDL().getAllAnimFlags();
+            final List<AnimFlag<?>> allAnimFlags = mainPanel.currentMDL().getAllAnimFlags();
             for (final AnimFlag flag : allAnimFlags) {
                 flag.linearize();
             }

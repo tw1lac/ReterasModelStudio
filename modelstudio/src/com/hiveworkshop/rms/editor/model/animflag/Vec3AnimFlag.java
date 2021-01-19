@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
+import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.util.Vec3;
 
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * Eric Theller 11/5/2011
  */
-public class Vec3AnimFlag extends AnimFlag2<Vec3> {
+public class Vec3AnimFlag extends AnimFlag<Vec3> {
 
 
 	public Vec3AnimFlag(MdlxTimeline<Float[]> timeline) {
@@ -28,8 +29,17 @@ public class Vec3AnimFlag extends AnimFlag2<Vec3> {
 		super(title);
 	}
 
-	public Vec3AnimFlag(AnimFlag2<Vec3> af) {
+	public Vec3AnimFlag(AnimFlag<Vec3> af) {
 		super(af);
+	}
+
+	public static Vec3AnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
+		final Vec3AnimFlag flag = new Vec3AnimFlag(title);
+//		flag.name = title;
+		flag.interpolationType = interpolationType;
+		flag.generateTypeId();
+		flag.setGlobSeq(globalSeq);
+		return flag;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.application;
 
 import com.hiveworkshop.rms.editor.model.*;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelViewManager;
@@ -257,7 +258,7 @@ public class ScriptActions {
         }
         snapshotModel.getAnims().clear();
         snapshotModel.add(new Animation("Stand", 333, 1333));
-        final List<AnimFlag> allAnimFlags = snapshotModel.getAllAnimFlags();
+        final List<AnimFlag<?>> allAnimFlags = snapshotModel.getAllAnimFlags();
         for (final AnimFlag flag : allAnimFlags) {
             if (!flag.hasGlobalSeq()) {
                 if (flag.size() > 0) {

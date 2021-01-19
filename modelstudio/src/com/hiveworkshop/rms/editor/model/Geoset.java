@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxExtent;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxGeoset;
@@ -10,8 +11,7 @@ import jassimp.AiMesh;
 import java.awt.geom.Rectangle2D;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Geoset implements Named, VisibilitySource {
 	ExtLog extents;
@@ -451,8 +451,7 @@ public class Geoset implements Named, VisibilitySource {
 	}
 
 	public void updateToObjects(final EditableModel mdlr) {
-		// upload the temporary UVLayer and Matrix objects into the vertices
-		// themselves
+		// upload the temporary UVLayer and Matrix objects into the vertices themselves
 		final int sz = numVerteces();
 		for (final Matrix m : matrix) {
 			m.updateBones(mdlr);
@@ -563,9 +562,8 @@ public class Geoset implements Named, VisibilitySource {
 				final Triangle trix = triangles.get(ix);
 				if (trix != tri) {
 					if (trix.equalRefsNoIds(tri))
-					// Changed this from "sameVerts" -- this means that
-					// triangles with the same vertices but in a different
-					// order will no longer be purged automatically.
+						// Changed this from "sameVerts" -- this means that triangles with the same
+						// vertices but in a different order will no longer be purged automatically.
 					{
 						triangles.remove(tri);
 						break;

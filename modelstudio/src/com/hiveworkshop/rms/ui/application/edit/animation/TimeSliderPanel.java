@@ -1,9 +1,9 @@
 package com.hiveworkshop.rms.ui.application.edit.animation;
 
-import com.hiveworkshop.rms.editor.model.AnimFlag;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.MainPanel;
 import com.hiveworkshop.rms.ui.application.TimeSliderView;
@@ -519,7 +519,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 
 	private ReversedAction getDeleteAction(String actionName, ModelStructureChangeListener structureChangeListener, IdObject object, AnimFlag flag, int trackTime, int flooredTimeIndex) {
 		final ReversedAction deleteFrameAction;
-		if ((flooredTimeIndex != -1) && (flooredTimeIndex < flag.getTimes().size()) && (flag.getTimes().get(flooredTimeIndex) == trackTime)) {
+		if ((flooredTimeIndex != -1) && (flooredTimeIndex < flag.getTimes().size()) && (flag.getTimes().get(flooredTimeIndex).equals(trackTime))) {
 			// I'm going to cheat a little bit.
 			// When this saves the list of keyframe values to put back if we CTRL+Z
 			// to the "undo stack", it will store the memory references directly.
@@ -610,7 +610,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 
 	private void copuKeyframes(IdObject object, AnimFlag flag, int trackTime) {
 		final int flooredTimeIndex = flag.floorIndex(trackTime);
-		if ((flooredTimeIndex != -1) && (flooredTimeIndex < flag.getTimes().size()) && (flag.getTimes().get(flooredTimeIndex) == trackTime)) {
+		if ((flooredTimeIndex != -1) && (flooredTimeIndex < flag.getTimes().size()) && (flag.getTimes().get(flooredTimeIndex).equals(trackTime))) {
 			final Object value = flag.getValues().get(flooredTimeIndex);
 			copiedKeyframes.add(new CopiedKeyFrame(object, flag, new AnimFlag.Entry(flag.getEntry(flooredTimeIndex))));
 //			if (flag.tans()) {
@@ -968,7 +968,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 						final int endFlagIndex = flag.floorIndex(end);
 						if (flag.size() > 0) {
 							for (int flagIndex = flagStartIndex; flagIndex <= endFlagIndex; flagIndex++) {
-								final Integer time = flag.getTimes().get(flagIndex);
+								final Integer time = (Integer) flag.getTimes().get(flagIndex);
 								KeyFrame keyFrame = timeToKey.get(time);
 								if (keyFrame == null) {
 									keyFrame = new KeyFrame(time);
@@ -1047,7 +1047,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 		// tans might be null
 //		final Object newInTan = AnimFlag.cloneValue(frame.inTan);
 //		final Object newOutTan = AnimFlag.cloneValue(frame.outTan);
-		if ((flooredTimeIndex != -1) && (flooredTimeIndex < sourceTimeline.getTimes().size()) && (sourceTimeline.getTimes().get(flooredTimeIndex) == mouseClickAnimationTime)) {
+		if ((flooredTimeIndex != -1) && (flooredTimeIndex < sourceTimeline.getTimes().size()) && (sourceTimeline.getTimes().get(flooredTimeIndex).equals(mouseClickAnimationTime))) {
 //			if (sourceTimeline.tans()) {
 //				final Object oldValue = sourceTimeline.valueAt(mouseClickAnimationTime);
 //				final Object oldInTan = sourceTimeline.valueAt(mouseClickAnimationTime);

@@ -1,6 +1,11 @@
 package com.hiveworkshop.rms.ui.application;
 
-import com.hiveworkshop.rms.editor.model.*;
+import com.hiveworkshop.rms.editor.model.Animation;
+import com.hiveworkshop.rms.editor.model.Bone;
+import com.hiveworkshop.rms.editor.model.IdObject;
+import com.hiveworkshop.rms.editor.model.ParticleEmitter2;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.FloatAnimFlag;
 import com.hiveworkshop.rms.parsers.mdlx.util.MdxUtils;
 import com.hiveworkshop.rms.ui.icons.IconUtils;
 import com.hiveworkshop.rms.util.Pair;
@@ -12,8 +17,8 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AddParticlePanel {
@@ -228,7 +233,7 @@ public class AddParticlePanel {
         }
         AnimFlag oldFlag = particle.getVisibilityFlag();
         if (oldFlag == null) {
-            oldFlag = new AnimFlag("Visibility");
+            oldFlag = new FloatAnimFlag("Visibility");
         }
         final AnimFlag visFlag = AnimFlag.buildEmptyFrom(oldFlag);
         animIndex = 0;
