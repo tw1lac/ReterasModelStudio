@@ -322,7 +322,7 @@ public class FileDialog {
         final MdlxModel mdlx = model.toMdlx();
         final FileOutputStream stream = new FileOutputStream(modelFile);
 
-        if (ext.equals(".mdl")) {
+        if (ext.equals("mdl")) {
             MdxUtils.saveMdl(mdlx, stream);
         } else {
             MdxUtils.saveMdx(mdlx, stream);

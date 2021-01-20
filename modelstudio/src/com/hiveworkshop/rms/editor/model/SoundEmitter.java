@@ -38,7 +38,7 @@ SoundEmitter {
  */
 public class SoundEmitter extends IdObject {
 	private static final List<String> EMPTY = new ArrayList<>();
-	List<AnimFlag> animFlags = new ArrayList<>();
+	List<AnimFlag<?>> animFlags = new ArrayList<>();
 	List<SoundFile> soundFiles;
 
 	private SoundEmitter() {
@@ -59,7 +59,7 @@ public class SoundEmitter extends IdObject {
 		x.parentId = parentId;
 		x.setParent(getParent());
 
-		for (final AnimFlag af : animFlags) {
+		for (final AnimFlag<?> af : animFlags) {
 			x.animFlags.add(AnimFlag.createFromAnimFlag(af));
 		}
 		return x;
@@ -116,11 +116,11 @@ public class SoundEmitter extends IdObject {
 	// 	writer.println("}");
 	// }
 
-	public void setSoundTrackFlag(final AnimFlag flag) {
+	public void setSoundTrackFlag(final AnimFlag<?> flag) {
 		int count = 0;
 		int index = 0;
 		for (int i = 0; i < animFlags.size(); i++) {
-			final AnimFlag af = animFlags.get(i);
+			final AnimFlag<?> af = animFlags.get(i);
 			if (af.getName().equals("SoundTrack")) {
 				count++;
 				index = i;
@@ -136,10 +136,10 @@ public class SoundEmitter extends IdObject {
 		}
 	}
 
-	public AnimFlag getSoundTrackFlag() {
+	public AnimFlag<?> getSoundTrackFlag() {
 		int count = 0;
-		AnimFlag output = null;
-		for (final AnimFlag af : animFlags) {
+		AnimFlag<?> output = null;
+		for (final AnimFlag<?> af : animFlags) {
 			if (af.getName().equals("SoundTrack")) {
 				count++;
 				output = af;

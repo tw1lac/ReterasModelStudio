@@ -231,7 +231,7 @@ public class AddParticlePanel {
         } else {
             particle.setParent(parentChoice);
         }
-        AnimFlag oldFlag = particle.getVisibilityFlag();
+        AnimFlag<?> oldFlag = particle.getVisibilityFlag();
         if (oldFlag == null) {
             oldFlag = new FloatAnimFlag("Visibility");
         }

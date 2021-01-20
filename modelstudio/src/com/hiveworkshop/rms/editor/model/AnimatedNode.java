@@ -1,6 +1,8 @@
 package com.hiveworkshop.rms.editor.model;
 
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.QuatAnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.Vec3AnimFlag;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.render3d.RenderNode;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
@@ -42,7 +44,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		return getInterpolatedVector(animatedRenderEnvironment, "Scaling", null);
 	}
 
-	public AddKeyframeAction createTranslationKeyframe(final RenderModel renderModel, final AnimFlag translationFlag,
+	public AddKeyframeAction createTranslationKeyframe(final RenderModel renderModel, final Vec3AnimFlag translationFlag,
                                                        final ModelStructureChangeListener structureChangeListener) {
 		// TODO global seqs, needs separate check on AnimRendEnv, and also we must make AnimFlag.find seek on globalSeqId
 		int trackTime = getTrackTime(renderModel);
@@ -57,7 +59,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 	}
 
-	public AddKeyframeAction createRotationKeyframe(final RenderModel renderModel, final AnimFlag rotationTimeline,
+	public AddKeyframeAction createRotationKeyframe(final RenderModel renderModel, final QuatAnimFlag rotationTimeline,
 	                                                final ModelStructureChangeListener structureChangeListener) {
 		// TODO global seqs, needs separate check on AnimRendEnv, and also we must make AnimFlag.find seek on globalSeqId
 		int trackTime = getTrackTime(renderModel);
@@ -90,7 +92,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		}
 	}
 
-	public AddKeyframeAction createScalingKeyframe(final RenderModel renderModel, final AnimFlag scalingTimeline,
+	public AddKeyframeAction createScalingKeyframe(final RenderModel renderModel, final Vec3AnimFlag scalingTimeline,
 	                                               final ModelStructureChangeListener structureChangeListener) {
 		// TODO global seqs, needs separate check on AnimRendEnv, and also we must make AnimFlag.find seek on globalSeqId
 		int trackTime = getTrackTime(renderModel);
@@ -116,7 +118,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		return trackTime;
 	}
 
-	private AddKeyframeAction getAddKeyframeAction(AnimFlag timeline, ModelStructureChangeListener structureChangeListener, int trackTime, int floorIndex, Vec3 vec3) {
+	private AddKeyframeAction getAddKeyframeAction(Vec3AnimFlag timeline, ModelStructureChangeListener structureChangeListener, int trackTime, int floorIndex, Vec3 vec3) {
 		final int insertIndex = floorIndex + 1;
 		timeline.getTimes().add(insertIndex, trackTime);
 
@@ -147,7 +149,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		// TODO fix cast, meta knowledge: NodeAnimationModelEditor will only be constructed from
 		//  a TimeEnvironmentImpl render environment, and never from the anim previewer impl
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel.getAnimatedRenderEnvironment();
-		final AnimFlag translationFlag = find("Translation", timeEnvironmentImpl.getGlobalSeq());
+		final AnimFlag<?> translationFlag = find("Translation", timeEnvironmentImpl.getGlobalSeq());
 		if (translationFlag == null) {
 			return;
 		}
@@ -208,7 +210,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		//  a TimeEnvironmentImpl render environment, and never from the anim previewer impl
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel
 				.getAnimatedRenderEnvironment();
-		final AnimFlag rotationTimeline = find("Rotation", timeEnvironmentImpl.getGlobalSeq());
+		final AnimFlag<?> rotationTimeline = find("Rotation", timeEnvironmentImpl.getGlobalSeq());
 		if (rotationTimeline == null) {
 			return;
 		}
@@ -278,7 +280,7 @@ public abstract class AnimatedNode extends TimelineContainer {
 		// TODO fix cast, meta knowledge: NodeAnimationModelEditor will only be constructed from
 		//  a TimeEnvironmentImpl render environment, and never from the anim previewer impl
 		final TimeEnvironmentImpl timeEnvironmentImpl = (TimeEnvironmentImpl) renderModel.getAnimatedRenderEnvironment();
-		final AnimFlag translationFlag = find("Scaling", timeEnvironmentImpl.getGlobalSeq());
+		final AnimFlag<?> translationFlag = find("Scaling", timeEnvironmentImpl.getGlobalSeq());
 		if (translationFlag == null) {
 			return;
 		}
@@ -318,7 +320,8 @@ public abstract class AnimatedNode extends TimelineContainer {
 		// we would like to be able to undo the action of rotating the animation data
 
 		// TODO global seqs, needs separate check on AnimRendEnv, and also we must make AnimFlag.find seek on globalSeqId
-		final AnimFlag rotationTimeline = find("Rotation", trackGlobalSeq);
+		final AnimFlag<?> rotationTimeline = find("Rotation", trackGlobalSeq);
+//		final AnimFlag rotationTimeline = find("Rotation", trackGlobalSeq);
 		if (rotationTimeline == null) {
 			return;
 		}

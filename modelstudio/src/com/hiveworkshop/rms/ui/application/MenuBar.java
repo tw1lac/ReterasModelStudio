@@ -679,8 +679,8 @@ public class MenuBar {
         if ((first == null) || (second == null)) {
             return false;
         }
-        final AnimFlag firstVisibilityFlag = first.getVisibilityFlag();
-        final AnimFlag secondVisibilityFlag = second.getVisibilityFlag();
+        final AnimFlag<?> firstVisibilityFlag = first.getVisibilityFlag();
+        final AnimFlag<?> secondVisibilityFlag = second.getVisibilityFlag();
         if ((firstVisibilityFlag == null) != (secondVisibilityFlag == null)) {
             return false;
         }
@@ -699,8 +699,8 @@ public class MenuBar {
         if ((first.getStaticColor() != null) && !first.getStaticColor().equalLocs(second.getStaticColor())) {
             return false;
         }
-        final AnimFlag firstAnimatedColor = first.find("Color");
-        final AnimFlag secondAnimatedColor = second.find("Color");
+        final AnimFlag<?> firstAnimatedColor = first.find("Color");
+        final AnimFlag<?> secondAnimatedColor = second.find("Color");
         if ((firstAnimatedColor == null) != (secondAnimatedColor == null)) {
             return false;
         }

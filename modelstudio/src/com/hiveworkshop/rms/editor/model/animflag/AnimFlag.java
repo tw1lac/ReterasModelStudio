@@ -4,7 +4,10 @@ import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.mdl.MdlUtils;
+import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
+import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
+import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
 import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.*;
@@ -68,74 +71,21 @@ public abstract class AnimFlag<T> {
 			setGlobalSeqId(globalSequenceId);
 			setHasGlobalSeq(true);
 		}
-
-		final long[] frames = timeline.frames;
-		final Object[] values = timeline.values;
-		final Object[] inTans = timeline.inTans;
-		final Object[] outTans = timeline.outTans;
-
-		if (frames.length > 0) {
-			final boolean hasTangents = interpolationType.tangential();
-
-			setVectorSize(values[0]);
-
-			for (int i = 0, l = frames.length; i < l; i++) {
-				final Object value = values[i];
-				final T valueAsObject;
-				T inTanAsObject = null;
-				T outTanAsObject = null;
-
-				if (isFloat) {
-					final float[] valueAsArray = (float[]) value;
-
-					if (vectorSize == 1) {
-						valueAsObject = (T) Float.valueOf(valueAsArray[0]);
-
-						if (hasTangents) {
-							inTanAsObject = (T) Float.valueOf(((float[]) inTans[i])[0]);
-							outTanAsObject = (T) Float.valueOf(((float[]) outTans[i])[0]);
-						}
-					} else if (vectorSize == 3) {
-						valueAsObject = (T) new Vec3(valueAsArray);
-
-						if (hasTangents) {
-							inTanAsObject = (T) new Vec3((float[]) inTans[i]);
-							outTanAsObject = (T) new Vec3((float[]) outTans[i]);
-						}
-					} else {
-						valueAsObject = (T) new Quat(valueAsArray);
-
-						if (hasTangents) {
-							inTanAsObject = (T) new Quat((float[]) inTans[i]);
-							outTanAsObject = (T) new Quat((float[]) outTans[i]);
-						}
-					}
-				} else {
-					valueAsObject = (T) Long.valueOf(((long[]) value)[0]);
-
-					if (hasTangents) {
-						inTanAsObject = (T) Long.valueOf(((long[]) inTans[i])[0]);
-						outTanAsObject = (T) Long.valueOf(((long[]) outTans[i])[0]);
-					}
-				}
-
-				addEntry((int) frames[i], valueAsObject, inTanAsObject, outTanAsObject);
-			}
-		}
 	}
 
 	public static AnimFlag<?> createFromTimeline(final MdlxTimeline<?> timeline){
 		Object firstValue = timeline.values[0];
-		if (firstValue instanceof float[]){
-			if(((float[]) firstValue).length == 1){
-				return new FloatAnimFlag((MdlxTimeline<Float[]>) timeline);
-			} else if(((float[]) firstValue).length == 3){
-				return new Vec3AnimFlag((MdlxTimeline<Float[]>) timeline);
-			} else if (((float[]) firstValue).length == 4){
-				return new QuatAnimFlag((MdlxTimeline<Float[]>) timeline);
+		if (firstValue instanceof float[]) {
+			if (((float[]) firstValue).length == 1) {
+				return new FloatAnimFlag((MdlxFloatTimeline) timeline);
+			} else if (((float[]) firstValue).length == 3) {
+				return new Vec3AnimFlag((MdlxFloatArrayTimeline) timeline);
+			} else if (((float[]) firstValue).length == 4) {
+				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
 			}
-		} else if (firstValue instanceof long[]){
-			return new IntAnimFlag((MdlxTimeline<Long[]>) timeline);
+		} else if (firstValue instanceof long[]) {
+			return new IntAnimFlag((MdlxUInt32Timeline) timeline);
+//			return new IntAnimFlag((MdlxTimeline<long[]>) timeline);
 		}
 		return null;
 	}
@@ -204,18 +154,6 @@ public abstract class AnimFlag<T> {
 		isFloat = af.isFloat;
 	}
 
-	private AnimFlag() {
-
-	}
-
-	private static AnimFlag getMostVis(AnimFlag flag1, AnimFlag flag2, AnimFlag mostVisible) {
-		if (mostVisible == null) {
-			mostVisible = flag1;
-		} else if (mostVisible == flag2) {
-			return null;
-		}
-		return mostVisible;
-	}
 
 	public static Object cloneValue(final Object value) {
 		if (value == null) {
@@ -281,24 +219,15 @@ public abstract class AnimFlag<T> {
 	}
 
 	public static AnimFlag<?> buildEmptyFrom(final AnimFlag<?> af) {
-
-		if(af instanceof IntAnimFlag){
-			return IntAnimFlag.buildEmptyFrom(af);
-		}else if(af instanceof FloatAnimFlag){
-			return FloatAnimFlag.buildEmptyFrom(af);
-		}else if(af instanceof Vec3AnimFlag){
-			return Vec3AnimFlag.buildEmptyFrom(af);
-		}else if(af instanceof QuatAnimFlag){
-			return QuatAnimFlag.buildEmptyFrom(af);
-		}
-		else return null;
-//			final AnimFlag na = new AnimFlag<?>(af.name);
-//		na.globalSeq = af.globalSeq;
-//		na.globalSeqId = af.globalSeqId;
-//		na.hasGlobalSeq = af.hasGlobalSeq;
-//		na.typeid = af.typeid;
-//		na.interpolationType = af.interpolationType;
-//		return na;
+		if (af instanceof IntAnimFlag) {
+			return new IntAnimFlag((IntAnimFlag) af);
+		} else if (af instanceof FloatAnimFlag) {
+			return new FloatAnimFlag((FloatAnimFlag) af);
+		} else if (af instanceof Vec3AnimFlag) {
+			return new Vec3AnimFlag((Vec3AnimFlag) af);
+		} else if (af instanceof QuatAnimFlag) {
+			return new QuatAnimFlag((QuatAnimFlag) af);
+		} else return null;
 	}
 
 	public War3ID getWar3ID(final TimelineContainer container) {
@@ -459,7 +388,7 @@ public abstract class AnimFlag<T> {
 		return null;
 	}
 
-	private void setVectorSize(Object value) {
+	protected void setVectorSize(Object value) {
 		if (value instanceof float[]) {
 			vectorSize = ((float[]) value).length;
 		} else if (value instanceof Vec3) {
@@ -470,8 +399,8 @@ public abstract class AnimFlag<T> {
 			vectorSize = 1;
 		} else {
 			isFloat = false;
-			System.out.println("value class: " + value.getClass().getName());
-			System.out.println("long[].class: " + long[].class.getName());
+//			System.out.println("value class: " + value.getClass().getName());
+//			System.out.println("long[].class: " + long[].class.getName());
 //			System.out.println("long[].class: " + long[].class.getName());
 			vectorSize = ((long[]) value).length;
 		}
@@ -749,22 +678,6 @@ public abstract class AnimFlag<T> {
 		for (int i = atimes.size() - 1; i >= 0; i--)
 		// count down from top, meaning that removing the current value causes no harm
 		{
-//			final Integer currentTime = atimes.get(i);
-//			final T currentVal = avalues.get(i);
-//
-//			if (btimes.contains(currentTime)) {
-//				final T partVal = bvalues.get(btimes.indexOf(currentTime));
-//				if (partVal > currentVal) {
-//					mostVisible = getMostVis(flag1, flag2, mostVisible);
-//					if (mostVisible == null) return null;
-//				} else if (partVal < currentVal) {
-//					mostVisible = getMostVis(flag2, flag1, mostVisible);
-//					if (mostVisible == null) return null;
-//				}
-//			} else if (currentVal < 1) {
-//				mostVisible = getMostVis(flag1, flag2, mostVisible);
-//				if (mostVisible == null) return null;
-//			}
 		}
 		return mostVisible;
 	}
@@ -973,28 +886,35 @@ public abstract class AnimFlag<T> {
 	 * Rather than spending time visualizing corner cases for these, I borrowed
 	 * logic from: https://www.geeksforgeeks.org/ceiling-in-a-sorted-array/
 	 */
-	private int ceilIndex(final int time, final int lo, final int hi) {
-		if (time <= times.get(lo)) {
-			return lo;
+	private int ceilIndex(final int time, final int timeStartIndex, final int timeEndIndex) {
+		if (time <= times.get(timeStartIndex)) {
+			return timeStartIndex;
 		}
-		if (time > times.get(hi)) {
+		if (time > times.get(timeEndIndex)) {
 			return -1;
 		}
-		final int mid = (lo + hi) / 2;
-		final Integer midTime = times.get(mid);
-		if (midTime == time) {
-			return mid;
-		} else if (midTime < time) {
-			if (((mid + 1) <= hi) && (time <= times.get(mid + 1))) {
-				return mid + 1;
+
+		if (timeEndIndex - timeStartIndex < 10) {
+			for (int i = timeStartIndex; i <= timeEndIndex; i++) {
+				if (times.get(i) == time || time < times.get(i) && (i > 0) && time > (times.get(i - 1))) {
+					return i;
+				}
+			}
+		}
+
+		final int midIndex = (timeStartIndex + timeEndIndex) / 2;
+		final Integer midTime = times.get(midIndex);
+		if (midTime < time) {
+			if (((midIndex + 1) <= timeEndIndex) && (time <= times.get(midIndex + 1))) {
+				return midIndex + 1;
 			} else {
-				return ceilIndex(time, mid + 1, hi);
+				return ceilIndex(time, midIndex + 1, timeEndIndex);
 			}
 		} else {
-			if (((mid - 1) >= lo) && (time > times.get(mid - 1))) {
-				return mid;
+			if (((midIndex - 1) >= timeStartIndex) && (time > times.get(midIndex - 1))) {
+				return midIndex;
 			} else {
-				return ceilIndex(time, lo, mid - 1);
+				return ceilIndex(time, timeStartIndex, midIndex - 1);
 			}
 		}
 	}
@@ -1010,29 +930,37 @@ public abstract class AnimFlag<T> {
 	 * Rather than spending time visualizing corner cases for these, I borrowed
 	 * logic from: https://www.geeksforgeeks.org/floor-in-a-sorted-array/
 	 */
-	private int floorIndex(final int time, final int lo, final int hi) {
-		if (lo > hi) {
+	private int floorIndex(final int time, final int timeStartIndex, final int timeEndIndex) {
+		if (timeStartIndex > timeEndIndex) {
 			return -1;
+		} else if (time >= times.get(timeEndIndex)) {
+			return timeEndIndex;
 		}
-		if (time >= times.get(hi)) {
-			return hi;
+		if (timeEndIndex - timeStartIndex < 10) {
+			for (int i = timeStartIndex; i <= timeEndIndex; i++) {
+				if (times.get(i) == time) {
+					return i;
+				} else if (time < times.get(i) && (i > 0) && (times.get(i - 1) <= time)) {
+					return i - 1;
+				}
+			}
 		}
-		final int mid = (lo + hi) / 2;
+		final int mid = (timeStartIndex + timeEndIndex) / 2;
 		final Integer midTime = times.get(mid);
 		if (times.get(mid) == time) {
 			return mid;
 		}
-		if ((mid > 0) && (times.get(mid - 1) <= time) && (time < midTime)) {
+		if ((time < midTime) && (mid > 0) && (time >= times.get(mid - 1))) {
 			return mid - 1;
 		}
 		if (time > midTime) {
-			return floorIndex(time, mid + 1, hi);
+			return floorIndex(time, mid + 1, timeEndIndex);
 		} else {
-			return floorIndex(time, lo, mid - 1);
+			return floorIndex(time, timeStartIndex, mid - 1);
 		}
 	}
 
-	private Object identity(final int typeid) {
+	protected Object identity(final int typeid) {
 		return switch (typeid) {
 			case ALPHA -> 1.f;
 			case TRANSLATION -> TRANSLATE_IDENTITY;
@@ -1068,8 +996,7 @@ public abstract class AnimFlag<T> {
 //			System.out.println(name + ", ~~ no times");
 			return identity(localTypeId);
 		}
-		// TODO ghostwolf says to stop using binary search, because linear walking is
-		// faster for the small MDL case
+		// TODO ghostwolf says to stop using binary search, because linear walking is faster for the small MDL case
 		final int time;
 		int ceilIndex;
 		final int floorIndex;
@@ -1086,11 +1013,9 @@ public abstract class AnimFlag<T> {
 			final int floorAnimStartIndex = Math.max(0, floorIndex(1));
 			final int floorAnimEndIndex = Math.max(0, floorIndex(getGlobalSeq()));
 			floorIndex = Math.max(0, floorIndex(time));
-			ceilIndex = ceilIndex(time);
-			if (ceilIndex < floorIndex) {
-				// retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
-				ceilIndex = floorIndex;
-			}
+
+			ceilIndex = Math.max(floorIndex, ceilIndex(time)); // retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
+
 			floorValue = values.get(floorIndex);
 			floorInTan = tans() ? inTans.get(floorIndex) : null;
 			floorOutTan = tans() ? outTans.get(floorIndex) : null;
@@ -1127,26 +1052,19 @@ public abstract class AnimFlag<T> {
 			final int floorAnimStartIndex = Math.max(0, floorIndex(animation.getStart() + 1));
 			final int floorAnimEndIndex = Math.max(0, floorIndex(animation.getEnd()));
 			floorIndex = floorIndex(time);
-			ceilIndex = ceilIndex(time);
-			if (ceilIndex < floorIndex) {
-				// retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
-				ceilIndex = floorIndex;
-			}
-			ceilValue = values.get(ceilIndex);
+			ceilIndex = Math.max(floorIndex, ceilIndex(time)); // retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
+
 			ceilIndexTime = times.get(ceilIndex);
-			if (ceilIndexTime < animation.getStart()) {
+			final int lookupFloorIndex = Math.max(0, floorIndex);
+			floorIndexTime = times.get(lookupFloorIndex);
+			if (ceilIndexTime < animation.getStart() || floorIndexTime > animation.getEnd()) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)1 " + localTypeId + " id: " + identity(localTypeId));
 				return identity(localTypeId);
 			}
-			final int lookupFloorIndex = Math.max(0, floorIndex);
+			ceilValue = values.get(ceilIndex);
 			floorValue = values.get(lookupFloorIndex);
 			floorInTan = tans() ? inTans.get(lookupFloorIndex) : null;
 			floorOutTan = tans() ? outTans.get(lookupFloorIndex) : null;
-			floorIndexTime = times.get(lookupFloorIndex);
-			if (floorIndexTime > animation.getEnd()) {
-//				System.out.println(name + ", ~~~~ identity(localTypeId)2");
-				return identity(localTypeId);
-			}
 			if ((floorIndexTime < animation.getStart()) && (ceilIndexTime > animation.getEnd())) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)3");
 				return identity(localTypeId);

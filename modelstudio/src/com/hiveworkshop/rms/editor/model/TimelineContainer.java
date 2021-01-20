@@ -1,6 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
-import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.*;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxAnimatedObject;
 import com.hiveworkshop.rms.parsers.mdlx.mdl.MdlUtils;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
@@ -89,40 +89,40 @@ public abstract class TimelineContainer implements VisibilitySource {
 	}
 
 	public int getInterpolatedInteger(final AnimatedRenderEnvironment animatedRenderEnvironment, final String tag, final int defaultValue) {
-		final AnimFlag<?> timeline = find(tag);
+		final IntAnimFlag timeline = (IntAnimFlag)find(tag);
 
 		if (timeline != null) {
-			return (Integer) timeline.interpolateAt(animatedRenderEnvironment);
+			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
 		
 		return defaultValue;
 	}
 
 	public float getInterpolatedFloat(final AnimatedRenderEnvironment animatedRenderEnvironment, final String tag, final float defaultValue) {
-		final AnimFlag<?> timeline = find(tag);
+		final FloatAnimFlag timeline = (FloatAnimFlag) find(tag);
 
 		if (timeline != null) {
-			return (Float) timeline.interpolateAt(animatedRenderEnvironment);
+			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
 		
 		return defaultValue;
 	}
 
 	public Vec3 getInterpolatedVector(final AnimatedRenderEnvironment animatedRenderEnvironment, final String tag, final Vec3 defaultValue) {
-		final AnimFlag<?> timeline = find(tag);
+		final Vec3AnimFlag timeline = (Vec3AnimFlag) find(tag);
 
 		if (timeline != null) {
-			return (Vec3)timeline.interpolateAt(animatedRenderEnvironment);
+			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
 		
 		return defaultValue;
 	}
 
 	public Quat getInterpolatedQuat(final AnimatedRenderEnvironment animatedRenderEnvironment, final String tag, final Quat defaultValue) {
-		final AnimFlag<?> timeline = find(tag);
+		final QuatAnimFlag timeline = (QuatAnimFlag) find(tag);
 
 		if (timeline != null) {
-			return (Quat)timeline.interpolateAt(animatedRenderEnvironment);
+			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
 		
 		return defaultValue;
