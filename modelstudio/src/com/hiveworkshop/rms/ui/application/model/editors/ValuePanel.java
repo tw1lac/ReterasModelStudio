@@ -330,6 +330,8 @@ public abstract class ValuePanel<T> extends JPanel {
 			toggleStaticDynamicPanel(true);
 		} else {
 			toggleStaticDynamicPanel(false);
+//			List<InterpolationType> types =  animFlag.getForbiddenInterpolationTypes();
+//			types.forEach(t -> interpTypeBox.remove());
 			interpTypeBox.setSelectedItem(animFlag.getInterpolationType());
 		}
 //		System.out.println("colums: " + keyframeTable.getModel().getColumnCount());
@@ -382,12 +384,14 @@ public abstract class ValuePanel<T> extends JPanel {
 	private void addEntry(int row) {
 		if (animFlag == null && timelineContainer != null && !flagName.equals("")) {
 			AnimFlag<T> flag = getNewAnimFlag();
-			AnimFlag.Entry<T> entry = new AnimFlag.Entry<>(0, staticValue);
-			flag.addEntry(entry);
+			if (flag != null) {
+				AnimFlag.Entry<T> entry = new AnimFlag.Entry<>(0, staticValue);
+				flag.addEntry(entry);
 //			UndoAction undoAction = new AddAnimFlagAction(timelineContainer, flagName, modelStructureChangeListener);
-			UndoAction undoAction = new AddAnimFlagAction(timelineContainer, flag, modelStructureChangeListener);
-			undoActionListener.pushAction(undoAction);
-			undoAction.redo();
+				UndoAction undoAction = new AddAnimFlagAction(timelineContainer, flag, modelStructureChangeListener);
+				undoActionListener.pushAction(undoAction);
+				undoAction.redo();
+			}
 		} else if (animFlag != null) {
 			AnimFlag.Entry<T> newEntry;
 			AnimFlag.Entry<T> lastEntry;

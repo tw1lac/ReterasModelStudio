@@ -314,6 +314,39 @@ public class GeosetVertex extends Vec3 {
         return sum;
     }
 
+    public Vec3 createNormal(final List<GeosetVertex> matches, double maxAngle) {
+        final Vec3 sum = new Vec3();
+        Vec3 normal = createNormal();
+        List<Vec3> uniqueNormals = new ArrayList<>();
+        for (final GeosetVertex match : matches) {
+            Vec3 matchNormal = match.createNormal();
+            uniqueNormals.add(matchNormal);
+        }
+        uniqueNormals.stream().filter(n -> normal.degAngleTo(n) < maxAngle).forEach(sum::add);
+        sum.normalize();
+
+        return sum;
+    }
+
+
+    public Vec3 createNormalFromFaces(final List<GeosetVertex> matches, double maxAngle) {
+        final Vec3 sum = new Vec3();
+        Vec3 normal = createNormal();
+        for (final GeosetVertex match : matches) {
+            for (final Triangle triangle : match.triangles) {
+                Vec3 matchNormal = triangle.getNormal().normalize();
+                double angle = normal.degAngleTo(matchNormal);
+                if (angle < maxAngle) {
+                    sum.add(matchNormal);
+                }
+            }
+        }
+
+        sum.normalize();
+
+        return sum;
+    }
+
     public void rigBones(List<Bone> matrixBones) {
         if (skinBones == null) {
             clearBoneAttachments();

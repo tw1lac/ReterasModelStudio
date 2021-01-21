@@ -2,15 +2,10 @@ package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
 import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
+import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
 import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.rms.util.MathUtils;
-import com.hiveworkshop.rms.util.Quat;
-import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.List;
 
@@ -23,23 +18,10 @@ import java.util.List;
  */
 public class IntAnimFlag extends AnimFlag<Integer> {
 
-
-//	public IntAnimFlag(MdlxTimeline<Long[]> timeline) {
-//		super(timeline);
-//	}
-
 	public IntAnimFlag(final MdlxUInt32Timeline timeline) {
 		super(timeline);
 		name = AnimationMap.ID_TO_TAG.get(timeline.name).getMdlToken();
 		generateTypeId();
-
-//		interpolationType = timeline.interpolationType;
-//
-//		final int globalSequenceId = timeline.globalSequenceId;
-//		if (globalSequenceId >= 0) {
-//			setGlobalSeqId(globalSequenceId);
-//			setHasGlobalSeq(true);
-//		}
 
 		final long[] frames = timeline.frames;
 		final Object[] values =  timeline.values;
@@ -87,7 +69,7 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 	}
 
 
-
+	@Override
 	public Integer interpolateAt(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 //		System.out.println(name + ", interpolateAt");
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {
@@ -104,8 +86,7 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 //			System.out.println(name + ", ~~ no times");
 			return (Integer) identity(localTypeId);
 		}
-		// TODO ghostwolf says to stop using binary search, because linear walking is
-		// faster for the small MDL case
+		// TODO ghostwolf says to stop using binary search, because linear walking is faster for the small MDL case
 		final int time;
 		int ceilIndex;
 		final int floorIndex;
@@ -161,7 +142,6 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 				if (times.get(floorAnimStartIndex) == animation.getStart()) {
 					ceilIndex = ceilIndex(animation.getStart());
 				}
-				// NOTE: we just let it be in this case, based on Water Elemental's birth
 			}
 		}
 		if (floorIndex == ceilIndex) {
@@ -181,10 +161,11 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 	}
 
 	@Override
-//	public MdlxTimeline<Long[]> toMdlx(TimelineContainer container) {
-//		return null;
-//	}
+	public void setInterpType(final InterpolationType interpolationType) {
+		this.interpolationType = InterpolationType.DONT_INTERP;
+	}
 
+	@Override
 	public MdlxUInt32Timeline toMdlx(final TimelineContainer container) {
 		final MdlxUInt32Timeline timeline = new MdlxUInt32Timeline();
 

@@ -245,10 +245,9 @@ public class ScriptActions {
                 final Object visibilityValue = geosetAnim.getVisibilityFlag().interpolateAt(editorRenderModel.getAnimatedRenderEnvironment());
 
                 if (visibilityValue instanceof Float) {
-                    final Float visibility = (Float) visibilityValue;
-                    final double visvalue = visibility;
+                    final double visValue = (Float) visibilityValue;
 
-                    if (visvalue < 0.01) {
+                    if (visValue < 0.01) {
                         geosetIterator.remove();
                         snapshotModel.remove(geosetAnim);
                     }

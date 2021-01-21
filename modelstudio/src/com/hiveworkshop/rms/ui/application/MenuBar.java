@@ -49,6 +49,7 @@ public class MenuBar {
     static List<MenuBar.RecentItem> recentItems = new ArrayList<>();
 
     public static JMenuBar createMenuBar(MainPanel mainPanel) {
+        MenuBar.mainPanel = mainPanel;
         // Create my menu bar
         menuBar = new JMenuBar();
 
@@ -265,7 +266,7 @@ public class MenuBar {
         editMenu.add(new JSeparator());
 
 //        createAndAddMenuItem("Snap Vertices", editMenu, -1, KeyStroke.getKeyStroke("control shift W"), e -> MenuBarActions.getSnapVerticiesAction(mainPanel));
-        createAndAddMenuItem("Snap Vertices", editMenu, -1, KeyStroke.getKeyStroke("control shift W"), e -> ModelEditActions.snapVerticies(mainPanel));
+        createAndAddMenuItem("Snap Vertices", editMenu, -1, KeyStroke.getKeyStroke("control shift W"), e -> ModelEditActions.snapVertices(mainPanel));
 
         createAndAddMenuItem("Snap Normals", editMenu, -1, KeyStroke.getKeyStroke("control L"), e -> ModelEditActions.snapNormals(mainPanel));
 

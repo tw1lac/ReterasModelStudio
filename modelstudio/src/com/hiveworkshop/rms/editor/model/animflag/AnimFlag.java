@@ -408,6 +408,9 @@ public abstract class AnimFlag<T> {
 
 	public void setInterpType(final InterpolationType interpolationType) {
 		this.interpolationType = interpolationType;
+		if (interpolationType.tangential() && inTans.isEmpty()) {
+			unLinearize();
+		}
 	}
 
 	public InterpolationType getInterpolationType() {
@@ -691,6 +694,14 @@ public abstract class AnimFlag<T> {
 			interpolationType = InterpolationType.LINEAR;
 			inTans.clear();
 			outTans.clear();
+		}
+	}
+
+	public void unLinearize() {
+		if (interpolationType.tangential()) {
+			interpolationType = InterpolationType.LINEAR;
+			inTans.addAll(values);
+			outTans.addAll(values);
 		}
 	}
 

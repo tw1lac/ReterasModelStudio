@@ -2,7 +2,6 @@ package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.MathUtils;
@@ -20,22 +19,8 @@ import java.util.List;
  */
 public class FloatAnimFlag extends AnimFlag<Float> {
 
-
-//	public FloatAnimFlag(MdlxTimeline<Float[]> timeline) {
-//		super(timeline);
-//	}
 	public FloatAnimFlag(final MdlxFloatTimeline timeline) {
 		super(timeline);
-//		name = AnimationMap.ID_TO_TAG.get(timeline.name).getMdlToken();
-//		generateTypeId();
-//
-//		interpolationType = timeline.interpolationType;
-//
-//		final int globalSequenceId = timeline.globalSequenceId;
-//		if (globalSequenceId >= 0) {
-//			setGlobalSeqId(globalSequenceId);
-//			setHasGlobalSeq(true);
-//		}
 
 		final long[] frames = timeline.frames;
 		final Object[] values = timeline.values;
@@ -146,9 +131,6 @@ public class FloatAnimFlag extends AnimFlag<Float> {
 				ceilValue = values.get(floorAnimStartIndex);
 				ceilIndex = floorAnimStartIndex;
 			}
-			if (floorIndex == ceilIndex) {
-				return floorValue;
-			}
 		} else {
 //			System.out.println(name + ", ~~ no global seq");
 			final BasicTimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
@@ -196,18 +178,16 @@ public class FloatAnimFlag extends AnimFlag<Float> {
 			} else {
 				timeBetweenFrames = ceilIndexTime - floorIndexTime;
 			}
-			if (floorIndex == ceilIndex) {
-//				System.out.println(name + ", ~~~~ floorValue");
-				return floorValue;
-			}
+		}
+		if (floorIndex == ceilIndex) {
+			return floorValue;
 		}
 //		System.out.println(name + ", ~~ Something");
 
 		final Integer floorTime = floorIndexTime;
 		final float timeFactor = (time - floorTime) / timeBetweenFrames;
 
-		// Integer
-		if (localTypeId == ALPHA || localTypeId == OTHER_TYPE) {
+		if (localTypeId == ALPHA) {
 			return switch (interpolationType) {
 				case BEZIER -> MathUtils.bezier(floorValue, floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor);
 				case DONT_INTERP -> floorValue;

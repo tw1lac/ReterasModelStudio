@@ -196,6 +196,26 @@ public class Vec3 {
         return (x * a.x) + (y * a.y) + (z * a.z);
     }
 
+    public double degAngleTo(Vec3 a) {
+
+        return (radAngleTo(a) * 180 / Math.PI);
+    }
+
+    public double radAngleTo(Vec3 a) {
+        float dot = dot(a);
+        float length = length();
+        float lengthA = a.length();
+        double cos = dot / (length * lengthA);
+        if (cos > 1) {
+            cos = cos % (1.0);
+            return (Math.acos(1 - cos));
+        } else if (cos < -1) {
+            cos = cos % (1.0);
+            return (Math.acos(cos) + 2 * Math.PI); //ToDo check if stuff behaves correct when this is made positive by rotating 360 degrees
+        }
+        return Math.acos(cos);
+    }
+
     public void scale(final double centerX, final double centerY, final double centerZ, final double scaleX,
                       final double scaleY, final double scaleZ) {
         final float dx = this.x - (float) centerX;
@@ -277,7 +297,8 @@ public class Vec3 {
     }
 
     public Vec3 normalize(final Vec3 out) {
-        float len = lengthSquared();
+//        float len = lengthSquared();
+        float len = length();
 
         if (len != 0) {
             len = 1 / len;

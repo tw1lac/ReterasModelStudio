@@ -53,11 +53,10 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                 if (gv.getSkinBones() != null) {
                     vertexToOldSkinBoneReferences.put(gv, gv.getSkinBones().clone());
                     vertexToOldSkinBoneWeightReferences.put(gv, gv.getSkinBoneWeights().clone());
-                    gv.rigBones(matrixBones);
                 } else {
                     vertexToOldBoneReferences.put(gv, new ArrayList<>(gv.getBoneAttachments()));
-                    gv.rigBones(matrixBones);
                 }
+                gv.rigBones(matrixBones);
             }
         }
         return new SetMatrixAction(vertexToOldBoneReferences, vertexToOldSkinBoneReferences,
@@ -108,20 +107,35 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
     }
 
     @Override
-    public UndoAction recalcNormals() {
+    public UndoAction recalcNormals(double maxAngle, boolean useTries) {
         final List<Vec3> oldLocations = new ArrayList<>();
         final List<GeosetVertex> selectedVertices = new ArrayList<>();
         final Vec3 snapped = new Vec3(0, 0, 1);
-        for (final Vec3 vertex : selectionManager.getSelectedVertices()) {
-            if (vertex instanceof GeosetVertex) {
+        Collection<? extends Vec3> vertices = selectionManager.getSelectedVertices();
+        if (vertices.isEmpty()) {
+            Set<Geoset> editable = model.getEditableGeosets();
+            List<GeosetVertex> edVert = new ArrayList<>();
+            editable.forEach(geoset -> edVert.addAll(geoset.getVertices()));
+            for (final Vec3 vertex : edVert) {
+//        for (final Vec3 vertex : selectionManager.getSelectedVertices()) {
                 final GeosetVertex gv = (GeosetVertex) vertex;
                 if (gv.getNormal() != null) {
                     oldLocations.add(new Vec3(gv.getNormal()));
                     selectedVertices.add(gv);
                 } // else no normal to snap!!!
             }
+        } else {
+            for (final Vec3 vertex : vertices) {
+                if (vertex instanceof GeosetVertex) {
+                    final GeosetVertex gv = (GeosetVertex) vertex;
+                    if (gv.getNormal() != null) {
+                        oldLocations.add(new Vec3(gv.getNormal()));
+                        selectedVertices.add(gv);
+                    } // else no normal to snap!!!
+                }
+            }
         }
-        final RecalculateNormalsAction2 temp = new RecalculateNormalsAction2(selectedVertices, oldLocations, snapped);
+        final RecalculateNormalsAction2 temp = new RecalculateNormalsAction2(selectedVertices, oldLocations, snapped, maxAngle, useTries);
         temp.redo();// a handy way to do the snapping!
         return temp;
     }
@@ -142,8 +156,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
 
     @Override
     public UndoAction deleteSelectedComponents() {
-        // TODO this code is RIPPED FROM MDLDispaly and is not good for general
-        // cases
+        // TODO this code is RIPPED FROM MDLDispaly and is not good for general cases
         // TODO this code operates directly on MODEL
         final List<Geoset> remGeosets = new ArrayList<>();// model.getGeosets()
         final List<Triangle> deletedTris = new ArrayList<>();
@@ -177,8 +190,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
         }
         selectByVertices(new ArrayList<>());
         if (remGeosets.size() <= 0) {
-            final DeleteAction temp = new DeleteAction(selection, deletedTris, vertexSelectionHelper);
-            return temp;
+            return new DeleteAction(selection, deletedTris, vertexSelectionHelper);
         } else {
             final SpecialDeleteAction temp = new SpecialDeleteAction(selection, deletedTris, vertexSelectionHelper,
                     remGeosets, model.getModel(), structureChangeListener);
@@ -192,9 +204,8 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                              final double centerZ) {
         final MirrorModelAction mirror = new MirrorModelAction(selectionManager.getSelectedVertices(),
                 model.getEditableIdObjects(), dim, centerX, centerY, centerZ);
-        // super weird passing of currently editable id Objects, works because
-        // mirror action checks selected vertices against pivot points from this
-        // list
+        // super weird passing of currently editable id Objects, works because mirror action
+        // checks selected vertices against pivot points from this list
         mirror.redo();
         if (flipModel) {
             final UndoAction flipFacesAction = flipSelectedFaces();
@@ -302,10 +313,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                     // for (final GeosetVertex copyVer : copies) {
                     // if (copyVer != null) {
                     // if (tri.containsRef(copyVer)) {
-                    // System.out.println("holy brejeezers!");
-                    // }
-                    // }
-                    // }
+                    // System.out.println("holy brejeezers!");}}}
                     for (int gvI = 0; gvI < tri.getAll().length; gvI++) {
                         final GeosetVertex gvTemp = tri.get(gvI);
                         if (!gvTemp.equalLocs(gv) && (gvTemp.getGeoset() == gv.getGeoset())) {
@@ -325,11 +333,9 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                                 final GeosetVertex gvCopy = copies.get(selection.indexOf(gv));
                                 final GeosetVertex gvTempCopy = copies.get(selection.indexOf(gvTemp));
                                 // if (gvCopy == null) {
-                                // System.out.println("Vertex (gvCopy) copy found as null!");
-                                // }
+                                // System.out.println("Vertex (gvCopy) copy found as null!");}
                                 // if (gvTempCopy == null) {
-                                // System.out.println("Vertex (gvTempCopy) copy found as null!");
-                                // }
+                                // System.out.println("Vertex (gvTempCopy) copy found as null!");}
                                 Triangle newFace = new Triangle(null, null, null, gv.getGeoset());
 
                                 final int indexA = temptr.indexOf(gv);
@@ -355,10 +361,7 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                                 boolean bad = false;
                                 for (final Triangle t : newTriangles) {
                                     // if( t.equals(newFace) )
-                                    // {
-                                    // bad = true;
-                                    // break;
-                                    // }
+                                    // {bad = true;break;}
                                     if (t.contains(gv) && t.contains(gvTemp)) {
                                         bad = true;
                                         break;
@@ -498,11 +501,9 @@ public abstract class AbstractModelEditor<T> extends AbstractSelectingEditor<T> 
                 }
                 if (selVerts == 2) {
                     // if (gvCopy == null) {
-                    // System.out.println("Vertex (gvCopy) copy found as null!");
-                    // }
+                    // System.out.println("Vertex (gvCopy) copy found as null!"); }
                     // if (gvTempCopy == null) {
-                    // System.out.println("Vertex (gvTempCopy) copy found as null!");
-                    // }
+                    // System.out.println("Vertex (gvTempCopy) copy found as null!"); }
                     Triangle newFace = new Triangle(null, null, null, gv.getGeoset());
 
                     final int indexA = tri.indexOf(gvCopy);

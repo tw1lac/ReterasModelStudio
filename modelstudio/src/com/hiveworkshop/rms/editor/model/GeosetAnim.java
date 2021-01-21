@@ -151,8 +151,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 
 	public void copyVisibilityFrom(final VisibilitySource other, final EditableModel mdlr) {
 		final VisibilitySource temp = this;
-		final AnimFlag visFlag = temp.getVisibilityFlag();// might be
-		// null
+		final AnimFlag visFlag = temp.getVisibilityFlag();// might be null
 		final AnimFlag newVisFlag;
 		boolean tans = false;
 		if (visFlag != null) {

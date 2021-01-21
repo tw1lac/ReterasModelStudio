@@ -1,12 +1,5 @@
 package com.hiveworkshop.rms.ui.application.edit.mesh;
 
-import java.awt.Point;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.hiveworkshop.rms.editor.model.Bone;
 import com.hiveworkshop.rms.editor.model.Camera;
 import com.hiveworkshop.rms.editor.model.Geoset;
@@ -29,6 +22,13 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.listener.EditabilityToggle
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectableComponent;
 import com.hiveworkshop.rms.util.SubscriberSetNotifier;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ModelEditorNotifier extends SubscriberSetNotifier<ModelEditor> implements ModelEditor {
 	private CloneContextHelper cloneContextHelper;
@@ -260,10 +260,10 @@ public class ModelEditorNotifier extends SubscriberSetNotifier<ModelEditor> impl
 	}
 
 	@Override
-	public UndoAction recalcNormals() {
+	public UndoAction recalcNormals(double maxAngle, boolean useTries) {
 		final List<UndoAction> actions = new ArrayList<>();
 		for (final ModelEditor handler : set) {
-			actions.add(handler.recalcNormals());
+			actions.add(handler.recalcNormals(maxAngle, useTries));
 		}
 		return mergeActions(actions);
 	}

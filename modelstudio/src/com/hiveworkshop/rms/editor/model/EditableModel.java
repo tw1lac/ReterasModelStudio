@@ -247,11 +247,8 @@ public class EditableModel implements Named {
 
 				if (materialColors.containsKey(material)) {
 					final GeosetAnim geosetAnim = new GeosetAnim(geoset);
-
 					geosetAnim.setStaticColor(materialColors.get(material));
-
 					add(geosetAnim);
-
 					geoset.geosetAnim = geosetAnim;
 				}
 			}
@@ -530,7 +527,6 @@ public class EditableModel implements Named {
 
 		if (texture == null) {
 			texture = new Bitmap(path);
-
 			add(texture);
 		}
 
@@ -636,18 +632,58 @@ public class EditableModel implements Named {
 		return geosets.indexOf(g);
 	}
 
-	// public void setGeosetVisible(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setVisible(flag);
-	// }
-	// public void setGeosetHighlight(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setHighlight(flag);
-	// }
-	public void clearGeosets() {
-		geosets.clear();
+	public static void makeItHD(final EditableModel model) {
+		for (final Geoset geo : model.getGeosets()) {
+			final List<GeosetVertex> vertices = geo.getVertices();
+			for (final GeosetVertex gv : vertices) {
+				final Vec3 normal = gv.getNormal();
+				if (normal != null) {
+					gv.initV900();
+					final float[] tangent = gv.getTangent();
+					for (int i = 0; i < 3; i++) {
+						tangent[i] = normal.getCoord((byte) i);
+					}
+					tangent[3] = 1;
+				}
+				final int bones = Math.min(4, gv.getBoneAttachments().size());
+				final short weight = (short) (255 / bones);
+				final short offsetWeight = (short) (255 - (weight * bones));
+				for (int i = 0; i < bones; i++) {
+					gv.getSkinBones()[i] = gv.getBoneAttachments().get(i);
+					gv.getSkinBoneWeights()[i] = weight;
+					if (i == 0) {
+						gv.getSkinBoneWeights()[i] += offsetWeight;
+					}
+				}
+			}
+		}
+		for (final Material m : model.getMaterials()) {
+			m.makeHD();
+//			m.setShaderString("Shader_HD_DefaultUnit");
+//			if (m.getLayers().size() > 1) {
+//				m.getLayers().add(m.getLayers().remove(0));
+//			}
+//			final Bitmap normTex = new Bitmap("ReplaceableTextures\\TeamColor\\TeamColor09.dds");
+//			normTex.setWrapHeight(true);
+//			normTex.setWrapWidth(true);
+//			final Bitmap ormTex = new Bitmap("ReplaceableTextures\\TeamColor\\TeamColor18.dds");
+//			ormTex.setWrapHeight(true);
+//			ormTex.setWrapWidth(true);
+//			m.getLayers().add(1, new Layer("None", normTex));
+//			m.getLayers().add(2, new Layer("None", ormTex));
+//			final Bitmap black32 = new Bitmap("Textures\\Black32.dds");
+//			black32.setWrapHeight(true);
+//			black32.setWrapWidth(true);
+//			m.getLayers().add(3, new Layer("None", black32));
+//			final Bitmap texture2 = new Bitmap("ReplaceableTextures\\EnvironmentMap.dds");
+//			texture2.setWrapHeight(true);
+//			texture2.setWrapWidth(true);
+//			m.getLayers().add(4, new Layer("None", m.getLayers().get(0).getTextureBitmap()));
+//			m.getLayers().add(5, new Layer("None", texture2));
+//			for (final Layer l : m.getLayers()) {
+//				l.setEmissive(1.0);
+//			}
+		}
 	}
 
 	public void clearAnimations() {
@@ -705,92 +741,14 @@ public class EditableModel implements Named {
 		clearAnimations();
 	}
 
-	/**
-	 * Copies the animations from another model into this model. Specifically,
-	 * copies all motion from similarly named bones and copies in the "Anim" blocks
-	 * at the top of the MDL for the newly added sections.
-	 *
-	 * In addition, any bones with significant amounts of motion that were not found
-	 * to correlate with the contents of this model get added to this model's list
-	 * of bones.
-	 */
-	public void addAnimationsFrom(EditableModel other) {
-		// this process destroys the "other" model inside memory, so destroy
-		// a copy instead
-		other = EditableModel.deepClone(other, "animation source file");
-
-		final List<AnimFlag<?>> flags = getAllAnimFlags();
-		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
-
-		final List<AnimFlag<?>> othersFlags = other.getAllAnimFlags();
-		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
-
-		// ------ Duplicate the time track in the other model -------------
-		//
-		// On this new, separate time track, we want to be able to
-		// the information specific to each node about how it will
-		// move if it gets translated into or onto the current model
-
-		final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
-		for (final AnimFlag<?> af : othersFlags) {
-			if (!af.hasGlobalSeq) {
-				newImpFlags.add(AnimFlag.buildEmptyFrom(af));
-			} else {
-				newImpFlags.add(AnimFlag.createFromAnimFlag(af));
-			}
-		}
-		final List<EventObject> newImpEventObjs = new ArrayList<>();
-		for (final Object e : othersEventObjs) {
-			newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
-		}
-
-		// Fill the newly created time track with
-		// the exact same data, but shifted forward relative to wherever the
-		// current model's last animation starts
-		for (final Animation anim : other.anims) {
-			final int animTrackEnd = animTrackEnd();
-			final int newStart = animTrackEnd + 300;
-			final int newEnd = newStart + anim.length();
-			final Animation newAnim = new Animation(anim);
-			// clone the animation from the other model
-			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
-			newAnim.setInterval(newStart, newEnd);
-			add(newAnim); // add the new animation to this model
-		}
-
-		// destroy the other model's animations, filling them in with the new stuff
-		for (final AnimFlag af : othersFlags) {
-			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
-		}
-		for (final Object e : othersEventObjs) {
-			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
-		}
-
-		// Now, map the bones in the other model onto the bones in the current
-		// model
-		final List<Bone> leftBehind = new ArrayList<>();
-		// the bones that don't find matches in current model
-		for (final IdObject object : other.idObjects) {
-			if (object instanceof Bone) {
-				// the bone from the other model
-				final Bone bone = (Bone) object;
-				// the object in this model of similar name
-				final Object localObject = getObject(bone.getName());
-				if ((localObject instanceof Bone)) {
-					final Bone localBone = (Bone) localObject;
-					localBone.copyMotionFrom(bone); // if it's a match, take the data
-				} else {
-					leftBehind.add(bone);
-				}
-			}
-		}
-		for (final Bone bone : leftBehind) {
-			if (bone.animates()) {
-				add(bone);
-			}
-		}
-
-		// i think we're done????
+	// public void setGeosetVisible(int index, boolean flag)
+	// {  Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setVisible(flag); }
+	// public void setGeosetHighlight(int index, boolean flag)
+	// {Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setHighlight(flag); }
+	public void clearGeosets() {
+		geosets.clear();
 	}
 
 	public List<Animation> addAnimationsFrom(EditableModel other, final List<Animation> anims) {
@@ -2246,58 +2204,89 @@ public class EditableModel implements Named {
 		model.faceEffects.clear();
 	}
 
-	public static void makeItHD(final EditableModel model) {
-		for (final Geoset geo : model.getGeosets()) {
-			final List<GeosetVertex> vertices = geo.getVertices();
-			for (final GeosetVertex gv : vertices) {
-				final Vec3 normal = gv.getNormal();
-				if (normal != null) {
-					gv.initV900();
-					final float[] tangent = gv.getTangent();
-					for (int i = 0; i < 3; i++) {
-						tangent[i] = normal.getCoord((byte) i);
-					}
-					tangent[3] = 1;
-				}
-				final int bones = Math.min(4, gv.getBoneAttachments().size());
-				final short weight = (short) (255 / bones);
-				final short offsetWeight = (short) (255 - (weight * bones));
-				for (int i = 0; (i < bones) && (i < 4); i++) {
-					gv.getSkinBones()[i] = gv.getBoneAttachments().get(i);
-					gv.getSkinBoneWeights()[i] = weight;
-					if (i == 0) {
-						gv.getSkinBoneWeights()[i] += offsetWeight;
-					}
+	/**
+	 * Copies the animations from another model into this model. Specifically,
+	 * copies all motion from similarly named bones and copies in the "Anim" blocks
+	 * at the top of the MDL for the newly added sections.
+	 *
+	 * In addition, any bones with significant amounts of motion that were not found
+	 * to correlate with the contents of this model get added to this model's list
+	 * of bones.
+	 */
+	public void addAnimationsFrom(EditableModel other) {
+		// this process destroys the "other" model inside memory, so destroy a copy instead
+		other = EditableModel.deepClone(other, "animation source file");
+
+		final List<AnimFlag<?>> flags = getAllAnimFlags();
+		final List<EventObject> eventObjs = sortedIdObjects(EventObject.class);
+
+		final List<AnimFlag<?>> othersFlags = other.getAllAnimFlags();
+		final List<EventObject> othersEventObjs = other.sortedIdObjects(EventObject.class);
+
+		// ------ Duplicate the time track in the other model -------------
+		//
+		// On this new, separate time track, we want to be able to the information specific to
+		// each node about how it will move if it gets translated into or onto the current model
+
+		final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
+		for (final AnimFlag<?> af : othersFlags) {
+			if (!af.hasGlobalSeq) {
+				newImpFlags.add(AnimFlag.buildEmptyFrom(af));
+			} else {
+				newImpFlags.add(AnimFlag.createFromAnimFlag(af));
+			}
+		}
+		final List<EventObject> newImpEventObjs = new ArrayList<>();
+		for (final Object e : othersEventObjs) {
+			newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
+		}
+
+		// Fill the newly created time track with the exact same data, but shifted
+		// forward relative to wherever the current model's last animation starts
+		for (final Animation anim : other.anims) {
+			final int animTrackEnd = animTrackEnd();
+			final int newStart = animTrackEnd + 300;
+			final int newEnd = newStart + anim.length();
+			final Animation newAnim = new Animation(anim);
+			// clone the animation from the other model
+			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
+			newAnim.setInterval(newStart, newEnd);
+			add(newAnim); // add the new animation to this model
+		}
+
+		// destroy the other model's animations, filling them in with the new stuff
+		for (final AnimFlag af : othersFlags) {
+			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
+		}
+		for (final Object e : othersEventObjs) {
+			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
+		}
+
+		// Now, map the bones in the other model onto the bones in the current
+		// model
+		final List<Bone> leftBehind = new ArrayList<>();
+		// the bones that don't find matches in current model
+		for (final IdObject object : other.idObjects) {
+			if (object instanceof Bone) {
+				// the bone from the other model
+				final Bone bone = (Bone) object;
+				// the object in this model of similar name
+				final Object localObject = getObject(bone.getName());
+				if ((localObject instanceof Bone)) {
+					final Bone localBone = (Bone) localObject;
+					localBone.copyMotionFrom(bone); // if it's a match, take the data
+				} else {
+					leftBehind.add(bone);
 				}
 			}
 		}
-		for (final Material m : model.getMaterials()) {
-			m.makeHD();
-//			m.setShaderString("Shader_HD_DefaultUnit");
-//			if (m.getLayers().size() > 1) {
-//				m.getLayers().add(m.getLayers().remove(0));
-//			}
-//			final Bitmap normTex = new Bitmap("ReplaceableTextures\\TeamColor\\TeamColor09.dds");
-//			normTex.setWrapHeight(true);
-//			normTex.setWrapWidth(true);
-//			final Bitmap ormTex = new Bitmap("ReplaceableTextures\\TeamColor\\TeamColor18.dds");
-//			ormTex.setWrapHeight(true);
-//			ormTex.setWrapWidth(true);
-//			m.getLayers().add(1, new Layer("None", normTex));
-//			m.getLayers().add(2, new Layer("None", ormTex));
-//			final Bitmap black32 = new Bitmap("Textures\\Black32.dds");
-//			black32.setWrapHeight(true);
-//			black32.setWrapWidth(true);
-//			m.getLayers().add(3, new Layer("None", black32));
-//			final Bitmap texture2 = new Bitmap("ReplaceableTextures\\EnvironmentMap.dds");
-//			texture2.setWrapHeight(true);
-//			texture2.setWrapWidth(true);
-//			m.getLayers().add(4, new Layer("None", m.getLayers().get(0).getTextureBitmap()));
-//			m.getLayers().add(5, new Layer("None", texture2));
-//			for (final Layer l : m.getLayers()) {
-//				l.setEmissive(1.0);
-//			}
+		for (final Bone bone : leftBehind) {
+			if (bone.animates()) {
+				add(bone);
+			}
 		}
+
+		// i think we're done????
 	}
 
 	public static void recalculateTangents(final EditableModel currentMDL, final Component parent) {
