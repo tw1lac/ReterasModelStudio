@@ -11,7 +11,10 @@ import jassimp.AiMesh;
 import java.awt.geom.Rectangle2D;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Geoset implements Named, VisibilitySource {
 	ExtLog extents;
@@ -53,7 +56,7 @@ public class Geoset implements Named, VisibilitySource {
 		for (int k = 0; k < nVertices; k++) {
 			final int i = k * 3;
 			final int j = k * 2;
-			final GeosetVertex gv = new GeosetVertex(vertices[i], vertices[i + 1],vertices[i + 2]);
+			final GeosetVertex gv = new GeosetVertex(vertices[i], vertices[i + 1], vertices[i + 2]);
 
 			add(gv);
 
@@ -62,8 +65,7 @@ public class Geoset implements Named, VisibilitySource {
 			} else {
 				gv.setVertexGroup((256 + vertexGroups[k]) % 256);
 			}
-			// this is an unsigned byte, the other guys java code will read as
-			// signed
+			// this is an unsigned byte, the other guys java code will read as signed
 			if (normals.length > 0) {
 				gv.setNormal(new Vec3(normals[i], normals[i + 1], normals[i + 2]));
 			}
@@ -72,10 +74,8 @@ public class Geoset implements Named, VisibilitySource {
 				gv.addTVertex(new Vec2(uvSet[j], uvSet[j + 1]));
 			}
 		}
-		// guys I didn't code this to allow experimental
-		// non-triangle faces that were suggested to exist
-		// on the web (i.e. quads).
-		// if you wanted to fix that, you'd want to do it below
+		// guys I didn't code this to allow experimental non-triangle faces that were suggested to exist
+		// on the web (i.e. quads). if you wanted to fix that, you'd want to do it below
 		final int[] faces = geoset.faces;
 
 		for (int i = 0; i < faces.length; i += 3) {
@@ -213,10 +213,10 @@ public class Geoset implements Named, VisibilitySource {
 		}
 
 		// Again, the current implementation of my mdl code is that it only
-		// handles triangle facetypes
+		// handles triangle face types
 		// (there's another note about this in the MDX -> MDL geoset code)
-		geoset.faceGroups = new long[] { getTriangles().size() * 3 };
-		geoset.faceTypeGroups = new long[] { 4 }; // triangles!
+		geoset.faceGroups = new long[] {getTriangles().size() * 3};
+		geoset.faceTypeGroups = new long[] {4}; // triangles!
 		geoset.faces = new int[getTriangles().size() * 3]; // triangles!
 
 		int i = 0;
@@ -232,21 +232,21 @@ public class Geoset implements Named, VisibilitySource {
 
 		geoset.selectionGroup = getSelectionGroup();
 
-		int matrixIndexsSize = 0;
+		int matrixIndexesSize = 0;
 		for (final Matrix matrix : getMatrix()) {
 			int size = matrix.size();
 			if (size == -1) {
 				size = 1;
 			}
-			matrixIndexsSize += size;
+			matrixIndexesSize += size;
 		}
 
 		geoset.matrixGroups = new long[getMatrix().size()];
-		if (matrixIndexsSize == -1) {
-			matrixIndexsSize = 1;
+		if (matrixIndexesSize == -1) {
+			matrixIndexesSize = 1;
 		}
 
-		geoset.matrixIndices = new long[matrixIndexsSize];
+		geoset.matrixIndices = new long[matrixIndexesSize];
 		i = 0;
 		int groupIndex = 0;
 		for (final Matrix matrix : getMatrix()) {
@@ -286,8 +286,115 @@ public class Geoset implements Named, VisibilitySource {
 
 	@Override
 	public String getName() {
-		return "Geoset " + (parentModel.getGeosetId(this) + 1);// parentModel.getName()
-																// + "
+		if (levelOfDetailName.equals("")) {
+			if (skin != null) {
+				String name = hdGetMostCommonUniqueBoneName();
+				if (name.equals("")) {
+					matrix.get(0).getName();
+				}
+				return "Geoset " + (parentModel.getGeosetId(this)) + ": " + name;
+			} else if (!matrix.isEmpty()) {
+				String name = sdGetMostCommonUniqueBoneName();
+				if (name.equals("")) {
+					matrix.get(0).getName();
+				}
+//				return "Geoset " + (parentModel.getGeosetId(this)) + ": " + matrix.get(0).getName();
+				return "Geoset " + (parentModel.getGeosetId(this)) + ": " + name;
+			}
+		} else {
+			return "Geoset " + (parentModel.getGeosetId(this)) + ": " + levelOfDetailName;
+		}
+		return "Geoset " + (parentModel.getGeosetId(this));// parentModel.getName() // + "
+	}
+
+	public String sdGetMostCommonUniqueBoneName() {
+		List<Bone> nonSharedParentBones = new ArrayList<>();
+		List<Bone> mBones = new ArrayList<>();
+		if (!matrix.isEmpty()) {
+			for (Matrix m : matrix) {
+				mBones.addAll(m.getBones());
+			}
+
+			if (mBones.size() == 1) {
+				return mBones.get(0).getName().replaceAll("(?i)bone_*", "");
+			}
+			for (Bone bone : mBones) {
+				Bone lp = lastParentIn(bone, mBones);
+
+				if (lp.geoset == this && !nonSharedParentBones.contains(lp)) {
+					nonSharedParentBones.add(lp);
+				}
+			}
+			List<String> nameParts = new ArrayList<>();
+			for (Bone bone : nonSharedParentBones) {
+				nameParts.add(bone.getName().replaceAll("(?i)bone_*", ""));
+			}
+			return String.join(", ", nameParts);
+		}
+		return "";
+	}
+
+
+	public Bone lastParentIn(Bone bone, List<Bone> list) {
+		Bone parentBone = bone;
+		while (list.contains(parentBone)) {
+			if (bone.getParent() instanceof Bone) {
+				parentBone = (Bone) bone.getParent();
+				if (parentBone.multiGeoId || parentBone.geoset != this) {
+					return bone;
+				} else if (list.contains(parentBone)) {
+					bone = parentBone;
+				}
+			} else {
+				return bone;
+			}
+		}
+		return bone;
+	}
+
+
+	public String hdGetMostCommonUniqueBoneName() {
+		List<Bone> nonSharedParentBones = new ArrayList<>();
+		List<Bone> mBones = new ArrayList<>();
+		Set<Short> parentIds = new HashSet<>();
+		Set<Short> prioParentIds = new HashSet<>();
+		if (skin != null) {
+			for (short[] vert : skin) {
+				for (int i = 0; i < 4; i++) {
+					if (vert[i + 4] > 60) {
+						parentIds.add(vert[i]);
+						if (vert[i + 4] > 250) {
+							prioParentIds.add(vert[i]);
+						}
+					}
+				}
+			}
+			if (prioParentIds.isEmpty()) {
+				for (short s : parentIds) {
+					mBones.add(parentModel.getBone(s));
+				}
+			} else {
+				for (short s : prioParentIds) {
+					mBones.add(parentModel.getBone(s));
+				}
+			}
+
+			if (mBones.size() == 1) {
+				return mBones.get(0).getName().replaceAll("[Bb][Oo][Nn][Ee]_*", "");
+			}
+			for (Bone bone : mBones) {
+				Bone lp = lastParentIn(bone, mBones);
+				if (lp.geoset == this && !nonSharedParentBones.contains(lp)) {
+					nonSharedParentBones.add(lp);
+				}
+			}
+			List<String> nameParts = new ArrayList<>();
+			for (Bone bone : nonSharedParentBones) {
+				nameParts.add(bone.getName().replaceAll("[Bb][Oo][Nn][Ee]_*", ""));
+			}
+			return String.join(", ", nameParts);
+		}
+		return "";
 	}
 
 	public void addVertex(final GeosetVertex v) {
