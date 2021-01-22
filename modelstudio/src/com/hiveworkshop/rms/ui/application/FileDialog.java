@@ -505,12 +505,12 @@ public class FileDialog {
     }
 
     private JComponent getParent() {
-        if (mainPanel != null) {
+        if (parent != null) {
+            return parent;
+        } else if (mainPanel != null) {
             return mainPanel;
         } else if (modelPanel != null) {
             return modelPanel.getParent();
-        } else if (parent != null) {
-            return parent;
         } else {
             return null;
         }
