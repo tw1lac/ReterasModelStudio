@@ -17,6 +17,7 @@ import com.hiveworkshop.rms.ui.gui.modeledit.toolbar.ToolbarActionButtonType;
 import com.hiveworkshop.rms.ui.gui.modeledit.toolbar.ToolbarButtonGroup;
 import com.hiveworkshop.rms.ui.icons.IconUtils;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
+import com.hiveworkshop.rms.ui.preferences.SaveProfile;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
@@ -365,25 +366,26 @@ public class MPQBrowserView {
     public static void loadFile(MainPanel mainPanel, final File f, boolean temporary, final boolean selectNewTab, final ImageIcon icon) {
         System.out.println("loadFile: " + f.getName());
         System.out.println("filePath: " + f.getPath());
-        final String pathLow = f.getPath().toLowerCase();
-        String ext = pathLow.replaceAll(".+\\.(?=.+)", "");
-        ModelPanel temp = null;
-        if (Arrays.asList("blp", "png", "jpg", "bmp", "tga").contains(ext)) {
+        if (f.exists()) {
+            final String pathLow = f.getPath().toLowerCase();
+            String ext = pathLow.replaceAll(".+\\.(?=.+)", "");
+            ModelPanel temp = null;
+            if (Arrays.asList("blp", "png", "jpg", "bmp", "tga").contains(ext)) {
 //            final EditableModel model = getImagePlaneModel(f.getName(), f.getParentFile(), 800);
-            final EditableModel model = getImagePlaneModel(f, 800);
-            model.setTemp(true);
+                final EditableModel model = getImagePlaneModel(f, 800);
+                model.setTemp(true);
 //            model.setFileRef(f);
-            temporary = false;
-            temp = newTempModelPanel(mainPanel, icon, model);
+                temporary = false;
+                temp = newTempModelPanel(mainPanel, icon, model);
 
-        } else if (Arrays.asList("dds").contains(ext)) {
+            } else if (Arrays.asList("dds").contains(ext)) {
 //            final EditableModel model = getImagePlaneModel(f.getName(), f.getParentFile(), 1000);
-            final EditableModel model = getImagePlaneModel(f, 1000);
-            model.setTemp(true);
+                final EditableModel model = getImagePlaneModel(f, 1000);
+                model.setTemp(true);
 //            model.setFileRef(f);
-            temporary = false;
-            temp = newTempModelPanel(mainPanel, icon, model);
-        }
+                temporary = false;
+                temp = newTempModelPanel(mainPanel, icon, model);
+            }
 //        if (Arrays.asList("blp", "png", "jpg", "bmp").contains(ext)) {
 //            loadBLPPathAsModel(mainPanel, f.getName(), f.getParentFile());
 //            return;
@@ -405,33 +407,40 @@ public class MPQBrowserView {
 //            return;
 //        }
 
-        if (Arrays.asList("mdx", "mdl").contains(ext)) {
-            try {
+            if (Arrays.asList("mdx", "mdl").contains(ext)) {
+                try {
 
-                final EditableModel model = MdxUtils.loadEditable(f);
-                model.setFileRef(f);
+                    final EditableModel model = MdxUtils.loadEditable(f);
+                    model.setFileRef(f);
 
-                temp = newTempModelPanel(mainPanel, icon, model);
+                    temp = newTempModelPanel(mainPanel, icon, model);
 
-            } catch (final IOException e) {
-                e.printStackTrace();
-                ExceptionPopup.display(e);
-                throw new RuntimeException("Reading mdx failed");
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    ExceptionPopup.display(e);
+                    throw new RuntimeException("Reading mdx failed");
+                }
+            } else if (Arrays.asList("obj", "fbx").contains(ext)) {
+                try {
+                    AiScene scene = Jassimp.importFile(f.getPath(), new HashSet<>(Collections.singletonList(AiPostProcessSteps.TRIANGULATE)));
+
+                    final EditableModel model = new EditableModel(scene);
+                    model.setFileRef(f);
+
+                    temp = newTempModelPanel(mainPanel, icon, model);
+                } catch (final Exception e) {
+                    ExceptionPopup.display(e);
+                    e.printStackTrace();
+                }
             }
-        } else if (Arrays.asList("obj", "fbx").contains(ext)) {
-            try {
-                AiScene scene = Jassimp.importFile(f.getPath(), new HashSet<>(Collections.singletonList(AiPostProcessSteps.TRIANGULATE)));
-
-                final EditableModel model = new EditableModel(scene);
-                model.setFileRef(f);
-
-                temp = newTempModelPanel(mainPanel, icon, model);
-            } catch (final Exception e) {
-                ExceptionPopup.display(e);
-                e.printStackTrace();
+            loadModel(mainPanel, temporary, selectNewTab, temp);
+        } else if (SaveProfile.get().getRecent().contains(f.getPath())) {
+            int option = JOptionPane.showConfirmDialog(mainPanel, "Could not find the file.\nRemove from recent?", "File not found", JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                SaveProfile.get().removeFromRecent(f.getPath());
+                MenuBar.updateRecent();
             }
         }
-        loadModel(mainPanel, temporary, selectNewTab, temp);
     }
 
     static void revert(MainPanel mainPanel) {

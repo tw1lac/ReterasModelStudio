@@ -45,6 +45,13 @@ public class SaveProfile implements Serializable {
 		save();
 	}
 
+	public void removeFromRecent(final String fp) {
+		if (getRecent().contains(fp)) {
+			getRecent().remove(fp);
+			save();
+		}
+	}
+
 	public ProgramPreferences getPreferences() {
 		return preferences;
 	}
