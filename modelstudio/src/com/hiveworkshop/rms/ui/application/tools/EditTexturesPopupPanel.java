@@ -7,6 +7,7 @@ import com.hiveworkshop.rms.parsers.blp.BLPHandler;
 import com.hiveworkshop.rms.ui.application.FileDialog;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
 import com.hiveworkshop.rms.ui.util.ZoomableImagePreviewPanel;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -23,13 +24,12 @@ public class EditTexturesPopupPanel extends JPanel {
 	 */
 	public EditTexturesPopupPanel(final ModelView modelView, final ModelStructureChangeListener listener) {
 		fileDialog = new FileDialog(this);
-		setLayout(null);
+		setLayout(new MigLayout("fill", "[16%:16%:97][16%:16%:97][16%:16%:97][5%:5%:30][fill, max(200)][16%:16%:97][grow]", "[fill, grow][shrink][shrink]"));
 
-		final JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Textures", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(16, 17, 297, 507);
-		panel.setLayout(new BorderLayout(0, 0));
-		add(panel);
+		final JPanel texturesPanel = new JPanel();
+		texturesPanel.setBorder(new TitledBorder(null, "Textures", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		texturesPanel.setLayout(new BorderLayout(0, 0));
+		add(texturesPanel, "cell 0 0 3 1, w 50%:300:300");
 
 		final JCheckBox chckbxDisplayPath = new JCheckBox("Display Path");
 
@@ -42,53 +42,48 @@ public class EditTexturesPopupPanel extends JPanel {
 		list.setModel(bitmapListModel);
 		list.setCellRenderer(getCellRenderer(chckbxDisplayPath));
 		list.addListSelectionListener(e -> ListListener(modelView, list));
-		panel.add(new JScrollPane(list));
+		texturesPanel.add(new JScrollPane(list));
 
-		panel.add(chckbxDisplayPath, BorderLayout.SOUTH);
+		texturesPanel.add(chckbxDisplayPath, BorderLayout.SOUTH);
 
 		imageViewerPanel = new JPanel();
 		imageViewerPanel.setBorder(new TitledBorder(null, "Image Viewer", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		imageViewerPanel.setBounds(323, 17, 439, 507);
 		imageViewerPanel.setLayout(new BorderLayout());
-		add(imageViewerPanel);
+		add(imageViewerPanel, "cell 3 0 6 1, w 50%:95%:95%, grow");
 
 		loadBitmap(modelView, defaultTexture);
 
-		final JButton importButton = new JButton("Import");
-		importButton.setBounds(26, 535, 89, 23);
+//		final JButton importButton = new JButton("Import");
+		final JButton importButton = new JButton("Add");
 		importButton.addActionListener(e -> importTexturePopup(modelView, listener, bitmapListModel, list));
-		add(importButton);
+		add(importButton, "cell 0 1 1 1, growx");
+
+		final JButton btnAdd = new JButton("Add From Path");
+		btnAdd.addActionListener(e -> btnAddTexture(modelView, listener, bitmapListModel));
+		add(btnAdd, "cell 1 1 1 1, growx");
 
 		final JButton exportButton = new JButton("Export");
-		exportButton.setBounds(125, 535, 89, 23);
 		exportButton.addActionListener(e -> exportTexture(list));
-		add(exportButton);
+		add(exportButton, "cell 2 1 1 1, growx");
 
-		final JButton btnReplaceTexture = new JButton("Replace Texture");
-		btnReplaceTexture.setBounds(25, 569, 185, 23);
+//		final JButton btnReplaceTexture = new JButton("Replace Texture");
+		final JButton btnReplaceTexture = new JButton("Replace");
 		btnReplaceTexture.addActionListener(e -> btnReplaceTexture(modelView, listener, list));
-		add(btnReplaceTexture);
+		add(btnReplaceTexture, "cell 0 2 1 1, growx");
 
 		final JButton btnRemove = new JButton("Remove");
-		btnRemove.setBounds(224, 535, 89, 23);
 		btnRemove.addActionListener(e -> btnRemoveTexture(modelView, listener, list, bitmapListModel));
-		add(btnRemove);
-
-		final JButton btnEditTexture = new JButton("Edit Path");
-		btnEditTexture.setBounds(415, 535, 88, 23);
-		btnEditTexture.addActionListener(e -> btnEditTexture(list, modelView, listener));
-		add(btnEditTexture);
+		add(btnRemove, "cell 1 2 1 1, growx");
 
 		pathField = new JTextField();
-		pathField.setBounds(513, 535, 249, 20);
+//		pathField.setEditable(false);
 		pathField.setColumns(10);
 		pathField.addActionListener(e -> btnEditTexture(list, modelView, listener));
-		add(pathField);
+		add(pathField, "cell 4 1 2 1, grow");
 
-		final JButton btnAdd = new JButton("Add Path");
-		btnAdd.setBounds(415, 569, 89, 23);
-		btnAdd.addActionListener(e -> btnAddTexture(modelView, listener, bitmapListModel));
-		add(btnAdd);
+		final JButton btnEditTexture = new JButton("Apply Path");
+		btnEditTexture.addActionListener(e -> btnEditTexture(list, modelView, listener));
+		add(btnEditTexture, "cell 5 2 1 1, growx");
 
 	}
 
@@ -161,6 +156,27 @@ public class EditTexturesPopupPanel extends JPanel {
 	}
 
 	private void btnEditTexture(JList<Bitmap> list, ModelView modelView, ModelStructureChangeListener listener) {
+		final Bitmap selectedValue = list.getSelectedValue();
+		if (selectedValue != null) {
+//			final String path = (String) JOptionPane.showInputDialog(EditTexturesPopupPanel.this, "Enter new texture path:",
+//					"Edit Path", JOptionPane.PLAIN_MESSAGE, null, null, pathField.getText());
+//			System.out.println("path: " + path);
+//			if (path != null) {
+//				final Bitmap newBitmap = new Bitmap(path);
+//				modelView.getModel().add(newBitmap);
+//				bitmapListModel.addElement(newBitmap);
+//				listener.texturesChanged();
+//			}
+//			pathField.setText(path);
+//			selectedValue.setPath(path);
+			selectedValue.setPath(pathField.getText());
+			list.repaint();
+			loadBitmap(modelView, selectedValue);
+			listener.texturesChanged();
+		}
+	}
+
+	private void btnEditTexture2(JList<Bitmap> list, ModelView modelView, ModelStructureChangeListener listener) {
 		final Bitmap selectedValue = list.getSelectedValue();
 		if (selectedValue != null) {
 			selectedValue.setPath(pathField.getText());
