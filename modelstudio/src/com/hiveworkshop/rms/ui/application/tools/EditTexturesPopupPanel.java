@@ -4,8 +4,8 @@ import com.hiveworkshop.rms.editor.model.Bitmap;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.filesystem.sources.DataSource;
 import com.hiveworkshop.rms.parsers.blp.BLPHandler;
+import com.hiveworkshop.rms.ui.application.FileDialog;
 import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
-import com.hiveworkshop.rms.ui.gui.modeledit.util.TextureExporter;
 import com.hiveworkshop.rms.ui.util.ZoomableImagePreviewPanel;
 
 import javax.swing.*;
@@ -15,17 +15,14 @@ import java.awt.image.BufferedImage;
 
 public class EditTexturesPopupPanel extends JPanel {
 	private final JTextField pathField;
-	private final ModelView modelView;
-	private final ModelStructureChangeListener listener;
 	private final JPanel imageViewerPanel;
+	private final FileDialog fileDialog;
 
 	/**
 	 * Create the panel.
 	 */
-	public EditTexturesPopupPanel(final ModelView modelView, final ModelStructureChangeListener listener,
-	                              final TextureExporter textureExporter) {
-		this.modelView = modelView;
-		this.listener = listener;
+	public EditTexturesPopupPanel(final ModelView modelView, final ModelStructureChangeListener listener) {
+		fileDialog = new FileDialog(this);
 		setLayout(null);
 
 		final JPanel panel = new JPanel();
@@ -59,17 +56,17 @@ public class EditTexturesPopupPanel extends JPanel {
 
 		final JButton importButton = new JButton("Import");
 		importButton.setBounds(26, 535, 89, 23);
-		importButton.addActionListener(e -> importTexturePopup(modelView, listener, textureExporter, bitmapListModel));
+		importButton.addActionListener(e -> importTexturePopup(modelView, listener, bitmapListModel, list));
 		add(importButton);
 
 		final JButton exportButton = new JButton("Export");
 		exportButton.setBounds(125, 535, 89, 23);
-		exportButton.addActionListener(e -> exportTexture(modelView, textureExporter, list));
+		exportButton.addActionListener(e -> exportTexture(list));
 		add(exportButton);
 
 		final JButton btnReplaceTexture = new JButton("Replace Texture");
 		btnReplaceTexture.setBounds(25, 569, 185, 23);
-		btnReplaceTexture.addActionListener(e -> btnReplaceTexture(modelView, listener, textureExporter, list));
+		btnReplaceTexture.addActionListener(e -> btnReplaceTexture(modelView, listener, list));
 		add(btnReplaceTexture);
 
 		final JButton btnRemove = new JButton("Remove");
@@ -135,21 +132,20 @@ public class EditTexturesPopupPanel extends JPanel {
 		return defaultTexture;
 	}
 
-	private void importTexturePopup(ModelView modelView, ModelStructureChangeListener listener, TextureExporter textureExporter, DefaultListModel<Bitmap> bitmapListModel) {
-		textureExporter.showOpenDialog("", (file, filter) -> {
-			final Bitmap newBitmap = new Bitmap(file.getName());
+	private void importTexturePopup(ModelView modelView, ModelStructureChangeListener listener, DefaultListModel<Bitmap> bitmapListModel, JList<Bitmap> list) {
+		final Bitmap newBitmap = fileDialog.importImage();
+		if (newBitmap != null) {
 			modelView.getModel().add(newBitmap);
 			bitmapListModel.addElement(newBitmap);
+			list.setSelectedIndex(bitmapListModel.size() - 1);
 			listener.texturesChanged();
-		}, EditTexturesPopupPanel.this);
+		}
 	}
 
-	private void exportTexture(ModelView modelView, TextureExporter textureExporter, JList<Bitmap> list) {
+	private void exportTexture(JList<Bitmap> list) {
 		final Bitmap selectedValue = list.getSelectedValue();
 		if (selectedValue != null) {
-			String selectedPath = selectedValue.getPath();
-			selectedPath = selectedPath.substring(selectedPath.lastIndexOf("\\") + 1);
-			textureExporter.exportTexture(selectedPath, (file, filter) -> BLPHandler.exportBitmapTextureFile(EditTexturesPopupPanel.this, modelView, selectedValue, file), EditTexturesPopupPanel.this);
+			fileDialog.exportImage(selectedValue);
 		}
 	}
 
@@ -183,15 +179,17 @@ public class EditTexturesPopupPanel extends JPanel {
 		}
 	}
 
-	private void btnReplaceTexture(ModelView modelView, ModelStructureChangeListener listener, TextureExporter textureExporter, JList<Bitmap> list) {
+	private void btnReplaceTexture(ModelView modelView, ModelStructureChangeListener listener, JList<Bitmap> list) {
 		final Bitmap selectedValue = list.getSelectedValue();
 		if (selectedValue != null) {
-			textureExporter.showOpenDialog("", (file, filter) -> {
-				selectedValue.setPath(file.getName());
+			Bitmap newBitmap = fileDialog.importImage();
+			if (newBitmap != null) {
+				selectedValue.setPath(newBitmap.getPath());
+				pathField.setText(selectedValue.getPath());
 				list.repaint();
 				loadBitmap(modelView, selectedValue);
 				listener.texturesChanged();
-			}, EditTexturesPopupPanel.this);
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.ui.application;
 
+import com.hiveworkshop.rms.editor.model.Bitmap;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
 import com.hiveworkshop.rms.parsers.blp.BLPHandler;
@@ -291,8 +292,6 @@ public class FileDialog {
     public void exportInternalFile(String internalPath) {
         setCurrentDirectory(getModel());
         String fileName = internalPath.replaceAll(".+[\\\\/](?=.+)", "");
-        System.out.println("intP: " + internalPath + "\nfileName: " + fileName);
-        System.out.println("path: " + getPath());
         File tempFile = new File(fileChooser.getCurrentDirectory(), fileName);
         fileChooser.setSelectedFile(tempFile);
         final int returnValue = fileChooser.showSaveDialog(getParent());
@@ -305,6 +304,45 @@ public class FileDialog {
             }
 
         }
+    }
+
+    public void exportImage(Bitmap bitmap) {
+        setFilter(FileDialog.OPEN_TEXTURE);
+        setCurrentDirectory(getModel());
+        fileChooser.setSelectedFile(new File(getPath(), bitmap.getName()));
+        final int returnValue = fileChooser.showSaveDialog(getParent());
+        File selectedFile = fileChooser.getSelectedFile();
+        if (selectedFile != null) {
+            String ext = getExtension(selectedFile).toLowerCase();
+            String absolutePath = selectedFile.getAbsolutePath();
+            if (absolutePath.lastIndexOf('.') == -1) {
+                absolutePath += "." + ext;
+                selectedFile = new File(absolutePath);
+            }
+            setCurrentPath(selectedFile);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                BufferedImage bufferedImage = BLPHandler.getImage(bitmap, null);
+                if (bufferedImage != null) {
+                    try {
+                        saveTexture(bufferedImage, selectedFile, ext);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    public Bitmap importImage() {
+        setFilter(FileDialog.OPEN_TEXTURE);
+        setCurrentDirectory(getModel());
+        final int returnValue = fileChooser.showOpenDialog(getParent());
+        File selectedFile = fileChooser.getSelectedFile();
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File modelDirectory = getModel().getFile().getParentFile();
+            return new Bitmap(modelDirectory.toPath().relativize(selectedFile.toPath()).toString());
+        }
+        return null;
     }
 
     public void exportAnimatedFramePNG() {
