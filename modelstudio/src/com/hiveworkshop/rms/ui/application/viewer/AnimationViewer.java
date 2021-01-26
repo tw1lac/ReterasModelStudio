@@ -8,6 +8,7 @@ import org.lwjgl.LWJGLException;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.util.List;
 
 public class AnimationViewer extends JPanel {
 	private ModelView mdlDisp;
@@ -75,21 +76,32 @@ public class AnimationViewer extends JPanel {
 	public void reload() {
 		final Animation selectedItem = (Animation) animationBox.getSelectedItem();
 		animations.removeAllElements();
-		boolean sawLast = selectedItem == null;
-		if (allowUnanimated || (mdlDisp.getModel().getAnims().size() == 0)) {
+//		boolean sawLast = selectedItem == null;
+		List<Animation> anims = mdlDisp.getModel().getAnims();
+		if (allowUnanimated || (anims.size() == 0)) {
 			animations.addElement(null);
 		}
-		for (final Animation animation : mdlDisp.getModel().getAnims()) {
-			animations.addElement(animation);
-			if (animation == selectedItem) {
-				sawLast = true;
-			}
-		}
+//		for (final Animation animation : anims) {
+//			animations.addElement(animation);
+//			if (animation == selectedItem) {
+//				sawLast = true;
+//			}
+//		}
+//		System.out.println("allow unanimated: " + allowUnanimated);
+		animations.addAll(anims);
+		boolean sawLast = (selectedItem == null || anims.contains(selectedItem));
 		perspectiveViewport.reloadTextures();
 		if (sawLast && ((selectedItem != null) || allowUnanimated)) {
 			animationBox.setSelectedItem(selectedItem);
-		} else if (!allowUnanimated && (mdlDisp.getModel().getAnims().size() > 0)) {
-			animationBox.setSelectedItem(mdlDisp.getModel().getAnim(0));
+		} else if (!allowUnanimated && (anims.size() > 0)) {
+			animationBox.setSelectedItem(anims.get(0));
 		}
+
+//		boolean sawLast1 = ((selectedItem == null || anims.contains(selectedItem)) && ((selectedItem != null) || allowUnanimated));
+//
+//		boolean sawLast2 = selectedItem == null && selectedItem != null
+//				|| selectedItem == null && allowUnanimated
+//				|| anims.contains(selectedItem) && selectedItem != null
+//				|| anims.contains(selectedItem) && allowUnanimated;
 	}
 }

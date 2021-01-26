@@ -64,41 +64,9 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		right = getButton(this, 16, 32);
 		// add(right);
 
-		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(vp));
-		// .addComponent(wireframe));
-		// .addComponent(vp)
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-		// .addComponent(plusZoom)
-		// .addComponent(minusZoom)
-		// .addGroup(layout.createSequentialGroup()
-		// .addComponent(left)
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-		// .addComponent(up)
-		// .addComponent(down))
-		// .addComponent(right)))
-		// );
-		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(vp));
-		// .addComponent(wireframe));
-		// .addComponent(vp)
-		// .addGroup(layout.createSequentialGroup()
-		// .addComponent(plusZoom)
-		// .addGap(16)
-		// .addComponent(minusZoom)
-		// .addGap(16)
-		// .addComponent(up)
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-		// .addComponent(left)
-		// .addComponent(right))
-		// .addComponent(down)
-		// ));
-		//
 		setLayout(new BorderLayout());
 		add(vp);
-//		add(Box.createHorizontalStrut(200));
-//		add(Box.createVerticalStrut(200));
-		// setLayout( new BoxLayout(this,BoxLayout.LINE_AXIS));
-		// setLayout(new GridLayout(1,1));
+
 		view = new View(title, null, this);
 	}
 
@@ -150,35 +118,7 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 			vp = new PerspectiveViewport(dispModel, programPreferences, editorRenderModel);
 			vp.setIgnoreRepaint(false);
 			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
-			final GroupLayout layout = new GroupLayout(this);
-			layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(vp));
-			// .addComponent(wireframe));
-			// .addComponent(vp)
-			// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-			// .addComponent(plusZoom)
-			// .addComponent(minusZoom)
-			// .addGroup(layout.createSequentialGroup()
-			// .addComponent(left)
-			// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-			// .addComponent(up)
-			// .addComponent(down))
-			// .addComponent(right)))
-			// );
-			layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(vp));
-			// .addComponent(wireframe));
-			// .addComponent(vp)
-			// .addGroup(layout.createSequentialGroup()
-			// .addComponent(plusZoom)
-			// .addGap(16)
-			// .addComponent(minusZoom)
-			// .addGap(16)
-			// .addComponent(up)
-			// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-			// .addComponent(left)
-			// .addComponent(right))
-			// .addComponent(down)
-			// ));
-			//
+
 			setLayout(new BorderLayout());
 			// vp.setWireframeHandler(wireframe);
 			// vpp = new JPanel();
