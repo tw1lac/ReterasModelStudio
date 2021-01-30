@@ -2292,6 +2292,7 @@ public class EditableModel implements Named {
 	public static void recalculateTangents(final EditableModel currentMDL, final Component parent) {
 		// copied from
 		// https://github.com/TaylorMouse/MaxScripts/blob/master/Warcraft%203%20Reforged/GriffonStudios/GriffonStudios_Warcraft_3_Reforged_Export.ms#L169
+		int zeroAreaUVTris = 0;
 		currentMDL.doSavePreps(); // I wanted to use VertexId on the triangle
 		for (final Geoset theMesh : currentMDL.getGeosets()) {
 			final double[][] tan1 = new double[theMesh.getVertices().size()][];
@@ -2319,7 +2320,13 @@ public class EditableModel implements Named {
 				final double t1 = w2.y - w1.y;
 				final double t2 = w3.y - w1.y;
 
-				final double r = 1.0 / ((s1 * t2) - (s2 * t1));
+				double tVertWeight = (s1 * t2) - (s2 * t1);
+				if (tVertWeight == 0) {
+					tVertWeight = 0.00000001;
+					zeroAreaUVTris++;
+				}
+
+				final double r = 1.0 / tVertWeight;
 
 				final double[] sdir = {((t2 * x1) - (t1 * x2)) * r, ((t2 * y1) - (t1 * y2)) * r, ((t2 * z1) - (t1 * z2)) * r};
 				final double[] tdir = {((s1 * x2) - (s2 * x1)) * r, ((s1 * y2) - (s2 * y1)) * r, ((s1 * z2) - (s2 * z1)) * r};
@@ -2337,7 +2344,8 @@ public class EditableModel implements Named {
 				final Vec3 n = gv.getNormal();
 				final Vec3 t = new Vec3(tan1[vertexId]);
 
-				final Vec3 v = new Vec3(t).sub(n).scale(n.dot(t)).normalize();
+//				final Vec3 v = new Vec3(t).sub(n).scale(n.dot(t)).normalize();
+				final Vec3 v = new Vec3(t).sub(n).normalize();
 				final Vec3 cross = new Vec3();
 
 				n.cross(t, cross);
@@ -2359,20 +2367,24 @@ public class EditableModel implements Named {
 		for (final Geoset theMesh : currentMDL.getGeosets()) {
 			for (final GeosetVertex gv : theMesh.getVertices()) {
 				final double dotProduct = gv.getNormal().dot(new Vec3(gv.getTangent()));
+//				System.out.println("dotProduct: " + dotProduct);
 				if (Math.abs(dotProduct) <= 0.000001) {
 					goodTangents += 1;
 				} else {
-					System.out.println(dotProduct);
 					badTangents += 1;
 				}
 			}
 		}
 		if (parent != null) {
 			JOptionPane.showMessageDialog(parent,
-					"Tangent generation completed.\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents);
+					"Tangent generation completed." +
+							"\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents + "" +
+							"\nFound " + zeroAreaUVTris + " uv triangles with no area");
 		} else {
 			System.out.println(
-					"Tangent generation completed.\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents);
+					"Tangent generation completed." +
+							"\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents +
+							"\nFound " + zeroAreaUVTris + " uv triangles with no area");
 		}
 	}
 
