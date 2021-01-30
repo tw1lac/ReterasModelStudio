@@ -22,52 +22,6 @@ public class Vec2 {
 		this.y = old.y;
 	}
 
-	public float getCoord(final int dim) {
-		return switch (dim) {
-			case 0 -> x;
-			case 1 -> y;
-			default -> 0;
-		};
-	}
-
-	public void setCoord(final int dim, final double value) {
-		if (!Double.isNaN(value)) {
-			switch (dim) {
-				case 0 -> x = (float) value;
-				case 1 -> y = (float) value;
-			}
-		}
-	}
-
-	public void translateCoord(final byte dim, final double value) {
-		switch (dim) {
-			case 0 -> x += value;
-			case 1 -> y += value;
-		}
-	}
-
-	public void set(final Vec2 v) {
-		x = v.x;
-		y = v.y;
-	}
-
-	public void translate(final double x, final double y) {
-		this.x += x;
-		this.y += y;
-	}
-
-	public void scale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
-		final float dx = this.x - (float)centerX;
-		final float dy = this.y - (float)centerY;
-		this.x = (float)centerX + (dx * (float)scaleX);
-		this.y = (float)centerY + (dy * (float)scaleY);
-	}
-
-	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
-			final byte secondXYZ) {
-		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
-	}
-
 	public static void rotateVertex(final double centerX, final double centerY, final double radians,
 			final byte firstXYZ, final byte secondXYZ, final Vec2 vertex) {
 		final double x1 = vertex.getCoord(firstXYZ);
@@ -103,11 +57,6 @@ public class Vec2 {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "{ " + x + ", " + y + " }";
-	}
-
 	public static Vec2 centerOfGroup(final Collection<? extends Vec2> group) {
 		final Vec2 center = new Vec2();
 
@@ -118,6 +67,57 @@ public class Vec2 {
 		center.scale(1.0f / group.size());
 
 		return center;
+	}
+
+	public float getCoord(final int dim) {
+		return switch (dim) {
+			case 0 -> x;
+			case 1 -> y;
+			default -> 0;
+		};
+	}
+
+	public void setCoord(final int dim, final double value) {
+		if (!Double.isNaN(value)) {
+			switch (dim) {
+				case 0 -> x = (float) value;
+				case 1 -> y = (float) value;
+			}
+		}
+	}
+
+	public void translateCoord(final byte dim, final double value) {
+		switch (dim) {
+			case 0 -> x += value;
+			case 1 -> y += value;
+		}
+	}
+
+	public void set(final Vec2 v) {
+		x = v.x;
+		y = v.y;
+	}
+
+	public void translate(final double x, final double y) {
+		this.x += x;
+		this.y += y;
+	}
+
+	public void scale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
+		final float dx = this.x - (float) centerX;
+		final float dy = this.y - (float) centerY;
+		this.x = (float) centerX + (dx * (float) scaleX);
+		this.y = (float) centerY + (dy * (float) scaleY);
+	}
+
+	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
+	                   final byte secondXYZ) {
+		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
+	}
+
+	@Override
+	public String toString() {
+		return "{ " + x + ", " + y + " }";
 	}
 
 	public float distance(final Vec2 a) {

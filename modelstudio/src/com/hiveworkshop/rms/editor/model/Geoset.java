@@ -337,7 +337,7 @@ public class Geoset implements Named, VisibilitySource {
 
 	public Bone lastParentIn(Bone bone, List<Bone> list) {
 		Bone parentBone = bone;
-		while (list.contains(parentBone)) {
+		while (list.contains(parentBone) && parentBone != null) {
 			if (bone.getParent() instanceof Bone) {
 				parentBone = (Bone) bone.getParent();
 				if (parentBone.multiGeoId || parentBone.geoset != this) {

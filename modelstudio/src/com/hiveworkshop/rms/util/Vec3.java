@@ -86,6 +86,60 @@ public class Vec3 {
         };
     }
 
+    public static Vec3 centerOfGroup(final Collection<? extends Vec3> group) {
+        final Vec3 center = new Vec3();
+
+        for (final Vec3 v : group) {
+            center.add(v);
+        }
+
+        center.scale(1.0f / group.size());
+
+        return center;
+    }
+
+    public static void rotateVertex(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
+        final double centerX = center.x;
+        final double centerY = center.y;
+        final double centerZ = center.z;
+        final double vertexX = vertex.x;
+        final double vertexY = vertex.y;
+        final double vertexZ = vertex.z;
+        final double deltaX = vertexX - centerX;
+        final double deltaY = vertexY - centerY;
+        final double deltaZ = vertexZ - centerZ;
+        double radiansToApply;
+        final double twoPi = Math.PI * 2;
+        if (radians > Math.PI) {
+            radiansToApply = (radians - twoPi) % twoPi;
+        } else if (radians <= -Math.PI) {
+            radiansToApply = (radians + twoPi) % twoPi;
+        } else {
+            radiansToApply = radians;
+        }
+        final double cosRadians = Math.cos(radiansToApply);
+        if (radiansToApply == Math.PI) {
+            vertex.x = (float) centerX - (float) deltaX;
+            vertex.y = (float) centerY - (float) deltaY;
+            vertex.z = (float) centerY - (float) deltaZ;
+        }
+        final double resultDeltaX = vertexX * cosRadians;
+        throw new UnsupportedOperationException("NYI");
+    }
+
+    public static Vec3 valueOf(String s) throws NumberFormatException {
+        return parseVec3(s);
+    }
+
+    public static Vec3 parseVec3(String s) throws NumberFormatException {
+        String unbracketed = s.replaceAll("[\\[\\](){}]", "");
+        String[] numbers = unbracketed.split(",");
+        float num0 = Float.parseFloat(numbers[0].strip());
+        float num1 = Float.parseFloat(numbers[1].strip());
+        float num2 = Float.parseFloat(numbers[2].strip());
+        return new Vec3(num0, num1, num2);
+    }
+
     public float getCoord(final byte dim) {
         return switch (dim) {
             case 0 -> x;
@@ -143,18 +197,6 @@ public class Vec3 {
 
     public long[] toLongArray() {
         return new long[]{(long) x, (long) y, (long) z};
-    }
-
-    public static Vec3 centerOfGroup(final Collection<? extends Vec3> group) {
-        final Vec3 center = new Vec3();
-
-        for (final Vec3 v : group) {
-            center.add(v);
-        }
-
-        center.scale(1.0f / group.size());
-
-        return center;
     }
 
     public float distance(final float ax, final float ay, final float az) {
@@ -241,35 +283,6 @@ public class Vec3 {
     public void rotate(final double centerX, final double centerY, final double centerZ, final double radians,
                        final byte firstXYZ, final byte secondXYZ) {
         rotateVertex(centerX, centerY, centerZ, radians, firstXYZ, secondXYZ, this);
-    }
-
-    public static void rotateVertex(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
-        final double centerX = center.x;
-        final double centerY = center.y;
-        final double centerZ = center.z;
-        final double vertexX = vertex.x;
-        final double vertexY = vertex.y;
-        final double vertexZ = vertex.z;
-        final double deltaX = vertexX - centerX;
-        final double deltaY = vertexY - centerY;
-        final double deltaZ = vertexZ - centerZ;
-        double radiansToApply;
-        final double twoPi = Math.PI * 2;
-        if (radians > Math.PI) {
-            radiansToApply = (radians - twoPi) % twoPi;
-        } else if (radians <= -Math.PI) {
-            radiansToApply = (radians + twoPi) % twoPi;
-        } else {
-            radiansToApply = radians;
-        }
-        final double cosRadians = Math.cos(radiansToApply);
-        if (radiansToApply == Math.PI) {
-            vertex.x = (float) centerX - (float) deltaX;
-            vertex.y = (float) centerY - (float) deltaY;
-            vertex.z = (float) centerY - (float) deltaZ;
-        }
-        final double resultDeltaX = vertexX * cosRadians;
-        throw new UnsupportedOperationException("NYI");
     }
 
     public void setCoord(final byte dim, final double value) {
@@ -411,18 +424,5 @@ public class Vec3 {
 
     public Vec3 bezier(final Vec3 outTan, final Vec3 inTan, final Vec3 a, final float t) {
         return bezier(outTan, inTan, a, t, this);
-    }
-
-    public static Vec3 valueOf(String s) throws NumberFormatException {
-        return parseVec3(s);
-    }
-
-    public static Vec3 parseVec3(String s) throws NumberFormatException {
-        String unbracketed = s.replaceAll("[\\[\\](){}]", "");
-        String[] numbers = unbracketed.split(",");
-        float num0 = Float.parseFloat(numbers[0].strip());
-        float num1 = Float.parseFloat(numbers[1].strip());
-        float num2 = Float.parseFloat(numbers[2].strip());
-        return new Vec3(num0, num1, num2);
     }
 }

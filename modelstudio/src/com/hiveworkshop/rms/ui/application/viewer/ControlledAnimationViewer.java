@@ -58,6 +58,10 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 		perspectiveViewport.setAnimation(animation);
 	}
 
+	public void setAnimationTime(int time) {
+		perspectiveViewport.setAnimationTime(time);
+	}
+
 	@Override
 	public void playAnimation() {
 		perspectiveViewport.setAnimationTime(0);
