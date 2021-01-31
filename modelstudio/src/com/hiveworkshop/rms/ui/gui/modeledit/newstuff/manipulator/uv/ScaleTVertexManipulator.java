@@ -7,8 +7,8 @@ import com.hiveworkshop.rms.util.Vec3;
 
 public final class ScaleTVertexManipulator extends AbstractScaleTVertexManipulator {
 
-	public ScaleTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView) {
-		super(modelEditor, selectionView);
+	public ScaleTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView, String dir) {
+		super(modelEditor, selectionView, dir);
 	}
 
 	@Override

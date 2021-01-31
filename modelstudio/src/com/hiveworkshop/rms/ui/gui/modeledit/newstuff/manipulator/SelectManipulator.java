@@ -31,12 +31,12 @@ public class SelectManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		this.mouseEnd = mouseEnd;
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		final double minX = Math.min(activityStart.x, mouseEnd.x);
 		final double minY = Math.min(activityStart.y, mouseEnd.y);
 		final double maxX = Math.max(activityStart.x, mouseEnd.x);

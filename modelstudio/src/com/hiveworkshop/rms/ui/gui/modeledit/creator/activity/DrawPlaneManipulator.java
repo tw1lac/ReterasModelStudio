@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.creator.activity;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.ui.application.edit.animation.WrongModeException;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
@@ -9,6 +8,7 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.DoNothingActi
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericMoveAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.AbstractManipulator;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.util.Vec3;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +36,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		if (Math.abs(mouseEnd.x - activityStart.x) >= 0.1 && Math.abs(mouseEnd.y - activityStart.y) >= 0.1) {
 			if (addPlane == null) {
 				try {
@@ -54,7 +54,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		if (addPlane == null) {
 			return new DoNothingAction("do nothing");
 		}

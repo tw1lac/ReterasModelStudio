@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.model;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
@@ -8,11 +7,10 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.Viewport
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget;
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtrudeManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtrudeXManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtrudeYManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
@@ -51,9 +49,9 @@ public final class ExtrudeWidgetManipulatorBuilder extends AbstractSelectAndEdit
 		}
 		if (directionByMouse != null) {
 			return switch (directionByMouse) {
-				case BOTH -> new ExtrudeManipulator(getModelEditor());
-				case RIGHT -> new ExtrudeXManipulator(getModelEditor());
-				case UP -> new ExtrudeYManipulator(getModelEditor());
+				case BOTH -> new ExtrudeManipulator(getModelEditor(), "xy");
+				case RIGHT -> new ExtrudeManipulator(getModelEditor(), "x");
+				case UP -> new ExtrudeManipulator(getModelEditor(), "y");
 				case NONE -> null;
 			};
 		}
@@ -63,7 +61,7 @@ public final class ExtrudeWidgetManipulatorBuilder extends AbstractSelectAndEdit
 	@Override
 	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter, final Point mousePoint,
 			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
-		return new ExtrudeManipulator(getModelEditor());
+		return new ExtrudeManipulator(getModelEditor(), "xyz");
 	}
 
 	@Override

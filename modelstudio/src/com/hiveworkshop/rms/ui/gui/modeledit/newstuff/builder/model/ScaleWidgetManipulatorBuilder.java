@@ -1,15 +1,17 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.model;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.ScalerWidget;
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.ScalerWidget.ScaleDirection;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.*;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ScaleManipulator;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ScaleManipulatorUsesYMouseDrag;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
@@ -29,8 +31,7 @@ public final class ScaleWidgetManipulatorBuilder extends AbstractSelectAndEditMo
 									   final CoordinateSystem coordinateSystem,
 									   final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		moverWidget.setMoveDirection(directionByMouse);
 		return directionByMouse != ScaleDirection.NONE;
 	}
@@ -41,17 +42,23 @@ public final class ScaleWidgetManipulatorBuilder extends AbstractSelectAndEditMo
                                                       final CoordinateSystem coordinateSystem,
 													  final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final ScaleDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
 		}
 		if (directionByMouse != null) {
+//			return switch (directionByMouse) {
+//				case XYZ -> new ScaleManipulatorUsesYMouseDrag(getModelEditor(), selectionView, "xyz");
+//				case FLAT_XY -> new ScaleXYManipulator(getModelEditor(), selectionView, "xy");
+//				case RIGHT -> new ScaleXManipulator(getModelEditor(), selectionView, "x");
+//				case UP -> new ScaleYManipulator(getModelEditor(), selectionView, "y");
+//				case NONE -> null;
+//			};
 			return switch (directionByMouse) {
-				case XYZ -> new ScaleManipulatorUsesYMouseDrag(getModelEditor(), selectionView);
-				case FLAT_XY -> new ScaleXYManipulator(getModelEditor(), selectionView);
-				case RIGHT -> new ScaleXManipulator(getModelEditor(), selectionView);
-				case UP -> new ScaleYManipulator(getModelEditor(), selectionView);
+				case XYZ -> new ScaleManipulatorUsesYMouseDrag(getModelEditor(), selectionView, "xyz");
+				case FLAT_XY -> new ScaleManipulator(getModelEditor(), selectionView, "xy");
+				case RIGHT -> new ScaleManipulator(getModelEditor(), selectionView, "x");
+				case UP -> new ScaleManipulator(getModelEditor(), selectionView, "y");
 				case NONE -> null;
 			};
 		}
@@ -63,7 +70,8 @@ public final class ScaleWidgetManipulatorBuilder extends AbstractSelectAndEditMo
 												   final Point mousePoint,
 												   final CoordinateSystem coordinateSystem,
 												   final SelectionView selectionView) {
-		return new ScaleManipulator(getModelEditor(), selectionView);
+		return new ScaleManipulator(getModelEditor(), selectionView, "xyz");
+		//todo correct dir
 	}
 
 	@Override

@@ -1,21 +1,23 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv;
 
-import java.awt.geom.Point2D.Double;
-
 import com.hiveworkshop.rms.ui.gui.modeledit.UndoAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.actions.util.GenericMoveAction;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.AbstractManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.util.Vec3;
 
+import java.awt.geom.Point2D.Double;
+
 public abstract class AbstractMoveTVertexManipulator extends AbstractManipulator {
 	protected final TVertexEditor modelEditor;
 	protected final Vec3 moveVector;
 	private GenericMoveAction translationAction;
+	String dir;
 
-	public AbstractMoveTVertexManipulator(final TVertexEditor modelEditor) {
+	public AbstractMoveTVertexManipulator(final TVertexEditor modelEditor, String dir) {
 		this.modelEditor = modelEditor;
 		moveVector = new Vec3(0, 0, 0);
+		this.dir = dir;
 	}
 
 	@Override
@@ -25,15 +27,15 @@ public abstract class AbstractMoveTVertexManipulator extends AbstractManipulator
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		resetMoveVector();
 		buildMoveVector(mouseStart, mouseEnd, dim1, dim2);
 		translationAction.updateTranslation(moveVector.x, moveVector.y, moveVector.z);
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
-		update(mouseStart, mouseEnd, dim1, dim2);
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
+		update(mouseStart, mouseEnd, dim1, dim2, dir);
 		resetMoveVector();
 		return translationAction;
 	}

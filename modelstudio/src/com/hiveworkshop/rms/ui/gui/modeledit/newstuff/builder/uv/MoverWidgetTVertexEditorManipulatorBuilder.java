@@ -1,8 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.uv;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
@@ -10,12 +7,12 @@ import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexMoverWidget;
 import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexMoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.MoveTVertexManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.MoveXTVertexManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.MoveYTVertexManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec2;
+
+import java.awt.*;
 
 public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSelectAndEditTVertexEditorManipulatorBuilder {
 	private final TVertexMoverWidget moverWidget = new TVertexMoverWidget(new Vec2(0, 0));
@@ -46,9 +43,9 @@ public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 			moverWidget.setMoveDirection(directionByMouse);
 
 			return switch (directionByMouse) {
-				case BOTH -> new MoveTVertexManipulator(getModelEditor());
-				case RIGHT -> new MoveXTVertexManipulator(getModelEditor());
-				case UP -> new MoveYTVertexManipulator(getModelEditor());
+				case BOTH -> new MoveTVertexManipulator(getModelEditor(), "xy");
+				case RIGHT -> new MoveTVertexManipulator(getModelEditor(), "x");
+				case UP -> new MoveTVertexManipulator(getModelEditor(), "y");
 				case NONE -> null;
 			};
 		}
@@ -58,7 +55,7 @@ public final class MoverWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 	@Override
 	protected Manipulator createDefaultManipulator(final Vec2 selectionCenter, final Point mousePoint,
 			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
-		return new MoveTVertexManipulator(getModelEditor());
+		return new MoveTVertexManipulator(getModelEditor(), "xy");
 	}
 
 	@Override

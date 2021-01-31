@@ -14,10 +14,12 @@ public abstract class AbstractScaleTVertexManipulator extends AbstractManipulato
 	private final TVertexEditor modelEditor;
 	private final SelectionView selectionView;
 	private GenericScaleAction scaleAction;
+	String dir;
 
-	public AbstractScaleTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView) {
+	public AbstractScaleTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView, String dir) {
 		this.modelEditor = modelEditor;
 		this.selectionView = selectionView;
+		this.dir = dir;
 	}
 
 	@Override
@@ -28,7 +30,7 @@ public abstract class AbstractScaleTVertexManipulator extends AbstractManipulato
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
 		final Vec2 center = selectionView.getUVCenter(modelEditor.getUVLayerIndex());
 		final double scaleFactor = computeScaleFactor(mouseStart, mouseEnd, center, dim1, dim2);
 		scaleWithFactor(modelEditor, center, scaleFactor, dim1, dim2);
@@ -39,8 +41,8 @@ public abstract class AbstractScaleTVertexManipulator extends AbstractManipulato
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
-		update(mouseStart, mouseEnd, dim1, dim2);
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
+		update(mouseStart, mouseEnd, dim1, dim2, dir);
 		return scaleAction;
 	}
 

@@ -8,8 +8,8 @@ import com.hiveworkshop.rms.util.Vec3;
 public final class ScaleXYTVertexManipulator extends AbstractScaleTVertexManipulator {
 	private final Vec3 resettableScaleFactors;
 
-	public ScaleXYTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView) {
-		super(modelEditor, selectionView);
+	public ScaleXYTVertexManipulator(final TVertexEditor modelEditor, final SelectionView selectionView, String dir) {
+		super(modelEditor, selectionView, dir);
 		this.resettableScaleFactors = new Vec3(0, 0, 0);
 	}
 
@@ -19,8 +19,17 @@ public final class ScaleXYTVertexManipulator extends AbstractScaleTVertexManipul
 		resettableScaleFactors.x = 1;
 		resettableScaleFactors.y = 1;
 		resettableScaleFactors.z = 1;
-		resettableScaleFactors.setCoord(dim1, scaleFactor);
-		resettableScaleFactors.setCoord(dim2, scaleFactor);
+		if(dir.contains("x")){
+			resettableScaleFactors.setCoord(dim1, scaleFactor);
+		}
+		if(dir.contains("y")){
+			resettableScaleFactors.setCoord(dim2, scaleFactor);
+		}
+		if(dir.contains("z")){
+			resettableScaleFactors.z = (float) scaleFactor;
+		}
+//		resettableScaleFactors.setCoord(dim1, scaleFactor);
+//		resettableScaleFactors.setCoord(dim2, scaleFactor);
 		getScaleAction().updateScale(resettableScaleFactors.x, resettableScaleFactors.y, resettableScaleFactors.z);
 	}
 

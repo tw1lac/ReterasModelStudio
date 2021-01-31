@@ -6,7 +6,9 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.Viewport
 import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexScalerWidget;
 import com.hiveworkshop.rms.ui.application.edit.uv.widgets.TVertexScalerWidget.ScaleDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.*;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.ScaleTVertexManipulator;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.ScaleTVertexManipulatorUsesYMouseDrag;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv.ScaleXYTVertexManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
@@ -43,10 +45,10 @@ public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 			moverWidget.setMoveDirection(directionByMouse);
 		}
 		return switch (directionByMouse) {
-			case XYZ -> new ScaleTVertexManipulatorUsesYMouseDrag(getModelEditor(), selectionView);
-			case FLAT_XY -> new ScaleXYTVertexManipulator(getModelEditor(), selectionView);
-			case RIGHT -> new ScaleXTVertexManipulator(getModelEditor(), selectionView);
-			case UP -> new ScaleYTVertexManipulator(getModelEditor(), selectionView);
+			case XYZ -> new ScaleTVertexManipulatorUsesYMouseDrag(getModelEditor(), selectionView, "xy");
+			case FLAT_XY -> new ScaleXYTVertexManipulator(getModelEditor(), selectionView, "xy");
+			case RIGHT -> new ScaleXYTVertexManipulator(getModelEditor(), selectionView, "x");
+			case UP -> new ScaleXYTVertexManipulator(getModelEditor(), selectionView, "y");
 			case NONE -> null;
 		};
 	}
@@ -54,7 +56,7 @@ public final class ScaleWidgetTVertexEditorManipulatorBuilder extends AbstractSe
 	@Override
 	protected Manipulator createDefaultManipulator(final Vec2 selectionCenter, final Point mousePoint,
 			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
-		return new ScaleTVertexManipulator(getModelEditor(), selectionView);
+		return new ScaleTVertexManipulator(getModelEditor(), selectionView, "xyz");
 	}
 
 	@Override

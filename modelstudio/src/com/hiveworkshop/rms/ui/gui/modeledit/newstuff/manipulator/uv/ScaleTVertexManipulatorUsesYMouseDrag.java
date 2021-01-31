@@ -1,16 +1,16 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.uv;
 
-import java.awt.geom.Point2D.Double;
-
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
+import java.awt.geom.Point2D.Double;
+
 public final class ScaleTVertexManipulatorUsesYMouseDrag extends AbstractScaleTVertexManipulator {
 
-	public ScaleTVertexManipulatorUsesYMouseDrag(final TVertexEditor modelEditor, final SelectionView selectionView) {
-		super(modelEditor, selectionView);
+	public ScaleTVertexManipulatorUsesYMouseDrag(final TVertexEditor modelEditor, final SelectionView selectionView, String dir) {
+		super(modelEditor, selectionView, dir);
 	}
 
 	@Override

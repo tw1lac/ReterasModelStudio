@@ -49,34 +49,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 	Timer paintTimer;
 	boolean mouseInBounds = false;
 	JPopupMenu contextMenu;
-	JMenu viewMenu;
-	JMenu meshMenu;
-	JMenu editMenu;
-	JMenu matrixMenu;
-	JMenu nodeMenu;
-	JMenuItem frontView;
-	JMenuItem backView;
-	JMenuItem topView;
-	JMenuItem bottomView;
-	JMenuItem leftView;
-	JMenuItem rightView;
-	JMenuItem rig;
-	JMenuItem reAssignMatrix;
-	JMenuItem viewMatrix;
-	JMenuItem reAssignSkinning;
-	JMenuItem viewHDSkinning;
-	JMenuItem setParent;
-	JMenuItem renameBone;
-	JMenuItem appendBoneBone;
-	JMenuItem cogBone;
-	JMenuItem manualMove;
-	JMenuItem manualRotate;
-	JMenuItem manualSet;
-	JMenuItem manualScale;
-	JMenuItem addTeamColor;
-	JMenuItem splitGeo;
 
-	private JMenuItem createFace;
 	private final ViewportModelRenderer viewportModelRenderer;
 	private final AnimatedViewportModelRenderer animatedViewportModelRenderer;
 	private final ResettableAnimatedIdObjectParentLinkRenderer linkRenderer;
@@ -152,59 +125,58 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 	private void createViewPortMenu(UndoActionListener undoListener) {
 		contextMenu = new JPopupMenu();
 
-		viewMenu = new JMenu("View");
+		JMenu viewMenu = new JMenu("View");
 		contextMenu.add(viewMenu);
 
-		frontView = addMenuItem("Front", new ChangeViewportAxisAction("Front", (byte) 1, (byte) 2), viewMenu);
-		backView = addMenuItem("Back", new ChangeViewportAxisAction("Back", (byte) -2, (byte) 2), viewMenu);
-		topView = addMenuItem("Top", new ChangeViewportAxisAction("Top", (byte) 1, (byte) -1), viewMenu);
-		bottomView = addMenuItem("Bottom", new ChangeViewportAxisAction("Bottom", (byte) 1, (byte) 0), viewMenu);
-		leftView = addMenuItem("Left", new ChangeViewportAxisAction("Left", (byte) -1, (byte) 2), viewMenu);
-		rightView = addMenuItem("Right", new ChangeViewportAxisAction("Right", (byte) 0, (byte) 2), viewMenu);
+		addMenuItem("Front", new ChangeViewportAxisAction("Front", (byte) 1, (byte) 2), viewMenu);
+		addMenuItem("Back", new ChangeViewportAxisAction("Back", (byte) -2, (byte) 2), viewMenu);
+		addMenuItem("Top", new ChangeViewportAxisAction("Top", (byte) 1, (byte) -1), viewMenu);
+		addMenuItem("Bottom", new ChangeViewportAxisAction("Bottom", (byte) 1, (byte) 0), viewMenu);
+		addMenuItem("Left", new ChangeViewportAxisAction("Left", (byte) -1, (byte) 2), viewMenu);
+		addMenuItem("Right", new ChangeViewportAxisAction("Right", (byte) 0, (byte) 2), viewMenu);
 
-		meshMenu = new JMenu("Mesh");
+		JMenu meshMenu = new JMenu("Mesh");
 		contextMenu.add(meshMenu);
 
-		createFace = new JMenuItem("Create Face");
+		JMenuItem createFace = new JMenuItem("Create Face");
 		createFace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
 		createFace.addActionListener(e -> createFace());
 		meshMenu.add(createFace);
 
-		addTeamColor = addMenuItem("Split Geoset and Add Team Color", e -> undoListener.pushAction(modelEditor.addTeamColor()), meshMenu);
-		splitGeo = addMenuItem("Split Geoset", e -> undoListener.pushAction(modelEditor.splitGeoset()), meshMenu);
+		addMenuItem("Split Geoset and Add Team Color", e -> undoListener.pushAction(modelEditor.addTeamColor()), meshMenu);
+		addMenuItem("Split Geoset", e -> undoListener.pushAction(modelEditor.splitGeoset()), meshMenu);
 
-		editMenu = new JMenu("Edit");
+		JMenu editMenu = new JMenu("Edit");
 		contextMenu.add(editMenu);
 
-		manualMove = addMenuItem("Translation Type-in", e -> manualMove(), editMenu);
-		manualRotate = addMenuItem("Rotate Type-in", e -> manualRotate(), editMenu);
-		manualSet = addMenuItem("Position Type-in", e -> manualSet(), editMenu);
-		manualScale = addMenuItem("Scale Type-in", e -> manualScale(), editMenu);
+		addMenuItem("Translation Type-in", e -> manualMove(), editMenu);
+		addMenuItem("Rotate Type-in", e -> manualRotate(), editMenu);
+		addMenuItem("Position Type-in", e -> manualSet(), editMenu);
+		addMenuItem("Scale Type-in", e -> manualScale(), editMenu);
 
-		matrixMenu = new JMenu("Rig");
+		JMenu matrixMenu = new JMenu("Rig");
 		contextMenu.add(matrixMenu);
 
-		rig = addMenuItem("Selected Mesh to Selected Nodes", e -> undoListener.pushAction(modelEditor.rig()), matrixMenu);
-		reAssignMatrix = addMenuItem("Re-assign Matrix", e -> reAssignMatrix(), matrixMenu);
-		viewMatrix = addMenuItem("View Matrix", e -> InfoPopup.show(this, modelEditor.getSelectedMatricesDescription()), matrixMenu);
-		reAssignSkinning = addMenuItem("Re-assign HD Skin", e -> reAssignSkinning(), matrixMenu);
-		viewHDSkinning = addMenuItem("View HD Skin", e -> InfoPopup.show(this, modelEditor.getSelectedHDSkinningDescription()), matrixMenu);
+		addMenuItem("Selected Mesh to Selected Nodes", e -> undoListener.pushAction(modelEditor.rig()), matrixMenu);
+		addMenuItem("Re-assign Matrix", e -> reAssignMatrix(), matrixMenu);
+		addMenuItem("View Matrix", e -> InfoPopup.show(this, modelEditor.getSelectedMatricesDescription()), matrixMenu);
+		addMenuItem("Re-assign HD Skin", e -> reAssignSkinning(), matrixMenu);
+		addMenuItem("View HD Skin", e -> InfoPopup.show(this, modelEditor.getSelectedHDSkinningDescription()), matrixMenu);
 
-		nodeMenu = new JMenu("Node");
+		JMenu nodeMenu = new JMenu("Node");
 		contextMenu.add(nodeMenu);
 
-		setParent = addMenuItem("Set Parent", e -> setParent(), nodeMenu);
-		cogBone = addMenuItem("Auto-Center Bone(s)", e -> undoListener.pushAction(modelEditor.autoCenterSelectedBones()), nodeMenu);
-		renameBone = addMenuItem("Rename Bone", e -> renameBone(), nodeMenu);
-		appendBoneBone = addMenuItem("Append Bone Suffix", e -> appendBoneBone(), nodeMenu);
+		addMenuItem("Set Parent", e -> setParent(), nodeMenu);
+		addMenuItem("Auto-Center Bone(s)", e -> undoListener.pushAction(modelEditor.autoCenterSelectedBones()), nodeMenu);
+		addMenuItem("Rename Bone", e -> renameBone(), nodeMenu);
+		addMenuItem("Append Bone Suffix", e -> appendBoneBone(), nodeMenu);
 
 	}
 
-	private static JMenuItem addMenuItem(String itemText, ActionListener actionListener, JMenu menu) {
+	private static void addMenuItem(String itemText, ActionListener actionListener, JMenu menu) {
 		JMenuItem menuItem = new JMenuItem(itemText);
 		menuItem.addActionListener(actionListener);
 		menu.add(menuItem);
-		return menuItem;
 	}
 
 	public void setView(View view) {
@@ -321,8 +293,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 			linkRenderer.reset(this, graphics2d, NodeIconPalette.HIGHLIGHT, renderModel);
 			modelView.visit(linkRenderingVisitorAdapter);
 			graphics2d.setStroke(stroke);
-			animatedViewportModelRenderer.reset(graphics2d, programPreferences, m_d1, m_d2, this, this, modelView,
-					renderModel);
+			animatedViewportModelRenderer.reset(graphics2d, programPreferences, m_d1, m_d2, this, this, modelView, renderModel);
 			modelView.visit(animatedViewportModelRenderer);
 			activityListener.render(graphics2d, this, renderModel);
 		} else {
@@ -332,12 +303,10 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		}
 
 		getColor(g, m_d1);
-		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(5)),
-				(int) Math.round(convertY(0)));
+		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(5)), (int) Math.round(convertY(0)));
 
 		getColor(g, m_d2);
-		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(0)),
-				(int) Math.round(convertY(5)));
+		g.drawLine((int) Math.round(convertX(0)), (int) Math.round(convertY(0)), (int) Math.round(convertX(0)), (int) Math.round(convertY(5)));
 
 		// Visual effects from user controls
 		// int xoff = 0;
@@ -520,7 +489,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		final MatrixPopup matrixPopup = new MatrixPopup(modelView.getModel());
 		final String[] words = { "Accept", "Cancel" };
 		final int i = JOptionPane.showOptionDialog(this, matrixPopup, "Rebuild Matrix",
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION, null, words, words[1]);
+				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, words, words[1]);
 		if (i == 0) {
 			// JOptionPane.showMessageDialog(null,"action approved");
 			UndoAction reassignMatrixAction = modelEditor.setMatrix(BoneShell.toBonesList(Collections.list(matrixPopup.newRefs.elements())));
@@ -532,7 +501,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		SkinPopup skinPopup = new SkinPopup(modelView);
 		final String[] words = { "Accept", "Cancel" };
 		final int i = JOptionPane.showOptionDialog(this, skinPopup, "Rebuild Skin",
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION, null, words, words[1]);
+				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, words, words[1]);
 		if (i == 0) {
 			// JOptionPane.showMessageDialog(null,"action approved");
 			undoListener.pushAction(modelEditor.setHDSkinning(skinPopup.getBones(), skinPopup.getSkinWeights()));
@@ -633,8 +602,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 		final double deltaXAngle = Math.toRadians(((Number) spinners[0].getValue()).doubleValue());
 		final double deltaYAngle = Math.toRadians(((Number) spinners[1].getValue()).doubleValue());
 		final double deltaZAngle = Math.toRadians(((Number) spinners[2].getValue()).doubleValue());
-		final UndoAction rotate = modelEditor.rotate(modelEditor.getSelectionCenter(), deltaXAngle, deltaYAngle,
-				deltaZAngle);
+		final UndoAction rotate = modelEditor.rotate(modelEditor.getSelectionCenter(), deltaXAngle, deltaYAngle, deltaZAngle);
 		undoListener.pushAction(rotate);
 
 	}
@@ -828,10 +796,8 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 	}
 
 	public Rectangle2D.Double pointsToGeomRect(final Point a, final Point b) {
-		final Point2D.Double topLeft = new Point2D.Double(Math.min(geomX(a.x), geomX(b.x)),
-				Math.min(geomY(a.y), geomY(b.y)));
-		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
-				Math.max(geomY(a.y), geomY(b.y)));
+		final Point2D.Double topLeft = new Point2D.Double(Math.min(geomX(a.x), geomX(b.x)), Math.min(geomY(a.y), geomY(b.y)));
+		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)), Math.max(geomY(a.y), geomY(b.y)));
 		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
 				lowRight.y - topLeft.y);
 	}
@@ -839,8 +805,7 @@ public class Viewport extends JPanel implements MouseListener, ActionListener, M
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
-				lowRight.y - topLeft.y);
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x, lowRight.y - topLeft.y);
 	}
 
 	@Override

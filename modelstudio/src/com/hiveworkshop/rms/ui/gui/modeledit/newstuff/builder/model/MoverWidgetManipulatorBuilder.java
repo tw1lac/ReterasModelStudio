@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.builder.model;
 
-import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
@@ -9,10 +8,9 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget;
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.MoveManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.MoveXManipulator;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.MoveYManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.util.Vec3;
 
 import java.awt.*;
 
@@ -32,8 +30,7 @@ public final class MoverWidgetManipulatorBuilder extends AbstractSelectAndEditMo
 									   final CoordinateSystem coordinateSystem,
 									   final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem,coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		moverWidget.setMoveDirection(directionByMouse);
 		return directionByMouse != MoveDirection.NONE;
 	}
@@ -44,16 +41,15 @@ public final class MoverWidgetManipulatorBuilder extends AbstractSelectAndEditMo
                                                       final CoordinateSystem coordinateSystem,
 													  final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		if (directionByMouse != null) {
 			moverWidget.setMoveDirection(directionByMouse);
 		}
 		if (directionByMouse != null) {
 			return switch (directionByMouse) {
-				case BOTH -> new MoveManipulator(getModelEditor());
-				case RIGHT -> new MoveXManipulator(getModelEditor());
-				case UP -> new MoveYManipulator(getModelEditor());
+				case BOTH -> new MoveManipulator(getModelEditor(), "xy");
+				case RIGHT -> new MoveManipulator(getModelEditor(), "x");
+				case UP -> new MoveManipulator(getModelEditor(), "y");
 				case NONE -> null;
 			};
 		}
@@ -65,7 +61,7 @@ public final class MoverWidgetManipulatorBuilder extends AbstractSelectAndEditMo
 												   final Point mousePoint,
 												   final CoordinateSystem coordinateSystem,
 												   final SelectionView selectionView) {
-		return new MoveManipulator(getModelEditor());
+		return new MoveManipulator(getModelEditor(), "xyz");
 	}
 
 	@Override
