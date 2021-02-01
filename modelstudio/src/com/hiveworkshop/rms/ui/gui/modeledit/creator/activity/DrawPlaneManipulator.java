@@ -36,7 +36,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
 		if (Math.abs(mouseEnd.x - activityStart.x) >= 0.1 && Math.abs(mouseEnd.y - activityStart.y) >= 0.1) {
 			if (addPlane == null) {
 				try {
@@ -54,7 +54,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
 		if (addPlane == null) {
 			return new DoNothingAction("do nothing");
 		}

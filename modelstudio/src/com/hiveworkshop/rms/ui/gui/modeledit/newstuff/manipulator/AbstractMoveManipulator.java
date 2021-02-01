@@ -11,9 +11,9 @@ public abstract class AbstractMoveManipulator extends AbstractManipulator {
 	protected final ModelEditor modelEditor;
 	protected final Vec3 moveVector;
 	private GenericMoveAction translationAction;
-	String dir;
+	MoveDimension dir;
 
-	public AbstractMoveManipulator(final ModelEditor modelEditor, String dir) {
+	public AbstractMoveManipulator(final ModelEditor modelEditor, MoveDimension dir) {
 		this.modelEditor = modelEditor;
 		moveVector = new Vec3(0, 0, 0);
 		this.dir = dir;
@@ -26,15 +26,15 @@ public abstract class AbstractMoveManipulator extends AbstractManipulator {
 	}
 
 	@Override
-	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
+	public void update(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
 		resetMoveVector();
 		buildMoveVector(mouseStart, mouseEnd, dim1, dim2);
 		translationAction.updateTranslation(moveVector.x, moveVector.y, moveVector.z);
 	}
 
 	@Override
-	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2, String dir) {
-		update(mouseStart, mouseEnd, dim1, dim2, dir);
+	public UndoAction finish(final Double mouseStart, final Double mouseEnd, final byte dim1, final byte dim2) {
+		update(mouseStart, mouseEnd, dim1, dim2);
 		resetMoveVector();
 		return translationAction;
 	}

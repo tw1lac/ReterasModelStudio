@@ -293,7 +293,8 @@ public class Vec3 {
                 case 2 -> z = (float) value;
                 case -1 -> x = (float) -value;
                 case -2 -> y = (float) -value;
-                case -32 -> z = (float) -value;
+                case -3 -> z = (float) -value;
+//                case -32 -> z = (float) -value;
             }
         }
     }

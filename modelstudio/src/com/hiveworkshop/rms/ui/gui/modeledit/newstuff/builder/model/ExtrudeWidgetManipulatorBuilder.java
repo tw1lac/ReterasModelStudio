@@ -5,9 +5,9 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.ModelEditor;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.selection.ViewportSelectionHandler;
 import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget;
-import com.hiveworkshop.rms.ui.application.edit.mesh.widgets.MoverWidget.MoveDirection;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.ExtrudeManipulator;
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.Manipulator;
+import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.manipulator.MoveDimension;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec3;
@@ -17,56 +17,37 @@ import java.awt.*;
 public final class ExtrudeWidgetManipulatorBuilder extends AbstractSelectAndEditModelEditorManipulatorBuilder {
 	private final MoverWidget moverWidget = new MoverWidget(new Vec3(0, 0, 0));
 
-	public ExtrudeWidgetManipulatorBuilder(final ModelEditor modelEditor,
-										   final ViewportSelectionHandler viewportSelectionHandler,
-										   final ProgramPreferences programPreferences,
-										   final ModelView modelView) {
+	public ExtrudeWidgetManipulatorBuilder(final ModelEditor modelEditor, final ViewportSelectionHandler viewportSelectionHandler, final ProgramPreferences programPreferences, final ModelView modelView) {
 		super(viewportSelectionHandler, programPreferences, modelEditor, modelView);
 	}
 
 	@Override
-	protected boolean widgetOffersEdit(final Vec3 selectionCenter,
-									   final Point mousePoint,
-									   final CoordinateSystem coordinateSystem,
-									   final SelectionView selectionView) {
+	protected boolean widgetOffersEdit(final Vec3 selectionCenter, final Point mousePoint, final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+		final MoveDimension directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 		moverWidget.setMoveDirection(directionByMouse);
-		return directionByMouse != MoveDirection.NONE;
+		return directionByMouse != MoveDimension.NONE;
 	}
 
 	@Override
-	protected Manipulator createManipulatorFromWidget(final Vec3 selectionCenter,
-													  final Point mousePoint,
-                                                      final CoordinateSystem coordinateSystem,
-													  final SelectionView selectionView) {
+	protected Manipulator createManipulatorFromWidget(final Vec3 selectionCenter, final Point mousePoint, final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
-		final MoveDirection directionByMouse = moverWidget.getDirectionByMouse(
-				mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
-		if (directionByMouse != null) {
-			moverWidget.setMoveDirection(directionByMouse);
-		}
-		if (directionByMouse != null) {
-			return switch (directionByMouse) {
-				case BOTH -> new ExtrudeManipulator(getModelEditor(), "xy");
-				case RIGHT -> new ExtrudeManipulator(getModelEditor(), "x");
-				case UP -> new ExtrudeManipulator(getModelEditor(), "y");
-				case NONE -> null;
-			};
+		final MoveDimension directionByMouse = moverWidget.getDirectionByMouse(mousePoint, coordinateSystem, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
+
+		moverWidget.setMoveDirection(directionByMouse);
+		if (directionByMouse != MoveDimension.NONE) {
+			return new ExtrudeManipulator(getModelEditor(), directionByMouse);
 		}
 		return null;
 	}
 
 	@Override
-	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter, final Point mousePoint,
-			final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
-		return new ExtrudeManipulator(getModelEditor(), "xyz");
+	protected Manipulator createDefaultManipulator(final Vec3 selectionCenter, final Point mousePoint, final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
+		return new ExtrudeManipulator(getModelEditor(), MoveDimension.XYZ);
 	}
 
 	@Override
-	protected void renderWidget(final Graphics2D graphics, final CoordinateSystem coordinateSystem,
-			final SelectionView selectionView) {
+	protected void renderWidget(final Graphics2D graphics, final CoordinateSystem coordinateSystem, final SelectionView selectionView) {
 		moverWidget.setPoint(selectionView.getCenter());
 		moverWidget.render(graphics, coordinateSystem);
 	}

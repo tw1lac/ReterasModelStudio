@@ -136,8 +136,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		final Set<VertexGroupBundle> oldSelection = new HashSet<>(selectionManager.getSelection());
 		final Set<VertexGroupBundle> invertedSelection = new HashSet<>(selectionManager.getSelection());
 		for (final Geoset geoset : model.getEditableGeosets()) {
-			for (int vertexGroupId = -1; vertexGroupId < vertexClusterDefinitions
-					.getMaxClusterIdKnown(); vertexGroupId++) {
+			for (int vertexGroupId = -1; vertexGroupId < vertexClusterDefinitions.getMaxClusterIdKnown(); vertexGroupId++) {
 				final VertexGroupBundle bundle = new VertexGroupBundle(geoset, vertexGroupId);
 				if (invertedSelection.contains(bundle)) {
 					invertedSelection.remove(bundle);
@@ -155,8 +154,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		final Set<VertexGroupBundle> oldSelection = new HashSet<>(selectionManager.getSelection());
 		final Set<VertexGroupBundle> allSelection = new HashSet<>();
 		for (final Geoset geoset : model.getEditableGeosets()) {
-			for (int vertexGroupId = -1; vertexGroupId < vertexClusterDefinitions
-					.getMaxClusterIdKnown(); vertexGroupId++) {
+			for (int vertexGroupId = -1; vertexGroupId < vertexClusterDefinitions.getMaxClusterIdKnown(); vertexGroupId++) {
 				final VertexGroupBundle bundle = new VertexGroupBundle(geoset, vertexGroupId);
 				allSelection.add(bundle);
 			}
@@ -177,8 +175,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		}
 		for (final Geoset geoset : model.getEditableGeosets()) {
 			for (final GeosetVertex geosetVertex : geoset.getVertices()) {
-				if (GeosetVertexModelEditor.hitTest(geosetVertex, CoordinateSystem.Util.geom(axes, point), axes,
-						programPreferences.getVertexSize())) {
+				if (GeosetVertexModelEditor.hitTest(geosetVertex, CoordinateSystem.Util.geom(axes, point), axes, programPreferences.getVertexSize())) {
 					canSelect = true;
 				}
 			}
@@ -202,9 +199,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		for (final Geoset geoset : model.getEditableGeosets()) {
 			for (final Triangle triangle : geoset.getTriangles()) {
 				if (FaceModelEditor.hitTest(triangle, new Point2D.Double(area.getX(), area.getY()), coordinateSystem)
-						|| FaceModelEditor.hitTest(triangle,
-								new Point2D.Double(area.getX() + area.getWidth(), area.getY() + area.getHeight()),
-								coordinateSystem)
+						|| FaceModelEditor.hitTest(triangle, new Point2D.Double(area.getX() + area.getWidth(), area.getY() + area.getHeight()), coordinateSystem)
 						|| FaceModelEditor.hitTest(triangle, area, coordinateSystem)) {
 					for (final GeosetVertex vertex : triangle.getAll()) {
 						newSelection.add(new VertexGroupBundle(geoset, vertexClusterDefinitions.getClusterId(vertex)));
@@ -215,8 +210,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		final List<GeosetVertex> geosetVerticesSelected = new ArrayList<>();
 		for (final Geoset geoset : model.getEditableGeosets()) {
 			for (final GeosetVertex geosetVertex : geoset.getVertices()) {
-				GeosetVertexModelEditor.hitTest(geosetVerticesSelected, area, geosetVertex, coordinateSystem,
-						programPreferences.getVertexSize());
+				GeosetVertexModelEditor.hitTest(geosetVerticesSelected, area, geosetVertex, coordinateSystem, programPreferences.getVertexSize());
 			}
 		}
 		for (final GeosetVertex vertex : geosetVerticesSelected) {
@@ -252,8 +246,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		}
 		final Runnable truncateSelectionRunnable = () -> selectionManager.removeSelection(vertexBundlesToTruncate);
 		final Runnable unTruncateSelectionRunnable = () -> selectionManager.setSelection(previousSelection);
-		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable,
-				unTruncateSelectionRunnable, refreshGUIRunnable);
+		return new MakeNotEditableAction(editabilityToggleHandler, truncateSelectionRunnable, unTruncateSelectionRunnable, refreshGUIRunnable);
 	}
 
 	@Override
@@ -262,8 +255,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		for (final Geoset geoset : model.getEditableGeosets()) {
 			for (final GeosetVertex geosetVertex : geoset.getVertices()) {
 				if (newSelection.contains(geosetVertex)) {
-					newSelectionGroups.add(new VertexGroupBundle(geosetVertex.getGeoset(),
-							vertexClusterDefinitions.getClusterId(geosetVertex)));
+					newSelectionGroups.add(new VertexGroupBundle(geosetVertex.getGeoset(), vertexClusterDefinitions.getClusterId(geosetVertex)));
 				}
 			}
 		}
@@ -297,8 +289,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 					}
 				}
 				if (triangleIsFullySelected) {
-					final Triangle newTriangle = new Triangle(triangleVertices.get(0), triangleVertices.get(1),
-							triangleVertices.get(2), copy);
+					final Triangle newTriangle = new Triangle(triangleVertices.get(0), triangleVertices.get(1), triangleVertices.get(2), copy);
 					copiedTriangles.add(newTriangle);
 				}
 			}

@@ -56,7 +56,7 @@ public abstract class MultiManipulatorActivity<MANIPULATOR_BUILDER extends Manip
 			long currentTime = System.currentTimeMillis();
 			if(debugPrintLimiter < currentTime){
 				debugPrintLimiter = currentTime + 500;
-				System.out.println("geomX: "  + coordinateSystem.geomX(e.getPoint().getX()) + ", geomY: " + coordinateSystem.geomY(e.getPoint().getY()));
+//				System.out.println("geomX: "  + coordinateSystem.geomX(e.getPoint().getX()) + ", geomY: " + coordinateSystem.geomY(e.getPoint().getY()));
 			}
 			manipulator.start(mouseStartPoint, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 			lastDragPoint = mouseStartPoint;
@@ -69,11 +69,11 @@ public abstract class MultiManipulatorActivity<MANIPULATOR_BUILDER extends Manip
 		if (manipulator != null) {
 			final Point2D.Double mouseEnd = new Point2D.Double(coordinateSystem.geomX(e.getPoint().getX()), coordinateSystem.geomY(e.getPoint().getY()));
 			long currentTime = System.currentTimeMillis();
-			if(debugPrintLimiter2 < currentTime){
+			if (debugPrintLimiter2 < currentTime) {
 				debugPrintLimiter2 = currentTime + 500;
-				System.out.println("geomX: "  + coordinateSystem.geomX(e.getPoint().getX()) + ", geomY: " + coordinateSystem.geomY(e.getPoint().getY()));
+//				System.out.println("geomX: "  + coordinateSystem.geomX(e.getPoint().getX()) + ", geomY: " + coordinateSystem.geomY(e.getPoint().getY()));
 			}
-			undoActionListener.pushAction(manipulator.finish(lastDragPoint, mouseEnd, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ(), "x"));
+			undoActionListener.pushAction(manipulator.finish(lastDragPoint, mouseEnd, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ()));
 			// ToDo choose correct dir
 			mouseStartPoint = null;
 			lastDragPoint = null;
@@ -90,8 +90,7 @@ public abstract class MultiManipulatorActivity<MANIPULATOR_BUILDER extends Manip
 	public void mouseDragged(final MouseEvent e, final CoordinateSystem coordinateSystem) {
 		if (manipulator != null) {
 			final Point2D.Double mouseEnd = new Point2D.Double(coordinateSystem.geomX(e.getPoint().getX()), coordinateSystem.geomY(e.getPoint().getY()));
-			manipulator.update(lastDragPoint, mouseEnd, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ(), "xyz");
-			// ToDo choose correct dir
+			manipulator.update(lastDragPoint, mouseEnd, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ());
 			lastDragPoint = mouseEnd;
 		}
 	}

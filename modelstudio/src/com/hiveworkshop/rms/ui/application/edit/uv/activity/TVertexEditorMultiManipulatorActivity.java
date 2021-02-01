@@ -10,7 +10,8 @@ public class TVertexEditorMultiManipulatorActivity extends MultiManipulatorActiv
 		implements TVertexEditorViewportActivity {
 
 	public TVertexEditorMultiManipulatorActivity(final TVertexEditorManipulatorBuilder manipulatorBuilder,
-												 final UndoActionListener undoActionListener, final SelectionView selectionView) {
+	                                             final UndoActionListener undoActionListener,
+	                                             final SelectionView selectionView) {
 		super(manipulatorBuilder, undoActionListener, selectionView);
 	}
 

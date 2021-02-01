@@ -1,34 +1,5 @@
 package com.hiveworkshop.rms.ui.application.edit.uv.panel;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.Timer;
-
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.activity.CursorManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.activity.ViewportActivity;
@@ -41,8 +12,15 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditorChangeList
 import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.viewport.UVViewportModelRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 
-public class UVViewport extends JPanel implements MouseListener, ActionListener, MouseWheelListener,
-		MouseMotionListener, CoordinateSystem, ViewportView, TVertexEditorChangeListener {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+public class UVViewport extends JPanel implements MouseListener, ActionListener, MouseWheelListener, MouseMotionListener, CoordinateSystem, ViewportView, TVertexEditorChangeListener {
 	ArrayList<Image> backgrounds = new ArrayList<>();
 	double m_a = 0;
 	double m_b = 0;
@@ -66,19 +44,15 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 	private Point lastMouseMotion = new Point(0, 0);
 	private TVertexEditor editor;
 
-	public UVViewport(final ModelView modelView, final UVPanel parent, final ProgramPreferences programPreferences,
-			final ViewportActivity viewportActivity, final CoordDisplayListener coordDisplayListener,
-			final TVertexEditor editor) {
+	public UVViewport(final ModelView modelView, final UVPanel parent, final ProgramPreferences programPreferences, final ViewportActivity viewportActivity, final CoordDisplayListener coordDisplayListener, final TVertexEditor editor) {
 		this.modelView = modelView;
 		this.programPreferences = programPreferences;
 		activityListener = viewportActivity;
 		this.coordDisplayListener = coordDisplayListener;
 		this.editor = editor;
-		// Dimension 1 and Dimension 2, these specify which dimensions to
-		// display.
-		// the d bytes can thus be from 0 to 2, specifying either the X, Y, or Z
-		// dimensions
-		//
+		// Dimension 1 and Dimension 2, these specify which dimensions to display.
+		// the d bytes can thus be from 0 to 2, specifying either the X, Y, or Z dimensions
+
 		// Viewport border
 		setBorder(BorderFactory.createBevelBorder(1));
 		setBackground(programPreferences.getBackgroundColor());
@@ -179,13 +153,11 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 				final int maxY = (int) Math.ceil(geomMaxY);
 				for (int y = minY; y < maxY; y++) {
 					for (int x = minX; x < maxX; x++) {
-						g.drawImage(background, (int) convertX(x), (int) convertY(y),
-								(int) (convertX(x + 1) - convertX(x)), (int) (convertY(y + 1) - convertY(y)), null);
+						g.drawImage(background, (int) convertX(x), (int) convertY(y), (int) (convertX(x + 1) - convertX(x)), (int) (convertY(y + 1) - convertY(y)), null);
 					}
 				}
 			} else {
-				g.drawImage(background, (int) convertX(0), (int) convertY(0), (int) (convertX(1) - convertX(0)),
-						(int) (convertY(1) - convertY(0)), null);
+				g.drawImage(background, (int) convertX(0), (int) convertY(0), (int) (convertX(1) - convertX(0)), (int) (convertY(1) - convertY(0)), null);
 			}
 		}
 		final Graphics2D graphics2d = (Graphics2D) g;
@@ -284,8 +256,7 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 				lastClick.x = (int) mx;
 				lastClick.y = (int) my;
 			}
-			parent.setMouseCoordDisplay(((mx - (getWidth() / 2.0)) / aspectRatio / m_zoom) - m_a,
-					((my - (getHeight() / 2.0)) / m_zoom) - m_b);
+			parent.setMouseCoordDisplay(((mx - (getWidth() / 2.0)) / aspectRatio / m_zoom) - m_a, ((my - (getHeight() / 2.0)) / m_zoom) - m_b);
 
 			repaint();
 		} else if (e.getSource() == placeholderButton) {
@@ -409,19 +380,15 @@ public class UVViewport extends JPanel implements MouseListener, ActionListener,
 	}
 
 	public Rectangle2D.Double pointsToGeomRect(final Point a, final Point b) {
-		final Point2D.Double topLeft = new Point2D.Double(Math.min(geomX(a.x), geomX(b.x)),
-				Math.min(geomY(a.y), geomY(b.y)));
-		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)),
-				Math.max(geomY(a.y), geomY(b.y)));
-		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
-				lowRight.y - topLeft.y);
+		final Point2D.Double topLeft = new Point2D.Double(Math.min(geomX(a.x), geomX(b.x)), Math.min(geomY(a.y), geomY(b.y)));
+		final Point2D.Double lowRight = new Point2D.Double(Math.max(geomX(a.x), geomX(b.x)), Math.max(geomY(a.y), geomY(b.y)));
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x, lowRight.y - topLeft.y);
 	}
 
 	public Rectangle2D.Double pointsToRect(final Point a, final Point b) {
 		final Point2D.Double topLeft = new Point2D.Double(Math.min(a.x, b.x), Math.min(a.y, b.y));
 		final Point2D.Double lowRight = new Point2D.Double(Math.max(a.x, b.x), Math.max(a.y, b.y));
-		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x,
-				lowRight.y - topLeft.y);
+		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x, lowRight.y - topLeft.y);
 	}
 
 	public void setAspectRatio(final double ratio) {
