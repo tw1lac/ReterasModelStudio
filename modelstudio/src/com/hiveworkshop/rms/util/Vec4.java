@@ -271,4 +271,15 @@ public class Vec4 {
 	public Vec4 bezier(final Vec4 outTan, final Vec4 inTan, final Vec4 a, final float t) {
 		return bezier(outTan, inTan, a, t, this);
 	}
+
+	public boolean isValid() {
+		return !(Float.isNaN(this.x)
+				|| Float.isNaN(this.y)
+				|| Float.isNaN(this.z)
+				|| Float.isNaN(this.w)
+				|| Float.isInfinite(this.x)
+				|| Float.isInfinite(this.y)
+				|| Float.isInfinite(this.z)
+				|| Float.isInfinite(this.w));
+	}
 }

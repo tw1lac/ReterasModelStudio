@@ -51,6 +51,10 @@ public class BLPHandler {
 //		System.out.println("BLPHandeler - getImage");
 		String path = defaultTexture.getPath();
 //		System.out.println("path: " + path);
+		return getImage(defaultTexture, workingDirectory, path);
+	}
+
+	public static BufferedImage getImage(Bitmap defaultTexture, DataSource workingDirectory, String path) {
 		if ((path == null) || path.isEmpty()) {
 			if (defaultTexture.getReplaceableId() == 1) {
 				path = "ReplaceableTextures\\TeamColor\\TeamColor" + Material.getTeamColorNumberString() + ".blp";
@@ -233,6 +237,50 @@ public class BLPHandler {
 		}
 
 		final BufferedImage javaTexture = getTexture(dataSource, filepath);
+
+		if (javaTexture == null) {
+			return null;
+		}
+
+		final int[] pixels = new int[javaTexture.getWidth() * javaTexture.getHeight()];
+		javaTexture.getRGB(0, 0, javaTexture.getWidth(), javaTexture.getHeight(), pixels, 0, javaTexture.getWidth());
+
+		final ByteBuffer buffer = BufferUtils
+				.createByteBuffer(javaTexture.getWidth() * javaTexture.getHeight() * BYTES_PER_PIXEL);
+		// 4 for RGBA, 3 for RGB
+
+		for (int y = 0; y < javaTexture.getHeight(); y++) {
+			for (int x = 0; x < javaTexture.getWidth(); x++) {
+				final int pixel = pixels[(y * javaTexture.getWidth()) + x];
+				buffer.put((byte) ((pixel >> 16) & 0xFF)); // Red component
+				buffer.put((byte) ((pixel >> 8) & 0xFF)); // Green component
+				buffer.put((byte) (pixel & 0xFF)); // Blue component
+				buffer.put((byte) ((pixel >> 24) & 0xFF)); // Alpha component.
+				// Only for RGBA
+			}
+		}
+
+		buffer.flip();
+
+		gpuReadyTexture = new GPUReadyTexture(buffer, javaTexture.getWidth(), javaTexture.getHeight());
+		if (cache.containsKey(lowerFilePath)) {
+			// In this case, caching is allowed
+			gpuBufferCache.put(lowerFilePath, gpuReadyTexture);
+		}
+		// You now have a ByteBuffer filled with the color data of each pixel.
+		return gpuReadyTexture;
+	}
+
+	public GPUReadyTexture loadTexture2(final DataSource dataSource, final String filepath, final Bitmap bitmap) {
+//		System.out.println("loadTexture(), fp: " + filepath);
+		final String lowerFilePath = bitmap.getPath().toLowerCase(Locale.US);
+		GPUReadyTexture gpuReadyTexture = gpuBufferCache.get(lowerFilePath);
+		if (gpuReadyTexture != null) {
+			return gpuReadyTexture;
+		}
+
+		final BufferedImage javaTexture = getImage(bitmap, dataSource, filepath);
+//		final BufferedImage javaTexture = getTexture(dataSource, filepath);
 
 		if (javaTexture == null) {
 			return null;
