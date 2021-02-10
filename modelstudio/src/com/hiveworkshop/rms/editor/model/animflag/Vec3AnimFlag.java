@@ -1,16 +1,10 @@
 package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
-import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
 import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.rms.util.MathUtils;
-import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.List;
@@ -225,10 +219,10 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 				// Vertex
 
 				return switch (interpolationType) {
-					case BEZIER -> floorValue.bezier(floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor, new Vec3());
+					case BEZIER -> Vec3.getBezier(floorValue, floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor);
 					case DONT_INTERP -> floorValue;
-					case HERMITE -> floorValue.hermite(floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor, new Vec3());
-					case LINEAR -> floorValue.lerp(ceilValue, timeFactor, new Vec3());
+					case HERMITE -> Vec3.getHermite(floorValue, floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor);
+					case LINEAR -> Vec3.getLerped(floorValue, ceilValue, timeFactor);
 				};
 			}
 		}

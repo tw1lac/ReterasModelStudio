@@ -173,7 +173,12 @@ public class MdlxLayer extends MdlxAnimatedObject {
 			case "static EmissiveGain":
 				emissiveGain = stream.readFloat();
 				break;
-//			case "EmissiveGain":
+			case "static Emissive":
+				emissiveGain = stream.readFloat();
+				break;
+			case "EmissiveGain":
+				readTimeline(stream, AnimationMap.KMTE);
+				break;
 			case "Emissive":
 				readTimeline(stream, AnimationMap.KMTE);
 				break;
@@ -253,8 +258,8 @@ public class MdlxLayer extends MdlxAnimatedObject {
 
 		if (version > 800) {
 			if (!writeTimeline(stream, AnimationMap.KMTE) && emissiveGain != 1) {
-//				stream.writeFloatAttrib("static EmissiveGain", emissiveGain);
-				stream.writeFloatAttrib("static Emissive", emissiveGain);
+				stream.writeFloatAttrib("static EmissiveGain", emissiveGain);
+//				stream.writeFloatAttrib("static Emissive", emissiveGain);
 			  }
 		
 			  if (!writeTimeline(stream, AnimationMap.KFC3) && (fresnelColor[0] != 1 || fresnelColor[1] != 1 || fresnelColor[2] != 1)) {

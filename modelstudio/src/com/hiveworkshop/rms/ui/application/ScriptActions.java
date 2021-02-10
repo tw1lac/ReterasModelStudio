@@ -151,10 +151,8 @@ public class ScriptActions {
             return;
         }
         final Vec4 vertexHeap = new Vec4();
-        final Vec4 appliedVertexHeap = new Vec4();
         final Vec4 vertexSumHeap = new Vec4();
         final Vec4 normalHeap = new Vec4();
-        final Vec4 appliedNormalHeap = new Vec4();
         final Vec4 normalSumHeap = new Vec4();
 
         final ModelPanel modelContext = mainPanel.currentModelPanel();
@@ -173,40 +171,28 @@ public class ScriptActions {
                 final GeosetVertex vertex = geoset.getVertex(vertexIndex);
                 final GeosetVertex snapshotVertex = snapshotGeoset.getVertex(vertexIndex);
                 final List<Bone> bones = vertex.getBones();
-                vertexHeap.x = (float) vertex.x;
-                vertexHeap.y = (float) vertex.y;
-                vertexHeap.z = (float) vertex.z;
-                vertexHeap.w = 1;
+                vertexHeap.set(vertex, 1);
 
                 if (bones.size() > 0) {
 
                     vertexSumHeap.set(0, 0, 0, 0);
                     for (final Bone bone : bones) {
-                        editorRenderModel.getRenderNode(bone).getWorldMatrix().transform(vertexHeap, appliedVertexHeap);
+                        Vec4 appliedVertexHeap = Vec4.getTransformed(vertexHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
                         vertexSumHeap.add(appliedVertexHeap);
                     }
 
-                    final int boneCount = bones.size();
-                    vertexSumHeap.x /= boneCount;
-                    vertexSumHeap.y /= boneCount;
-                    vertexSumHeap.z /= boneCount;
-                    vertexSumHeap.w /= boneCount;
+                    vertexSumHeap.scale(1/bones.size());
                 } else {
                     vertexSumHeap.set(vertexHeap);
                 }
-                snapshotVertex.x = vertexSumHeap.x;
-                snapshotVertex.y = vertexSumHeap.y;
-                snapshotVertex.z = vertexSumHeap.z;
+                snapshotVertex.set(vertexSumHeap);
 
-                normalHeap.x = (float) vertex.getNormal().x;
-                normalHeap.y = (float) vertex.getNormal().y;
-                normalHeap.z = (float) vertex.getNormal().z;
-                normalHeap.w = 0;
+                normalHeap.set(vertex.getNormal(), 0);
                 if (bones.size() > 0) {
 
                     normalSumHeap.set(0, 0, 0, 0);
                     for (final Bone bone : bones) {
-                        editorRenderModel.getRenderNode(bone).getWorldMatrix().transform(normalHeap, appliedNormalHeap);
+                        Vec4 appliedNormalHeap = Vec4.getTransformed(normalHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
                         normalSumHeap.add(appliedNormalHeap);
                     }
 
@@ -218,9 +204,7 @@ public class ScriptActions {
                 } else {
                     normalSumHeap.set(normalHeap);
                 }
-                snapshotVertex.getNormal().x = normalSumHeap.x;
-                snapshotVertex.getNormal().y = normalSumHeap.y;
-                snapshotVertex.getNormal().z = normalSumHeap.z;
+                snapshotVertex.getNormal().set(normalSumHeap);
             }
         }
         snapshotModel.getIdObjects().clear();

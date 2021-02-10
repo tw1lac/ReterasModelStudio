@@ -1873,16 +1873,16 @@ public class EditableModel implements Named {
 								final Float d = (Float) entry.value;
 								final Float older = (Float) olderKeyframe;
 								final Float old = (Float) oldKeyframe;
-								if ((older != null) && (old != null) && MathUtils.isBetween(older, old, d)) {
+								if ((older != null) && (old != null) && MathUtils.isBetween(older, d, old)) {
 									indicesForDeletion.add(i - 1);
 								}
 							} else if (entry.value instanceof Vec3) {
 								final Vec3 current = (Vec3) entry.value;
 								final Vec3 older = (Vec3) olderKeyframe;
 								final Vec3 old = (Vec3) oldKeyframe;
-								if ((older != null) && (old != null) && MathUtils.isBetween(older.x, old.x, current.x)
-										&& MathUtils.isBetween(older.y, old.y, current.y)
-										&& MathUtils.isBetween(older.z, old.z, current.z)) {
+								if ((older != null) && (old != null) && MathUtils.isBetween(older.x, current.x, old.x)
+										&& MathUtils.isBetween(older.y, current.y, old.y)
+										&& MathUtils.isBetween(older.z, current.z, old.z)) {
 									indicesForDeletion.add(i - 1);
 								}
 							} else if (entry.value instanceof Quat) {
@@ -1893,9 +1893,9 @@ public class EditableModel implements Named {
 								if ((older != null) && (old != null)) {
 									final Vec3 olderEuler = older.toEuler();
 									final Vec3 oldEuler = old.toEuler();
-									if (MathUtils.isBetween(olderEuler.x, oldEuler.x, euler.x)
-											&& MathUtils.isBetween(olderEuler.y, oldEuler.y, euler.y)
-											&& MathUtils.isBetween(olderEuler.z, oldEuler.z, euler.z)) {
+									if (MathUtils.isBetween(olderEuler.x, euler.x, oldEuler.x)
+											&& MathUtils.isBetween(olderEuler.y, euler.y, oldEuler.y)
+											&& MathUtils.isBetween(olderEuler.z, euler.z, oldEuler.z)) {
 										// if
 										// (MathUtils.isBetween(older.a,
 										// old.a, current.a)
@@ -1948,16 +1948,16 @@ public class EditableModel implements Named {
 							final Float d = (Float) entry.value;
 							final Float older = (Float) olderKeyframe;
 							final Float old = (Float) oldKeyframe;
-							if ((older != null) && (old != null) && MathUtils.isBetween(older, old, d)) {
+							if ((older != null) && (old != null) && MathUtils.isBetween(older, d, old)) {
 								indicesForDeletion.add(i - 1);
 							}
 						} else if (entry.value instanceof Vec3) {
 							final Vec3 current = (Vec3) entry.value;
 							final Vec3 older = (Vec3) olderKeyframe;
 							final Vec3 old = (Vec3) oldKeyframe;
-							if ((older != null) && (old != null) && MathUtils.isBetween(older.x, old.x, current.x)
-									&& MathUtils.isBetween(older.y, old.y, current.y)
-									&& MathUtils.isBetween(older.z, old.z, current.z)) {
+							if ((older != null) && (old != null) && MathUtils.isBetween(older.x, current.x, old.x)
+									&& MathUtils.isBetween(older.y, current.y, old.y)
+									&& MathUtils.isBetween(older.z, current.z, old.z)) {
 								indicesForDeletion.add(i - 1);
 							}
 						} else if (entry.value instanceof Quat) {
@@ -1968,9 +1968,9 @@ public class EditableModel implements Named {
 							if ((older != null) && (old != null)) {
 								final Vec3 olderEuler = older.toEuler();
 								final Vec3 oldEuler = old.toEuler();
-								if (MathUtils.isBetween(olderEuler.x, oldEuler.x, euler.x)
-										&& MathUtils.isBetween(olderEuler.y, oldEuler.y, euler.y)
-										&& MathUtils.isBetween(olderEuler.z, oldEuler.z, euler.z)) {
+								if (MathUtils.isBetween(olderEuler.x, euler.x, oldEuler.x)
+										&& MathUtils.isBetween(olderEuler.y, euler.y, oldEuler.y)
+										&& MathUtils.isBetween(olderEuler.z, euler.z, oldEuler.z)) {
 									// if (MathUtils.isBetween(older.a,
 									// old.a, current.a)
 									// && MathUtils.isBetween(older.b,
@@ -2345,10 +2345,8 @@ public class EditableModel implements Named {
 				final Vec3 t = new Vec3(tan1[vertexId]);
 
 //				final Vec3 v = new Vec3(t).sub(n).scale(n.dot(t)).normalize();
-				final Vec3 v = new Vec3(t).sub(n).normalize();
-				final Vec3 cross = new Vec3();
-
-				n.cross(t, cross);
+				final Vec3 v = Vec3.getDiff(t, n).normalize();
+				final Vec3 cross = Vec3.getCross(n, t);
 
 				final Vec3 tanAsVert = new Vec3(tan2[vertexId]);
 

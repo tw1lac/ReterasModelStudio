@@ -1,8 +1,8 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.util.List;
-
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.List;
 
 public class Triangle {
 	GeosetVertex[] verts = new GeosetVertex[3];
@@ -55,10 +55,8 @@ public class Triangle {
 
 	public void updateVertexIds() {
 		// Potentially this procedure could lag a bunch in the way I wrote it,
-		// but it will
-		// change vertex ids to match a changed geoset, assuming the geoset
-		// still contains the
-		// vertex
+		// but it will change vertex ids to match a changed geoset,
+		// assuming the geoset still contains the vertex
 		vertIds[0] = geoset.getVertexId(verts[0]);
 		vertIds[1] = geoset.getVertexId(verts[1]);
 		vertIds[2] = geoset.getVertexId(verts[2]);
@@ -251,14 +249,8 @@ public class Triangle {
 	}
 
 	public Vec3 getNormal() {
-		final Vec3 edge1 = new Vec3();
-		final Vec3 edge2 = new Vec3();
-		final Vec3 normal = new Vec3();
-		
-		verts[1].sub(verts[0], edge1);
-		verts[2].sub(verts[1], edge2);
-		edge1.cross(edge2, normal);
-
-		return normal;
+		final Vec3 edge1 = Vec3.getDiff(verts[1], verts[0]);
+		final Vec3 edge2 = Vec3.getDiff(verts[2], verts[1]);
+		return Vec3.getCross(edge1, edge2);
 	}
 }

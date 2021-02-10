@@ -284,7 +284,7 @@ public class MPQBrowserView {
 //        mainPanel.toolsMenu.setEnabled(true);
         MenuBar.toolsMenu.setEnabled(true);
 
-        if (selectNewTab && (mainPanel.prefs.getQuickBrowse() != null) && mainPanel.prefs.getQuickBrowse()) {
+        if (selectNewTab && mainPanel.prefs.getQuickBrowse()) {
             for (int i = (mainPanel.modelPanels.size() - 2); i >= 0; i--) {
                 final ModelPanel openModelPanel = mainPanel.modelPanels.get(i);
                 if (openModelPanel.getUndoManager().isRedoListEmpty()
@@ -510,10 +510,11 @@ public class MPQBrowserView {
                 }
             }
         });
-        mainPanel.rootWindow.setWindow(new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(),
-                new View("Doodad Browser",
-                        new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)),
-                        new JScrollPane(unitEditorTree))));
+        View doodadBrowserView = new View("Doodad Browser", new ImageIcon(MainFrame.frame.getIconImage().getScaledInstance(16, 16, Image.SCALE_FAST)), new JScrollPane(unitEditorTree));
+        doodadBrowserView.getInsets().set(-1,-1,-1,-1);
+        SplitWindow doodadSplitWindow = new SplitWindow(true, 0.75f, mainPanel.rootWindow.getWindow(), doodadBrowserView);
+        doodadSplitWindow.getInsets().set(-1,-1,-1,-1);
+        mainPanel.rootWindow.setWindow(doodadSplitWindow);
     }
 
     private static void dodadViewerMouseClick(MouseEvent e, UnitEditorTree unitEditorTree, MainPanel mainPanel) {

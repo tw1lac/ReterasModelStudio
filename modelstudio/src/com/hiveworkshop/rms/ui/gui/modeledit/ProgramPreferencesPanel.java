@@ -30,21 +30,19 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 		final JCheckBox quickBrowse = new JCheckBox();
 		final JCheckBox allowLoadingNonBlpTextures = new JCheckBox();
 		final JCheckBox renderParticles = new JCheckBox();
-		if ((programPreferences.isInvertedDisplay() != null) && programPreferences.isInvertedDisplay()) {
+		if (programPreferences.isInvertedDisplay()) {
 			invertedDisplay.setSelected(true);
 		}
-		if ((programPreferences.getUseBoxesForPivotPoints() != null)
-				&& programPreferences.getUseBoxesForPivotPoints()) {
+		if (programPreferences.getUseBoxesForPivotPoints()) {
 			useBoxesForNodes.setSelected(true);
 		}
-		if ((programPreferences.getQuickBrowse() != null) && programPreferences.getQuickBrowse()) {
+		if (programPreferences.getQuickBrowse()) {
 			quickBrowse.setSelected(true);
 		}
-		if ((programPreferences.getAllowLoadingNonBlpTextures() != null)
-				&& programPreferences.getAllowLoadingNonBlpTextures()) {
+		if (programPreferences.getAllowLoadingNonBlpTextures()) {
 			allowLoadingNonBlpTextures.setSelected(true);
 		}
-		if ((programPreferences.getRenderParticles() == null) || programPreferences.getRenderParticles()) {
+		if (programPreferences.getRenderParticles()) {
 			renderParticles.setSelected(true);
 		}
 		final ActionListener viewModeUpdater = e -> {

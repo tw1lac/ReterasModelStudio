@@ -39,19 +39,21 @@ import java.util.List;
 public class MenuBarActions {
     static final ImageIcon POWERED_BY_HIVE = RMSIcons.loadHiveBrowserImageIcon("powered_by_hive.png");
 
-    static void updateUIFromProgramPreferences(JCheckBoxMenuItem fetchPortraitsToo, List<ModelPanel> modelPanels, ProgramPreferences prefs, JCheckBoxMenuItem showNormals, JCheckBoxMenuItem showVertexModifyControls, JRadioButtonMenuItem solid, JCheckBoxMenuItem textureModels, JRadioButtonMenuItem wireframe) {
+    static void updateUIFromProgramPreferences(JCheckBoxMenuItem fetchPortraitsToo, List<ModelPanel> modelPanels, ProgramPreferences prefs, JCheckBoxMenuItem showNormals, JCheckBoxMenuItem renderParticles, JCheckBoxMenuItem showPerspectiveGrid, JCheckBoxMenuItem showVertexModifyControls, JRadioButtonMenuItem solid, JCheckBoxMenuItem textureModels, JRadioButtonMenuItem wireframe) {
         showVertexModifyControls.setSelected(prefs.isShowVertexModifierControls());
         textureModels.setSelected(prefs.isTextureModels());
-        showNormals.setSelected(prefs.isShowNormals());
+        showNormals.setSelected(prefs.showNormals());
+        renderParticles.setSelected(prefs.getRenderParticles());
+        showPerspectiveGrid.setSelected(prefs.showPerspectiveGrid());
         fetchPortraitsToo.setSelected(prefs.isLoadPortraits());
         switch (prefs.getViewMode()) {
             case 0 -> wireframe.setSelected(true);
             case 1 -> solid.setSelected(true);
         }
         for (final ModelPanel mpanel : modelPanels) {
-            mpanel.getEditorRenderModel().setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
-            mpanel.getEditorRenderModel().setAllowInanimateParticles((prefs.getRenderStaticPoseParticles() == null) || prefs.getRenderStaticPoseParticles());
-            mpanel.getAnimationViewer().setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
+            mpanel.getEditorRenderModel().setSpawnParticles(prefs.getRenderParticles());
+            mpanel.getEditorRenderModel().setAllowInanimateParticles(prefs.getRenderStaticPoseParticles());
+//            mpanel.getAnimationViewer().setSpawnParticles(prefs.getRenderParticles());
         }
     }
 
@@ -145,7 +147,7 @@ public class MenuBarActions {
             if (changedDataSources) {
                 dataSourcesChanged(mainPanel.directoryChangeNotifier, mainPanel.modelPanels);
             }
-            updateUIFromProgramPreferences(mainPanel.fetchPortraitsToo, mainPanel.modelPanels, mainPanel.prefs, mainPanel.showNormals, mainPanel.showVertexModifyControls, mainPanel.solid, mainPanel.textureModels, mainPanel.wireframe);
+            updateUIFromProgramPreferences(mainPanel.fetchPortraitsToo, mainPanel.modelPanels, mainPanel.prefs, mainPanel.showNormals, mainPanel.renderParticles, mainPanel.showPerspectiveGrid, mainPanel.showVertexModifyControls, mainPanel.solid, mainPanel.textureModels, mainPanel.wireframe);
         }
     }
 

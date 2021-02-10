@@ -2,7 +2,6 @@ package com.hiveworkshop.rms.editor.render3d;
 
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.MathUtils;
-import com.hiveworkshop.rms.util.Mat4;
 import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
@@ -17,11 +16,6 @@ public class RenderParticle {
     private final InternalInstance internalInstance;
     private RenderNode node;
     private double health;
-    private static final Quat rotationZHeap = new Quat();
-    private static final Quat rotationYHeap = new Quat();
-    private static final Vec4 vector4Heap = new Vec4();
-    private static final Mat4 matrixHeap = new Mat4();
-    private static final Vec3 velocityTimeHeap = new Vec3();
 
     public RenderParticle(final RenderParticleEmitter emitter) {
         this.emitter = emitter;
@@ -48,31 +42,28 @@ public class RenderParticle {
         this.gravity = (float) (gravity * scale.z);
 
         // Local rotation
-        rotationZHeap.setIdentity();
-        vector4Heap.set(0, 0, 1, MathUtils.randomInRange(-Math.PI, Math.PI));
-        rotationZHeap.setFromAxisAngle(vector4Heap);
-        vector4Heap.set(0, 1, 0, MathUtils.randomInRange(-latitude, latitude));
-        rotationYHeap.setFromAxisAngle(vector4Heap);
+        Vec4 randomZRotVec = new Vec4(0, 0, 1, MathUtils.randomInRange(-Math.PI, Math.PI));
+        Quat rotationZHeap = new Quat().setFromAxisAngle(randomZRotVec);
+        Vec4 randomYRotVec = new Vec4(0, 1, 0, MathUtils.randomInRange(-latitude, latitude));
+        Quat rotationYHeap = new Quat().setFromAxisAngle(randomYRotVec);
         rotationYHeap.mul(rotationZHeap);
-        vector4Heap.set(0, 0, 1, 1);
-        rotationYHeap.transform(vector4Heap);
+        Vec4 speedVec = new Vec4(0, 0, 1, 1);
+        speedVec.transform(rotationYHeap);
 
         // World rotation
-        renderNode.getWorldRotation().transform(vector4Heap);
+        speedVec.transform(renderNode.getWorldRotation());
 
         // Apply speed
-        velocity.set(vector4Heap);
+        velocity.set(speedVec);
         velocity.scale((float) speed);
 
         // Apply the parent's scale
-        velocity.x *= scale.x;
-        velocity.y *= scale.y;
-        velocity.z *= scale.z;
+        velocity.multiply(scale);
 
         emitterView.addToScene(internalInstance);
 
-        vector4Heap.set(0, 0, 1, MathUtils.randomInRange(0, Math.PI * 2));
-        rotationZHeap.setFromAxisAngle(vector4Heap);
+        Vec4 zRandomAngle = new Vec4(0, 0, 1, MathUtils.randomInRange(0, Math.PI * 2));
+        rotationZHeap.setFromAxisAngle(zRandomAngle);
         internalInstance.setTransformation(renderNode.getWorldLocation(), rotationZHeap, renderNode.getWorldScale());
         internalInstance.setSequence(0);
         internalInstance.show();
@@ -87,9 +78,7 @@ public class RenderParticle {
 
         velocity.z -= gravity * frameTimeS;
 
-        velocityTimeHeap.x = velocity.x * frameTimeS;
-        velocityTimeHeap.y = velocity.y * frameTimeS;
-        velocityTimeHeap.z = velocity.z * frameTimeS;
+        Vec3 velocityTimeHeap = Vec3.getScaled(velocity, frameTimeS);
 
         internalInstance.move(velocityTimeHeap);
 

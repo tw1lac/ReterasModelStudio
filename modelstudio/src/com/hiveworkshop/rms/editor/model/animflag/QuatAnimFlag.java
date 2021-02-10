@@ -1,17 +1,11 @@
 package com.hiveworkshop.rms.editor.model.animflag;
 
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
-import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
-import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
 import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
-import com.hiveworkshop.rms.util.MathUtils;
 import com.hiveworkshop.rms.util.Quat;
-import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.List;
 
@@ -223,10 +217,10 @@ public class QuatAnimFlag extends AnimFlag<Quat> {
 		if (localTypeId == ROTATION) {// Quat
 
 			return switch (interpolationType) {
-				case BEZIER -> floorValue.squad(floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor, new Quat());
+				case BEZIER -> Quat.getSquad(floorValue, ceilValue, floorOutTan, inTans.get(ceilIndex), timeFactor);
 				case DONT_INTERP -> floorValue;
-				case HERMITE -> floorValue.squad(floorOutTan, inTans.get(ceilIndex), ceilValue, timeFactor, new Quat());
-				case LINEAR -> floorValue.slerp(ceilValue, timeFactor, new Quat());
+				case HERMITE -> Quat.getSquad(floorValue, ceilValue, floorOutTan, inTans.get(ceilIndex), timeFactor);
+				case LINEAR -> Quat.getSlerped(floorValue, ceilValue, timeFactor);
 			};
 		}
 		throw new IllegalStateException();

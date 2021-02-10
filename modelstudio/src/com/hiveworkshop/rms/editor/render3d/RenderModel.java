@@ -35,6 +35,8 @@ public final class RenderModel {
 	private boolean spawnParticles = true;
 	private boolean allowInanimateParticles = false;
 
+	private long lastConsoleLogTime = 0;
+
 	// These guys form the corners of a 2x2 rectangle, for use in Ghostwolf particle emitter algorithm
 	private final Vec4[] spacialVectors = {
 			new Vec4(-1, 1, 0, 1),
@@ -107,7 +109,8 @@ public final class RenderModel {
 		this.inverseCameraRotationZSpin = inverseCameraRotationZSpin;
 
 		for (int i = 0; i < billboardVectors.length; i++) {
-			inverseCameraRotation.transform(billboardBaseVectors[i], billboardVectors[i]);
+//			inverseCameraRotation.transform(billboardBaseVectors[i], billboardVectors[i]);
+			billboardVectors[i].set(Vec4.getTransformed(billboardBaseVectors[i], inverseCameraRotation));
 		}
 
 		sortedNodes.clear();
@@ -198,9 +201,7 @@ public final class RenderModel {
 					if (forced || true /* variants */) {
 						final Vec3 renderTranslation = idObject.getRenderTranslation(animatedRenderEnvironment);
 						if (renderTranslation != null) {
-							localLocation.x = renderTranslation.x;
-							localLocation.y = renderTranslation.y;
-							localLocation.z = renderTranslation.z;
+							localLocation.set(renderTranslation);
 						} else {
 							localLocation.set(0, 0, 0);
 						}
@@ -208,24 +209,28 @@ public final class RenderModel {
 
 					// Rotation
 					if (forced || true /* variants */) {
-						final Quat renderRotation = idObject.getRenderRotation(animatedRenderEnvironment);
-						if (renderRotation != null) {
-							localRotation.x = renderRotation.x;
-							localRotation.y = renderRotation.y;
-							localRotation.z = renderRotation.z;
-							localRotation.w = renderRotation.w;
-						} else {
-							localRotation.set(0, 0, 0, 1);
+						try{
+							final Quat renderRotation = idObject.getRenderRotation(animatedRenderEnvironment);
+							if (renderRotation != null) {
+								localRotation.set(renderRotation);
+							} else {
+								localRotation.set(0, 0, 0, 1);
+							}
+						} catch (Exception e) {
+							long currentTime = System.currentTimeMillis();
+							if(lastConsoleLogTime < currentTime){
+								System.out.println("RenderModel#updateNodes: failed to update rotation for " + idObject.getName());;
+								lastConsoleLogTime = currentTime + 500;
+							}
 						}
+
 					}
 
 					// Scale
 					if (forced || true /* variants */) {
 						final Vec3 renderScale = idObject.getRenderScale(animatedRenderEnvironment);
 						if (renderScale != null) {
-							localScale.x = renderScale.x;
-							localScale.y = renderScale.y;
-							localScale.z = renderScale.z;
+							localScale.set(renderScale);
 						} else {
 							localScale.set(1, 1, 1);
 						}
@@ -234,53 +239,7 @@ public final class RenderModel {
 				}
 
 				// Billboarding
-				// If the instance is not attached to any scene, this is meaningless
-				if (node.billboarded || node.billboardedX) {
-					wasDirty = true;
-
-					// Cancel the parent's rotation;
-					if (parent != null) {
-						localRotation.set(parent.inverseWorldRotation);
-					} else {
-						localRotation.setIdentity();
-					}
-
-					localRotation.mul(inverseCameraRotation);
-				} else if (node.billboardedY) {
-					// To solve billboard Y, you must rotate to face camera in node local space
-					// only around the node-local version of the Y axis.
-					// Imagine that we have a vector facing outward from the plane that represents
-					// where the front of the plane will face after we apply the node's rotation.
-					// We can easily do "billboarding", which is to say we can construct a rotation
-					// that turns this facing to face the camera. However, for BillboardLockY, we
-					// must instead take the projection of the vector that would result from this --
-					// "facing camera" vector, and take the projection of that vector onto the plane
-					// perpendicular to the billboard lock axis.
-
-					wasDirty = true;
-
-					// Cancel the parent's rotation;
-					localRotation.setIdentity();
-					localRotation.mul(inverseCameraRotationYSpin);
-//					if (parent != null) {
-//						QuaternionRotation.mul(localRotation, localRotation, parent.inverseWorldRotation);
-//					}
-
-					// TODO face camera, TODO have a camera
-				} else if (node.billboardedZ) {
-					wasDirty = true;
-
-					// Cancel the parent's rotation;
-					if (parent != null) {
-						localRotation.set(parent.inverseWorldRotation);
-					} else {
-						localRotation.setIdentity();
-					}
-
-					localRotation.mul(inverseCameraRotationZSpin);
-
-					// TODO face camera, TODO have a camera
-				}
+				wasDirty = RotateAndStuffBillboarding(node, parent, wasDirty, localRotation);
 
 				final boolean wasReallyDirty = forced || wasDirty || (parent == null) || parent.wasDirty;
 				node.wasDirty = wasReallyDirty;
@@ -319,9 +278,60 @@ public final class RenderModel {
 
 	}
 
+	public boolean RotateAndStuffBillboarding(RenderNode node, RenderNode parent, boolean wasDirty, Quat localRotation) {
+		// If the instance is not attached to any scene, this is meaningless
+		if (node.billboarded || node.billboardedX) {
+			wasDirty = true;
+
+			// Cancel the parent's rotation;
+			if (parent != null) {
+				localRotation.set(parent.inverseWorldRotation);
+			} else {
+				localRotation.setIdentity();
+			}
+
+			localRotation.mul(inverseCameraRotation);
+		} else if (node.billboardedY) {
+			// To solve billboard Y, you must rotate to face camera in node local space only
+			// around the node-local version of the Y axis. Imagine that we have a vector facing
+			// outward from the plane that represents where the front of the plane will face
+			// after we apply the node's rotation. We can easily do "billboarding", which is
+			// to say we can construct a rotation that turns this facing to face the camera.
+			// However, for BillboardLockY, we must instead take the projection of the vector
+			// that would result from this -- "facing camera" vector, and take the projection
+			// of that vector onto the plane perpendicular to the billboard lock axis.
+
+			wasDirty = true;
+
+			// Cancel the parent's rotation;
+			localRotation.setIdentity();
+			localRotation.mul(inverseCameraRotationYSpin);
+//					if (parent != null) {
+//						QuaternionRotation.mul(localRotation, localRotation, parent.inverseWorldRotation);
+//					}
+
+			// TODO face camera, TODO have a camera
+		} else if (node.billboardedZ) {
+			wasDirty = true;
+
+			// Cancel the parent's rotation;
+			if (parent != null) {
+				localRotation.set(parent.inverseWorldRotation);
+			} else {
+				localRotation.setIdentity();
+			}
+
+			localRotation.mul(inverseCameraRotationZSpin);
+
+			// TODO face camera, TODO have a camera
+		}
+		return wasDirty;
+	}
+
 	private void updateParticles() {
 		for (int i = 0; i < billboardVectors.length; i++) {
-			inverseCameraRotation.transform(billboardBaseVectors[i], billboardVectors[i]);
+//			inverseCameraRotation.transform(billboardBaseVectors[i], billboardVectors[i]);
+			billboardVectors[i].set(Vec4.getTransformed(billboardBaseVectors[i], inverseCameraRotation));
 		}
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {
 			// not animating

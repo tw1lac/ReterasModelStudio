@@ -113,11 +113,12 @@ public class ModelPanel implements ActionListener, MouseListener {
 
 		undoManager = new UndoManagerImpl(undoHandler);
 
-		editorRenderModel = new RenderModel(input, modelView);
-		editorRenderModel.setSpawnParticles((prefs.getRenderParticles() == null) || prefs.getRenderParticles());
-		editorRenderModel.setAllowInanimateParticles((prefs.getRenderStaticPoseParticles() == null) || prefs.getRenderStaticPoseParticles());
+//		editorRenderModel = new RenderModel(input, modelView);
+//		editorRenderModel.setSpawnParticles(prefs.getRenderParticles());
+//		editorRenderModel.setAllowInanimateParticles(prefs.getRenderStaticPoseParticles());
+		editorRenderModel = modelView.getEditorRenderModel();
 
-		modelEditorManager = new ModelEditorManager(modelView, prefs, modeNotifier, modelEditorChangeNotifier, viewportActivityManager, editorRenderModel, modelStructureChangeListener);
+		modelEditorManager = new ModelEditorManager(modelView, prefs, modeNotifier, modelEditorChangeNotifier, viewportActivityManager, modelStructureChangeListener);
 
 		modelViewManagingTree = new ModelViewManagingTree(modelView, undoManager, modelEditorManager);
 		modelViewManagingTree.setFocusable(false);
@@ -146,7 +147,7 @@ public class ModelPanel implements ActionListener, MouseListener {
 		botArea.setControlsVisible(prefs.showVMControls());
 		sideArea.setControlsVisible(prefs.showVMControls());
 
-		perspArea = new PerspDisplayPanel("Perspective", modelView, prefs, editorRenderModel);
+		perspArea = new PerspDisplayPanel("Perspective", modelView, prefs);
 
 		componentsPanel = new ComponentsPanel(getModelViewManager(), undoManager, modelStructureChangeListener, textureExporter);
 
@@ -154,10 +155,7 @@ public class ModelPanel implements ActionListener, MouseListener {
 	}
 
 	private DisplayPanel getDisplayPanel(ModelStructureChangeListener modelStructureChangeListener, CoordDisplayListener coordDisplayListener, ViewportTransferHandler viewportTransferHandler, ViewportListener viewportListener, String side, byte i, byte i2) {
-		return new DisplayPanel(side, i, i2, modelView,
-				modelEditorManager.getModelEditor(), modelStructureChangeListener, viewportActivityManager,
-				prefs, undoManager, coordDisplayListener, undoHandler, modelEditorChangeNotifier,
-				viewportTransferHandler, editorRenderModel, viewportListener);
+		return new DisplayPanel(side, i, i2, modelView, modelEditorManager.getModelEditor(), modelStructureChangeListener, viewportActivityManager, prefs, undoManager, coordDisplayListener, undoHandler, modelEditorChangeNotifier, viewportTransferHandler, editorRenderModel, viewportListener);
 	}
 
 	public RenderModel getEditorRenderModel() {

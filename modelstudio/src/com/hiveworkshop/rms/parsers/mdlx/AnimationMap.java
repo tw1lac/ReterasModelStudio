@@ -26,7 +26,7 @@ public enum AnimationMap {
 	/**
 	 * Layer emissive gain
 	 */
-	KMTE("Emissive", MdlxTimelineDescriptor.FLOAT_TIMELINE),
+	KMTE("EmissiveGain", MdlxTimelineDescriptor.FLOAT_TIMELINE),
 	/**
 	 * Layer fresnel color
 	 */

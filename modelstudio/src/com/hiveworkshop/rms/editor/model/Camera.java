@@ -126,7 +126,6 @@ public class Camera implements Named {
 		private static final Quat rotationHeap = new Quat(0, 0, 0, 1);
 		
 		private final Camera parent;
-		private final Vec3 axisHeap = new Vec3(0, 0, 0);
 
 		private SourceNode(final Camera parent) {
 			this.parent = parent;
@@ -159,7 +158,7 @@ public class Camera implements Named {
 
 		@Override
 		public Quat getRenderRotation(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-			final AnimFlag translationFlag = find("Rotation");
+			final AnimFlag<?> translationFlag = find("Rotation");
 			if (translationFlag != null) {
 				final Object interpolated = translationFlag.interpolateAt(animatedRenderEnvironment);
 				if (interpolated instanceof Float) {
@@ -168,9 +167,10 @@ public class Camera implements Named {
 					final Vec3 targetPosition = parent.targetPosition;
 					final Vec3 sourceTranslation = getRenderTranslation(animatedRenderEnvironment);
 					final Vec3 sourcePosition = parent.position;
-					axisHeap.x = (targetPosition.x + targetTranslation.x) - (sourcePosition.x + sourceTranslation.x);
-					axisHeap.y = (targetPosition.y + targetTranslation.y) - (sourcePosition.y + sourceTranslation.y);
-					axisHeap.z = (targetPosition.z + targetTranslation.z) - (sourcePosition.z + sourceTranslation.z);
+					final Vec3 axisHeap = new Vec3(targetPosition).add(targetTranslation).sub(sourcePosition).sub(sourceTranslation);
+//					axisHeap.x = (targetPosition.x + targetTranslation.x) - (sourcePosition.x + sourceTranslation.x);
+//					axisHeap.y = (targetPosition.y + targetTranslation.y) - (sourcePosition.y + sourceTranslation.y);
+//					axisHeap.z = (targetPosition.z + targetTranslation.z) - (sourcePosition.z + sourceTranslation.z);
 					rotationHeap.setFromAxisAngle(axisHeap, angle);
 					return rotationHeap;
 				} else {

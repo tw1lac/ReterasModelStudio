@@ -74,7 +74,6 @@ public abstract class MultiManipulatorActivity<MANIPULATOR_BUILDER extends Manip
 //				System.out.println("geomX: "  + coordinateSystem.geomX(e.getPoint().getX()) + ", geomY: " + coordinateSystem.geomY(e.getPoint().getY()));
 			}
 			undoActionListener.pushAction(manipulator.finish(lastDragPoint, mouseEnd, coordinateSystem.getPortFirstXYZ(), coordinateSystem.getPortSecondXYZ()));
-			// ToDo choose correct dir
 			mouseStartPoint = null;
 			lastDragPoint = null;
 			manipulator = null;
@@ -117,9 +116,6 @@ public abstract class MultiManipulatorActivity<MANIPULATOR_BUILDER extends Manip
 	}
 
 	@Override
-	public void modelChanged() {
-		// TODO Auto-generated method stub
-
-	}
+	public void modelChanged() {}
 
 }

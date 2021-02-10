@@ -84,6 +84,9 @@ public abstract class AnimFlag<T> {
 				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
 			}
 		} else if (firstValue instanceof long[]) {
+			if(timeline.name.toString().equalsIgnoreCase("rotation")){
+				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
+			}
 			return new IntAnimFlag((MdlxUInt32Timeline) timeline);
 //			return new IntAnimFlag((MdlxTimeline<long[]>) timeline);
 		}
@@ -248,6 +251,8 @@ public abstract class AnimFlag<T> {
 				case MdlUtils.TOKEN_ALPHA:
 					return AnimationMap.KMTA;
 				case MdlUtils.TOKEN_EMISSIVE_GAIN:
+					return AnimationMap.KMTE;
+				case MdlUtils.TOKEN_EMISSIVE:
 					return AnimationMap.KMTE;
 				case MdlUtils.TOKEN_FRESNEL_COLOR:
 					return AnimationMap.KFC3;
@@ -1134,10 +1139,10 @@ public abstract class AnimFlag<T> {
 				final Vec3 next = (Vec3) ceilValue;
 
 				return switch (interpolationType) {
-					case BEZIER -> previous.bezier((Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor, new Vec3());
+					case BEZIER -> Vec3.getBezier(previous, (Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor);
 					case DONT_INTERP -> floorValue;
-					case HERMITE -> previous.hermite((Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor, new Vec3());
-					case LINEAR -> previous.lerp(next, timeFactor, new Vec3());
+					case HERMITE -> Vec3.getHermite(previous, (Vec3)floorOutTan, (Vec3)inTans.get(ceilIndex), next, timeFactor);
+					case LINEAR -> Vec3.getLerped(previous, next, timeFactor);
 				};
 			}
 			case ROTATION -> {
@@ -1146,10 +1151,10 @@ public abstract class AnimFlag<T> {
 				final Quat next = (Quat) ceilValue;
 
 				return switch (interpolationType) {
-					case BEZIER -> previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
+					case BEZIER -> Quat.getSquad(previous, (Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor);
 					case DONT_INTERP -> floorValue;
-					case HERMITE -> previous.squad((Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor, new Quat());
-					case LINEAR -> previous.slerp(next, timeFactor, new Quat());
+					case HERMITE -> Quat.getSquad(previous, (Quat) floorOutTan, (Quat) inTans.get(ceilIndex), next, timeFactor);
+					case LINEAR -> Quat.getSlerped(previous, next, timeFactor);
 				};
 			}
 			case TEXTUREID -> {

@@ -75,12 +75,9 @@ public class ViewportModelRenderer implements ModelVisitor {
 
 	private void resetIdObjectRendererWithNode(final IdObject object) {
 		idObjectRenderer.reset(coordinateSystem, graphics,
-				modelView.getHighlightedNode() == object
-						? programPreferences.getHighlighVertexColor() : programPreferences.getLightsColor(),
-				modelView.getHighlightedNode() == object
-						? programPreferences.getHighlighVertexColor() : programPreferences.getPivotPointsColor(),
-				modelView.getHighlightedNode() == object
-						? NodeIconPalette.HIGHLIGHT : NodeIconPalette.UNSELECTED,
+				modelView.getHighlightedNode() == object ? programPreferences.getHighlighVertexColor() : programPreferences.getLightsColor(),
+				modelView.getHighlightedNode() == object ? programPreferences.getHighlighVertexColor() : programPreferences.getPivotPointsColor(),
+				modelView.getHighlightedNode() == object ? NodeIconPalette.HIGHLIGHT : NodeIconPalette.UNSELECTED,
 				programPreferences.isUseBoxesForPivotPoints());
 	}
 
@@ -180,8 +177,7 @@ public class ViewportModelRenderer implements ModelVisitor {
 			final double secondCoord;
 			firstCoord = getDimension(x, y, z, xDimension, "Invalid x dimension");
 			secondCoord = getDimension(x, y, z, yDimension, "Invalid y dimension");
-			final Point point = new Point((int) coordinateSystem.convertX(firstCoord),
-					(int) coordinateSystem.convertY(secondCoord));
+			final Point point = new Point((int) coordinateSystem.convertX(firstCoord), (int) coordinateSystem.convertY(secondCoord));
 
 			if (previousVertices.size() > 0) {
 				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
@@ -241,8 +237,9 @@ public class ViewportModelRenderer implements ModelVisitor {
 	/**
 	 * Copied directly from MDLDisplay and then made static.
 	 */
-	public static void drawFittedTriangles(final EditableModel model, final Graphics g, final Rectangle bounds, final byte a,
-										   final byte b, final VertexFilter<? super GeosetVertex> filter, final Vec3 extraHighlightPoint) {
+	public static void drawFittedTriangles(final EditableModel model, final Graphics g, final Rectangle bounds,
+	                                       final byte a, final byte b, final VertexFilter<? super GeosetVertex> filter,
+	                                       final Vec3 extraHighlightPoint) {
 		final List<Triangle> triangles = new ArrayList<>();
 		double minX = Double.MAX_VALUE;
 		double maxX = Double.MIN_VALUE;

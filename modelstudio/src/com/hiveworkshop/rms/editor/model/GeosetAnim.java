@@ -138,13 +138,12 @@ public class GeosetAnim extends TimelineContainer implements Named {
 	}
 
 	private static final Vec3 renderColorVector = new Vec3();
+	//todo does this need to be a class variable?
 
 	public Vec3 getRenderColor(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 		final Vec3 c = getInterpolatedVector(animatedRenderEnvironment, "Color", staticColor);
 
-		renderColorVector.x = c.x;
-		renderColorVector.y = c.y;
-		renderColorVector.z = c.z;
+		renderColorVector.set(c);
 
 		return renderColorVector;
 	}

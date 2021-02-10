@@ -37,6 +37,7 @@ import net.infonode.docking.util.StringViewMap;
 import net.infonode.tabbedpanel.TabAreaVisiblePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabBorderSizePolicy;
 import net.infonode.tabbedpanel.titledtab.TitledTabSizePolicy;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +51,7 @@ public class MainPanel extends JPanel
         implements ActionListener, UndoHandler, ModelEditorChangeActivityListener, ModelPanelCloseListener {
     JMenuBar menuBar;
     JMenu recentMenu, toolsMenu, windowMenu;
-    JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, textureModels, showVertexModifyControls;
+    JCheckBoxMenuItem mirrorFlip, fetchPortraitsToo, showNormals, renderParticles, showPerspectiveGrid, textureModels, showVertexModifyControls;
     List<JMenuItem> geoItems = new ArrayList<>();
     JMenuItem nullmodelButton;
     List<MenuBar.RecentItem> recentItems = new ArrayList<>();
@@ -138,7 +139,7 @@ public class MainPanel extends JPanel
 
     public MainPanel() {
         super();
-
+        setLayout(new MigLayout("fill, gap 0, novisualpadding, wrap 1", "[fill, grow]", "[][fill, grow]"));
         add(ToolBar.createJToolBar(this));
         // testArea = new PerspDisplayPanel("Graphic Test",2,0);
         // //botArea.setViewport(0,1);
@@ -171,7 +172,6 @@ public class MainPanel extends JPanel
         modelPanels = new ArrayList<>();
         final JPanel toolsPanel = new JPanel();
         toolsPanel.setMaximumSize(new Dimension(30, 999999));
-        final GroupLayout layout = new GroupLayout(this);
         toolbar.setMaximumSize(new Dimension(80000, 48));
 
         viewMap = new StringViewMap();
@@ -221,15 +221,17 @@ public class MainPanel extends JPanel
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
         startupTabWindow.setSelectedTab(0);
 
-        layout.setHorizontalGroup(layout
-                .createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(toolbar)
-                .addComponent(rootWindow));
-        layout.setVerticalGroup(layout
-                .createSequentialGroup()
-                .addComponent(toolbar)
-                .addComponent(rootWindow));
-        setLayout(layout);
+        add(rootWindow);
+//        final GroupLayout layout = new GroupLayout(this);
+//        layout.setHorizontalGroup(layout
+//                .createParallelGroup(GroupLayout.Alignment.LEADING)
+//                .addComponent(toolbar)
+//                .addComponent(rootWindow));
+//        layout.setVerticalGroup(layout
+//                .createSequentialGroup()
+//                .addComponent(toolbar)
+//                .addComponent(rootWindow));
+//        setLayout(layout);
 
 
         // Create a file chooser
@@ -544,7 +546,7 @@ public class MainPanel extends JPanel
         final JRootPane root = getRootPane();
         MainPanelLinkActions.linkActions(this, root);
 
-        MenuBarActions.updateUIFromProgramPreferences(fetchPortraitsToo, modelPanels, prefs, showNormals, showVertexModifyControls, solid, textureModels, wireframe);
+        MenuBarActions.updateUIFromProgramPreferences(fetchPortraitsToo, modelPanels, prefs, showNormals, renderParticles, showPerspectiveGrid, showVertexModifyControls, solid, textureModels, wireframe);
     }
 
 

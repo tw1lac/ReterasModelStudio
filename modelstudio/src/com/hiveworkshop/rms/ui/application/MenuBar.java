@@ -351,6 +351,24 @@ public class MenuBar {
         mainPanel.textureModels.addActionListener(e -> mainPanel.prefs.setTextureModels(mainPanel.textureModels.isSelected()));
         viewMenu.add(mainPanel.textureModels);
 
+        mainPanel.showNormals = new JCheckBoxMenuItem("Show Normals", true);
+        mainPanel.showNormals.setMnemonic(KeyEvent.VK_N);
+        mainPanel.showNormals.setSelected(false);
+        mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
+        viewMenu.add(mainPanel.showNormals);
+
+        mainPanel.renderParticles = new JCheckBoxMenuItem("Render Particles", true);
+        mainPanel.renderParticles.setMnemonic(KeyEvent.VK_P);
+        mainPanel.renderParticles.setSelected(true);
+        mainPanel.renderParticles.addActionListener(e -> mainPanel.prefs.setRenderParticles(mainPanel.renderParticles.isSelected()));
+        viewMenu.add(mainPanel.renderParticles);
+
+        mainPanel.showPerspectiveGrid = new JCheckBoxMenuItem("Show Perspective Grid", true);
+        mainPanel.showPerspectiveGrid.setMnemonic(KeyEvent.VK_G);
+        mainPanel.showPerspectiveGrid.setSelected(true);
+        mainPanel.showPerspectiveGrid.addActionListener(e -> mainPanel.prefs.setShowPerspectiveGrid(mainPanel.showPerspectiveGrid.isSelected()));
+        viewMenu.add(mainPanel.showPerspectiveGrid);
+
         JMenuItem newDirectory = new JMenuItem("Change Game Directory");
         newDirectory.setAccelerator(KeyStroke.getKeyStroke("control shift D"));
         newDirectory.setToolTipText("Changes the directory from which to load texture files for the 3D display.");
@@ -366,12 +384,6 @@ public class MenuBar {
         viewMenu.add(mainPanel.showVertexModifyControls);
 
         viewMenu.add(new JSeparator());
-
-        mainPanel.showNormals = new JCheckBoxMenuItem("Show Normals", true);
-        mainPanel.showNormals.setMnemonic(KeyEvent.VK_N);
-        mainPanel.showNormals.setSelected(false);
-        mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
-        viewMenu.add(mainPanel.showNormals);
 
         mainPanel.viewMode = new JMenu("3D View Mode");
         viewMenu.add(mainPanel.viewMode);
@@ -540,7 +552,10 @@ public class MenuBar {
     private static void resetView(MainPanel mainPanel) {
         traverseAndReset(mainPanel.rootWindow);
         final TabWindow startupTabWindow = MainLayoutCreator.createMainLayout(mainPanel);
+        startupTabWindow.setSelectedTab(0);
         mainPanel.rootWindow.setWindow(startupTabWindow);
+        MPQBrowserView.setCurrentModel(mainPanel, mainPanel.currentModelPanel());
+        mainPanel.rootWindow.revalidate();
         MainLayoutCreator.traverseAndFix(mainPanel.rootWindow);
     }
 

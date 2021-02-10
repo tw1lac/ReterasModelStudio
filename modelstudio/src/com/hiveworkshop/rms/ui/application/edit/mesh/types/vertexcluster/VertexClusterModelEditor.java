@@ -34,10 +34,11 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 	private final Map<Vec3, Integer> vertexToClusterId = new HashMap<>();
 	private final VertexClusterDefinitions vertexClusterDefinitions;
 
-	public VertexClusterModelEditor(final ModelView model, final ProgramPreferences programPreferences,
-									final SelectionManager<VertexGroupBundle> selectionManager,
-									final ModelStructureChangeListener structureChangeListener,
-									final VertexClusterDefinitions vertexClusterDefinitions) {
+	public VertexClusterModelEditor(final ModelView model,
+	                                final ProgramPreferences programPreferences,
+	                                final SelectionManager<VertexGroupBundle> selectionManager,
+	                                final ModelStructureChangeListener structureChangeListener,
+	                                final VertexClusterDefinitions vertexClusterDefinitions) {
 		super(selectionManager, model, structureChangeListener);
 		this.programPreferences = programPreferences;
 		this.vertexClusterDefinitions = vertexClusterDefinitions;
@@ -110,18 +111,16 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 
 	@Override
 	public UndoAction addTeamColor() {
-		final TeamColorAddAction<VertexGroupBundle> teamColorAddAction = new TeamColorAddAction<>(
-				selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager,
-				vertexSelectionHelper);
+		final TeamColorAddAction<VertexGroupBundle> teamColorAddAction
+				= new TeamColorAddAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
 		teamColorAddAction.redo();
 		return teamColorAddAction;
 	}
 
 	@Override
 	public UndoAction splitGeoset() {
-		final SplitGeosetAction<VertexGroupBundle> teamColorAddAction = new SplitGeosetAction<>(
-				selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager,
-				vertexSelectionHelper);
+		final SplitGeosetAction<VertexGroupBundle> teamColorAddAction
+				= new SplitGeosetAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
 		teamColorAddAction.redo();
 		return teamColorAddAction;
 	}
@@ -278,8 +277,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 				boolean triangleIsFullySelected = true;
 				final List<GeosetVertex> triangleVertices = new ArrayList<>(3);
 				for (final GeosetVertex geosetVertex : triangle.getAll()) {
-					if (selection.contains(
-							new VertexGroupBundle(geoset, vertexClusterDefinitions.getClusterId(geosetVertex)))) {
+					if (selection.contains(new VertexGroupBundle(geoset, vertexClusterDefinitions.getClusterId(geosetVertex)))) {
 						final GeosetVertex newGeosetVertex = new GeosetVertex(geosetVertex);
 						newGeosetVertex.getTriangles().clear();
 						copiedVertices.add(newGeosetVertex);

@@ -16,13 +16,15 @@ public class AnimationViewer extends JPanel {
 	private final DefaultComboBoxModel<Animation> animations;
 	private final JComboBox<Animation> animationBox;
 	private final boolean allowUnanimated;
+	UggRenderEnv uggRenderEnv;
 
 	public AnimationViewer(final ModelView mdlDisp, final ProgramPreferences programPreferences,
 			final boolean allowUnanimated) {
 		this.mdlDisp = mdlDisp;
 		this.allowUnanimated = allowUnanimated;
 		try {
-			perspectiveViewport = new AnimatedPerspectiveViewport(mdlDisp, programPreferences, true);
+			uggRenderEnv = new UggRenderEnv();
+			perspectiveViewport = new AnimatedPerspectiveViewport(mdlDisp, programPreferences, uggRenderEnv, true);
 			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			perspectiveViewport.setAnimationTime(0);
 			perspectiveViewport.setLive(true);

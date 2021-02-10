@@ -19,6 +19,12 @@ public class Vec3 {
         this.z = (float) z;
     }
 
+    public Vec3(final float x, final float y, final float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     public Vec3(final Vec3 v) {
         x = v.x;
         y = v.y;
@@ -49,10 +55,10 @@ public class Vec3 {
         }
     }
 
-    public static void rotateVertex(final double centerX, final double centerY, final double centerZ,
-                                    final double radians, final byte firstXYZ, final byte secondXYZ, final Vec3 vertex) {
-        final double x1 = vertex.getCoord(firstXYZ);
-        final double y1 = vertex.getCoord(secondXYZ);
+    public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
+                       final byte firstXYZ, final byte secondXYZ) {
+        final double x1 = getCoord(firstXYZ);
+        final double y1 = getCoord(secondXYZ);
         final double cx = getCx(centerX, centerY, centerZ, firstXYZ);// = coordinateSystem.geomX(centerX);
         final double dx = x1 - cx;
         final double cy = getCx(centerX, centerY, centerZ, secondXYZ);// = coordinateSystem.geomY(centerY);
@@ -63,15 +69,69 @@ public class Vec3 {
             verAng = -verAng;
         }
         // if( getDimEditable(dim1) )
-        double nextDim = (Math.cos(verAng + radians) * r) + cx;
-        if (!Double.isNaN(nextDim)) {
-            vertex.setCoord(firstXYZ, nextDim);
+        double newFirstCoord = (Math.cos(verAng + radians) * r) + cx;
+        if (!Double.isNaN(newFirstCoord)) {
+            setCoord(firstXYZ, newFirstCoord);
         }
         // if( getDimEditable(dim2) )
-        nextDim = (Math.sin(verAng + radians) * r) + cy;
-        if (!Double.isNaN(nextDim)) {
-            vertex.setCoord(secondXYZ, nextDim);
+        double newSecondCoord = (Math.sin(verAng + radians) * r) + cy;
+        if (!Double.isNaN(newSecondCoord)) {
+            setCoord(secondXYZ, newSecondCoord);
         }
+        return this;
+    }
+
+    public static void rotateVertex(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
+//        final double centerX = center.x;
+//        final double centerY = center.y;
+//        final double centerZ = center.z;
+//        final double vertexX = vertex.x;
+//        final double vertexY = vertex.y;
+//        final double vertexZ = vertex.z;
+//        final double deltaX = vertexX - centerX;
+//        final double deltaY = vertexY - centerY;
+//        final double deltaZ = vertexZ - centerZ;
+//        double radiansToApply;
+//        final double twoPi = Math.PI * 2;
+//        if (radians > Math.PI) {
+//            radiansToApply = (radians - twoPi) % twoPi;
+//        } else if (radians <= -Math.PI) {
+//            radiansToApply = (radians + twoPi) % twoPi;
+//        } else {
+//            radiansToApply = radians;
+//        }
+//        final double cosRadians = Math.cos(radiansToApply);
+//        if (radiansToApply == Math.PI) {
+//            vertex.x = (float) centerX - (float) deltaX;
+//            vertex.y = (float) centerY - (float) deltaY;
+//            vertex.z = (float) centerY - (float) deltaZ;
+//        }
+//        final double resultDeltaX = vertexX * cosRadians;
+//        throw new UnsupportedOperationException("NYI");
+    }
+
+    public static void rotateVertex2(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
+        Vec3 delta = getDiff(vertex, center);
+
+
+
+        double radiansToApply;
+        final double twoPi = Math.PI * 2;
+        if (radians > Math.PI) {
+            radiansToApply = (radians - twoPi) % twoPi;
+        } else if (radians <= -Math.PI) {
+            radiansToApply = (radians + twoPi) % twoPi;
+        } else {
+            radiansToApply = radians;
+        }
+        final double cosRadians = Math.cos(radiansToApply);
+        if (radiansToApply == Math.PI) {
+            vertex.x = (float) center.x - (float) delta.x;
+            vertex.y = (float) center.y - (float) delta.y;
+            vertex.z = (float) center.z - (float) delta.z;
+        }
+//        final double resultDeltaX = vertexX * cosRadians;
+        throw new UnsupportedOperationException("NYI");
     }
 
     private static double getCx(double centerX, double centerY, double centerZ, byte firstXYZ) {
@@ -98,35 +158,6 @@ public class Vec3 {
         return center;
     }
 
-    public static void rotateVertex(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
-        final double centerX = center.x;
-        final double centerY = center.y;
-        final double centerZ = center.z;
-        final double vertexX = vertex.x;
-        final double vertexY = vertex.y;
-        final double vertexZ = vertex.z;
-        final double deltaX = vertexX - centerX;
-        final double deltaY = vertexY - centerY;
-        final double deltaZ = vertexZ - centerZ;
-        double radiansToApply;
-        final double twoPi = Math.PI * 2;
-        if (radians > Math.PI) {
-            radiansToApply = (radians - twoPi) % twoPi;
-        } else if (radians <= -Math.PI) {
-            radiansToApply = (radians + twoPi) % twoPi;
-        } else {
-            radiansToApply = radians;
-        }
-        final double cosRadians = Math.cos(radiansToApply);
-        if (radiansToApply == Math.PI) {
-            vertex.x = (float) centerX - (float) deltaX;
-            vertex.y = (float) centerY - (float) deltaY;
-            vertex.z = (float) centerY - (float) deltaZ;
-        }
-        final double resultDeltaX = vertexX * cosRadians;
-        throw new UnsupportedOperationException("NYI");
-    }
-
     public static Vec3 valueOf(String s) throws NumberFormatException {
         return parseVec3(s);
     }
@@ -150,24 +181,6 @@ public class Vec3 {
             case -3 -> -z;
             default -> 0;
         };
-    }
-
-    public void set(final Vec3 v) {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-    }
-
-    public void set(final Vec4 v) {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-    }
-
-    public void set(final double vx, final double vy, final double vz) {
-        x = (float) vx;
-        y = (float) vy;
-        z = (float) vz;
     }
 
     public boolean equalLocs(final Vec3 v) {
@@ -208,30 +221,84 @@ public class Vec3 {
 
     }
 
-    public float distance(final Vec3 other) {
-        return distance(other.x, other.y, other.z);
+    public float distance(final Vec3 a) {
+        return getDiff(this, a).length();
     }
 
     public float distance(final Vec4 other) {
         return distance(other.x, other.y, other.z);
     }
 
-    public Vec3 add(final Vec3 a, final Vec3 out) {
-        out.x = x + a.x;
-        out.y = y + a.y;
-        out.z = z + a.z;
+    public static Vec3 getSum(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).add(b);
+    }
 
-        return out;
+    public static Vec3 getDiff(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).sub(b);
+    }
+
+    public static Vec3 getProd(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).multiply(b);
+    }
+
+    public static Vec3 getQuotient(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).divide(b);
     }
 
     public Vec3 add(final Vec3 a) {
-        return add(a, this);
+        x = x + a.x;
+        y = y + a.y;
+        z = z + a.z;
+        return this;
+    }
+
+    public Vec3 multiply(final Vec3 a){
+        x = x * a.x;
+        y = y * a.y;
+        z = z * a.z;
+        return this;
+    }
+
+    public Vec3 divide(final Vec3 a){
+        x = x / a.x;
+        y = y / a.y;
+        z = z / a.z;
+        return this;
+    }
+
+    public Vec3 sub(final Vec3 a) {
+        x = x - a.x;
+        y = y - a.y;
+        z = z - a.z;
+        return this;
+    }
+
+    public Vec3 negate() {
+        return scale(-1f);
     }
 
     public void translate(final double x, final double y, final double z) {
         this.x += x;
         this.y += y;
         this.z += z;
+    }
+
+    public Vec3 transform(final Vec3 a, final Mat4 mat4) {
+        float newX = (mat4.m00 * a.x) + (mat4.m10 * a.y) + (mat4.m20 * a.z) + mat4.m30;
+        float newY = (mat4.m01 * a.x) + (mat4.m11 * a.y) + (mat4.m21 * a.z) + mat4.m31;
+        float newZ = (mat4.m02 * a.x) + (mat4.m12 * a.y) + (mat4.m22 * a.z) + mat4.m32;
+        return new Vec3(newX, newY, newZ);
+    }
+
+    public static Vec3 getTransformed(final Vec3 a, Mat4 mat4){
+        return new Vec3(a).transform(mat4);
+    }
+
+    public Vec3 transform(final Mat4 mat4) {
+        float newX = (mat4.m00 * x) + (mat4.m10 * y) + (mat4.m20 * z) + mat4.m30;
+        float newY = (mat4.m01 * x) + (mat4.m11 * y) + (mat4.m21 * z) + mat4.m31;
+        float newZ = (mat4.m02 * x) + (mat4.m12 * y) + (mat4.m22 * z) + mat4.m32;
+        return set(newX, newY, newZ);
     }
 
     public float dot(final Vec3 a) {
@@ -258,8 +325,8 @@ public class Vec3 {
         return Math.acos(cos);
     }
 
-    public void scale(final double centerX, final double centerY, final double centerZ, final double scaleX,
-                      final double scaleY, final double scaleZ) {
+    public void scale(final double centerX, final double centerY, final double centerZ,
+                      final double scaleX, final double scaleY, final double scaleZ) {
         final float dx = this.x - (float) centerX;
         final float dy = this.y - (float) centerY;
         final float dz = this.z - (float) centerZ;
@@ -268,21 +335,19 @@ public class Vec3 {
         this.z = (float) centerZ + (dz * (float) scaleZ);
     }
 
+    public Vec3 scaleCentered(final Vec3 center, final Vec3 scale) {
+        return sub(center).multiply(scale).add(center);
+    }
+
+    public static Vec3 getScaled(Vec3 a, float factor) {
+        return new Vec3(a).scale(factor);
+    }
+
     public Vec3 scale(final float factor) {
-        return scale(factor, this);
-    }
-
-    public Vec3 scale(final float factor, final Vec3 out) {
-        out.x = x * factor;
-        out.y = y * factor;
-        out.z = z * factor;
-
-        return out;
-    }
-
-    public void rotate(final double centerX, final double centerY, final double centerZ, final double radians,
-                       final byte firstXYZ, final byte secondXYZ) {
-        rotateVertex(centerX, centerY, centerZ, radians, firstXYZ, secondXYZ, this);
+        x = x * factor;
+        y = y * factor;
+        z = z * factor;
+        return this;
     }
 
     public void setCoord(final byte dim, final double value) {
@@ -310,39 +375,30 @@ public class Vec3 {
         }
     }
 
-    public Vec3 normalize(final Vec3 out) {
-//        float len = lengthSquared();
+    public static Vec3 getNormalized(final Vec3 a) {
+        return new Vec3(a).normalize();
+    }
+
+    public Vec3 normalize() {
         float len = length();
 
         if (len != 0) {
             len = 1 / len;
         }
-
-        out.x = x * len;
-        out.y = y * len;
-        out.z = z * len;
-
-        return out;
+        return scale(len);
     }
 
-    public Vec3 normalize() {
-        return normalize(this);
-    }
-
-    public Vec3 cross(final Vec3 a, final Vec3 out) {
-        final float ax = a.x;
-        final float ay = a.y;
-        final float az = a.z;
-
-        out.x = (y * az) - (ay * z);
-        out.y = (ax * z) - (x * az);
-        out.z = (x * ay) - (ax * y);
-
-        return out;
+    public static Vec3 getCross(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).cross(b);
     }
 
     public Vec3 cross(final Vec3 a) {
-        return cross(a, this);
+        float newX = (y * a.z) - (a.y * z);
+        float newY = (a.x * z) - (x * a.z);
+        float newZ = (x * a.y) - (a.x * y);
+
+        set(newX, newY, newZ);
+        return this;
     }
 
     public float lengthSquared() {
@@ -353,61 +409,40 @@ public class Vec3 {
         return (float) Math.sqrt(lengthSquared());
     }
 
-    public Vec3 sub(final Vec3 a, final Vec3 out) {
-        out.x = x - a.x;
-        out.y = y - a.y;
-        out.z = z - a.z;
-
-        return out;
-    }
-
-    public Vec3 sub(final Vec3 a) {
-        return sub(a, this);
-    }
-
-    public Vec3 negate(final Vec3 out) {
-        out.x = -x;
-        out.y = -y;
-        out.z = -z;
-
-        return out;
-    }
-
-    public Vec3 negate() {
-        return negate(this);
-    }
-
-    public Vec3 lerp(final Vec3 a, final float t, final Vec3 out) {
-        out.x = MathUtils.lerp(x, a.x, t);
-        out.y = MathUtils.lerp(y, a.y, t);
-        out.z = MathUtils.lerp(z, a.z, t);
-
-        return out;
+    public static Vec3 getLerped(final Vec3 from, final Vec3 toward, final float t){
+        return new Vec3(from).lerp(toward, t);
     }
 
     public Vec3 lerp(final Vec3 a, final float t) {
-        return lerp(a, t, this);
+        x = MathUtils.lerp(x, a.x, t);
+        y = MathUtils.lerp(y, a.y, t);
+        z = MathUtils.lerp(z, a.z, t);
+
+        return this;
     }
 
-    public Vec3 hermite(final Vec3 outTan, final Vec3 inTan, final Vec3 a, final float t, final Vec3 out) {
+    public static Vec3 getHermite(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t){
+        return new Vec3(from).hermite(outTan, inTan, toward, t);
+    }
+
+    public Vec3 hermite(final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
         final float factorTimes2 = t * t;
         final float factor1 = (factorTimes2 * ((2 * t) - 3)) + 1;
         final float factor2 = (factorTimes2 * (t - 2)) + t;
         final float factor3 = factorTimes2 * (t - 1);
         final float factor4 = factorTimes2 * (3 - (2 * t));
 
-        out.x = (x * factor1) + (outTan.x * factor2) + (inTan.x * factor3) + (a.x * factor4);
-        out.y = (y * factor1) + (outTan.y * factor2) + (inTan.y * factor3) + (a.y * factor4);
-        out.z = (z * factor1) + (outTan.z * factor2) + (inTan.z * factor3) + (a.z * factor4);
-
-        return out;
+        x = (x * factor1) + (outTan.x * factor2) + (inTan.x * factor3) + (toward.x * factor4);
+        y = (y * factor1) + (outTan.y * factor2) + (inTan.y * factor3) + (toward.y * factor4);
+        z = (z * factor1) + (outTan.z * factor2) + (inTan.z * factor3) + (toward.z * factor4);
+        return this;
     }
 
-    public Vec3 hermite(final Vec3 outTan, final Vec3 inTan, final Vec3 a, final float t) {
-        return hermite(outTan, inTan, a, t, this);
+    public static Vec3 getBezier(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t){
+        return new Vec3(from).hermite(outTan, inTan, toward, t);
     }
 
-    public Vec3 bezier(final Vec3 outTan, final Vec3 inTan, final Vec3 a, final float t, final Vec3 out) {
+    public Vec3 bezier(final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
         final float invt = 1 - t;
         final float factorSquared = t * t;
         final float inverseFactorSquared = invt * invt;
@@ -416,14 +451,52 @@ public class Vec3 {
         final float factor3 = 3 * factorSquared * invt;
         final float factor4 = factorSquared * t;
 
-        out.x = (x * factor1) + (outTan.x * factor2) + (inTan.x * factor3) + (a.x * factor4);
-        out.y = (y * factor1) + (outTan.y * factor2) + (inTan.y * factor3) + (a.y * factor4);
-        out.z = (z * factor1) + (outTan.z * factor2) + (inTan.z * factor3) + (a.z * factor4);
-
-        return out;
+        x = (x * factor1) + (outTan.x * factor2) + (inTan.x * factor3) + (toward.x * factor4);
+        y = (y * factor1) + (outTan.y * factor2) + (inTan.y * factor3) + (toward.y * factor4);
+        z = (z * factor1) + (outTan.z * factor2) + (inTan.z * factor3) + (toward.z * factor4);
+        return this;
     }
 
-    public Vec3 bezier(final Vec3 outTan, final Vec3 inTan, final Vec3 a, final float t) {
-        return bezier(outTan, inTan, a, t, this);
+    public Vec4 getVec4(){
+        return new Vec4(x, y, z, 0);
+    }
+
+    public Vec4 getVec4(final float w){
+        return new Vec4(x, y, z, w);
+    }
+
+    public Vec3 set(final Vec3 v) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        return this;
+    }
+
+    public Vec3 set(final Vec4 v) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        return this;
+    }
+
+    public Vec3 set(final double vx, final double vy, final double vz) {
+        x = (float) vx;
+        y = (float) vy;
+        z = (float) vz;
+        return this;
+    }
+
+    public Vec3 set(final float vx, final float vy, final float vz) {
+        x = vx;
+        y = vy;
+        z = vz;
+        return this;
+    }
+
+    public Vec3 set(final float[] data) {
+        x = data[0];
+        y = data[1];
+        z = data[2];
+        return this;
     }
 }

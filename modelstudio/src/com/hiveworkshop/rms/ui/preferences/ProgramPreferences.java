@@ -13,6 +13,7 @@ public class ProgramPreferences implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int viewMode = 1;
 	private boolean showNormals;
+	private boolean showPerspectiveGrid;
 	private boolean showVertexModifierControls = false;
 	private boolean textureModels = true;
 	private boolean useNativeMDXParser = true; // left for compat
@@ -121,6 +122,7 @@ public class ProgramPreferences implements Serializable {
 	public void loadFrom(final ProgramPreferences other) {
 		viewMode = other.viewMode;
 		showNormals = other.showNormals;
+		showPerspectiveGrid = other.showPerspectiveGrid;
 		showVertexModifierControls = other.showVertexModifierControls;
 		textureModels = other.textureModels;
 		useNativeMDXParser = other.useNativeMDXParser;
@@ -201,6 +203,10 @@ public class ProgramPreferences implements Serializable {
 		return showNormals;
 	}
 
+	public boolean showPerspectiveGrid() {
+		return showPerspectiveGrid;
+	}
+
 	public boolean isCloneOn() {
 		return cloneOn;
 	}
@@ -243,6 +249,12 @@ public class ProgramPreferences implements Serializable {
 
 	public void setShowNormals(final boolean showNormals) {
 		this.showNormals = showNormals;
+		SaveProfile.save();
+		firePrefsChanged();
+	}
+
+	public void setShowPerspectiveGrid(final boolean showPerspectiveGrid) {
+		this.showPerspectiveGrid = showPerspectiveGrid;
 		SaveProfile.save();
 		firePrefsChanged();
 	}
@@ -351,10 +363,6 @@ public class ProgramPreferences implements Serializable {
 		return viewMode;
 	}
 
-	public boolean isShowNormals() {
-		return showNormals;
-	}
-
 	public boolean isShowVertexModifierControls() {
 		return showVertexModifierControls;
 	}
@@ -438,11 +446,11 @@ public class ProgramPreferences implements Serializable {
 	}
 
 	public Boolean isInvertedDisplay() {
-		return invertedDisplay;
+		return invertedDisplay != null && invertedDisplay;
 	}
 
 	public Boolean getUseBoxesForPivotPoints() {
-		return useBoxesForPivotPoints;
+		return useBoxesForPivotPoints != null && useBoxesForPivotPoints;
 	}
 
 	public boolean isUseBoxesForPivotPoints() {
@@ -515,15 +523,15 @@ public class ProgramPreferences implements Serializable {
 	}
 
 	public Boolean getAllowLoadingNonBlpTextures() {
-		return allowLoadingNonBlpTextures;
+		return allowLoadingNonBlpTextures != null && allowLoadingNonBlpTextures;
 	}
 
 	public Boolean getRenderParticles() {
-		return renderParticles;
+		return renderParticles == null || renderParticles;
 	}
 
 	public Boolean getRenderStaticPoseParticles() {
-		return renderStaticPoseParticles;
+		return renderStaticPoseParticles == null || renderStaticPoseParticles;
 	}
 
 	public void setAllowLoadingNonBlpTextures(final Boolean allowLoadingNonBlpTextures) {
@@ -605,7 +613,7 @@ public class ProgramPreferences implements Serializable {
 	}
 
 	public Boolean getQuickBrowse() {
-		return quickBrowse;
+		return quickBrowse != null && quickBrowse;
 	}
 
 	public void setQuickBrowse(final Boolean quickBrowse) {

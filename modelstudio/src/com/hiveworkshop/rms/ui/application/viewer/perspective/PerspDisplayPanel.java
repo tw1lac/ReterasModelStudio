@@ -1,7 +1,6 @@
 package com.hiveworkshop.rms.ui.application.viewer.perspective;
 
 import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import net.infonode.docking.View;
@@ -28,14 +27,18 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 	private final JButton up, down, left, right, plusZoom, minusZoom;
 	private final ProgramPreferences programPreferences;
 	private final View view;
-	private final RenderModel editorRenderModel;
+//	private final RenderModel editorRenderModel;
 
 	// private JCheckBox wireframe;
-	public PerspDisplayPanel(final String title, final ModelView dispMDL, final ProgramPreferences programPreferences,
-			final RenderModel editorRenderModel) {
+	public PerspDisplayPanel(final String title, final ModelView dispMDL, final ProgramPreferences programPreferences) {
 		super();
 		this.programPreferences = programPreferences;
-		this.editorRenderModel = editorRenderModel;
+//		this.editorRenderModel = editorRenderModel;
+//		this.editorRenderModel = dispMDL.getEditorRenderModel();
+//		if (programPreferences != null) {
+//			this.editorRenderModel.setSpawnParticles(programPreferences.getRenderParticles());
+//			this.editorRenderModel.setAllowInanimateParticles(programPreferences.getRenderStaticPoseParticles());
+//		}
 		// BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title),BorderFactory.createBevelBorder(1)),BorderFactory.createEmptyBorder(1,1,1,1)
 		// ));
 		setOpaque(true);
@@ -115,7 +118,7 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 				vp.destroy();
 			}
 			removeAll();
-			vp = new PerspectiveViewport(dispModel, programPreferences, editorRenderModel);
+			vp = new PerspectiveViewport(dispModel, programPreferences);
 			vp.setIgnoreRepaint(false);
 			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
 
@@ -152,27 +155,17 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 	}
 
 	// public void addGeoset(Geoset g)
-	// {
-	// m_geosets.add(g);
-	// }
+	// { m_geosets.add(g);}
 	// public void setGeosetVisible(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setVisible(flag);
-	// }
+	// { Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setVisible(flag);}
 	// public void setGeosetHighlight(int index, boolean flag)
-	// {
-	// Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setHighlight(flag);
-	// }
+	// { Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setHighlight(flag);}
 	// public void clearGeosets()
-	// {
-	// m_geosets.clear();
-	// }
+	// { m_geosets.clear();}
 	// public int getGeosetsSize()
-	// {
-	// return m_geosets.size();
-	// }
+	// { return m_geosets.size()}
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		if (e.getSource() == up) {

@@ -12,15 +12,20 @@ import java.awt.image.BufferedImage;
 public class ControlledAnimationViewer extends JPanel implements AnimationControllerListener {
 	private ModelView mdlDisp;
 	private final AnimatedPerspectiveViewport perspectiveViewport;
+	UggRenderEnv uggRenderEnv;
 
 	public ControlledAnimationViewer(final ModelView mdlDisp, final ProgramPreferences programPreferences,
 			final boolean doDefaultCamera) {
 		this.mdlDisp = mdlDisp;
 		try {
-			perspectiveViewport = new AnimatedPerspectiveViewport(mdlDisp, programPreferences, doDefaultCamera);
+			uggRenderEnv = new UggRenderEnv();
+			perspectiveViewport = new AnimatedPerspectiveViewport(mdlDisp, programPreferences, uggRenderEnv, doDefaultCamera);
 			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			perspectiveViewport.setAnimationTime(0);
 			perspectiveViewport.setLive(true);
+//			uggRenderEnv = (UggRenderEnv) mdlDisp.getEditorRenderModel().getAnimatedRenderEnvironment();
+			System.out.println(".getAnimatedRenderEnv(): " + mdlDisp.getEditorRenderModel().getAnimatedRenderEnvironment());
+			System.out.println("uggRenderEnv: " + uggRenderEnv);
 		} catch (final LWJGLException e) {
 			throw new RuntimeException(e);
 		}
@@ -55,35 +60,42 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 
 	@Override
 	public void setAnimation(final Animation animation) {
-		perspectiveViewport.setAnimation(animation);
+//		perspectiveViewport.setAnimation(animation);
+		uggRenderEnv.setAnimation(animation);
 	}
 
 	public void setAnimationTime(int time) {
-		perspectiveViewport.setAnimationTime(time);
+//		perspectiveViewport.setAnimationTime(time);
+		uggRenderEnv.setAnimationTime(time);
 	}
 
 	@Override
 	public void playAnimation() {
-		perspectiveViewport.setAnimationTime(0);
+//		perspectiveViewport.setAnimationTime(0);
+		uggRenderEnv.setAnimationTime(0);
+
 	}
 
 	@Override
 	public void setLoop(final LoopType loopType) {
-		perspectiveViewport.setLoopType(loopType);
+//		perspectiveViewport.setLoopType(loopType);
+		uggRenderEnv.setLoopType(loopType);
 	}
 
 	@Override
 	public void setSpeed(final float speed) {
-		perspectiveViewport.setAnimationSpeed(speed);
+//		perspectiveViewport.setAnimationSpeed(speed);
+		uggRenderEnv.setAnimationSpeed(speed);
 	}
 
 	public Animation getCurrentAnimation() {
-		return perspectiveViewport.getCurrentAnimation();
+//		return perspectiveViewport.getCurrentAnimation();
+		return uggRenderEnv.getCurrentAnimation();
 	}
 
-	public void setSpawnParticles(final boolean b) {
-		perspectiveViewport.setSpawnParticles(b);
-	}
+//	public void setSpawnParticles(final boolean b) {
+//		perspectiveViewport.setSpawnParticles(b);
+//	}
 
 	@Override
 	public void setLevelOfDetail(final int levelOfDetail) {

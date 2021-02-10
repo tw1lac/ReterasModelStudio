@@ -45,12 +45,16 @@ public final class ModelEditorManager {
 	private final ModelStructureChangeListener structureChangeListener;
 	public static boolean MOVE_LINKED;
 
-	public ModelEditorManager(final ModelView model, final ProgramPreferences programPreferences, final ToolbarButtonGroup<SelectionMode> modeButtonGroup, final ModelEditorChangeListener modelEditorChangeListener, final SelectionListener selectionListener, final RenderModel renderModel, final ModelStructureChangeListener structureChangeListener) {
+	public ModelEditorManager(final ModelView model, final ProgramPreferences programPreferences, final ToolbarButtonGroup<SelectionMode> modeButtonGroup, final ModelEditorChangeListener modelEditorChangeListener, final SelectionListener selectionListener, final ModelStructureChangeListener structureChangeListener) {
 		this.model = model;
 		this.modelEditorChangeListener = modelEditorChangeListener;
 		this.programPreferences = programPreferences;
 		this.selectionListener = selectionListener;
-		this.renderModel = renderModel;
+//		this.renderModel = renderModel;
+		this.renderModel = model.getEditorRenderModel();
+		renderModel.setSpawnParticles(programPreferences.getRenderParticles());
+		renderModel.setAllowInanimateParticles(programPreferences.getRenderStaticPoseParticles());
+
 		this.structureChangeListener = structureChangeListener;
 		viewportSelectionHandler = new ViewportSelectionHandlerImpl(modeButtonGroup, null);
 		setSelectionItemType(SelectionItemTypes.VERTEX);
