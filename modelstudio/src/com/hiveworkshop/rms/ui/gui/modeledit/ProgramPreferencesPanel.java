@@ -21,17 +21,16 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 								   final List<DataSourceDescriptor> dataSources) {
 		this.programPreferences = programPreferences;
 
-		final JPanel generalPrefsPanel = new JPanel();
+		final JPanel generalPrefsPanel = new JPanel(new MigLayout());
 		final JLabel viewModeLabel = new JLabel("3D View Mode");
 		final JRadioButton wireframeViewMode = new JRadioButton("Wireframe");
 		final JRadioButton solidViewMode = new JRadioButton("Solid");
-		final JCheckBox invertedDisplay = new JCheckBox();
+		final JCheckBox grid2d = new JCheckBox();
 		final JCheckBox useBoxesForNodes = new JCheckBox();
 		final JCheckBox quickBrowse = new JCheckBox();
 		final JCheckBox allowLoadingNonBlpTextures = new JCheckBox();
-		final JCheckBox renderParticles = new JCheckBox();
-		if (programPreferences.isInvertedDisplay()) {
-			invertedDisplay.setSelected(true);
+		if (programPreferences.show2dGrid()) {
+			grid2d.setSelected(true);
 		}
 		if (programPreferences.getUseBoxesForPivotPoints()) {
 			useBoxesForNodes.setSelected(true);
@@ -42,12 +41,9 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 		if (programPreferences.getAllowLoadingNonBlpTextures()) {
 			allowLoadingNonBlpTextures.setSelected(true);
 		}
-		if (programPreferences.getRenderParticles()) {
-			renderParticles.setSelected(true);
-		}
 		final ActionListener viewModeUpdater = e -> {
-            programPreferences.setViewMode(wireframeViewMode.isSelected() ? 0 : 1);
-            programPreferences.setInvertedDisplay(invertedDisplay.isSelected());
+			programPreferences.setViewMode(wireframeViewMode.isSelected() ? 0 : 1);
+			programPreferences.setShow2dGrid(grid2d.isSelected());
         };
 		wireframeViewMode.setSelected(programPreferences.viewMode() == 0);
 		wireframeViewMode.addActionListener(viewModeUpdater);
@@ -57,12 +53,11 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 		viewModes.add(wireframeViewMode);
 		viewModes.add(solidViewMode);
 
-		generalPrefsPanel.setLayout(new MigLayout());
 		generalPrefsPanel.add(viewModeLabel, "cell 0 0");
 		generalPrefsPanel.add(wireframeViewMode, "cell 0 1");
 		generalPrefsPanel.add(solidViewMode, "cell 0 2");
-		generalPrefsPanel.add(new JLabel("Show Viewport Gridlines:"), "cell 0 3");
-		generalPrefsPanel.add(invertedDisplay, "cell 1 3");
+		generalPrefsPanel.add(new JLabel("Show 2D Viewport Gridlines:"), "cell 0 3");
+		generalPrefsPanel.add(grid2d, "cell 1 3");
 		generalPrefsPanel.add(new JLabel("Use Boxes for Nodes:"), "cell 0 4");
 		generalPrefsPanel.add(useBoxesForNodes, "cell 1 4");
 		generalPrefsPanel.add(new JLabel("Quick Browse:"), "cell 0 5");
@@ -71,8 +66,7 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 		generalPrefsPanel.add(new JLabel("Allow Loading Non BLP Textures:"), "cell 0 6");
 		allowLoadingNonBlpTextures.setToolTipText("Needed for opening PNGs with standard File Open");
 		generalPrefsPanel.add(allowLoadingNonBlpTextures, "cell 1 6");
-		generalPrefsPanel.add(new JLabel("Render Particle Emitters:"), "cell 0 7");
-		generalPrefsPanel.add(renderParticles, "cell 1 7");
+//		generalPrefsPanel.add(new JLabel("Render Particle Emitters:"), "cell 0 7");
 		// final BoxLayout boxLayout = new BoxLayout(generalPrefsPanel,
 		// BoxLayout.PAGE_AXIS);
 
@@ -80,10 +74,9 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 
 		final JPanel modelEditorPanel = new JPanel();
 		modelEditorPanel.setLayout(new MigLayout());
-		invertedDisplay.addActionListener(viewModeUpdater);
+		grid2d.addActionListener(viewModeUpdater);
 		quickBrowse.addActionListener(e -> programPreferences.setQuickBrowse(quickBrowse.isSelected()));
 		allowLoadingNonBlpTextures.addActionListener(e -> programPreferences.setAllowLoadingNonBlpTextures(allowLoadingNonBlpTextures.isSelected()));
-		renderParticles.addActionListener(e -> programPreferences.setRenderParticles(renderParticles.isSelected()));
 		useBoxesForNodes.addActionListener(e -> programPreferences.setUseBoxesForPivotPoints(useBoxesForNodes.isSelected()));
 		final ColorChooserIcon backgroundColorIcon = new ColorChooserIcon(programPreferences.getBackgroundColor(),
 				programPreferences::setBackgroundColor);
@@ -141,63 +134,25 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 			}
 		});
 		int row = 0;
-		modelEditorPanel.add(new JLabel("Background Color:"), "cell 0 " + row);
-		modelEditorPanel.add(backgroundColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Vertex Color:"), "cell 0 " + row);
-		modelEditorPanel.add(vertexColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Triangle Color:"), "cell 0 " + row);
-		modelEditorPanel.add(triangleColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Select Color:"), "cell 0 " + row);
-		modelEditorPanel.add(selectColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Triangle Highlight Color:"), "cell 0 " + row);
-		modelEditorPanel.add(triangleHighlightColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Vertex Highlight Color:"), "cell 0 " + row);
-		modelEditorPanel.add(vertexHighlightColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Perspective Background Color:"), "cell 0 " + row);
-		modelEditorPanel.add(perspectiveBackgroundColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Visible Uneditable Mesh Color:"), "cell 0 " + row);
-		modelEditorPanel.add(visibleUneditableColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Animation Editor Bone Color:"), "cell 0 " + row);
-		modelEditorPanel.add(animtedBoneUnselectedColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Animation Editor Selected Bone Color:"), "cell 0 " + row);
-		modelEditorPanel.add(animtedBoneSelectedColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Animation Editor Selected Upstream Color:"), "cell 0 " + row);
-		modelEditorPanel.add(animtedBoneSelectedUpstreamColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Pivot Point Color:"), "cell 0 " + row);
-		modelEditorPanel.add(pivotPointColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Pivot Point Selected Color:"), "cell 0 " + row);
-		modelEditorPanel.add(pivotPointSelectedColorIcon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button B Color 1:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColorB1Icon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button B Color 2:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColorB2Icon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button Color 1:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColor1Icon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button Color 2:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColor2Icon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button R Color 1:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColorR1Icon, "cell 1 " + row);
-		row++;
-		modelEditorPanel.add(new JLabel("Button R Color 2:"), "cell 0 " + row);
-		modelEditorPanel.add(buttonColorR2Icon, "cell 1 " + row);
-		row++;
+		row = getRowAddUgg(modelEditorPanel, backgroundColorIcon, row, "Background Color:");
+		row = getRowAddUgg(modelEditorPanel, vertexColorIcon, row, "Vertex Color:");
+		row = getRowAddUgg(modelEditorPanel, triangleColorIcon, row, "Triangle Color:");
+		row = getRowAddUgg(modelEditorPanel, selectColorIcon, row, "Select Color:");
+		row = getRowAddUgg(modelEditorPanel, triangleHighlightColorIcon, row, "Triangle Highlight Color:");
+		row = getRowAddUgg(modelEditorPanel, vertexHighlightColorIcon, row, "Vertex Highlight Color:");
+		row = getRowAddUgg(modelEditorPanel, perspectiveBackgroundColorIcon, row, "Perspective Background Color:");
+		row = getRowAddUgg(modelEditorPanel, visibleUneditableColorIcon, row, "Visible Uneditable Mesh Color:");
+		row = getRowAddUgg(modelEditorPanel, animtedBoneUnselectedColorIcon, row, "Animation Editor Bone Color:");
+		row = getRowAddUgg(modelEditorPanel, animtedBoneSelectedColorIcon, row, "Animation Editor Selected Bone Color:");
+		row = getRowAddUgg(modelEditorPanel, animtedBoneSelectedUpstreamColorIcon, row, "Animation Editor Selected Upstream Color:");
+		row = getRowAddUgg(modelEditorPanel, pivotPointColorIcon, row, "Pivot Point Color:");
+		row = getRowAddUgg(modelEditorPanel, pivotPointSelectedColorIcon, row, "Pivot Point Selected Color:");
+		row = getRowAddUgg(modelEditorPanel, buttonColorB1Icon, row, "Button B Color 1:");
+		row = getRowAddUgg(modelEditorPanel, buttonColorB2Icon, row, "Button B Color 2:");
+		row = getRowAddUgg(modelEditorPanel, buttonColor1Icon, row, "Button Color 1:");
+		row = getRowAddUgg(modelEditorPanel, buttonColor2Icon, row, "Button Color 2:");
+		row = getRowAddUgg(modelEditorPanel, buttonColorR1Icon, row, "Button R Color 1:");
+		row = getRowAddUgg(modelEditorPanel, buttonColorR2Icon, row, "Button R Color 2:");
 		modelEditorPanel.add(new JLabel("Window Borders (Theme):"), "cell 0 " + row);
 		modelEditorPanel.add(themeCheckBox, "cell 1 " + row);
 
@@ -222,6 +177,13 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 
 		dataSourceChooserPanel = new DataSourceChooserPanel(dataSources);
 		addTab("Warcraft Data", dataSourceChooserPanel);
+	}
+
+	public int getRowAddUgg(JPanel modelEditorPanel, ColorChooserIcon backgroundColorIcon, int row, String s) {
+		modelEditorPanel.add(new JLabel(s), "cell 0 " + row);
+		modelEditorPanel.add(backgroundColorIcon, "cell 1 " + row);
+		row++;
+		return row;
 	}
 
 	public List<DataSourceDescriptor> getDataSources() {

@@ -4,7 +4,7 @@ import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.Camera.SourceNode;
 import com.hiveworkshop.rms.editor.model.Camera.TargetNode;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
-import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeEnvironmentImpl;
 import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
@@ -21,7 +21,7 @@ public final class RenderModel {
 	private Quat inverseCameraRotation;
 	private Quat inverseCameraRotationYSpin;
 	private Quat inverseCameraRotationZSpin;
-	private AnimatedRenderEnvironment animatedRenderEnvironment;
+	private TimeEnvironmentImpl animatedRenderEnvironment;
 
 	private final Map<AnimatedNode, RenderNode> objectToRenderNode = new HashMap<>();
 	private final Map<ParticleEmitter2, RenderParticleEmitter2View> emitterToRenderer = new HashMap<>();
@@ -94,13 +94,17 @@ public final class RenderModel {
 		return getRenderNode(model.getIdObject(objectId));
 	}
 
-	public AnimatedRenderEnvironment getAnimatedRenderEnvironment() {
+	public TimeEnvironmentImpl getAnimatedRenderEnvironment() {
 		return animatedRenderEnvironment;
 	}
 
-	public void refreshFromEditor(final AnimatedRenderEnvironment animatedRenderEnvironment,
-			final Quat inverseCameraRotation, final Quat inverseCameraRotationYSpin,
-			final Quat inverseCameraRotationZSpin, final RenderResourceAllocator renderResourceAllocator) {
+	public void setAnimatedRenderEnvironment(TimeEnvironmentImpl animatedRenderEnvironment) {
+		this.animatedRenderEnvironment = animatedRenderEnvironment;
+	}
+
+	public void refreshFromEditor(final TimeEnvironmentImpl animatedRenderEnvironment,
+	                              final Quat inverseCameraRotation, final Quat inverseCameraRotationYSpin,
+	                              final Quat inverseCameraRotationZSpin, final RenderResourceAllocator renderResourceAllocator) {
 		particleEmitterViews2.clear();
 		particleEmitters2.clear();
 		this.animatedRenderEnvironment = animatedRenderEnvironment;

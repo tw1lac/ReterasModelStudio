@@ -20,7 +20,7 @@ public class ProgramPreferences implements Serializable {
 	private boolean loadPortraits = true;
 	private transient boolean cloneOn = false;
 	private transient boolean[] dimLocks = new boolean[3];
-	private Boolean invertedDisplay = true;
+	private Boolean show2dGrid = true;
 	private Boolean useBoxesForPivotPoints = true;
 	private Boolean allowLoadingNonBlpTextures = true;
 	private Boolean renderParticles = true;
@@ -60,8 +60,8 @@ public class ProgramPreferences implements Serializable {
 	public void reload() {
 		dimLocks = new boolean[3];
 		actionType = 3;
-		if (invertedDisplay == null) {
-			invertedDisplay = true;
+		if (show2dGrid == null) {
+			show2dGrid = true;
 		}
 		if (useBoxesForPivotPoints == null) {
 			useBoxesForPivotPoints = true;
@@ -127,7 +127,7 @@ public class ProgramPreferences implements Serializable {
 		textureModels = other.textureModels;
 		useNativeMDXParser = other.useNativeMDXParser;
 		loadPortraits = other.loadPortraits;
-		invertedDisplay = other.invertedDisplay;
+		show2dGrid = other.show2dGrid;
 		useBoxesForPivotPoints = other.useBoxesForPivotPoints;
 		activeRColor1 = other.activeRColor1;
 		activeRColor2 = other.activeRColor2;
@@ -445,8 +445,8 @@ public class ProgramPreferences implements Serializable {
 		firePrefsChanged();
 	}
 
-	public Boolean isInvertedDisplay() {
-		return invertedDisplay != null && invertedDisplay;
+	public Boolean show2dGrid() {
+		return show2dGrid != null && show2dGrid;
 	}
 
 	public Boolean getUseBoxesForPivotPoints() {
@@ -466,8 +466,8 @@ public class ProgramPreferences implements Serializable {
 		firePrefsChanged();
 	}
 
-	public void setInvertedDisplay(final Boolean invertedDisplay) {
-		this.invertedDisplay = invertedDisplay;
+	public void setShow2dGrid(final Boolean show2dGrid) {
+		this.show2dGrid = show2dGrid;
 		SaveProfile.save();
 		firePrefsChanged();
 	}
@@ -583,6 +583,9 @@ public class ProgramPreferences implements Serializable {
 	}
 
 	public Color getPerspectiveBackgroundColor() {
+		if (perspectiveBackgroundColor == null) {
+			return new Color(80, 80, 80);
+		}
 		return perspectiveBackgroundColor;
 	}
 

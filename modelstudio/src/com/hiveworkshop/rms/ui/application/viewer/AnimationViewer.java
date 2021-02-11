@@ -18,8 +18,7 @@ public class AnimationViewer extends JPanel {
 	private final boolean allowUnanimated;
 	UggRenderEnv uggRenderEnv;
 
-	public AnimationViewer(final ModelView mdlDisp, final ProgramPreferences programPreferences,
-			final boolean allowUnanimated) {
+	public AnimationViewer(final ModelView mdlDisp, final ProgramPreferences programPreferences, final boolean allowUnanimated) {
 		this.mdlDisp = mdlDisp;
 		this.allowUnanimated = allowUnanimated;
 		try {

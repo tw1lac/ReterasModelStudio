@@ -4,9 +4,10 @@ import com.hiveworkshop.rms.editor.model.TimelineContainer;
 import com.hiveworkshop.rms.parsers.mdlx.AnimationMap;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
-import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -116,10 +117,12 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 		}
 		else {
 //			System.out.println(name + ", ~~ no global seq");
-			final BasicTimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
-			time = animation.getStart() + animatedRenderEnvironment.getAnimationTime();
-			final int floorAnimStartIndex = Math.max(0, floorIndex(animation.getStart() + 1));
-			final int floorAnimEndIndex = Math.max(0, floorIndex(animation.getEnd()));
+			final TimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
+			int animationStart = animation.getStart();
+			time = animationStart + animatedRenderEnvironment.getAnimationTime();
+			final int floorAnimStartIndex = Math.max(0, floorIndex(animationStart + 1));
+			int animationEnd = animation.getEnd();
+			final int floorAnimEndIndex = Math.max(0, floorIndex(animationEnd));
 
 			floorIndex = floorIndex(time);
 			ceilIndex = Math.max(floorIndex, ceilIndex(time));
@@ -129,18 +132,18 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 			floorValue = values.get(lookupFloorIndex);
 			floorIndexTime = times.get(lookupFloorIndex);
 
-			if (ceilIndexTime < animation.getStart()
-					|| floorIndexTime > animation.getEnd()
-					|| (floorIndexTime < animation.getStart() && ceilIndexTime > animation.getEnd()) ) {
+			if (ceilIndexTime < animationStart
+					|| floorIndexTime > animationEnd
+					|| (floorIndexTime < animationStart && ceilIndexTime > animationEnd)) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)1 " + localTypeId + " id: " + identity(localTypeId));
 				return (Integer) identity(localTypeId);
 			}
-			if ((floorIndex == -1) || (floorIndexTime < animation.getStart())) {
+			if ((floorIndex == -1) || (floorIndexTime < animationStart)) {
 				floorValue = values.get(floorAnimEndIndex);
-			} else if ((ceilIndexTime > animation.getEnd() || (ceilIndexTime < time && times.get(floorAnimEndIndex) < time))
-					&& times.get(floorAnimStartIndex) == animation.getStart()) {
-				if (times.get(floorAnimStartIndex) == animation.getStart()) {
-					ceilIndex = ceilIndex(animation.getStart());
+			} else if ((ceilIndexTime > animationEnd || (ceilIndexTime < time && times.get(floorAnimEndIndex) < time))
+					&& times.get(floorAnimStartIndex) == animationStart) {
+				if (times.get(floorAnimStartIndex) == animationStart) {
+					ceilIndex = ceilIndex(animationStart);
 				}
 			}
 		}
@@ -202,12 +205,59 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 			}
 		}
 
-
 		timeline.frames = tempFrames;
 		timeline.values = tempValues;
 		timeline.inTans = tempInTans;
 		timeline.outTans = tempOutTans;
 
 		return timeline;
+	}
+
+	/**
+	 * Copies time track data from a certain interval into a different, new interval.
+	 * The AnimFlag source of the data to copy cannot be same AnimFlag into which the
+	 * data is copied, or else a ConcurrentModificationException will be thrown.
+	 */
+	public void copyFrom(final IntAnimFlag source, final int sourceStart, final int sourceEnd, final int newStart, final int newEnd) {
+		// Timescales a part of the AnimFlag from the source into the new time "newStart" to "newEnd"
+		boolean tans = source.tans();
+		if (tans && interpolationType == InterpolationType.LINEAR) {
+			final int x = JOptionPane.showConfirmDialog(null,
+					"ERROR! A source was found to have Linear and Nonlinear motion simultaneously. Does the following have non-zero data? " + source.inTans,
+					"Help This Program!", JOptionPane.YES_NO_OPTION);
+			if (x == JOptionPane.NO_OPTION) {
+				tans = false;
+			}
+		}
+		for (final Integer time : source.times) {
+			final int index = source.times.indexOf(time);
+			if ((time >= sourceStart) && (time <= sourceEnd)) {
+				// If this "time" is a part of the anim being rescaled
+				final double ratio = (double) (time - sourceStart) / (double) (sourceEnd - sourceStart);
+				times.add((int) (newStart + (ratio * (newEnd - newStart))));
+				values.add(source.values.get(index));
+				if (tans) {
+					inTans.add(source.inTans.get(index));
+					outTans.add(source.outTans.get(index));
+				}
+			}
+		}
+		sort();
+	}
+
+	public void copyFrom(final IntAnimFlag source) {
+		times.addAll(source.times);
+		values.addAll(source.values);
+		if (source.tans() && tans()) {
+			inTans.addAll(source.inTans);
+			outTans.addAll(source.outTans);
+		} else if (tans()) {
+			JOptionPane.showMessageDialog(null,
+					"Some animations will lose complexity due to transfer incombatibility. There will probably be no visible change.");
+			inTans.clear();
+			outTans.clear();
+			interpolationType = InterpolationType.LINEAR;
+			// Probably makes this flag linear, but certainly makes it more like the copy source
+		}
 	}
 }

@@ -243,7 +243,7 @@ public class Viewport extends JPanel
 	public void paintComponent(final Graphics g, final int vertexSize) {
 		super.paintComponent(g);
 		final long renderStart = System.nanoTime();
-		if (programPreferences.isInvertedDisplay()) {
+		if (programPreferences.show2dGrid()) {
 			drawGrid(g);
 		}
 		final Graphics2D graphics2d = (Graphics2D) g;

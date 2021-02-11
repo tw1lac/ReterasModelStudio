@@ -2,6 +2,7 @@ package com.hiveworkshop.rms.ui.application.viewer.perspective;
 
 import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
+import com.hiveworkshop.rms.ui.application.viewer.UggRenderEnv;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import net.infonode.docking.View;
 import org.lwjgl.LWJGLException;
@@ -85,7 +86,7 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 	}
 
 	public void setViewportBackground(final Color background) {
-		vp.setViewportBackground(background);
+//		vp.setViewportBackground(background);
 	}
 
 	public Color getViewportBackground() {
@@ -108,17 +109,23 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		vp.reloadAllTextures();
 	}
 
-	public void setViewport(final ModelView dispModel) {
-		setViewport(dispModel, 200);
+	public void setViewport(final ModelView dispModel, UggRenderEnv renderEnvironment) {
+//	public void setViewport(final ModelView dispModel, TimeEnvironmentImpl renderEnvironment) {
+		setViewport(dispModel, 200, renderEnvironment);
 	}
 
-	public void setViewport(final ModelView dispModel, final int viewerSize) {
+	public void setViewport(final ModelView dispModel) {
+		UggRenderEnv renderEnvironment = new UggRenderEnv();
+		setViewport(dispModel, 200, renderEnvironment);
+	}
+
+	public void setViewport(final ModelView dispModel, final int viewerSize, UggRenderEnv renderEnvironment) {
 		try {
 			if (vp != null) {
 				vp.destroy();
 			}
 			removeAll();
-			vp = new PerspectiveViewport(dispModel, programPreferences);
+			vp = new PerspectiveViewport(dispModel, programPreferences, renderEnvironment);
 			vp.setIgnoreRepaint(false);
 			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
 
@@ -200,5 +207,23 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 
 	public BufferedImage getBufferedImage() {
 		return vp.getBufferedImage();
+	}
+
+
+	private void makeContextMenu() {
+		JPopupMenu contextMenu = new JPopupMenu();
+
+		JMenuItem reAssignMatrix = new JMenuItem("Re-assign Matrix");
+//		reAssignMatrix.addActionListener(this);
+		contextMenu.add(reAssignMatrix);
+
+		JMenuItem cogBone = new JMenuItem("Auto-Center Bone(s)");
+		cogBone.addActionListener(e -> cogBone());
+		contextMenu.add(cogBone);
+	}
+
+	private void cogBone() {
+		JOptionPane.showMessageDialog(this,
+				"Please use other viewport, this action is not implemented for this viewport.");
 	}
 }

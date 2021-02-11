@@ -171,9 +171,8 @@ public class MenuBar {
         JCheckBoxMenuItem fetchPortraitsToo = new JCheckBoxMenuItem("Fetch portraits, too!", true);
         fetchPortraitsToo.setMnemonic(KeyEvent.VK_P);
         fetchPortraitsToo.addActionListener(e -> mainPanel.prefs.setLoadPortraits(fetchPortraitsToo.isSelected()));
-        mainPanel.fetchPortraitsToo = fetchPortraitsToo;
         fetch.add(fetchPortraitsToo);
-        fetchPortraitsToo.setSelected(true);
+        fetchPortraitsToo.setSelected(mainPanel.prefs.isLoadPortraits());
 
         fileMenu.add(new JSeparator());
 
@@ -331,43 +330,44 @@ public class MenuBar {
         mirrorSubmenu.getAccessibleContext().setAccessibleDescription("Allows the user to mirror objects.");
         toolsMenu.add(mirrorSubmenu);
 
-        createAndAddMenuItem("Mirror X", mirrorSubmenu, KeyEvent.VK_X, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 0));
+        JCheckBoxMenuItem mirrorFlip = new JCheckBoxMenuItem("Automatically flip after mirror (preserves surface)", true);
+        mirrorFlip.setMnemonic(KeyEvent.VK_A);
 
-        createAndAddMenuItem("Mirror Y", mirrorSubmenu, KeyEvent.VK_Y, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 1));
+        createAndAddMenuItem("Mirror X", mirrorSubmenu, KeyEvent.VK_X, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 0, mirrorFlip.isSelected()));
 
-        createAndAddMenuItem("Mirror Z", mirrorSubmenu, KeyEvent.VK_Z, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 2));
+        createAndAddMenuItem("Mirror Y", mirrorSubmenu, KeyEvent.VK_Y, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 1, mirrorFlip.isSelected()));
+
+        createAndAddMenuItem("Mirror Z", mirrorSubmenu, KeyEvent.VK_Z, e -> ModelEditActions.mirrorAxis(mainPanel, (byte) 2, mirrorFlip.isSelected()));
 
         mirrorSubmenu.add(new JSeparator());
 
-        mainPanel.mirrorFlip = new JCheckBoxMenuItem("Automatically flip after mirror (preserves surface)", true);
-        mainPanel.mirrorFlip.setMnemonic(KeyEvent.VK_A);
-        mirrorSubmenu.add(mainPanel.mirrorFlip);
+        mirrorSubmenu.add(mirrorFlip);
     }
 
     private static void fillViewMenu(MainPanel mainPanel, JMenu viewMenu) {
-        mainPanel.textureModels = new JCheckBoxMenuItem("Texture Models", true);
-        mainPanel.textureModels.setMnemonic(KeyEvent.VK_T);
-        mainPanel.textureModels.setSelected(true);
-        mainPanel.textureModels.addActionListener(e -> mainPanel.prefs.setTextureModels(mainPanel.textureModels.isSelected()));
-        viewMenu.add(mainPanel.textureModels);
+        JCheckBoxMenuItem textureModels = new JCheckBoxMenuItem("Texture Models", true);
+        textureModels.setMnemonic(KeyEvent.VK_T);
+        textureModels.setSelected(mainPanel.prefs.textureModels());
+        textureModels.addActionListener(e -> mainPanel.prefs.setTextureModels(textureModels.isSelected()));
+        viewMenu.add(textureModels);
 
-        mainPanel.showNormals = new JCheckBoxMenuItem("Show Normals", true);
-        mainPanel.showNormals.setMnemonic(KeyEvent.VK_N);
-        mainPanel.showNormals.setSelected(false);
-        mainPanel.showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(mainPanel.showNormals.isSelected()));
-        viewMenu.add(mainPanel.showNormals);
+        JCheckBoxMenuItem showNormals = new JCheckBoxMenuItem("Show Normals", true);
+        showNormals.setMnemonic(KeyEvent.VK_N);
+        showNormals.setSelected(mainPanel.prefs.showNormals());
+        showNormals.addActionListener(e -> mainPanel.prefs.setShowNormals(showNormals.isSelected()));
+        viewMenu.add(showNormals);
 
-        mainPanel.renderParticles = new JCheckBoxMenuItem("Render Particles", true);
-        mainPanel.renderParticles.setMnemonic(KeyEvent.VK_P);
-        mainPanel.renderParticles.setSelected(true);
-        mainPanel.renderParticles.addActionListener(e -> mainPanel.prefs.setRenderParticles(mainPanel.renderParticles.isSelected()));
-        viewMenu.add(mainPanel.renderParticles);
+        JCheckBoxMenuItem renderParticles = new JCheckBoxMenuItem("Render Particles", true);
+        renderParticles.setMnemonic(KeyEvent.VK_P);
+        renderParticles.setSelected(mainPanel.prefs.getRenderParticles());
+        renderParticles.addActionListener(e -> mainPanel.prefs.setRenderParticles(renderParticles.isSelected()));
+        viewMenu.add(renderParticles);
 
-        mainPanel.showPerspectiveGrid = new JCheckBoxMenuItem("Show Perspective Grid", true);
-        mainPanel.showPerspectiveGrid.setMnemonic(KeyEvent.VK_G);
-        mainPanel.showPerspectiveGrid.setSelected(true);
-        mainPanel.showPerspectiveGrid.addActionListener(e -> mainPanel.prefs.setShowPerspectiveGrid(mainPanel.showPerspectiveGrid.isSelected()));
-        viewMenu.add(mainPanel.showPerspectiveGrid);
+        JCheckBoxMenuItem showPerspectiveGrid = new JCheckBoxMenuItem("Show Perspective Grid", true);
+        showPerspectiveGrid.setMnemonic(KeyEvent.VK_G);
+        showPerspectiveGrid.setSelected(mainPanel.prefs.showPerspectiveGrid());
+        showPerspectiveGrid.addActionListener(e -> mainPanel.prefs.setShowPerspectiveGrid(showPerspectiveGrid.isSelected()));
+        viewMenu.add(showPerspectiveGrid);
 
         JMenuItem newDirectory = new JMenuItem("Change Game Directory");
         newDirectory.setAccelerator(KeyStroke.getKeyStroke("control shift D"));
@@ -378,31 +378,31 @@ public class MenuBar {
 
         viewMenu.add(new JSeparator());
 
-        mainPanel.showVertexModifyControls = new JCheckBoxMenuItem("Show Viewport Buttons", true);
+        JCheckBoxMenuItem showVertexModifyControls = new JCheckBoxMenuItem("Show Viewport Buttons", true);
         // showVertexModifyControls.setMnemonic(KeyEvent.VK_V);
-        mainPanel.showVertexModifyControls.addActionListener(e -> showVertexModifyControls(mainPanel.modelPanels, mainPanel.prefs, mainPanel.showVertexModifyControls));
-        viewMenu.add(mainPanel.showVertexModifyControls);
+        showVertexModifyControls.addActionListener(e -> showVertexModifyControls(mainPanel.modelPanels, mainPanel.prefs, showVertexModifyControls));
+        viewMenu.add(showVertexModifyControls);
 
         viewMenu.add(new JSeparator());
 
-        mainPanel.viewMode = new JMenu("3D View Mode");
-        viewMenu.add(mainPanel.viewMode);
+        JMenu viewMode = new JMenu("3D View Mode");
+        viewMenu.add(viewMode);
 
-        mainPanel.viewModes = new ButtonGroup();
+        ButtonGroup viewModes = new ButtonGroup();
 
-        final ActionListener repainter = e -> repaint(mainPanel);
+        JRadioButtonMenuItem wireframe = new JRadioButtonMenuItem("Wireframe");
+        wireframe.addActionListener(e -> repaint(mainPanel, 0));
+        wireframe.setSelected(mainPanel.prefs.getViewMode() == 0);
+        viewMode.add(wireframe);
+        viewModes.add(wireframe);
 
-        mainPanel.wireframe = new JRadioButtonMenuItem("Wireframe");
-        mainPanel.wireframe.addActionListener(repainter);
-        mainPanel.viewMode.add(mainPanel.wireframe);
-        mainPanel.viewModes.add(mainPanel.wireframe);
+        JRadioButtonMenuItem solid = new JRadioButtonMenuItem("Solid");
+        solid.addActionListener(e -> repaint(mainPanel, 1));
+        solid.setSelected(mainPanel.prefs.getViewMode() == 1);
+        viewMode.add(solid);
+        viewModes.add(solid);
 
-        mainPanel.solid = new JRadioButtonMenuItem("Solid");
-        mainPanel.solid.addActionListener(repainter);
-        mainPanel.viewMode.add(mainPanel.solid);
-        mainPanel.viewModes.add(mainPanel.solid);
-
-        mainPanel.viewModes.setSelected(mainPanel.solid.getModel(), true);
+//        viewModes.setSelected(solid.getModel(), true);
     }
 
     private static void fillWindowsMenu(MainPanel mainPanel, JMenu windowMenu) {
@@ -515,7 +515,6 @@ public class MenuBar {
         nullmodelButton.setMnemonic(KeyEvent.VK_E);
         nullmodelButton.setAccelerator(KeyStroke.getKeyStroke("control E"));
         nullmodelButton.addActionListener(e -> ScriptActions.nullmodelButtonActionRes(mainPanel));
-        mainPanel.nullmodelButton = nullmodelButton;
         scriptsMenu.add(nullmodelButton);
 
         createAndAddMenuItem("Export Animated to Static Mesh", scriptsMenu, KeyEvent.VK_E, e -> ScriptActions.exportAnimatedToStaticMesh(mainPanel));
@@ -571,10 +570,10 @@ public class MenuBar {
         frame.setVisible(true);
     }
 
-    private static void repaint(MainPanel mainPanel) {
-        if (mainPanel.wireframe.isSelected()) {
+    private static void repaint(MainPanel mainPanel, int radioButton) {
+        if (radioButton == 0) {
             mainPanel.prefs.setViewMode(0);
-        } else if (mainPanel.solid.isSelected()) {
+        } else if (radioButton == 1) {
             mainPanel.prefs.setViewMode(1);
         } else {
             mainPanel.prefs.setViewMode(-1);

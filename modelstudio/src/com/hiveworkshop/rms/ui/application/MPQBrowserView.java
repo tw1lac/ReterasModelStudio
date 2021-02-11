@@ -89,7 +89,7 @@ public class MPQBrowserView {
             if ((mainPanel.currentModelPanel() != null) && (mainPanel.currentModelPanel().getModel() != null)) {
                 if (mainPanel.currentModelPanel().getModel().getAnimsSize() > 0) {
                     final Animation anim = mainPanel.currentModelPanel().getModel().getAnim(0);
-                    mainPanel.animatedRenderEnvironment.setBounds(anim.getStart(), anim.getEnd());
+                    mainPanel.animatedRenderEnvironment.setBounds(anim);
                 }
                 refreshAndUpdateModelPanel(mainPanel);
                 mainPanel.timeSliderPanel.setNodeSelectionManager(mainPanel.currentModelPanel().getModelEditorManager().getNodeAnimationSelectionManager());
@@ -119,11 +119,6 @@ public class MPQBrowserView {
 //        mainPanel.setTimeBounds.setVisible(mainPanel.animationModeState);
         mainPanel.timeSliderPanel.setKeyframeModeActive(mainPanel.animationModeState);
 
-        if (mainPanel.animationModeState) {
-            mainPanel.animationModeButton.setColors(mainPanel.prefs.getActiveColor1(), mainPanel.prefs.getActiveColor2());
-        } else {
-            mainPanel.animationModeButton.resetColors();
-        }
         mainPanel.timeSliderPanel.repaint();
         mainPanel.creatorPanel.setAnimationModeState(mainPanel.animationModeState);
     }
@@ -330,10 +325,10 @@ public class MPQBrowserView {
             mainPanel.frontView.setComponent(modelContextManager.getFrontArea());
             mainPanel.bottomView.setComponent(modelContextManager.getBotArea());
             mainPanel.leftView.setComponent(modelContextManager.getSideArea());
-            mainPanel.perspectiveView.setComponent(modelContextManager.getPerspArea());
-            mainPanel.previewView.setComponent(modelContextManager.getAnimationViewer());
             mainPanel.animationControllerView.setComponent(modelContextManager.getAnimationController());
             refreshAnimationModeState(mainPanel);
+            mainPanel.perspectiveView.setComponent(modelContextManager.getPerspArea());
+            mainPanel.previewView.setComponent(modelContextManager.getAnimationViewer());
 
             mainPanel.timeSliderPanel.setUndoManager(mainPanel.currentModelPanel.getUndoManager(), mainPanel.animatedRenderEnvironment);
             mainPanel.timeSliderPanel.setModelView(mainPanel.currentModelPanel.getModelViewManager());

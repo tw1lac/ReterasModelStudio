@@ -111,16 +111,14 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 
 	@Override
 	public UndoAction addTeamColor() {
-		final TeamColorAddAction<VertexGroupBundle> teamColorAddAction
-				= new TeamColorAddAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
+		final TeamColorAddAction<VertexGroupBundle> teamColorAddAction = new TeamColorAddAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
 		teamColorAddAction.redo();
 		return teamColorAddAction;
 	}
 
 	@Override
 	public UndoAction splitGeoset() {
-		final SplitGeosetAction<VertexGroupBundle> teamColorAddAction
-				= new SplitGeosetAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
+		final SplitGeosetAction<VertexGroupBundle> teamColorAddAction = new SplitGeosetAction<>(selectionManager.getSelectedFaces(), model.getModel(), structureChangeListener, selectionManager, vertexSelectionHelper);
 		teamColorAddAction.redo();
 		return teamColorAddAction;
 	}
@@ -219,8 +217,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 	}
 
 	@Override
-	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents,
-                                                  final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
+	protected UndoAction buildHideComponentAction(final List<? extends SelectableComponent> selectableComponents, final EditabilityToggleHandler editabilityToggleHandler, final Runnable refreshGUIRunnable) {
 		final List<VertexGroupBundle> previousSelection = new ArrayList<>(selectionManager.getSelection());
 		final List<VertexGroupBundle> vertexBundlesToTruncate = new ArrayList<>(selectionManager.getSelection());
 		for (final SelectableComponent component : selectableComponents) {

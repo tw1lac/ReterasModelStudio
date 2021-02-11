@@ -711,7 +711,8 @@ public class EditableModel implements Named {
 			for (final IdObject emitter : emitters) {
 				int talliesFor = 0;
 				int talliesAgainst = 0;
-				final AnimFlag<?> visibility = ((VisibilitySource) emitter).getVisibilityFlag();
+//				final AnimFlag<?> visibility = ((VisibilitySource) emitter).getVisibilityFlag();
+				final AnimFlag<?> visibility = emitter.getVisibilityFlag();
 				for (final Animation anim : anims) {
 					final Integer animStartTime = anim.getStart();
 					final Number visible = (Number) visibility.valueAt(animStartTime);
@@ -783,24 +784,21 @@ public class EditableModel implements Named {
 			newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
 		}
 
-		// Fill the newly created time track with
-		// the exact same data, but shifted forward relative to wherever the
-		// current model's last animation starts
+		// Fill the newly created time track with the exact same data, but shifted forward
+		// relative to wherever the current model's last animation starts
 		for (final Animation anim : anims) {
 			final int animTrackEnd = animTrackEnd();
 			final int newStart = animTrackEnd + 300;
 			final int newEnd = newStart + anim.length();
-			final Animation newAnim = new Animation(anim); // clone the
-															// animation from
-															// the other model
+			final Animation newAnim = new Animation(anim);
+			// clone the animation from the other model
 			newAnim.copyToInterval(newStart, newEnd, othersFlags, othersEventObjs, newImpFlags, newImpEventObjs);
 			newAnim.setInterval(newStart, newEnd);
 			add(newAnim); // add the new animation to this model
 			newAnimations.add(newAnim);
 		}
 
-		// destroy the other model's animations, filling them in with the new
-		// stuff
+		// destroy the other model's animations, filling them in with the new stuff
 		for (final AnimFlag af : othersFlags) {
 			af.setValuesTo(newImpFlags.get(othersFlags.indexOf(af)));
 		}
@@ -808,12 +806,9 @@ public class EditableModel implements Named {
 			((EventObject) e).setValuesTo(newImpEventObjs.get(othersEventObjs.indexOf(e)));
 		}
 
-		// Now, map the bones in the other model onto the bones in the current
-		// model
-		final List<Bone> leftBehind = new ArrayList<>(); // the bones that
-															// don't find
-															// matches in
-															// current model
+		// Now, map the bones in the other model onto the bones in the current model
+		final List<Bone> leftBehind = new ArrayList<>();
+		// the bones that don't find matches in current model
 		for (final IdObject object : other.idObjects) {
 			if (object instanceof Bone) {
 				// the bone from the other model
@@ -822,7 +817,8 @@ public class EditableModel implements Named {
 				final Object localObject = getObject(bone.getName());
 				if ((localObject instanceof Bone)) {
 					final Bone localBone = (Bone) localObject;
-					localBone.copyMotionFrom(bone); // if it's a match, take the data
+					localBone.copyMotionFrom(bone);
+					// if it's a match, take the data
 				} else {
 					leftBehind.add(bone);
 				}
@@ -844,8 +840,7 @@ public class EditableModel implements Named {
 			final AnimFlag visibilityFlag = source.getVisibilityFlag();
 			final AnimFlag copyFlag = AnimFlag.createFromAnimFlag(visibilityFlag);
 			visibilityFlag.deleteAnim(target);
-			visibilityFlag.copyFrom(copyFlag, visibilitySource.getStart(), visibilitySource.getEnd(), target.getStart(),
-					target.getEnd());
+			visibilityFlag.copyFrom(copyFlag, visibilitySource.getStart(), visibilitySource.getEnd(), target.getStart(), target.getEnd());
 		}
 	}
 
@@ -1020,8 +1015,8 @@ public class EditableModel implements Named {
 						}
 					}
 				}
-				lay.updateIds(this);// keep those Ids straight, will be -1 if
-									// null
+				lay.updateIds(this);
+				// keep those Ids straight, will be -1 if null
 			}
 		}
 		final List<ParticleEmitter2> particles = sortedIdObjects(ParticleEmitter2.class);
@@ -1038,7 +1033,8 @@ public class EditableModel implements Named {
 					textures.add(pe.texture);
 				}
 			}
-			pe.setTextureId(getTextureId(pe.texture));// will be -1 if null
+			pe.setTextureId(getTextureId(pe.texture));
+			// will be -1 if null
 		}
 	}
 

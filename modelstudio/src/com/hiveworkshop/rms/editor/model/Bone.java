@@ -68,9 +68,9 @@ public class Bone extends IdObject {
 	}
 	
 	public void copyMotionFrom(final Bone b) {
-		for (final AnimFlag baf : b.animFlags.values()) {
+		for (final AnimFlag<?> baf : b.animFlags.values()) {
 			boolean foundMatch = false;
-			for (final AnimFlag af : animFlags.values()) {
+			for (final AnimFlag<?> af : animFlags.values()) {
 				boolean sameSeq = false;
 				if (baf.globalSeq == null && af.globalSeq == null) {
 					sameSeq = true;
@@ -90,7 +90,7 @@ public class Bone extends IdObject {
 	}
 
 	public void clearAnimation(final Animation a) {
-		for (final AnimFlag af : animFlags.values()) {
+		for (final AnimFlag<?> af : animFlags.values()) {
 			af.deleteAnim(a);
 		}
 	}
@@ -100,7 +100,7 @@ public class Bone extends IdObject {
 	 * the time track.
 	 */
 	public boolean animates() {
-		for (final AnimFlag af : animFlags.values()) {
+		for (final AnimFlag<?> af : animFlags.values()) {
 			if (af.size() > 1) {
 				return true;
 			}

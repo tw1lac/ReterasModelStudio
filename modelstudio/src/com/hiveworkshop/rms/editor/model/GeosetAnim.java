@@ -150,17 +150,15 @@ public class GeosetAnim extends TimelineContainer implements Named {
 
 	public void copyVisibilityFrom(final VisibilitySource other, final EditableModel mdlr) {
 		final VisibilitySource temp = this;
-		final AnimFlag visFlag = temp.getVisibilityFlag();// might be null
-		final AnimFlag newVisFlag;
-		boolean tans = false;
+		final AnimFlag<?> visFlag = getVisibilityFlag();// might be null
+		final FloatAnimFlag newVisFlag;
 		if (visFlag != null) {
-			newVisFlag = AnimFlag.buildEmptyFrom(visFlag);
-			tans = visFlag.tans();
+			newVisFlag = (FloatAnimFlag) AnimFlag.buildEmptyFrom(visFlag);
 		} else {
 			newVisFlag = new FloatAnimFlag(temp.visFlagName());
 		}
 		// newVisFlag = new AnimFlag(temp.visFlagName());
-		final AnimFlag flagNew = other.getVisibilityFlag();
+		final FloatAnimFlag flagNew = (FloatAnimFlag) other.getVisibilityFlag();
 		// this is an element not favoring existing over imported
 		for (final Animation a : mdlr.getAnims()) {
 			if (newVisFlag != null) {
@@ -171,7 +169,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 				}
 			}
 		}
-		if (flagNew != null) {
+		if (flagNew != null && newVisFlag != null) {
 			newVisFlag.copyFrom(flagNew);
 		}
 		setVisibilityFlag(newVisFlag);

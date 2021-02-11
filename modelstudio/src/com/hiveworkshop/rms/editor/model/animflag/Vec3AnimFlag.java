@@ -3,10 +3,11 @@ package com.hiveworkshop.rms.editor.model.animflag;
 import com.hiveworkshop.rms.editor.model.TimelineContainer;
 import com.hiveworkshop.rms.parsers.mdlx.InterpolationType;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
-import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.Vec3;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -95,6 +96,62 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 		return flag;
 	}
 
+	public static Vec3 cloneValue(final Vec3 value) {
+		if (value == null) {
+			return null;
+		}
+		return new Vec3(value);
+	}
+
+	@Override
+//	public MdlxTimeline<Float[]> toMdlx(TimelineContainer container) {
+//		return null;
+//	}
+
+	public MdlxFloatArrayTimeline toMdlx(final TimelineContainer container) {
+		final MdlxFloatArrayTimeline timeline = new MdlxFloatArrayTimeline(3);
+
+		setVectorSize(values.get(0));
+		timeline.name = getWar3ID(container);
+		timeline.interpolationType = interpolationType;
+		timeline.globalSequenceId = getGlobalSeqId();
+
+		final List<Integer> times = getTimes();
+		final List<Vec3> values = getValues();
+		final List<Vec3> inTans = getInTans();
+		final List<Vec3> outTans = getOutTans();
+
+		final long[] tempFrames = new long[times.size()];
+		final float[][] tempValues = new float[times.size()][];
+		final float[][] tempInTans = new float[times.size()][];
+		final float[][] tempOutTans = new float[times.size()][];
+
+		final boolean hasTangents = timeline.interpolationType.tangential();
+
+		for (int i = 0, l = times.size(); i < l; i++) {
+			final Vec3 value = values.get(i);
+
+			tempFrames[i] = times.get(i).longValue();
+
+			tempValues[i] = value.toFloatArray();
+
+			if (hasTangents) {
+				tempInTans[i] = inTans.get(i).toFloatArray();
+				tempOutTans[i] = outTans.get(i).toFloatArray();
+			} else {
+				tempInTans[i] = (new Vec3()).toFloatArray();
+				tempOutTans[i] = (new Vec3()).toFloatArray();
+			}
+		}
+
+		timeline.frames = tempFrames;
+		timeline.values = tempValues;
+		timeline.inTans = tempInTans;
+		timeline.outTans = tempOutTans;
+
+		return timeline;
+	}
+
 	public Vec3 interpolateAt(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 //		System.out.println(name + ", interpolateAt");
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {
@@ -159,45 +216,47 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 			}
 		} else {
 //			System.out.println(name + ", ~~ no global seq");
-			final BasicTimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
-			time = animation.getStart() + animatedRenderEnvironment.getAnimationTime();
-			final int floorAnimStartIndex = Math.max(0, floorIndex(animation.getStart() + 1));
-			final int floorAnimEndIndex = Math.max(0, floorIndex(animation.getEnd()));
+			final TimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
+			int animationStart = animation.getStart();
+			time = animationStart + animatedRenderEnvironment.getAnimationTime();
+			final int floorAnimStartIndex = Math.max(0, floorIndex(animationStart + 1));
+			int animationEnd = animation.getEnd();
+			final int floorAnimEndIndex = Math.max(0, floorIndex(animationEnd));
 			floorIndex = floorIndex(time);
 			ceilIndex = Math.max(floorIndex, ceilIndex(time)); // retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
 
 			ceilIndexTime = times.get(ceilIndex);
 			final int lookupFloorIndex = Math.max(0, floorIndex);
 			floorIndexTime = times.get(lookupFloorIndex);
-			if (ceilIndexTime < animation.getStart() || floorIndexTime > animation.getEnd()) {
+			if (ceilIndexTime < animationStart || floorIndexTime > animationEnd) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)1 " + localTypeId + " id: " + identity(localTypeId));
 				return (Vec3) identity(localTypeId);
 			}
 			ceilValue = values.get(ceilIndex);
 			floorValue = values.get(lookupFloorIndex);
 			floorOutTan = tans() ? outTans.get(lookupFloorIndex) : null;
-			if ((floorIndexTime < animation.getStart()) && (ceilIndexTime > animation.getEnd())) {
+			if ((floorIndexTime < animationStart) && (ceilIndexTime > animationEnd)) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)3");
 				return (Vec3) identity(localTypeId);
-			} else if ((floorIndex == -1) || (floorIndexTime < animation.getStart())) {
+			} else if ((floorIndex == -1) || (floorIndexTime < animationStart)) {
 				floorValue = values.get(floorAnimEndIndex);
 				floorIndexTime = times.get(floorAnimStartIndex);
 				if (tans()) {
 					floorOutTan = inTans.get(floorAnimEndIndex);
 //					floorIndexTime = times.get(floorAnimEndIndex);
 				}
-				timeBetweenFrames = times.get(floorAnimEndIndex) - animation.getStart();
-			} else if ((ceilIndexTime > animation.getEnd())
+				timeBetweenFrames = times.get(floorAnimEndIndex) - animationStart;
+			} else if ((ceilIndexTime > animationEnd)
 					|| ((ceilIndexTime < time) && (times.get(floorAnimEndIndex) < time))) {
-				if (times.get(floorAnimStartIndex) == animation.getStart()) {
+				if (times.get(floorAnimStartIndex) == animationStart) {
 					ceilValue = values.get(floorAnimStartIndex);
 					ceilIndex = floorAnimStartIndex;
-					ceilIndexTime = animation.getEnd();
+					ceilIndexTime = animationEnd;
 					timeBetweenFrames = ceilIndexTime - floorIndexTime;
 				} else {
-					ceilIndex = ceilIndex(animation.getStart());
+					ceilIndex = ceilIndex(animationStart);
 					ceilValue = values.get(ceilIndex);
-					timeBetweenFrames = animation.getEnd() - animation.getStart();
+					timeBetweenFrames = animationEnd - animationStart;
 				}
 				// NOTE: we just let it be in this case, based on Water Elemental's birth
 			} else {
@@ -229,52 +288,51 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 		throw new IllegalStateException();
 	}
 
-	@Override
-//	public MdlxTimeline<Float[]> toMdlx(TimelineContainer container) {
-//		return null;
-//	}
-
-	public MdlxFloatArrayTimeline toMdlx(final TimelineContainer container) {
-		final MdlxFloatArrayTimeline timeline = new MdlxFloatArrayTimeline(3);
-
-		setVectorSize(values.get(0));
-		timeline.name = getWar3ID(container);
-		timeline.interpolationType = interpolationType;
-		timeline.globalSequenceId = getGlobalSeqId();
-
-		final List<Integer> times = getTimes();
-		final List<Vec3> values = getValues();
-		final List<Vec3> inTans = getInTans();
-		final List<Vec3> outTans = getOutTans();
-
-		final long[] tempFrames = new long[times.size()];
-		final float[][] tempValues = new float[times.size()][];
-		final float[][] tempInTans = new float[times.size()][];
-		final float[][] tempOutTans = new float[times.size()][];
-
-		final boolean hasTangents = timeline.interpolationType.tangential();
-
-		for (int i = 0, l = times.size(); i < l; i++) {
-			final Vec3 value = values.get(i);
-
-			tempFrames[i] = times.get(i).longValue();
-
-			tempValues[i] = value.toFloatArray();
-
-			if (hasTangents) {
-				tempInTans[i] = inTans.get(i).toFloatArray();
-				tempOutTans[i] = outTans.get(i).toFloatArray();
-			} else {
-				tempInTans[i] = (new Vec3()).toFloatArray();
-				tempOutTans[i] = (new Vec3()).toFloatArray();
+	/**
+	 * Copies time track data from a certain interval into a different, new interval.
+	 * The AnimFlag source of the data to copy cannot be same AnimFlag into which the
+	 * data is copied, or else a ConcurrentModificationException will be thrown.
+	 */
+	public void copyFrom(final Vec3AnimFlag source, final int sourceStart, final int sourceEnd, final int newStart, final int newEnd) {
+		// Timescales a part of the AnimFlag from the source into the new time "newStart" to "newEnd"
+		boolean tans = source.tans();
+		if (tans && interpolationType == InterpolationType.LINEAR) {
+			final int x = JOptionPane.showConfirmDialog(null,
+					"ERROR! A source was found to have Linear and Nonlinear motion simultaneously. Does the following have non-zero data? " + source.inTans,
+					"Help This Program!", JOptionPane.YES_NO_OPTION);
+			if (x == JOptionPane.NO_OPTION) {
+				tans = false;
 			}
 		}
+		for (final Integer time : source.times) {
+			final int index = source.times.indexOf(time);
+			if ((time >= sourceStart) && (time <= sourceEnd)) {
+				// If this "time" is a part of the anim being rescaled
+				final double ratio = (double) (time - sourceStart) / (double) (sourceEnd - sourceStart);
+				times.add((int) (newStart + (ratio * (newEnd - newStart))));
+				values.add(cloneValue(source.values.get(index)));
+				if (tans) {
+					inTans.add(cloneValue(source.inTans.get(index)));
+					outTans.add(cloneValue(source.outTans.get(index)));
+				}
+			}
+		}
+		sort();
+	}
 
-		timeline.frames = tempFrames;
-		timeline.values = tempValues;
-		timeline.inTans = tempInTans;
-		timeline.outTans = tempOutTans;
-
-		return timeline;
+	public void copyFrom(final Vec3AnimFlag source) {
+		times.addAll(source.times);
+		values.addAll(source.values);
+		if (source.tans() && tans()) {
+			inTans.addAll(source.inTans);
+			outTans.addAll(source.outTans);
+		} else if (tans()) {
+			JOptionPane.showMessageDialog(null,
+					"Some animations will lose complexity due to transfer incombatibility. There will probably be no visible change.");
+			inTans.clear();
+			outTans.clear();
+			interpolationType = InterpolationType.LINEAR;
+			// Probably makes this flag linear, but certainly makes it more like the copy source
+		}
 	}
 }

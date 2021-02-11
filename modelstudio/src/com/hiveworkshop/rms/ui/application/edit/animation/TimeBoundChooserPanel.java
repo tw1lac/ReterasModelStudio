@@ -332,7 +332,7 @@ public class TimeBoundChooserPanel extends JPanel {
 		if (tabs.getSelectedIndex() == 0) {
 			final Animation selectedAnimation = animationBox.getSelectedValue();
 			if (selectedAnimation != null) {
-				timeEnvironmentImpl.setBounds(selectedAnimation.getStart(), selectedAnimation.getEnd());
+				timeEnvironmentImpl.setBounds(selectedAnimation);
 			}
 		} else if (tabs.getSelectedIndex() == 1) {
 			timeEnvironmentImpl.setBounds(((Number) timeStart.getValue()).intValue(),

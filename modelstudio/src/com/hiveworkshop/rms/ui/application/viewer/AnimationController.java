@@ -16,8 +16,7 @@ public class AnimationController extends JPanel {
 	private JComboBox<Animation> animationBox;
 	private final boolean allowUnanimated;
 
-	public AnimationController(final ModelView mdlDisp, final boolean allowUnanimated,
-	                           final AnimationControllerListener listener) {
+	public AnimationController(final ModelView mdlDisp, final boolean allowUnanimated, final AnimationControllerListener listener) {
 		this(mdlDisp, allowUnanimated, listener, null);
 	}
 

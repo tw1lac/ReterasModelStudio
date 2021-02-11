@@ -161,21 +161,6 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 		public void geosetFinished() {}
 	}
 
-	private static Mat4 skinBonesMatrixSumHeap = new Mat4();
-
-//	private float getNormalCoord(byte dimension, String exceptionString) {
-//		return switch (dimension) {
-//			case 0 -> normalSumHeap.x;
-//			case 1 -> normalSumHeap.y;
-//			case 2 -> normalSumHeap.z;
-//			case -1 -> -normalSumHeap.x;
-//			case -2 -> -normalSumHeap.y;
-//			case -3 -> -normalSumHeap.z;
-//			default -> throw new IllegalStateException(exceptionString);
-//		};
-//	}
-
-
 	private float getNormalCoord(byte dimension, String exceptionString, Vec4 normalSumHeap) {
 		return switch (dimension) {
 			case 0 -> normalSumHeap.x;

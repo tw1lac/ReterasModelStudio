@@ -8,7 +8,7 @@ import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatArrayTimeline;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxFloatTimeline;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxTimeline;
 import com.hiveworkshop.rms.parsers.mdlx.timeline.MdlxUInt32Timeline;
-import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.*;
 
@@ -710,39 +710,18 @@ public abstract class AnimFlag<T> {
 		}
 	}
 
-	public void copyFrom(final AnimFlag<T> source) {
-		times.addAll(source.times);
-		values.addAll(source.values);
-		final boolean stans = source.tans();
-		final boolean mtans = tans();
-		if (stans && mtans) {
-			inTans.addAll(source.inTans);
-			outTans.addAll(source.outTans);
-		} else if (mtans) {
-			JOptionPane.showMessageDialog(null,
-					"Some animations will lose complexity due to transfer incombatibility. There will probably be no visible change.");
-			inTans.clear();
-			outTans.clear();
-			interpolationType = InterpolationType.LINEAR;
-			// Probably makes this flag linear, but certainly makes it more like the copy source
-		}
-	}
-
 	public void deleteAnim(final Animation anim) {
 		if (!hasGlobalSeq) {
 			for (int index = times.size() - 1; index >= 0; index--) {
-				final int i = times.get(index);
-				// int index = times.indexOf(inte);
-				if ((i >= anim.getStart()) && (i <= anim.getEnd())) {
-					// If this "i" is a part of the anim being removed
+				final int time = times.get(index);
+				if ((time >= anim.getStart()) && (time <= anim.getEnd())) {
+					// If this "time" is a part of the anim being removed
 					deleteAt(index);
 				}
 			}
 		} else {
 			System.out.println("KeyFrame deleting was blocked by a GlobalSequence");
 		}
-
-		// BOOM magic happens
 	}
 
 	public void deleteAt(final int index) {
@@ -758,51 +737,52 @@ public abstract class AnimFlag<T> {
 	 * Copies time track data from a certain interval into a different, new interval.
 	 * The AnimFlag source of the data to copy cannot be same AnimFlag into which the
 	 * data is copied, or else a ConcurrentModificationException will be thrown.
+	 * Does not check that the destination interval is empty!
+	 *
+	 * @param source      the AnimFlag which values will be copied
+	 * @param sourceStart the start time for the interval to be copied, inclusive
+	 * @param sourceEnd   the end time for the interval to be copied, inclusive
+	 * @param newStart    the start time for the interval in the destination AnimFlag, inclusive
+	 * @param newEnd      the end time for the interval in the destination AnimFlag, inclusive
 	 */
-	public void copyFrom(final AnimFlag<T> source, final int sourceStart, final int sourceEnd, final int newStart,
-	                     final int newEnd) {
-		// Timescales a part of the AnimFlag from the source into the new time "newStart" to "newEnd"
-		boolean tans = source.tans();
-		if (tans && interpolationType == InterpolationType.LINEAR) {
-			final int x = JOptionPane.showConfirmDialog(null,
-					"ERROR! A source was found to have Linear and Nonlinear motion simultaneously. Does the following have non-zero data? " + source.inTans,
-					"Help This Program!", JOptionPane.YES_NO_OPTION);
-			if (x == JOptionPane.NO_OPTION) {
-				tans = false;
-			}
+	public void copyFrom(final AnimFlag<?> source, final int sourceStart, final int sourceEnd, final int newStart, final int newEnd) {
+		if (this instanceof IntAnimFlag && source instanceof IntAnimFlag) {
+			((IntAnimFlag) this).copyFrom((IntAnimFlag) source, sourceStart, sourceEnd, newStart, newEnd);
 		}
-		for (final Integer integer : source.times) {
-			final int i = integer;
-			final int index = source.times.indexOf(integer);
-			if ((i >= sourceStart) && (i <= sourceEnd)) {
-				// If this "i" is a part of the anim being rescaled
-				final double ratio = (double) (i - sourceStart) / (double) (sourceEnd - sourceStart);
-				times.add((int) (newStart + (ratio * (newEnd - newStart))));
-				values.add((T) cloneValue(source.values.get(index)));
-				if (tans) {
-					inTans.add((T) cloneValue(source.inTans.get(index)));
-					outTans.add((T) cloneValue(source.outTans.get(index)));
-				}
-			}
+		if (this instanceof FloatAnimFlag && source instanceof FloatAnimFlag) {
+			((FloatAnimFlag) this).copyFrom((FloatAnimFlag) source, sourceStart, sourceEnd, newStart, newEnd);
 		}
+		if (this instanceof Vec3AnimFlag && source instanceof Vec3AnimFlag) {
+			((Vec3AnimFlag) this).copyFrom((Vec3AnimFlag) source, sourceStart, sourceEnd, newStart, newEnd);
+		}
+		if (this instanceof QuatAnimFlag && source instanceof QuatAnimFlag) {
+			((QuatAnimFlag) this).copyFrom((QuatAnimFlag) source, sourceStart, sourceEnd, newStart, newEnd);
+		}
+	}
 
-		sort();
-
-		// BOOM magic happens
+	public void copyFrom(final AnimFlag<?> source) {
+		if (this instanceof IntAnimFlag && source instanceof IntAnimFlag) {
+			((IntAnimFlag) this).copyFrom((IntAnimFlag) source);
+		}
+		if (this instanceof FloatAnimFlag && source instanceof FloatAnimFlag) {
+			((FloatAnimFlag) this).copyFrom((FloatAnimFlag) source);
+		}
+		if (this instanceof Vec3AnimFlag && source instanceof Vec3AnimFlag) {
+			((Vec3AnimFlag) this).copyFrom((Vec3AnimFlag) source);
+		}
+		if (this instanceof QuatAnimFlag && source instanceof QuatAnimFlag) {
+			((QuatAnimFlag) this).copyFrom((QuatAnimFlag) source);
+		}
 	}
 
 	public void timeScale(final int start, final int end, final int newStart, final int newEnd) {
-		// Timescales a part of the AnimFlag from section "start" to "end" into
-		// the new time "newStart" to "newEnd"
-		// if( newEnd > newStart )
-		// {
-		for (int z = 0; z < times.size(); z++)// Integer inte: times )
-		{
-			final int i = times.get(z);
-			if ((i >= start) && (i <= end)) {
-				// If this "i" is a part of the anim being rescaled
-				final double ratio = (double) (i - start) / (double) (end - start);
-				times.set(z, (int) (newStart + (ratio * (newEnd - newStart))));
+		// Timescales a part of the AnimFlag from section "start" to "end" into the new time "newStart" to "newEnd"
+		for (int index = 0; index < times.size(); index++) {
+			final int time = times.get(index);
+			if ((time >= start) && (time <= end)) {
+				// If this "time" is a part of the anim being rescaled
+				final double ratio = (double) (time - start) / (double) (end - start);
+				times.set(index, (int) (newStart + (ratio * (newEnd - newStart))));
 			}
 		}
 		sort();
@@ -1063,17 +1043,19 @@ public abstract class AnimFlag<T> {
 			}
 		} else {
 //			System.out.println(name + ", ~~ no global seq");
-			final BasicTimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
-			time = animation.getStart() + animatedRenderEnvironment.getAnimationTime();
-			final int floorAnimStartIndex = Math.max(0, floorIndex(animation.getStart() + 1));
-			final int floorAnimEndIndex = Math.max(0, floorIndex(animation.getEnd()));
+			final TimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
+			int animationStart = animation.getStart();
+			time = animationStart + animatedRenderEnvironment.getAnimationTime();
+			final int floorAnimStartIndex = Math.max(0, floorIndex(animationStart + 1));
+			int animationEnd = animation.getEnd();
+			final int floorAnimEndIndex = Math.max(0, floorIndex(animationEnd));
 			floorIndex = floorIndex(time);
 			ceilIndex = Math.max(floorIndex, ceilIndex(time)); // retarded repeated keyframes issue, see Peasant's Bone_Chest at time 18300
 
 			ceilIndexTime = times.get(ceilIndex);
 			final int lookupFloorIndex = Math.max(0, floorIndex);
 			floorIndexTime = times.get(lookupFloorIndex);
-			if (ceilIndexTime < animation.getStart() || floorIndexTime > animation.getEnd()) {
+			if (ceilIndexTime < animationStart || floorIndexTime > animationEnd) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)1 " + localTypeId + " id: " + identity(localTypeId));
 				return identity(localTypeId);
 			}
@@ -1081,10 +1063,10 @@ public abstract class AnimFlag<T> {
 			floorValue = values.get(lookupFloorIndex);
 			floorInTan = tans() ? inTans.get(lookupFloorIndex) : null;
 			floorOutTan = tans() ? outTans.get(lookupFloorIndex) : null;
-			if ((floorIndexTime < animation.getStart()) && (ceilIndexTime > animation.getEnd())) {
+			if ((floorIndexTime < animationStart) && (ceilIndexTime > animationEnd)) {
 //				System.out.println(name + ", ~~~~ identity(localTypeId)3");
 				return identity(localTypeId);
-			} else if ((floorIndex == -1) || (floorIndexTime < animation.getStart())) {
+			} else if ((floorIndex == -1) || (floorIndexTime < animationStart)) {
 				floorValue = values.get(floorAnimEndIndex);
 				floorIndexTime = times.get(floorAnimStartIndex);
 				if (tans()) {
@@ -1092,19 +1074,19 @@ public abstract class AnimFlag<T> {
 					floorOutTan = inTans.get(floorAnimEndIndex);
 //					floorIndexTime = times.get(floorAnimEndIndex);
 				}
-				timeBetweenFrames = times.get(floorAnimEndIndex) - animation.getStart();
-			} else if ((ceilIndexTime > animation.getEnd())
+				timeBetweenFrames = times.get(floorAnimEndIndex) - animationStart;
+			} else if ((ceilIndexTime > animationEnd)
 					|| ((ceilIndexTime < time) && (times.get(floorAnimEndIndex) < time))) {
-				if (times.get(floorAnimStartIndex) == animation.getStart()) {
+				if (times.get(floorAnimStartIndex) == animationStart) {
 					ceilValue = values.get(floorAnimStartIndex);
 					ceilIndex = floorAnimStartIndex;
-					ceilIndexTime = animation.getEnd();
+					ceilIndexTime = animationEnd;
 					timeBetweenFrames = ceilIndexTime - floorIndexTime;
 				} else {
-					ceilIndex = ceilIndex(animation.getStart());
+					ceilIndex = ceilIndex(animationStart);
 					ceilValue = values.get(ceilIndex);
-					ceilIndexTime = animation.getEnd();
-					timeBetweenFrames = animation.getEnd() - animation.getStart();
+					ceilIndexTime = animationEnd;
+					timeBetweenFrames = animationEnd - animationStart;
 				}
 				// NOTE: we just let it be in this case, based on Water Elemental's birth
 			} else {

@@ -24,9 +24,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 	private final int numberOfWidthSegments;
 	private final int numberOfHeightSegments;
 
-	public DrawPlaneManipulator(final ModelEditor modelEditor, final ProgramPreferences programPreferences,
-			final CoordinateSystem coordinateSystem, final int numberOfWidthSegments, final int numberOfHeightSegments,
-			final Vec3 facingVector) {
+	public DrawPlaneManipulator(final ModelEditor modelEditor, final ProgramPreferences programPreferences, final CoordinateSystem coordinateSystem, final int numberOfWidthSegments, final int numberOfHeightSegments, final Vec3 facingVector) {
 		this.modelEditor = modelEditor;
 		this.programPreferences = programPreferences;
 		this.coordinateSystem = coordinateSystem;
@@ -40,8 +38,7 @@ public class DrawPlaneManipulator extends AbstractManipulator {
 		if (Math.abs(mouseEnd.x - activityStart.x) >= 0.1 && Math.abs(mouseEnd.y - activityStart.y) >= 0.1) {
 			if (addPlane == null) {
 				try {
-					addPlane = modelEditor.addPlane(activityStart.x, activityStart.y, mouseEnd.x, mouseEnd.y, dim1,
-							dim2, facingVector, numberOfWidthSegments, numberOfHeightSegments);
+					addPlane = modelEditor.addPlane(activityStart.x, activityStart.y, mouseEnd.x, mouseEnd.y, dim1, dim2, facingVector, numberOfWidthSegments, numberOfHeightSegments);
 				} catch (final WrongModeException exc) {
 					JOptionPane.showMessageDialog(null, exc.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}

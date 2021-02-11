@@ -2,7 +2,8 @@ package com.hiveworkshop.rms.editor.model;
 
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxSequence;
-import com.hiveworkshop.rms.ui.application.edit.animation.BasicTimeBoundProvider;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundChangeListener;
+import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * Eric Theller 11/5/2011
  */
-public class Animation implements BasicTimeBoundProvider {
+public class Animation implements TimeBoundProvider {
 	private String name = "";
 	private int intervalStart = 0;
 	private int intervalEnd = -1;
@@ -151,7 +152,7 @@ public class Animation implements BasicTimeBoundProvider {
 
 	public void copyToInterval(final int start, final int end, final List<AnimFlag<?>> flags,
 			final List<EventObject> eventObjs, final List<AnimFlag<?>> newFlags, final List<EventObject> newEventObjs) {
-		for (final AnimFlag af : newFlags) {
+		for (final AnimFlag<?> af : newFlags) {
 			if (!af.hasGlobalSeq) {
 				af.copyFrom(flags.get(newFlags.indexOf(af)), intervalStart, intervalEnd, start, end);
 			}
@@ -163,9 +164,8 @@ public class Animation implements BasicTimeBoundProvider {
 		}
 	}
 
-	public void copyToInterval(final int start, final int end, final List<AnimFlag<?>> flags,
-	                               final List<EventObject> eventObjs) {
-		for (final AnimFlag af : flags) {
+	public void copyToInterval(final int start, final int end, final List<AnimFlag<?>> flags, final List<EventObject> eventObjs) {
+		for (final AnimFlag<?> af : flags) {
 			if (!af.hasGlobalSeq) {
 				af.copyFrom(af, intervalStart, intervalEnd, start, end);
 			}
@@ -193,7 +193,7 @@ public class Animation implements BasicTimeBoundProvider {
 
 	public void setInterval(final int start, final int end, final List<AnimFlag<?>> flags,
 			final List<EventObject> eventObjs) {
-		for (final AnimFlag af : flags) {
+		for (final AnimFlag<?> af : flags) {
 			if (!af.hasGlobalSeq) {
 				af.timeScale(intervalStart, intervalEnd, start, end);
 			}
@@ -208,7 +208,7 @@ public class Animation implements BasicTimeBoundProvider {
 	}
 
 	public void reverse(final List<AnimFlag<?>> flags, final List<EventObject> eventObjs) {
-		for (final AnimFlag af : flags) {
+		for (final AnimFlag<?> af : flags) {
 			if (!af.hasGlobalSeq && ((af.getTypeId() == 1) || (af.getTypeId() == 2) || (af.getTypeId() == 3))) {
 				af.timeScale(intervalStart, intervalEnd, intervalEnd, intervalStart);
 			}
@@ -231,11 +231,10 @@ public class Animation implements BasicTimeBoundProvider {
 	}
 
 	public void clearData(final List<AnimFlag<?>> flags, final List<EventObject> eventObjs) {
-		for (final AnimFlag af : flags) {
+		for (final AnimFlag<?> af : flags) {
 			if (((af.getTypeId() == 1) || (af.getTypeId() == 2) || (af.getTypeId() == 3))) {
 				// !af.hasGlobalSeq && was above before
-				af.deleteAnim(this);// timeScale(m_intervalStart, m_intervalEnd,
-									// m_intervalEnd, m_intervalStart);
+				af.deleteAnim(this);
 			}
 		}
 		for (final EventObject e : eventObjs) {
@@ -247,6 +246,11 @@ public class Animation implements BasicTimeBoundProvider {
 		final List<AnimFlag<?>> aniFlags = mdlr.getAllAnimFlags();
 		final List<EventObject> eventObjs = mdlr.sortedIdObjects(EventObject.class);
 		setInterval(start, end, aniFlags, eventObjs);
+	}
+
+	@Override
+	public void addChangeListener(TimeBoundChangeListener listener) {
+
 	}
 
 	@Override
