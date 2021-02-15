@@ -6,15 +6,14 @@ import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.model.Matrix;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.gui.modeledit.MatrixShell;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-class BoneAttachmentPanel extends JPanel implements ActionListener, ListSelectionListener {
+class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 	JLabel title;
 
 	// Old bone refs (matrices)
@@ -59,7 +58,7 @@ class BoneAttachmentPanel extends JPanel implements ActionListener, ListSelectio
 		bonesPane = new JScrollPane(bonesList);
 
 		useBone = new JButton("Use Bone(s)", ImportPanel.greenArrowIcon);
-		useBone.addActionListener(this);
+		useBone.addActionListener(e -> useBone());
 
 		oldBoneRefsLabel = new JLabel("Old Bone References");
 		buildOldRefsList();
@@ -77,11 +76,11 @@ class BoneAttachmentPanel extends JPanel implements ActionListener, ListSelectio
 		newRefsPane = new JScrollPane(newRefsList);
 
 		removeNewRef = new JButton("Remove", ImportPanel.redXIcon);
-		removeNewRef.addActionListener(this);
+		removeNewRef.addActionListener(e -> removeRef());
 		moveUp = new JButton(ImportPanel.moveUpIcon);
-		moveUp.addActionListener(this);
+		moveUp.addActionListener(e -> moveUp());
 		moveDown = new JButton(ImportPanel.moveDownIcon);
-		moveDown.addActionListener(this);
+		moveDown.addActionListener(e -> moveDown());
 
 		buildLayout();
 
@@ -89,39 +88,56 @@ class BoneAttachmentPanel extends JPanel implements ActionListener, ListSelectio
 	}
 
 	public void buildLayout() {
-		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(oldBoneRefsLabel)
-						.addComponent(oldBoneRefsPane))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(newRefsLabel)
-						.addComponent(newRefsPane)
-						.addComponent(removeNewRef))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(moveUp)
-						.addComponent(moveDown))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(bonesLabel)
-						.addComponent(bonesPane)
-						.addComponent(useBone)));
+		setLayout(new MigLayout("gap 0", "[grow][grow][][grow]", "[][grow][grow][]"));
+		add(oldBoneRefsLabel, "cell 0 0");
+		add(oldBoneRefsPane, "cell 0 1, spany 2, growy, growx");
 
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(oldBoneRefsLabel)
-						.addComponent(newRefsLabel)
-						.addComponent(bonesLabel))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(oldBoneRefsPane)
-						.addComponent(newRefsPane)
-						.addGroup(layout.createSequentialGroup()
-								.addComponent(moveUp).addGap(16)
-								.addComponent(moveDown))
-						.addComponent(bonesPane))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(removeNewRef)
-						.addComponent(useBone)));
-		setLayout(layout);
+		add(newRefsLabel, "cell 1 0");
+		add(newRefsPane, "cell 1 1, spany 2, growy, growx");
+
+		add(removeNewRef, "cell 1 3, alignx center");
+
+		add(moveUp, "cell 2 1, bottom");
+		add(moveDown, "cell 2 2, top");
+
+		add(bonesLabel, "cell 3 0");
+		add(bonesPane, "cell 3 1, spany 2, growy, growx");
+		add(useBone, "cell 3 3, alignx center");
+
+
+//		final GroupLayout layout = new GroupLayout(this);
+//		layout.setHorizontalGroup(layout.createSequentialGroup()
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(oldBoneRefsLabel)
+//						.addComponent(oldBoneRefsPane))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(newRefsLabel)
+//						.addComponent(newRefsPane)
+//						.addComponent(removeNewRef))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(moveUp)
+//						.addComponent(moveDown))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(bonesLabel)
+//						.addComponent(bonesPane)
+//						.addComponent(useBone)));
+//
+//		layout.setVerticalGroup(layout.createSequentialGroup()
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(oldBoneRefsLabel)
+//						.addComponent(newRefsLabel)
+//						.addComponent(bonesLabel))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(oldBoneRefsPane)
+//						.addComponent(newRefsPane)
+//						.addGroup(layout.createSequentialGroup()
+//								.addComponent(moveUp).addGap(16)
+//								.addComponent(moveDown))
+//						.addComponent(bonesPane))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(removeNewRef)
+//						.addComponent(useBone)));
+//		setLayout(layout);
 	}
 
 	@Override
@@ -129,52 +145,56 @@ class BoneAttachmentPanel extends JPanel implements ActionListener, ListSelectio
 		refreshLists();
 	}
 
-	@Override
-	public void actionPerformed(final ActionEvent e) {
-		if (e.getSource() == useBone) {
-			for (final Object o : bonesList.getSelectedValuesList()) {
-				if (!newRefs.contains(o)) {
-					newRefs.addElement((BoneShell) o);
+
+	private void moveDown() {
+		final int[] indices = newRefsList.getSelectedIndices();
+		if ((indices != null) && (indices.length > 0)) {
+			if (indices[indices.length - 1] < (newRefs.size() - 1)) {
+				for (int i = indices.length - 1; i >= 0; i--) {
+					final BoneShell bs = newRefs.get(indices[i]);
+					newRefs.removeElement(bs);
+					newRefs.add(indices[i] + 1, bs);
+					indices[i] += 1;
 				}
 			}
-			refreshNewRefsList();
-		} else if (e.getSource() == removeNewRef) {
-			for (final Object o : newRefsList.getSelectedValuesList()) {
-				int i = newRefsList.getSelectedIndex();
-				newRefs.removeElement(o);
-				if (i > (newRefs.size() - 1)) {
-					i = newRefs.size() - 1;
+			newRefsList.setSelectedIndices(indices);
+		}
+	}
+
+	private void moveUp() {
+		final int[] indices = newRefsList.getSelectedIndices();
+		if ((indices != null) && (indices.length > 0)) {
+			if (indices[0] > 0) {
+				for (int i = 0; i < indices.length; i++) {
+					final BoneShell bs = newRefs.get(indices[i]);
+					newRefs.removeElement(bs);
+					newRefs.add(indices[i] - 1, bs);
+					indices[i] -= 1;
 				}
-				newRefsList.setSelectedIndex(i);
 			}
-			refreshNewRefsList();
-		} else if (e.getSource() == moveUp) {
-			final int[] indices = newRefsList.getSelectedIndices();
-			if ((indices != null) && (indices.length > 0)) {
-				if (indices[0] > 0) {
-					for (int i = 0; i < indices.length; i++) {
-						final BoneShell bs = newRefs.get(indices[i]);
-						newRefs.removeElement(bs);
-						newRefs.add(indices[i] - 1, bs);
-						indices[i] -= 1;
-					}
-				}
-				newRefsList.setSelectedIndices(indices);
+			newRefsList.setSelectedIndices(indices);
+		}
+	}
+
+	private void removeRef() {
+		for (final Object o : newRefsList.getSelectedValuesList()) {
+			int i = newRefsList.getSelectedIndex();
+			newRefs.removeElement(o);
+			if (i > (newRefs.size() - 1)) {
+				i = newRefs.size() - 1;
 			}
-		} else if (e.getSource() == moveDown) {
-			final int[] indices = newRefsList.getSelectedIndices();
-			if ((indices != null) && (indices.length > 0)) {
-				if (indices[indices.length - 1] < (newRefs.size() - 1)) {
-					for (int i = indices.length - 1; i >= 0; i--) {
-						final BoneShell bs = newRefs.get(indices[i]);
-						newRefs.removeElement(bs);
-						newRefs.add(indices[i] + 1, bs);
-						indices[i] += 1;
-					}
-				}
-				newRefsList.setSelectedIndices(indices);
+			newRefsList.setSelectedIndex(i);
+		}
+		refreshNewRefsList();
+	}
+
+	private void useBone() {
+		for (final Object o : bonesList.getSelectedValuesList()) {
+			if (!newRefs.contains(o)) {
+				newRefs.addElement((BoneShell) o);
 			}
 		}
+		refreshNewRefsList();
 	}
 
 	public void refreshLists() {

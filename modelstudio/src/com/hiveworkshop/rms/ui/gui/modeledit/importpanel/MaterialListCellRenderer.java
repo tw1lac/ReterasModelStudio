@@ -31,26 +31,25 @@ class MaterialListCellRenderer extends DefaultListCellRenderer {
 		if (myModel.contains((Material) value)) {
 			super.getListCellRendererComponent(list, name, index, iss, chf);
 
-			ImageIcon myIcon = map.get(value);
-			if (myIcon == null) {
-				myIcon = new ImageIcon(Material.mergeImageScaled(ImportPanel.greenIcon.getImage(),
-						((Material) value).getBufferedImage(myModel.getWrappedDataSource()), 64, 64, 48, 48));
-				map.put((Material) value, myIcon);
-			}
-
-			setIcon(myIcon);
+			setIcon(value, ImportPanel.greenIcon);
 		} else {
 			super.getListCellRendererComponent(list, "Import: " + name, index, iss, chf);
-			ImageIcon myIcon = map.get(value);
-			if (myIcon == null) {
-				myIcon = new ImageIcon(Material.mergeImageScaled(ImportPanel.orangeIcon.getImage(),
-						((Material) value).getBufferedImage(myModel.getWrappedDataSource()), 64, 64, 48, 48));
-				map.put((Material) value, myIcon);
-			}
-
-			setIcon(myIcon);
+			setIcon(value, ImportPanel.orangeIcon);
 		}
 		setFont(theFont);
 		return this;
+	}
+
+	public void setIcon(Object value, ImageIcon orangeIcon) {
+		ImageIcon myIcon = map.get(value);
+		if (myIcon == null) {
+			myIcon = new ImageIcon(Material.mergeImageScaled(
+					orangeIcon.getImage(),
+					((Material) value).getBufferedImage(myModel.getWrappedDataSource()),
+					64, 64, 48, 48));
+			map.put((Material) value, myIcon);
+		}
+
+		setIcon(myIcon);
 	}
 }

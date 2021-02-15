@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Animation;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -18,8 +19,6 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 	static final String CHANGENAME = "Change name to:";
 	static final String TIMESCALE = "Time-scale into pre-existing:";
 	static final String GLOBALSEQ = "Rebuild as global sequence";
-	// title
-	JLabel title;
 	// Import option
 	JCheckBox doImport;
 	// Import option
@@ -47,6 +46,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 	boolean listenSelection = true;
 
 	public AnimPanel(final Animation anim, final DefaultListModel<AnimShell> existingAnims, final AnimListCellRenderer renderer) {
+		setLayout(new MigLayout("gap 0"));
 		this.existingAnims = existingAnims;
 		listModel = new DefaultListModel<>();
 		for (int i = 0; i < existingAnims.size(); i++) {
@@ -54,7 +54,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		}
 		this.anim = anim;
 
-		title = new JLabel(anim.getName());
+		JLabel title = new JLabel(anim.getName());
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 
 		doImport = new JCheckBox("Import this Sequence");
@@ -105,25 +105,29 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		cardPane.add(animListPane, TIMESCALE);
 		cardPane.add(blankCardGS, GLOBALSEQ);
 		// cardLayout.show(cardPane,IMPORTBASIC);
-
-		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(title)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(doImport)
-								.addComponent(inReverse)
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(importTypeBox)
-										.addComponent(cardPane)))).addGap(8));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addComponent(title).addGap(16)
-				.addComponent(doImport)
-				.addComponent(inReverse)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(importTypeBox)
-						.addComponent(cardPane)));
-		setLayout(layout);
+		add(title, "align center, wrap");
+		add(doImport, "left, wrap");
+		add(inReverse, "left, wrap");
+		add(importTypeBox);
+		add(cardPane, "growx, growy");
+//		final GroupLayout layout = new GroupLayout(this);
+//		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(title)
+//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//								.addComponent(doImport)
+//								.addComponent(inReverse)
+//								.addGroup(layout.createSequentialGroup()
+//										.addComponent(importTypeBox)
+//										.addComponent(cardPane)))).addGap(8));
+//		layout.setVerticalGroup(layout.createSequentialGroup()
+//				.addComponent(title).addGap(16)
+//				.addComponent(doImport)
+//				.addComponent(inReverse)
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//						.addComponent(importTypeBox)
+//						.addComponent(cardPane)));
+//		setLayout(layout);
 	}
 
 	public void setSelected(final boolean flag) {

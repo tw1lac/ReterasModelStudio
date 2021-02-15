@@ -56,7 +56,7 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 	@Override
 	public void stateChanged(final ChangeEvent e) {
 		if (favorOld.isSelected() != oldVal) {
-			getImportPanel().setVisGroupSelected(favorOld.isSelected());
+			ImportPanel.setVisGroupSelected(getImportPanel().visTabs, favorOld.isSelected());
 			oldVal = favorOld.isSelected();
 		}
 	}
@@ -64,10 +64,10 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 	@Override
 	public void itemStateChanged(final ItemEvent e) {
 		if (e.getSource() == oldSourcesBox) {
-			getImportPanel().setVisGroupItemOld(oldSourcesBox.getSelectedItem());
+			ImportPanel.setVisGroupItemOld(getImportPanel().visTabs, oldSourcesBox.getSelectedItem());
 		}
 		if (e.getSource() == newSourcesBox) {
-			getImportPanel().setVisGroupItemNew(newSourcesBox.getSelectedItem());
+			ImportPanel.setVisGroupItemNew(getImportPanel().visTabs, newSourcesBox.getSelectedItem());
 		}
 	}
 

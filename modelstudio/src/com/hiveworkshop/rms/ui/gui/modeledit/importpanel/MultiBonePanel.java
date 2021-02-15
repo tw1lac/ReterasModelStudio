@@ -1,51 +1,62 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 class MultiBonePanel extends BonePanel {
 	JButton setAllParent;
 	boolean listenForChange = true;
 
 	public MultiBonePanel(final DefaultListModel<BoneShell> existingBonesList, final BoneShellListCellRenderer renderer) {
-		setAllParent = new JButton("Set Parent for All");
-		setAllParent.addActionListener(e -> getImportPanel().setParentMultiBones());
+		setLayout(new MigLayout("gap 0"));
 		bone = null;
 		existingBones = existingBonesList;
 
 		title = new JLabel("Multiple Selected");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
+		add(title, "align center, wrap");
 
 		importTypeBox.setEditable(false);
-		importTypeBox.addActionListener(this);
+		importTypeBox.addActionListener(e -> listSelectionChanged());
 		importTypeBox.setMaximumSize(new Dimension(200, 20));
+		add(importTypeBox, "wrap");
 
 		boneList = new JList<>(existingBones);
 		boneList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		boneList.setCellRenderer(renderer);
 		boneListPane = new JScrollPane(boneList);
 
-		add(importTypeBox);
-		add(boneListPane);
+//		add(boneListPane);
 		cardPanel = new JPanel(cards);
 		cardPanel.add(boneListPane, "boneList");
 		cardPanel.add(dummyPanel, "blank");
 		boneList.setEnabled(false);
 		cards.show(cardPanel, "blank");
+		add(cardPanel, "wrap");
 
-		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(title)
-						.addGroup(layout.createSequentialGroup().addComponent(importTypeBox).addComponent(cardPanel)
-								.addComponent(setAllParent)))
-				.addGap(8));
-		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(title).addGap(16)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(importTypeBox)
-						.addComponent(cardPanel).addComponent(setAllParent)));
-		setLayout(layout);
+		setAllParent = new JButton("Set Parent for All");
+		setAllParent.addActionListener(e -> ImportPanel.setParentMultiBones(getImportPanel()));
+		add(setAllParent, "wrap");
+
+//		final GroupLayout layout = new GroupLayout(this);
+//		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//						.addComponent(title)
+//						.addGroup(layout.createSequentialGroup()
+//								.addComponent(importTypeBox)
+//								.addComponent(cardPanel)
+//								.addComponent(setAllParent)))
+//				.addGap(8));
+//		layout.setVerticalGroup(layout.createSequentialGroup()
+//				.addComponent(title).addGap(16)
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//						.addComponent(importTypeBox)
+//						.addComponent(cardPanel)
+//						.addComponent(setAllParent)));
+//		setLayout(layout);
 	}
 
 	@Override
@@ -83,8 +94,12 @@ class MultiBonePanel extends BonePanel {
 		listenForChange = true;
 	}
 
-	@Override
-	public void actionPerformed(final ActionEvent e) {
+//	@Override
+//	public void actionPerformed(final ActionEvent e) {
+//		listSelectionChanged();
+//	}
+
+	private void listSelectionChanged() {
 		final long nanoStart = System.nanoTime();
 		final boolean pastListSelectionState = listenSelection;
 		listenSelection = false;
@@ -95,7 +110,7 @@ class MultiBonePanel extends BonePanel {
 		}
 		listenSelection = pastListSelectionState;
 		if (listenForChange) {
-			getImportPanel().setSelectedItem((String) importTypeBox.getSelectedItem());
+			ImportPanel.setSelectedItem(getImportPanel().boneTabs, (String) importTypeBox.getSelectedItem());
 		}
 		final long nanoEnd = System.nanoTime();
 		System.out.println("MultiBonePanel.actionPerformed() took " + (nanoEnd - nanoStart) + " ns");

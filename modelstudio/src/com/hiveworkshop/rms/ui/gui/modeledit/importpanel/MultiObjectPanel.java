@@ -50,7 +50,7 @@ class MultiObjectPanel extends ObjectPanel implements ChangeListener {
 	@Override
 	public void stateChanged(final ChangeEvent e) {
 		if (doImport.isSelected() != oldVal) {
-			getImportPanel().setObjGroupSelected(doImport.isSelected());
+			ImportPanel.setObjGroupSelected(getImportPanel().objectTabs, doImport.isSelected());
 			oldVal = doImport.isSelected();
 		}
 	}

@@ -15,7 +15,8 @@ class VisShellBoxCellRenderer extends javax.swing.plaf.basic.BasicComboBoxRender
 		}
 		if (value.getClass() != String.class) {
 			super.getListCellRendererComponent(list,
-					((VisibilityShell) value).model.getName() + ": " + ((VisibilityShell) value).source.getName(), index, iss, chf);
+					((VisibilityShell) value).model.getName() + ": " + ((VisibilityShell) value).source.getName(),
+					index, iss, chf);
 		} else {
 			super.getListCellRendererComponent(list, value, index, iss, chf);
 		}
