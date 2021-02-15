@@ -1,4 +1,4 @@
-package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv;
+package com.hiveworkshop.rms.ui.application.edit.uv.types;
 
 import com.hiveworkshop.rms.ui.application.edit.mesh.CloneContextHelper;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
@@ -269,8 +269,7 @@ public class TVertexEditorNotifier extends SubscriberSetNotifier<TVertexEditor> 
 			if (uvLayerIndex == -1) {
 				uvLayerIndex = handler.getUVLayerIndex();
 			} else if (uvLayerIndex != handler.getUVLayerIndex()) {
-				throw new IllegalStateException("Differing UV Layer Indices between editors: "
-						+ uvLayerIndex + " != " + handler.getUVLayerIndex());
+				throw new IllegalStateException("Differing UV Layer Indices between editors: " + uvLayerIndex + " != " + handler.getUVLayerIndex());
 			}
 		}
 		return uvLayerIndex;

@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.application.viewer;
 
 import com.hiveworkshop.rms.editor.model.Animation;
+import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import org.lwjgl.LWJGLException;
@@ -10,22 +11,20 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ControlledAnimationViewer extends JPanel implements AnimationControllerListener {
-	private ModelView mdlDisp;
+	private ModelView modelView;
 	private final AnimatedPerspectiveViewport perspectiveViewport;
 	UggRenderEnv uggRenderEnv;
 
-	public ControlledAnimationViewer(final ModelView mdlDisp, final ProgramPreferences programPreferences,
+	public ControlledAnimationViewer(final ModelView modelView, final ProgramPreferences programPreferences,
 			final boolean doDefaultCamera) {
-		this.mdlDisp = mdlDisp;
+		this.modelView = modelView;
 		try {
 			uggRenderEnv = new UggRenderEnv();
-			perspectiveViewport = new AnimatedPerspectiveViewport(mdlDisp, programPreferences, uggRenderEnv, doDefaultCamera);
+			RenderModel renderModel = new RenderModel(modelView.getModel(), modelView);
+			perspectiveViewport = new AnimatedPerspectiveViewport(modelView, renderModel, programPreferences, uggRenderEnv, doDefaultCamera);
 			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
-			perspectiveViewport.setAnimationTime(0);
-			perspectiveViewport.setLive(true);
-//			uggRenderEnv = (UggRenderEnv) mdlDisp.getEditorRenderModel().getAnimatedRenderEnvironment();
-			System.out.println(".getAnimatedRenderEnv(): " + mdlDisp.getEditorRenderModel().getAnimatedRenderEnvironment());
-			System.out.println("uggRenderEnv: " + uggRenderEnv);
+			uggRenderEnv.setAnimationTime(0);
+			uggRenderEnv.setLive(true);
 		} catch (final LWJGLException e) {
 			throw new RuntimeException(e);
 		}
@@ -34,7 +33,7 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 	}
 
 	public void setModel(final ModelView modelView) {
-		mdlDisp = modelView;
+		this.modelView = modelView;
 		perspectiveViewport.setModel(modelView);
 		reload();
 	}
@@ -72,6 +71,7 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 	@Override
 	public void playAnimation() {
 //		perspectiveViewport.setAnimationTime(0);
+		uggRenderEnv.setLive(true);
 		uggRenderEnv.setAnimationTime(0);
 
 	}

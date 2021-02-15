@@ -2,17 +2,13 @@ package com.hiveworkshop.rms.ui.application.viewer;
 
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
-import com.hiveworkshop.rms.editor.render3d.InternalInstance;
-import com.hiveworkshop.rms.editor.render3d.InternalResource;
-import com.hiveworkshop.rms.editor.render3d.RenderModel;
-import com.hiveworkshop.rms.editor.render3d.RenderParticleEmitter2;
+import com.hiveworkshop.rms.editor.render3d.*;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.filesystem.sources.DataSource;
 import com.hiveworkshop.rms.parsers.blp.BLPHandler;
 import com.hiveworkshop.rms.parsers.blp.GPUReadyTexture;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer;
 import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
-import com.hiveworkshop.rms.ui.application.edit.animation.TimeEnvironmentImpl;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.ui.util.BetterAWTGLCanvas;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
@@ -40,7 +36,7 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 
-public class UggViewport extends BetterAWTGLCanvas {
+public abstract class UggViewport extends BetterAWTGLCanvas implements RenderResourceAllocator {
 	public static final boolean LOG_EXCEPTIONS = true;
 	private static final int BYTES_PER_PIXEL = 4;
 	private final float[] whiteDiffuse = {1f, 1f, 1f, 1f};
@@ -50,6 +46,7 @@ public class UggViewport extends BetterAWTGLCanvas {
 	Quat inverseCameraRotationQuat = new Quat();
 	Quat inverseCameraRotationYSpin = new Quat();
 	Quat inverseCameraRotationZSpin = new Quat();
+
 	double m_zoom = 1;
 	Point cameraPanStartPoint;
 	Point cameraSpinStartPoint;
@@ -57,61 +54,55 @@ public class UggViewport extends BetterAWTGLCanvas {
 	Timer paintTimer;
 	boolean mouseInBounds = false;
 	boolean enabled = false;
+
 	boolean texLoaded = false;
 	JCheckBox wireframe;
 	HashMap<Bitmap, Integer> textureMap = new HashMap<>();
 	Map<Geoset, List<Vec4>> normalListMap;
 	Map<Geoset, List<Vec4>> vertListMap;
+
 	Class<? extends Throwable> lastThrownErrorClass;
 	boolean wantReload = false;
 	boolean wantReloadAll = false;
 	int popupCount = 0;
-	TimeEnvironmentImpl timeEnvironment;
+	UggRenderEnv timeEnvironment;
 	boolean initialized = false;
-	private RenderModel renderModel;
+
+	protected RenderModel renderModel;
 	private ProgramPreferences programPreferences;
-	private int animationTime;
-	private boolean live;
-	private boolean looping = true;
-	private Animation animation;
-	private long lastUpdateMillis = System.currentTimeMillis();
+
 	private long lastExceptionTimeMillis = 0;
 	private float backgroundRed, backgroundBlue, backgroundGreen;
 	private int levelOfDetail = 0;
-	private AnimationControllerListener.LoopType loopType;
+
 	private float xRatio;
 	private float yRatio;
 	private float xangle;
 	private float yangle;
 	Timer clickTimer = new Timer(16, e -> clickTimerAction());
 
-	public UggViewport(final ModelView modelView, final ProgramPreferences programPreferences, TimeEnvironmentImpl renderEnvironment, final boolean loadDefaultCamera) throws LWJGLException {
+	public UggViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, UggRenderEnv renderEnvironment, final boolean loadDefaultCamera) throws LWJGLException {
 		super();
 		this.programPreferences = programPreferences;
 
 		normalListMap = new HashMap<>();
 		vertListMap = new HashMap<>();
 
-//		uggRenderEnv = (UggRenderEnv) renderEnvironment;
 		timeEnvironment = renderEnvironment;
-		// Dimension 1 and Dimension 2, these specify which dimensions to display.
-		// The d bytes can thus be from 0 to 2, specifying either the X, Y, or Z dimensions
-		//
-		// Viewport border
-		// setBorder(BorderFactory.createBevelBorder(1));
+
 		setBackground(programPreferences == null ? new Color(80, 80, 80) : programPreferences.getPerspectiveBackgroundColor());
 		setMinimumSize(new Dimension(200, 200));
 
 		this.modelView = modelView;
-//		if (loadDefaultCamera) {
-//			loadDefaultCameraFor(modelView);
-//		}
+		if (loadDefaultCamera) {
+			loadDefaultCameraFor(modelView);
+		}
 
-		renderModel = new RenderModel(modelView.getModel(), modelView);
+		this.renderModel = renderModel;
 
 		if (programPreferences != null) {
-			renderModel.setSpawnParticles(programPreferences.getRenderParticles());
-			renderModel.setAllowInanimateParticles(programPreferences.getRenderStaticPoseParticles());
+//			renderModel.setSpawnParticles(programPreferences.getRenderParticles());
+//			renderModel.setAllowInanimateParticles(programPreferences.getRenderStaticPoseParticles());
 
 			programPreferences.addChangeListener(() -> updateBackgroundColor(programPreferences));
 		}
@@ -130,6 +121,11 @@ public class UggViewport extends BetterAWTGLCanvas {
 		});
 		paintTimer.start();
 		shortcutKeyListener();
+	}
+
+
+	public void setLevelOfDetail(final int levelOfDetail) {
+		this.levelOfDetail = levelOfDetail;
 	}
 
 	public static int loadTexture(final GPUReadyTexture texture, final Bitmap bitmap) {
@@ -161,81 +157,95 @@ public class UggViewport extends BetterAWTGLCanvas {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, tex.isWrapHeight() ? GL11.GL_REPEAT : GL12.GL_CLAMP_TO_EDGE);
 	}
 
-	private void loadDefaultCameraFor(final ModelView modelView) {
-		ExtLog extents = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
+	void loadDefaultCameraFor(final ModelView modelView) {
+		ExtLog collisionExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
 		final List<CollisionShape> collisionShapes = modelView.getModel().sortedIdObjects(CollisionShape.class);
 		if (collisionShapes.size() > 0) {
 			for (final CollisionShape shape : collisionShapes) {
 				if ((shape != null) && (shape.getExtents() != null) && shape.getExtents().hasBoundsRadius()) {
-					extents.setMinMax(shape.getExtents());
+					collisionExtent.setMinMax(shape.getExtents());
 				}
 			}
 //			final CollisionShape firstShape = collisionShapes.get(0);
 //			extents = firstShape.getExtents();
 		}
-		if (extents == null) {
-			extents = modelView.getModel().getExtents();
-		}
-		extents.setMinMax(modelView.getModel().getExtents());
 
+		ExtLog modelExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
+		modelExtent.setMinMax(modelView.getModel().getExtents());
+
+
+		ExtLog animationExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
 		Animation defaultAnimation = null;
 		for (final Animation animation : modelView.getModel().getAnims()) {
 			if ((defaultAnimation == null) || !defaultAnimation.getName().toLowerCase().contains("stand") || (animation.getName().toLowerCase().contains("stand") && (animation.getName().length() < defaultAnimation.getName().length()))) {
 				defaultAnimation = animation;
 				if ((animation.getExtents() != null) && (animation.getExtents().hasBoundsRadius() || (animation.getExtents().getMinimumExtent() != null))) {
 //					extents = animation.getExtents();
-					extents.setMinMax(animation.getExtents());
+					animationExtent.setMinMax(animation.getExtents());
 				}
 			}
 		}
-//		uggRenderEnv.setAnimation(defaultAnimation);
-//		animation = defaultAnimation;
-		if (extents != null) {
-			double boundsRadius = 64;
-			if (extents.hasBoundsRadius() && (extents.getBoundsRadius() > 1)) {
-				final double extBoundRadius = extents.getBoundsRadius();
-				if (extBoundRadius > boundsRadius) {
-					boundsRadius = extBoundRadius;
-				}
-			}
-			if ((extents.getMaximumExtent() != null) && (extents.getMaximumExtent() != null)) {
-				final double minMaxBoundRadius = extents.getMaximumExtent().distance(extents.getMinimumExtent()) / 2;
-				if (minMaxBoundRadius > boundsRadius) {
-					boundsRadius = minMaxBoundRadius;
-				}
-			}
-			if ((boundsRadius > 10000) || (boundsRadius < 0.1)) {
-				boundsRadius = 64;
-			}
-			m_zoom = 128 / (boundsRadius * 2);
-			cameraPos.y -= boundsRadius / 2;
+		timeEnvironment.setAnimation(defaultAnimation);
+		ExtLog someExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
+		if ((defaultAnimation == null) && defaultAnimation.getExtents() != null){
+			someExtent.setMinMax(defaultAnimation.getExtents());
+
 		}
+		someExtent.setMinMax(modelExtent);
+
+		double boundsRadius = 64;
+		if (someExtent.hasBoundsRadius() && (someExtent.getBoundsRadius() > 1)) {
+			final double extBoundRadius = someExtent.getBoundsRadius();
+			if (extBoundRadius > boundsRadius) {
+				boundsRadius = extBoundRadius;
+			}
+		}
+		if ((someExtent.getMaximumExtent() != null) && (someExtent.getMaximumExtent() != null)) {
+			final double minMaxBoundRadius = someExtent.getMaximumExtent().distance(someExtent.getMinimumExtent()) / 2;
+			if (minMaxBoundRadius > boundsRadius) {
+				boundsRadius = minMaxBoundRadius;
+			}
+		}
+		if ((boundsRadius > 10000) || (boundsRadius < 0.1)) {
+			boundsRadius = 64;
+		}
+
+		m_zoom = 128 / (boundsRadius * 2);
+		cameraPos.y -= boundsRadius / 2;
 		yangle += 35;
 
-		Vec4 yAxisHeap = new Vec4(0, 1, 0, (float) Math.toRadians(yangle));
+		Vec4 yAxisHeap = new Vec4(0, 1, 0, Math.toRadians(yangle));
 		inverseCameraRotationYSpin.setFromAxisAngle(yAxisHeap).invertRotation();
-		Vec4 zAxisHeap = new Vec4(0, 0, 1, (float) Math.toRadians(xangle));
+		Vec4 zAxisHeap = new Vec4(0, 0, 1, Math.toRadians(xangle));
 		inverseCameraRotationZSpin.setFromAxisAngle(zAxisHeap).invertRotation();
 		inverseCameraRotationQuat.set(Quat.getProd(inverseCameraRotationYSpin, inverseCameraRotationZSpin)).invertRotation();
 	}
 
 	public void setModel(final ModelView modelView) {
 //		setAnimation(null);
+		timeEnvironment.setAnimation(null);
 		this.modelView = modelView;
 		renderModel = new RenderModel(modelView.getModel(), modelView);
 //		renderModel.refreshFromEditor(timeEnvironment, inverseCameraRotationQuat, inverseCameraRotationYSpin, inverseCameraRotationZSpin, this);
 		if (modelView.getModel().getAnims().size() > 0) {
 //			setAnimation(modelView.getModel().getAnim(0));
+			timeEnvironment.setAnimation(modelView.getModel().getAnim(0));
 		}
 		reloadAllTextures();
 	}
 
-	private void updateBackgroundColor(ProgramPreferences programPreferences) {
+	protected void updateBackgroundColor(ProgramPreferences programPreferences) {
 		setBackground(programPreferences.getPerspectiveBackgroundColor() == null ? new Color(80, 80, 80) : programPreferences.getPerspectiveBackgroundColor());
 		loadBackgroundColors();
 	}
 
-	private void shortcutKeyListener() {
+	protected void loadBackgroundColors() {
+		backgroundRed = programPreferences.getPerspectiveBackgroundColor().getRed() / 255f;
+		backgroundGreen = programPreferences.getPerspectiveBackgroundColor().getGreen() / 255f;
+		backgroundBlue = programPreferences.getPerspectiveBackgroundColor().getBlue() / 255f;
+	}
+
+	protected void shortcutKeyListener() {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -278,13 +288,7 @@ public class UggViewport extends BetterAWTGLCanvas {
 		cameraPos.set(vertexHeap.getVec3());
 	}
 
-	private void loadBackgroundColors() {
-		backgroundRed = programPreferences.getPerspectiveBackgroundColor().getRed() / 255f;
-		backgroundGreen = programPreferences.getPerspectiveBackgroundColor().getGreen() / 255f;
-		backgroundBlue = programPreferences.getPerspectiveBackgroundColor().getBlue() / 255f;
-	}
-
-	private void loadToTexMap(final Bitmap tex) {
+	protected void loadToTexMap(final Bitmap tex) {
 		if (textureMap.get(tex) == null) {
 			String path = tex.getPath();
 			if (!path.isEmpty() && !programPreferences.getAllowLoadingNonBlpTextures()) {
@@ -305,14 +309,15 @@ public class UggViewport extends BetterAWTGLCanvas {
 		}
 	}
 
-	private void forceReloadTextures() {
+	protected void forceReloadTextures() {
 		texLoaded = true;
 
 		deleteAllTextures();
 		addGeosets(modelView.getModel().getGeosets());
+		renderModel.refreshFromEditor(timeEnvironment, inverseCameraRotationQuat, inverseCameraRotationYSpin, inverseCameraRotationZSpin, this);
 	}
 
-	private void deleteAllTextures() {
+	protected void deleteAllTextures() {
 		for (final Integer textureId : textureMap.values()) {
 			GL11.glDeleteTextures(textureId);
 		}
@@ -369,9 +374,9 @@ public class UggViewport extends BetterAWTGLCanvas {
 	public void updateAnimatedNodes() {
 		final long currentTimeMillis = System.currentTimeMillis();
 		if ((currentTimeMillis - lastExceptionTimeMillis) > 16) {
-//			timeEnvironment.updateAnimatedNodes();
+			timeEnvironment.updateAnimationTime();
 
-			renderModel.updateNodes(false, true);
+			renderModel.updateNodes(false, programPreferences.getRenderParticles());
 //			lastUpdateMillis = currentTimeMillis;
 		}
 	}
@@ -444,7 +449,7 @@ public class UggViewport extends BetterAWTGLCanvas {
 			vertListMap.clear();
 
 			final int formatVersion = modelView.getModel().getFormatVersion();
-			if (live) {
+			if (timeEnvironment.isLive()) {
 				updateAnimatedNodes();
 			}
 
@@ -636,7 +641,7 @@ public class UggViewport extends BetterAWTGLCanvas {
 		glScalef((float) m_zoom, (float) m_zoom, (float) m_zoom);
 	}
 
-	private void setStandardColors(GeosetAnim geosetAnim, float geosetAnimVisibility, AnimatedRenderEnvironment timeEnvironment, Layer layer) {
+	private void setStandardColors(GeosetAnim geosetAnim, float geosetAnimVisibility, UggRenderEnv timeEnvironment, Layer layer) {
 		if (timeEnvironment.getCurrentAnimation() != null) {
 			final float layerVisibility = layer.getRenderVisibility(timeEnvironment);
 			final float alphaValue = geosetAnimVisibility * layerVisibility;
@@ -705,7 +710,7 @@ public class UggViewport extends BetterAWTGLCanvas {
 		}
 	}
 
-	private void bindParticleTexture(final ParticleEmitter2 particle2, final Bitmap tex, final Integer texture) {
+	protected void bindParticleTexture(final ParticleEmitter2 particle2, final Bitmap tex, final Integer texture) {
 		if (texture != null) {
 			bindTexture(tex, texture);
 		} else if (textureMap.size() > 0) {
@@ -1000,10 +1005,6 @@ public class UggViewport extends BetterAWTGLCanvas {
 		return new Rectangle2D.Double(topLeft.x, topLeft.y, lowRight.x - topLeft.x, lowRight.y - topLeft.y);
 	}
 
-	public InternalResource allocateTexture(final Bitmap bitmap, final ParticleEmitter2 textureSource) {
-		return new Particle2TextureInstance(bitmap, textureSource);
-	}
-
 	public boolean renderTextures() {
 		return texLoaded && ((programPreferences == null) || programPreferences.textureModels());
 	}
@@ -1172,7 +1173,12 @@ public class UggViewport extends BetterAWTGLCanvas {
 		};
 	}
 
-	private final class Particle2TextureInstance implements InternalResource, InternalInstance {
+	@Override
+	public InternalResource allocateTexture(final Bitmap bitmap, final ParticleEmitter2 textureSource) {
+		return new Particle2TextureInstance(bitmap, textureSource);
+	}
+
+	protected final class Particle2TextureInstance implements InternalResource, InternalInstance {
 		private final Bitmap bitmap;
 		private final ParticleEmitter2 particle;
 		private boolean loaded = false;

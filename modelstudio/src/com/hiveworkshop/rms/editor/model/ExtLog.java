@@ -54,9 +54,15 @@ public class ExtLog {
 		boundsRadius = boundsRad;
 	}
 
+//	public ExtLog(final ExtLog other) {
+//		minimumExtent = other.minimumExtent;
+//		maximumExtent = other.maximumExtent;
+//		boundsRadius = other.boundsRadius;
+//	}
+
 	public ExtLog(final ExtLog other) {
-		minimumExtent = other.minimumExtent;
-		maximumExtent = other.maximumExtent;
+		minimumExtent = new Vec3(other.minimumExtent);
+		maximumExtent = new Vec3(other.maximumExtent);
 		boundsRadius = other.boundsRadius;
 	}
 

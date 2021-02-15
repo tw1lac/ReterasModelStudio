@@ -8,7 +8,7 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.ModelElementRenderer;
 import com.hiveworkshop.rms.ui.application.edit.mesh.selection.AbstractSelectionManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.types.geosetvertex.GeosetVertexSelectionManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexModelElementRenderer;
+import com.hiveworkshop.rms.ui.application.edit.uv.types.TVertexModelElementRenderer;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
@@ -61,8 +61,7 @@ public final class VertexGroupSelectionManager extends AbstractSelectionManager<
 	}
 
 	@Override
-	public void renderSelection(final ModelElementRenderer renderer, final CoordinateSystem coordinateSystem,
-								final ModelView modelView, final ProgramPreferences programPreferences) {
+	public void renderSelection(final ModelElementRenderer renderer, final CoordinateSystem coordinateSystem, final ModelView modelView, final ProgramPreferences programPreferences) {
 		final Set<VertexGroupModelEditor.VertexGroupBundle> selection = getSelection();
 		for (final Geoset geoset : modelView.getEditableGeosets()) {
 			final Color outlineColor;
@@ -76,20 +75,15 @@ public final class VertexGroupSelectionManager extends AbstractSelectionManager<
 			}
 			for (final Triangle triangle : geoset.getTriangles()) {
 				final GeosetVertex[] triangleVertices = triangle.getVerts();
-				if (selectionContainsVertexGroup(selection, 0, geoset, triangleVertices)
-						&& selectionContainsVertexGroup(selection, 1, geoset, triangleVertices)
-						&& selectionContainsVertexGroup(selection, 2, geoset, triangleVertices)) {
-					renderer.renderFace(outlineColor, fillColor, triangle.get(0), triangle.get(1), triangle.get(2));
-				} else if (selectionContainsVertexGroup(selection, 0, geoset, triangleVertices)
-						&& selectionContainsVertexGroup(selection, 1, geoset, triangleVertices)) {
-					renderer.renderFace(outlineColor, fillColor, triangle.get(0), triangle.get(1), triangle.get(0));
-				} else if (selectionContainsVertexGroup(selection, 0, geoset, triangleVertices)
-						&& selectionContainsVertexGroup(selection, 2, geoset, triangleVertices)) {
-					renderer.renderFace(outlineColor, fillColor, triangle.get(0), triangle.get(2), triangle.get(0));
-				} else if (selectionContainsVertexGroup(selection, 1, geoset, triangleVertices)
-						&& selectionContainsVertexGroup(selection, 2, geoset, triangleVertices)) {
-					renderer.renderFace(outlineColor, fillColor, triangle.get(1), triangle.get(2), triangle.get(1));
-				}
+
+				if (renderIf(renderer, selection, geoset, outlineColor, fillColor, triangle, triangleVertices, 0, 1, 2))
+					continue;
+				if (renderIf(renderer, selection, geoset, outlineColor, fillColor, triangle, triangleVertices, 0, 1, 0))
+					continue;
+				if (renderIf(renderer, selection, geoset, outlineColor, fillColor, triangle, triangleVertices, 0, 2, 0))
+					continue;
+				if (renderIf(renderer, selection, geoset, outlineColor, fillColor, triangle, triangleVertices, 1, 2, 1))
+					continue;
 			}
 			// for (final GeosetVertex geosetVertex : geoset.getVertices()) {
 			// if (selection.contains(new VertexGroupBundle(geoset,
@@ -98,6 +92,17 @@ public final class VertexGroupSelectionManager extends AbstractSelectionManager<
 			// }
 			// }
 		}
+	}
+
+	public boolean renderIf(ModelElementRenderer renderer, Set<VertexGroupModelEditor.VertexGroupBundle> selection, Geoset geoset, Color outlineColor, Color fillColor, Triangle triangle, GeosetVertex[] triangleVertices, int i, int i2, int i3) {
+		if (selectionContainsVertexGroup(selection, i, geoset, triangleVertices)
+				&& selectionContainsVertexGroup(selection, i2, geoset, triangleVertices)
+				&& selectionContainsVertexGroup(selection, i3, geoset, triangleVertices)) {
+
+			renderer.renderFace(outlineColor, fillColor, triangle.get(i), triangle.get(i2), triangle.get(i3));
+			return true;
+		}
+		return false;
 	}
 
 	private boolean selectionContainsVertexGroup(Set<VertexGroupModelEditor.VertexGroupBundle> selection, int i, Geoset geoset, GeosetVertex[] triangleVertices) {

@@ -44,56 +44,6 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 		this.vertexClusterDefinitions = vertexClusterDefinitions;
 	}
 
-	public static final class VertexGroupBundle {
-		private final Geoset geoset;
-		private final int vertexGroupId;
-
-		public VertexGroupBundle(final Geoset geoset, final int vertexGroupId) {
-			this.geoset = geoset;
-			this.vertexGroupId = vertexGroupId;
-		}
-
-		public Geoset getGeoset() {
-			return geoset;
-		}
-
-		public int getVertexGroupId() {
-			return vertexGroupId;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = (prime * result) + ((geoset == null) ? 0 : geoset.hashCode());
-			result = (prime * result) + vertexGroupId;
-			return result;
-		}
-
-		@Override
-		public boolean equals(final Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			final VertexGroupBundle other = (VertexGroupBundle) obj;
-			if (geoset == null) {
-				if (other.geoset != null) {
-					return false;
-				}
-			} else if (!geoset.equals(other.geoset)) {
-				return false;
-			}
-			return vertexGroupId == other.vertexGroupId;
-		}
-
-	}
-
 	@Override
 	public UndoAction autoCenterSelectedBones() {
 		throw new UnsupportedOperationException("This feature is not available in Vertex Group mode");
@@ -307,8 +257,7 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 	}
 
 	@Override
-	public UndoAction addVertex(final double x, final double y, final double z,
-			final Vec3 preferredNormalFacingVector) {
+	public UndoAction addVertex(final double x, final double y, final double z, final Vec3 preferredNormalFacingVector) {
 		throw new WrongModeException("Unable to draw vertices in vertex group selection mode");
 	}
 
@@ -319,5 +268,55 @@ public final class VertexClusterModelEditor extends AbstractModelEditor<VertexCl
 
 	public VertexSelectionHelper getVertexSelectionHelper() {
 		return vertexSelectionHelper;
+	}
+
+	public static final class VertexGroupBundle {
+		private final Geoset geoset;
+		private final int vertexGroupId;
+
+		public VertexGroupBundle(final Geoset geoset, final int vertexGroupId) {
+			this.geoset = geoset;
+			this.vertexGroupId = vertexGroupId;
+		}
+
+		public Geoset getGeoset() {
+			return geoset;
+		}
+
+		public int getVertexGroupId() {
+			return vertexGroupId;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = (prime * result) + ((geoset == null) ? 0 : geoset.hashCode());
+			result = (prime * result) + vertexGroupId;
+			return result;
+		}
+
+		@Override
+		public boolean equals(final Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final VertexGroupBundle other = (VertexGroupBundle) obj;
+			if (geoset == null) {
+				if (other.geoset != null) {
+					return false;
+				}
+			} else if (!geoset.equals(other.geoset)) {
+				return false;
+			}
+			return vertexGroupId == other.vertexGroupId;
+		}
+
 	}
 }

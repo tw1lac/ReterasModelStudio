@@ -7,7 +7,8 @@ import javax.swing.*;
 
 public enum TVertexSelectionItemTypes implements ToolbarButtonType {
 	VERTEX("Select Vertices", RMSIcons.loadToolBarImageIcon("vertex.png")),
-	FACE("Select Faces", RMSIcons.loadToolBarImageIcon("poly.png"));
+	FACE("Select Faces", RMSIcons.loadToolBarImageIcon("poly.png")),
+	CLUSTER("Select Cluster", RMSIcons.loadToolBarImageIcon("poly.png"));
 
 	private final String name;
 	private final ImageIcon imageIcon;

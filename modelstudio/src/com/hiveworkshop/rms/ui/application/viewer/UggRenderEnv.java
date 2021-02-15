@@ -11,7 +11,7 @@ public class UggRenderEnv extends TimeEnvironmentImpl {
 	private AnimationControllerListener.LoopType loopType = AnimationControllerListener.LoopType.DEFAULT_LOOP;
 	private boolean looping = true;
 	float animSpeed = 1f;
-	boolean isLive = false;
+	boolean live = false;
 
 	public UggRenderEnv() {
 		super(0, 1);
@@ -85,6 +85,14 @@ public class UggRenderEnv extends TimeEnvironmentImpl {
 		looping = false;
 	}
 
+	public void setLive(final boolean live) {
+		this.live = live;
+	}
+
+	public boolean isLive() {
+		return live;
+	}
+
 	public void setAnimationSpeed(final float speed) {
 		animSpeed = speed;
 	}
@@ -98,6 +106,9 @@ public class UggRenderEnv extends TimeEnvironmentImpl {
 				animationTime = (int) ((animationTime + (long) (timeSkip * animSpeed)) % animation.length());
 			} else {
 				animationTime = Math.min(animation.length(), (int) (animationTime + (timeSkip * animSpeed)));
+				if (animationTime > animation.length()){
+					live = false;
+				}
 			}
 		}
 	}

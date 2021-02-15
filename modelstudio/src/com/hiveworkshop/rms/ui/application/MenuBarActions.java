@@ -41,8 +41,8 @@ public class MenuBarActions {
 
     static void updateUIFromProgramPreferences(List<ModelPanel> modelPanels, ProgramPreferences prefs) {
         for (final ModelPanel mpanel : modelPanels) {
-            mpanel.getEditorRenderModel().setSpawnParticles(prefs.getRenderParticles());
-            mpanel.getEditorRenderModel().setAllowInanimateParticles(prefs.getRenderStaticPoseParticles());
+//            mpanel.getEditorRenderModel().setSpawnParticles(prefs.getRenderParticles());
+//            mpanel.getEditorRenderModel().setAllowInanimateParticles(prefs.getRenderStaticPoseParticles());
 //            mpanel.getAnimationViewer().setSpawnParticles(prefs.getRenderParticles());
         }
     }
@@ -63,8 +63,7 @@ public class MenuBarActions {
             if (gameDataFileSystem.has("war3map.w3d")) {
                 editorData.load(new BlizzardDataInputStream(gameDataFileSystem.getResourceAsStream("war3map.w3d")),
                         gameDataFileSystem.has("war3map.wts")
-                                ? new WTSFile(gameDataFileSystem.getResourceAsStream("war3map.wts")) : null,
-                        true);
+                                ? new WTSFile(gameDataFileSystem.getResourceAsStream("war3map.wts")) : null, true);
             }
         } catch (final IOException e) {
             e.printStackTrace();

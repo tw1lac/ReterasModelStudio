@@ -212,7 +212,9 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 			return VertexVisitor.NO_ACTION;
 		}
 
-		public void processAndDraw(double x, double y, double z, double normalX, double normalY, double normalZ, Mat4 skinBonesMatrixSumHeap) {
+		public void processAndDraw(double x, double y, double z,
+		                           double normalX, double normalY, double normalZ,
+		                           Mat4 skinBonesMatrixSumHeap) {
 			Vec4 vertexHeap = new Vec4(x, y, z, 1);
 			Vec4 vertexSumHeap = Vec4.getTransformed(vertexHeap, skinBonesMatrixSumHeap);
 

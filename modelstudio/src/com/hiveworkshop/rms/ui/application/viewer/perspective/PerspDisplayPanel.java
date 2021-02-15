@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.application.viewer.perspective;
 
 import com.hiveworkshop.rms.editor.model.Geoset;
+import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.viewer.UggRenderEnv;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
@@ -21,7 +22,7 @@ import java.util.List;
  * @version (a version number or a date)
  */
 public class PerspDisplayPanel extends JPanel implements ActionListener {
-	private final ModelView dispMDL;
+	private final ModelView modelView;
 	private PerspectiveViewport vp;
 	private JPanel vpp;
 	private String title;
@@ -31,25 +32,15 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 //	private final RenderModel editorRenderModel;
 
 	// private JCheckBox wireframe;
-	public PerspDisplayPanel(final String title, final ModelView dispMDL, final ProgramPreferences programPreferences) {
+	public PerspDisplayPanel(final String title, final ModelView modelView, final ProgramPreferences programPreferences) {
 		super();
 		this.programPreferences = programPreferences;
-//		this.editorRenderModel = editorRenderModel;
-//		this.editorRenderModel = dispMDL.getEditorRenderModel();
-//		if (programPreferences != null) {
-//			this.editorRenderModel.setSpawnParticles(programPreferences.getRenderParticles());
-//			this.editorRenderModel.setAllowInanimateParticles(programPreferences.getRenderStaticPoseParticles());
-//		}
-		// BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title),BorderFactory.createBevelBorder(1)),BorderFactory.createEmptyBorder(1,1,1,1)
-		// ));
 		setOpaque(true);
 
-		// wireframe = new JCheckBox("Wireframe");
-		// add(wireframe);
-		setViewport(dispMDL);
+		setViewport(modelView);
 		getViewport().setMinimumSize(new Dimension(200, 200));
 		this.title = title;
-		this.dispMDL = dispMDL;
+		this.modelView = modelView;
 
 		plusZoom = getButton(this, 20, 20);
 
@@ -109,9 +100,9 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		vp.reloadAllTextures();
 	}
 
-	public void setViewport(final ModelView dispModel, UggRenderEnv renderEnvironment) {
-//	public void setViewport(final ModelView dispModel, TimeEnvironmentImpl renderEnvironment) {
-		setViewport(dispModel, 200, renderEnvironment);
+	public void setViewport(final ModelView modelView, UggRenderEnv renderEnvironment) {
+//	public void setViewport(final ModelView modelView, TimeEnvironmentImpl renderEnvironment) {
+		setViewport(modelView, 200, renderEnvironment);
 	}
 
 	public void setViewport(final ModelView dispModel) {
@@ -119,13 +110,16 @@ public class PerspDisplayPanel extends JPanel implements ActionListener {
 		setViewport(dispModel, 200, renderEnvironment);
 	}
 
-	public void setViewport(final ModelView dispModel, final int viewerSize, UggRenderEnv renderEnvironment) {
+	public void setViewport(final ModelView modelView, final int viewerSize, UggRenderEnv renderEnvironment) {
 		try {
 			if (vp != null) {
 				vp.destroy();
 			}
 			removeAll();
-			vp = new PerspectiveViewport(dispModel, programPreferences, renderEnvironment);
+
+//			RenderModel renderModel = new RenderModel(modelView.getModel(), modelView);
+			RenderModel renderModel = modelView.getEditorRenderModel();
+			vp = new PerspectiveViewport(modelView, renderModel, programPreferences, renderEnvironment);
 			vp.setIgnoreRepaint(false);
 			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
 

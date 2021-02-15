@@ -1,8 +1,4 @@
-package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv;
-
-import java.awt.Point;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
+package com.hiveworkshop.rms.ui.application.edit.uv.types;
 
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.application.edit.uv.panel.UVPanel;
@@ -14,6 +10,10 @@ import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.listener.ComponentVisibili
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 /**
  * So, in some ideal future this would be an implementation of the ModelEditor

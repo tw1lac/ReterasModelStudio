@@ -42,21 +42,6 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 		this.programPreferences = programPreferences;
 	}
 
-	@Override
-	public UndoAction autoCenterSelectedBones() {
-		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
-	}
-
-	@Override
-	public UndoAction setSelectedBoneName(final String name) {
-		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
-	}
-
-	@Override
-	public UndoAction addSelectedBoneSuffix(final String name) {
-		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
-	}
-
 	public static void hitTest(final List<GeosetVertex> selectedItems, final Rectangle2D area, final GeosetVertex geosetVertex, final CoordinateSystem coordinateSystem, final double vertexSize) {
 		final byte dim1 = coordinateSystem.getPortFirstXYZ();
 		final byte dim2 = coordinateSystem.getPortSecondXYZ();
@@ -83,6 +68,12 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 		return Point2D.distance(px, py, x, y) <= (vertexSize / 2.0);
 	}
 
+	public static double distance(final double vertexX, final double vertexY, final double x, final double y) {
+		final double dx = x - vertexX;
+		final double dy = y - vertexY;
+		return Math.sqrt((dx * dx) + (dy * dy));
+	}
+
 	@Override
 	public void selectByVertices(final Collection<? extends Vec3> newSelection) {
 		final List<GeosetVertex> newGeosetVertices = new ArrayList<>();
@@ -94,6 +85,21 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 			}
 		}
 		selectionManager.setSelection(newGeosetVertices);
+	}
+
+	@Override
+	public UndoAction autoCenterSelectedBones() {
+		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
+	}
+
+	@Override
+	public UndoAction setSelectedBoneName(final String name) {
+		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
+	}
+
+	@Override
+	public UndoAction addSelectedBoneSuffix(final String name) {
+		throw new UnsupportedOperationException("This feature is not available in Geoset Vertex mode");
 	}
 
 	@Override
@@ -196,12 +202,6 @@ public class GeosetVertexModelEditor extends AbstractModelEditor<GeosetVertex> {
 			}
 		}
 		return canSelect;
-	}
-
-	public static double distance(final double vertexX, final double vertexY, final double x, final double y) {
-		final double dx = x - vertexX;
-		final double dy = y - vertexY;
-		return Math.sqrt((dx * dx) + (dy * dy));
 	}
 
 	@Override

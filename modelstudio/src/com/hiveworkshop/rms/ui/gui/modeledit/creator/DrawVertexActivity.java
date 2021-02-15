@@ -32,9 +32,12 @@ public class DrawVertexActivity implements ModelEditorViewportActivity {
 	private final Graphics2DToModelElementRendererAdapter graphics2dToModelElementRendererAdapter;
 	private final ActiveViewportWatcher activeViewportWatcher;
 
-	public DrawVertexActivity(final ProgramPreferences preferences, final UndoActionListener undoActionListener,
-							  final ModelEditor modelEditor, final ModelView modelView, final SelectionView selectionView,
-							  final ActiveViewportWatcher activeViewportWatcher) {
+	public DrawVertexActivity(final ProgramPreferences preferences,
+	                          final UndoActionListener undoActionListener,
+	                          final ModelEditor modelEditor,
+	                          final ModelView modelView,
+	                          final SelectionView selectionView,
+	                          final ActiveViewportWatcher activeViewportWatcher) {
 		this.preferences = preferences;
 		this.undoActionListener = undoActionListener;
 		this.modelEditor = modelEditor;

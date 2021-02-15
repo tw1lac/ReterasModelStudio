@@ -1,4 +1,4 @@
-package com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.viewport;
+package com.hiveworkshop.rms.ui.application.edit.uv;
 
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
@@ -6,10 +6,13 @@ import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
 import com.hiveworkshop.rms.ui.application.edit.animation.NodeAnimationSelectionManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.types.faces.FaceSelectionManager;
 import com.hiveworkshop.rms.ui.application.edit.mesh.types.geosetvertex.GeosetVertexSelectionManager;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.FaceTVertexEditor;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.GeosetVertexTVertexEditor;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditor;
-import com.hiveworkshop.rms.ui.gui.modeledit.newstuff.uv.TVertexEditorChangeListener;
+import com.hiveworkshop.rms.ui.application.edit.mesh.types.vertexcluster.VertexClusterDefinitions;
+import com.hiveworkshop.rms.ui.application.edit.mesh.types.vertexcluster.VertexClusterModelEditor;
+import com.hiveworkshop.rms.ui.application.edit.mesh.types.vertexcluster.VertexClusterSelectionManager;
+import com.hiveworkshop.rms.ui.application.edit.uv.types.FaceTVertexEditor;
+import com.hiveworkshop.rms.ui.application.edit.uv.types.GeosetVertexTVertexEditor;
+import com.hiveworkshop.rms.ui.application.edit.uv.types.TVertexEditor;
+import com.hiveworkshop.rms.ui.application.edit.uv.types.TVertexEditorChangeListener;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionListener;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionMode;
 import com.hiveworkshop.rms.ui.gui.modeledit.selection.SelectionView;
@@ -58,8 +61,7 @@ public final class TVertexEditorManager {
 		switch (selectionMode) {
 			case FACE -> {
 				final FaceSelectionManager selectionManager = new FaceSelectionManager();
-				final FaceTVertexEditor faceModelEditor = new FaceTVertexEditor(model, programPreferences, selectionManager,
-						structureChangeListener);
+				final FaceTVertexEditor faceModelEditor = new FaceTVertexEditor(model, programPreferences, selectionManager, structureChangeListener);
 				modelEditor = faceModelEditor;
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
@@ -72,9 +74,22 @@ public final class TVertexEditorManager {
 			}
 			case VERTEX -> {
 				final GeosetVertexSelectionManager selectionManager = new GeosetVertexSelectionManager();
-				final GeosetVertexTVertexEditor geosetVertexModelEditor = new GeosetVertexTVertexEditor(model,
-						programPreferences, selectionManager, structureChangeListener);
+				final GeosetVertexTVertexEditor geosetVertexModelEditor = new GeosetVertexTVertexEditor(model, programPreferences, selectionManager, structureChangeListener);
 				modelEditor = geosetVertexModelEditor;
+				if (lastSelectedVertices != null) {
+					modelEditor.selectByVertices(lastSelectedVertices);
+				}
+				viewportSelectionHandler.setSelectingEventHandler(modelEditor);
+				modelEditorChangeListener.editorChanged(modelEditor);
+				selectionView = selectionManager;
+				selectionListener.onSelectionChanged(selectionView);
+				nodeAnimationSelectionManager = null;
+			}
+			case CLUSTER -> {
+				final VertexClusterDefinitions vertexClusterDefinitions = new VertexClusterDefinitions(model.getModel());
+				final VertexClusterSelectionManager selectionManager = new VertexClusterSelectionManager(vertexClusterDefinitions);
+				final VertexClusterModelEditor vertexGroupModelEditor = new VertexClusterModelEditor(model, programPreferences, selectionManager, structureChangeListener, vertexClusterDefinitions);
+//				modelEditor = modelEditorNotifier;
 				if (lastSelectedVertices != null) {
 					modelEditor.selectByVertices(lastSelectedVertices);
 				}

@@ -7,7 +7,7 @@ public abstract class EmittedObject<EMITTER_VIEW extends EmitterView> {
 
 	public EMITTER_VIEW emitterView;
 
-	public float[] vertices;
+//	public float[] vertices;
 	public Vec3[] verticesV;
 
 	public float lta, lba, rta, rba, rgb;

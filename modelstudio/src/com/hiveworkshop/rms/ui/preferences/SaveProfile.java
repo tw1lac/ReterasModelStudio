@@ -17,7 +17,8 @@ public class SaveProfile implements Serializable {
 	ProgramPreferences preferences;
 	private List<DataSourceDescriptor> dataSources;
 
-	private transient WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier dataSourceChangeNotifier = new WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier();
+	private transient WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier dataSourceChangeNotifier
+			= new WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier();
 	private transient boolean isHD = false;
 
 	public void clearRecent() {
@@ -33,12 +34,8 @@ public class SaveProfile implements Serializable {
 	}
 
 	public void addRecent(final String fp) {
-		if (!getRecent().contains(fp)) {
-			getRecent().add(fp);
-		} else {
-			getRecent().remove(fp);
-			getRecent().add(fp);
-		}
+		getRecent().remove(fp);
+		getRecent().add(fp);
 		if (recent.size() > 15) {
 			recent.remove(0);
 		}
@@ -92,15 +89,9 @@ public class SaveProfile implements Serializable {
 		if (currentProfile == null) {
 			try {
 				final String homeProfile = System.getProperty("user.home");
-				String profilePath = "\\AppData\\Roaming\\ReteraStudioBeta";
-				if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-					profilePath = "/.reteraStudioBeta";
-				}
+				String profilePath = getProfilePath();
 				final File profileDir = new File(homeProfile + profilePath);
-				File profileFile = new File(profileDir.getPath() + "\\user.profile");
-				if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-					profileFile = new File(profileFile.getPath().replace('\\', '/'));
-				}
+				File profileFile = getProfileFile(profileDir);
 				final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(profileFile));
 				currentProfile = (SaveProfile) ois.readObject();
 				currentProfile.preferences.reload();
@@ -150,18 +141,10 @@ public class SaveProfile implements Serializable {
 	public static void save() {
 		if (currentProfile != null) {
 			final String homeProfile = System.getProperty("user.home");
-			String profilePath = "\\AppData\\Roaming\\ReteraStudioBeta";
-			if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-				profilePath = "/.reteraStudioBeta";
-			}
+			String profilePath = getProfilePath();
 			final File profileDir = new File(homeProfile + profilePath);
 			profileDir.mkdirs();
-			// System.out.println(profileDir.mkdirs());
-			// System.out.println(profileDir);
-			File profileFile = new File(profileDir.getPath() + "\\user.profile");
-			if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-				profileFile = new File(profileFile.getPath().replace('\\', '/'));
-			}
+			File profileFile = getProfileFile(profileDir);
 			System.out.println(profileFile.getPath());
 			// profileFile.delete();
 
@@ -188,6 +171,24 @@ public class SaveProfile implements Serializable {
 			return false;
 		}
 		return true;
+	}
+
+
+
+	public static File getProfileFile(File profileDir) {
+		File profileFile = new File(profileDir.getPath() + "\\user.profile");
+		if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+			profileFile = new File(profileFile.getPath().replace('\\', '/'));
+		}
+		return profileFile;
+	}
+
+	public static String getProfilePath() {
+		String profilePath = "\\AppData\\Roaming\\ReteraStudioBeta";
+		if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+			profilePath = "/.reteraStudioBeta";
+		}
+		return profilePath;
 	}
 
 	public boolean isHd() {

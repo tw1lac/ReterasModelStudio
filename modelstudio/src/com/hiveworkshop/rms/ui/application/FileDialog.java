@@ -339,8 +339,11 @@ public class FileDialog {
         final int returnValue = fileChooser.showOpenDialog(getParent());
         File selectedFile = fileChooser.getSelectedFile();
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File modelDirectory = getModel().getFile().getParentFile();
-            return new Bitmap(modelDirectory.toPath().relativize(selectedFile.toPath()).toString());
+            if(getModel().getFile() != null){
+                File modelDirectory = getModel().getFile().getParentFile();
+                return new Bitmap(modelDirectory.toPath().relativize(selectedFile.toPath()).toString());
+            }
+            return new Bitmap(selectedFile.toPath().toString());
         }
         return null;
     }

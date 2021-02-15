@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -381,20 +383,22 @@ public class BLPHandler {
 		try {
 			final String lowerCaseFilepath = filepath.toLowerCase(Locale.US);
 			BufferedImage resultImage = cache.get(lowerCaseFilepath);
-			if (resultImage == null && lowerCaseFilepath.endsWith(".blp") || lowerCaseFilepath.endsWith(".tif")) {
-				// War3 allows .blp and .tif to actually resolve to dds
-				final String ddsFilepath = filepath.substring(0, filepath.length() - 4) + ".dds";
+			if (dataSource != null) {
+				if (resultImage == null && lowerCaseFilepath.endsWith(".blp") || lowerCaseFilepath.endsWith(".tif")) {
+					// War3 allows .blp and .tif to actually resolve to dds
+					final String ddsFilepath = filepath.substring(0, filepath.length() - 4) + ".dds";
 
-				if (dataSource.has(ddsFilepath)) {
-					resultImage = getImage(dataSource, lowerCaseFilepath, ddsFilepath);
+					if (dataSource.has(ddsFilepath)) {
+						resultImage = getImage(dataSource, lowerCaseFilepath, ddsFilepath);
+					}
 				}
-			}
-			if (resultImage == null && dataSource.has(filepath)) {
-				resultImage = getImage(dataSource, lowerCaseFilepath, filepath);
-			}
-			if (resultImage == null) {
-				final String nameOnly = filepath.substring(Math.max(filepath.lastIndexOf("/"), filepath.lastIndexOf("\\")) + 1);
-				resultImage = getImage(dataSource, lowerCaseFilepath, nameOnly);
+				if (resultImage == null && dataSource.has(filepath)) {
+					resultImage = getImage(dataSource, lowerCaseFilepath, filepath);
+				}
+				if (resultImage == null) {
+					final String nameOnly = filepath.substring(Math.max(filepath.lastIndexOf("/"), filepath.lastIndexOf("\\")) + 1);
+					resultImage = getImage(dataSource, lowerCaseFilepath, nameOnly);
+				}
 			}
 
 			return resultImage;
@@ -438,5 +442,26 @@ public class BLPHandler {
 			e1.printStackTrace();
 		}
 		return null;
+	}
+
+	public BufferedImage loadTextureDirectly2(Bitmap bitmap){
+		String filepath = bitmap.getPath();
+		BufferedImage resultImage = null;
+		try (final InputStream imageDataStream = Files.newInputStream(Path.of(filepath), StandardOpenOption.READ)){
+			if (isExtension(filepath, ".tga")) {
+				resultImage = TgaFile.readTGA(filepath, imageDataStream);
+			} else {
+				resultImage = ImageIO.read(imageDataStream);
+				if (resultImage != null) {
+					if (isExtension(filepath, ".blp")) {
+						resultImage = forceBufferedImagesRGB(resultImage);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return resultImage;
 	}
 }

@@ -70,6 +70,13 @@ public class Vec2 {
 		this.y = (float) centerY + (dy * (float) scaleY);
 	}
 
+	public void scale(Vec2 center, Vec2 a) {
+		final float dx = this.x - center.x;
+		final float dy = this.y - center.y;
+		this.x = center.x + (dx * a.x);
+		this.y = center.y + (dy * a.y);
+	}
+
 //	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
 //	                   final byte secondXYZ) {
 //		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
@@ -150,6 +157,18 @@ public class Vec2 {
 		return this;
 	}
 
+	public Vec2 mul(final Vec2 a) {
+		x = x * a.x;
+		y = y * a.y;
+		return this;
+	}
+
+	public Vec2 div(final Vec2 a) {
+		x = x / a.x;
+		y = y / a.y;
+		return this;
+	}
+
 
 	public Vec2 add(final Vec2 a) {
 		x = x + a.x;
@@ -158,6 +177,9 @@ public class Vec2 {
 		return this;
 	}
 
+	public static Vec2 getDif(Vec2 a, Vec2 b){
+		return new Vec2(a).sub(b);
+	}
 
 	public Vec2 sub(final Vec2 a) {
 		x = x - a.x;
