@@ -33,7 +33,8 @@ public final class RenderModel {
 	private final RenderNode rootPosition;
 
 	private boolean spawnParticles = true;
-	private boolean allowInanimateParticles = false;
+	//	private boolean allowInanimateParticles = false;
+	private boolean allowInanimateParticles = true;
 
 	private long lastConsoleLogTime = 0;
 
@@ -142,8 +143,10 @@ public final class RenderModel {
 			particleEmitters2.add(new RenderParticleEmitter2(particleEmitter, renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
 		}
 		particleEmitters2.sort(Comparator.comparingInt(RenderParticleEmitter2::getPriorityPlane));
+		System.out.println("refresh from renderer, partEm: " + particleEmitters2.size());
 		for (final RenderParticleEmitter2 particleEmitter : particleEmitters2) {
 			final RenderParticleEmitter2View emitterView = new RenderParticleEmitter2View(this, particleEmitter);
+			System.out.println("emitterView: " + emitterView + " emitterView.em: " + emitterView.getEmitter());
 			particleEmitterViews2.add(emitterView);
 			emitterToRenderer.put(emitterView.getEmitter(), emitterView);
 		}
@@ -269,6 +272,7 @@ public final class RenderModel {
 					node.update();
 					if (particles) {
 						final RenderParticleEmitter2View renderer = emitterToRenderer.get(idObject);
+//						System.out.println("render: " + renderer);
 						if (renderer != null) {
 							if ((modelView == null) || modelView.getEditableIdObjects().contains(idObject)) {
 								renderer.fill();

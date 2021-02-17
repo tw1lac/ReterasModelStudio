@@ -1,12 +1,14 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Camera;
+import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 class ObjectPanel extends JPanel {
 	JLabel title;
@@ -110,5 +112,31 @@ class ObjectPanel extends JPanel {
 //				.addComponent(doImport)
 //				.addComponent(oldParentLabel));
 //		setLayout(layout);
+	}
+
+	public void addSelectedObjects(List<IdObject> objectsAdded, List<Camera> camerasAdded, EditableModel model) {
+		if (doImport.isSelected()) {
+			if (object != null) {
+				final BoneShell mbs = parentsList.getSelectedValue();
+				if (mbs != null) {
+					object.setParent(mbs.bone);
+				} else {
+					object.setParent(null);
+				}
+				// object.setName(importedModel.getName()+" "+object.getName());
+				// later make a name field?
+				model.add(object);
+				objectsAdded.add(object);
+			} else if (camera != null) {
+				// camera.setName(importedModel.getName()+" "+camera.getName());
+				model.add(camera);
+				camerasAdded.add(camera);
+			}
+		} else {
+			if (object != null) {
+				object.setParent(null);
+				// Fix cross-model referencing issue (force clean parent node's list of children)
+			}
+		}
 	}
 }

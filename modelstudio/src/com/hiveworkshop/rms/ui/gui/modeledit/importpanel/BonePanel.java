@@ -1,6 +1,8 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Bone;
+import com.hiveworkshop.rms.editor.model.EditableModel;
+import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import net.miginfocom.swing.MigLayout;
 
@@ -8,6 +10,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.List;
 
 //public class BonePanel extends JPanel implements ListSelectionListener, ActionListener {
 public class BonePanel extends JPanel implements ListSelectionListener {
@@ -218,6 +221,29 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	public void valueChanged(final ListSelectionEvent e) {
 		if (listenSelection && e.getValueIsAdjusting()) {
 			updateSelectionPicks();
+		}
+	}
+
+	public void getSelectedBones(List<IdObject> objectsAdded, EditableModel currentModel) {
+		final Bone b = bone;
+		final int type = importTypeBox.getSelectedIndex();
+		// b.setName(b.getName()+" "+importedModel.getName());
+		// bonePanel.boneList.getSelectedValuesList();
+
+		// we will go through all bone shells for this
+		// Fix cross-model referencing issue (force clean parent node's list of children)
+		switch (type) {
+			case 0 -> {
+				currentModel.add(b);
+				objectsAdded.add(b);
+				final BoneShell mbs = futureBonesList.getSelectedValue();
+				if (mbs != null) {
+					b.setParent((mbs).bone);
+				} else {
+					b.setParent(null);
+				}
+			}
+			case 1, 2 -> b.setParent(null);
 		}
 	}
 }

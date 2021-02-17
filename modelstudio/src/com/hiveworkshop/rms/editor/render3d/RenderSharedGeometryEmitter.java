@@ -91,7 +91,9 @@ public abstract class RenderSharedGeometryEmitter<MODEL_OBJECT extends EmitterId
 
 	@Override
 	public void render(final RenderModel modelView, final ParticleEmitterShader shader) {
+//		System.out.println("p-shader: " + shader + ", alive: " + alive);
 		if ((internalResource != null) && (alive > 0)) {
+			System.out.println("p");
 			shader.renderParticles(modelObject.getBlendSrc(), modelObject.getBlendDst(), modelObject.getRows(),
 					modelObject.getCols(), internalResource, renderData, modelObject.isRibbonEmitter(), alive * 6);
 		}

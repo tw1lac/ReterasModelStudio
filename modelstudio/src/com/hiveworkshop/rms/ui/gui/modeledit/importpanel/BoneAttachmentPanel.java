@@ -1,11 +1,9 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.EditableModel;
-import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.Matrix;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.gui.modeledit.MatrixShell;
+import com.hiveworkshop.rms.util.Vec3;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -327,5 +325,47 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 			impPanel = (ImportPanel) temp;
 		}
 		return impPanel;
+	}
+
+
+	public Bone attachBones(Bone dummyBone) {
+		for (int l = 0; l < oldBoneRefs.size(); l++) {
+			final MatrixShell ms = oldBoneRefs.get(l);
+			ms.matrix.getBones().clear();
+			for (final BoneShell bs : ms.newBones) {
+				if (model.contains(bs.bone)) {
+					if (bs.bone.getClass() == Helper.class) {
+						JOptionPane.showMessageDialog(null,
+								"Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
+					}
+					ms.matrix.add(bs.bone);
+				} else {
+					System.out.println("Boneshaving " + bs.bone.getName() + " out of use");
+				}
+			}
+			if (ms.matrix.size() == 0) {
+				JOptionPane.showMessageDialog(null,
+						"Error: A matrix was functionally destroyed while importing, and may take the program with it!");
+			}
+			if (ms.matrix.getBones().size() < 1) {
+				if (dummyBone == null) {
+					dummyBone = new Bone();
+					dummyBone.setName("Bone_MatrixEaterDummy" + (int) (Math.random() * 2000000000));
+					dummyBone.setPivotPoint(new Vec3(0, 0, 0));
+					if (!model.contains(dummyBone)) {
+						model.add(dummyBone);
+					}
+					JOptionPane.showMessageDialog(null,
+							"Warning: You left some matrices empty. This was detected, and a dummy bone at { 0, 0, 0 } has been generated for them named "
+									+ dummyBone.getName()
+									+ "\nMultiple geosets may be attached to this bone, and the error will only be reported once for your convenience.");
+				}
+				if (!ms.matrix.getBones().contains(dummyBone)) {
+					ms.matrix.getBones().add(dummyBone);
+				}
+			}
+			// ms.matrix.bones = ms.newBones;
+		}
+		return dummyBone;
 	}
 }

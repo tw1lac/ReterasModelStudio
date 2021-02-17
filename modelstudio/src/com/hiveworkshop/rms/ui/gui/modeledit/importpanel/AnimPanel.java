@@ -1,6 +1,9 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Animation;
+import com.hiveworkshop.rms.editor.model.EditableModel;
+import com.hiveworkshop.rms.editor.model.EventObject;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -11,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 
 class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSelectionListener {
 	// Animation panel for controlling which are imported
@@ -89,8 +93,8 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		// (although this should stop after the first one is picked)
 		animList.addListSelectionListener(this);
 		for (int i = 0; (i < existingAnims.size()) && (animList.getSelectedIndex() == -1); i++) {
-			final Animation iAnim = ((AnimShell) listModel.get(i)).anim;
-			if (iAnim.getName().toLowerCase().equals(anim.getName().toLowerCase())) {
+			final Animation iAnim = listModel.get(i).anim;
+			if (iAnim.getName().equalsIgnoreCase(anim.getName())) {
 				animList.setSelectedValue(listModel.get(i), true);
 			}
 		}
@@ -218,6 +222,55 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 			temp = temp.getParent();
 		}
 		return (ImportPanel) temp;
+	}
+
+	public void transfereSingleAnimation(Animation pickedAnim, Animation visFromAnim) {
+		if (anim.getName().equals(visFromAnim.getName())) {
+			doImport.doClick();
+			importTypeBox.setSelectedItem(AnimPanel.TIMESCALE);
+			for (int d = 0; d < existingAnims.getSize(); d++) {
+				final AnimShell shell = existingAnims.get(d);
+				if ((shell).anim.getName().equals(pickedAnim.getName())) {
+					animList.setSelectedValue(shell, true);
+					updateSelectionPicks();
+					break;
+				}
+			}
+		}
+
+	}
+
+	public void doImportSelectedAnims(EditableModel currentModel, EditableModel importedModel, List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs) {
+		final int type = importTypeBox.getSelectedIndex();
+		final int animTrackEnd = currentModel.animTrackEnd();
+		if (inReverse.isSelected()) {
+			// reverse the animation
+			anim.reverse(impFlags, impEventObjs);
+		}
+		switch (type) {
+			case 0:
+				anim.copyToInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+				anim.setInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300);
+				currentModel.add(anim);
+				newAnims.add(anim);
+				break;
+			case 1:
+				anim.copyToInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+				anim.setInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300);
+				anim.setName(newNameEntry.getText());
+				currentModel.add(anim);
+				newAnims.add(anim);
+				break;
+			case 2:
+				// List<AnimShell> targets = aniPane.animList.getSelectedValuesList();
+				// anim.setInterval(animTrackEnd+300,animTrackEnd + anim.length() + 300, impFlags,
+				// impEventObjs, newImpFlags, newImpEventObjs);
+				// handled by animShells
+				break;
+			case 3:
+				importedModel.buildGlobSeqFrom(anim, impFlags);
+				break;
+		}
 	}
 
 //	public void reorderToModel(final DefaultListModel order) {

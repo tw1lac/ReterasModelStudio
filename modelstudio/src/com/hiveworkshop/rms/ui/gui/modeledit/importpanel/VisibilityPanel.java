@@ -1,9 +1,15 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
+import com.hiveworkshop.rms.editor.model.Animation;
+import com.hiveworkshop.rms.editor.model.EditableModel;
+import com.hiveworkshop.rms.editor.model.VisibilitySource;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.editor.model.animflag.FloatAnimFlag;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 class VisibilityPanel extends JPanel {
 	static final String NOTVISIBLE = "Not visible";
@@ -115,5 +121,70 @@ class VisibilityPanel extends JPanel {
 				}
 			}
 		}
+	}
+
+	private static void deleteFlagAnimations(List<Animation> anims, FloatAnimFlag flag) {
+		for (final Animation a : anims) {
+			if (flag != null) {
+				if (!flag.hasGlobalSeq()) {
+					flag.deleteAnim(a);
+				}
+			}
+		}
+	}
+
+	private static FloatAnimFlag getVisAnimFlag(List<Animation> anims, boolean tans, Object source) {
+		FloatAnimFlag flag = null;
+		if (source != null) {
+			if (source.getClass() == String.class) {
+				if (source == VisibilityPanel.NOTVISIBLE) {
+					flag = new FloatAnimFlag("temp");
+					for (final Animation a : anims) {
+						if (tans) {
+							flag.addEntry(a.getStart(), (float) 0, (float) 0, (float) 0);
+						} else {
+							flag.addEntry(a.getStart(), (float) 0);
+						}
+					}
+				}
+			} else {
+				flag = (FloatAnimFlag) ((VisibilitySource) ((VisibilityShell) source).source).getVisibilityFlag();
+			}
+		}
+		return flag;
+	}
+
+	public void addSelectedVisFlags(java.util.List<Animation> oldAnims, java.util.List<Animation> newAnims, boolean clearAnims, List<FloatAnimFlag> finalVisFlags, EditableModel currentModel, EditableModel importedModel) {
+		final VisibilitySource temp = ((VisibilitySource) sourceShell.source);
+		final AnimFlag<?> visFlag = temp.getVisibilityFlag();// might be null
+		final FloatAnimFlag newVisFlag;
+		boolean tans = false;
+		if (visFlag != null) {
+			newVisFlag = (FloatAnimFlag) AnimFlag.buildEmptyFrom(visFlag);
+			tans = visFlag.tans();
+		} else {
+			newVisFlag = new FloatAnimFlag(temp.visFlagName());
+		}
+		// newVisFlag = new AnimFlag(temp.visFlagName());
+		final Object oldSource = oldSourcesBox.getSelectedItem();
+		FloatAnimFlag flagOld = getVisAnimFlag(oldAnims, tans, oldSource);
+		final Object newSource = newSourcesBox.getSelectedItem();
+		FloatAnimFlag flagNew = getVisAnimFlag(newAnims, tans, newSource);
+		if ((favorOld.isSelected() && sourceShell.model == currentModel && !clearAnims) || (!favorOld.isSelected() && sourceShell.model == importedModel)) {
+			// this is an element favoring existing animations over imported
+			deleteFlagAnimations(oldAnims, flagNew);
+			// All entries for visibility are deleted from imported sources during existing animation times
+		} else {
+			// this is an element not favoring existing over imported
+			deleteFlagAnimations(newAnims, flagOld);
+			// All entries for visibility are deleted from original-based sources during imported animation times
+		}
+		if (flagOld != null) {
+			newVisFlag.copyFrom(flagOld);
+		}
+		if (flagNew != null) {
+			newVisFlag.copyFrom(flagNew);
+		}
+		finalVisFlags.add(newVisFlag);
 	}
 }
