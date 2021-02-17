@@ -23,8 +23,7 @@ public class UVViewportModelRenderer implements MeshVisitor {
 	private final GeosetRendererImpl geosetRenderer;
 	private ViewportView viewportView;
 	private CoordinateSystem coordinateSystem;
-	// TODO Now that I added modelView to this class, why does
-	// RenderByViewModelRenderer exist???
+	// TODO Now that I added modelView to this class, why does RenderByViewModelRenderer exist???
 	private ModelView modelView;
 	private int uvLayerIndex;
 
@@ -92,6 +91,16 @@ public class UVViewportModelRenderer implements MeshVisitor {
 		}
 
 		@Override
+		public VertexVisitor vertex(Vec3 vert, Vec3 normal, final List<Bone> bones) {
+			return vertexRenderer.reset();
+		}
+
+		@Override
+		public VertexVisitor hdVertex(Vec3 vert, Vec3 normal, final Bone[] skinBones, final short[] skinBoneWeights) {
+			return vertexRenderer.reset();
+		}
+
+		@Override
 		public void triangleFinished() {
 			if (previousVertices.size() > 1) {
 				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
@@ -118,9 +127,7 @@ public class UVViewportModelRenderer implements MeshVisitor {
 					}
 					previousVertices.add(point);
 					// graphics.setColor(programPreferences.getVertexColor());
-					// graphics.fillRect((int) firstCoord - vertexSize / 2, (int)
-					// secondCoord - vertexSize / 2, vertexSize,
-					// vertexSize);
+					// graphics.fillRect((int) firstCoord - vertexSize / 2, (int) secondCoord - vertexSize / 2, vertexSize, vertexSize);
 				}
 				index++;
 			}

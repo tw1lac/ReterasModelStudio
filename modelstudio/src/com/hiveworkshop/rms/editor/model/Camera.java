@@ -124,17 +124,17 @@ public class Camera implements Named {
 
 	public static final class SourceNode extends AnimatedNode {
 		private static final Quat rotationHeap = new Quat(0, 0, 0, 1);
-		
+
 		private final Camera parent;
 
 		private SourceNode(final Camera parent) {
 			this.parent = parent;
 		}
 
-		@Override
-		public AnimatedNode getParent() {
-			return null;
-		}
+//		@Override
+//		public AnimatedNode getParent() {
+//			return null;
+//		}
 
 		@Override
 		public Vec3 getPivotPoint() {
@@ -197,10 +197,10 @@ public class Camera implements Named {
 			this.parent = parent;
 		}
 
-		@Override
-		public AnimatedNode getParent() {
-			return null;
-		}
+//		@Override
+//		public AnimatedNode getParent() {
+//			return null;
+//		}
 
 		@Override
 		public Vec3 getPivotPoint() {

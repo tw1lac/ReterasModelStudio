@@ -72,6 +72,24 @@ public class FloatAnimFlag extends AnimFlag<Float> {
 		super(af);
 	}
 
+	@Override
+	public void setValuesTo2(final AnimFlag<Float> af) {
+		this.setValuesTo(af);
+	}
+
+	public void setValuesTo(final FloatAnimFlag af) {
+		name = af.name;
+		globalSeq = af.globalSeq;
+		globalSeqId = af.globalSeqId;
+		hasGlobalSeq = af.hasGlobalSeq;
+		interpolationType = af.interpolationType;
+		typeid = af.typeid;
+		times = new ArrayList<>(af.times);
+		values = deepCopy(af.values);
+		inTans = deepCopy(af.inTans);
+		outTans = deepCopy(af.outTans);
+	}
+
 	public Float interpolateAt(final AnimatedRenderEnvironment animatedRenderEnvironment) {
 //		System.out.println(name + ", interpolateAt");
 		if ((animatedRenderEnvironment == null) || (animatedRenderEnvironment.getCurrentAnimation() == null)) {

@@ -108,6 +108,18 @@ public class Bone extends IdObject {
 		return false;
 	}
 
+	public boolean isMultiGeo() {
+		return multiGeoId;
+	}
+
+	public boolean controlsGeoset(Geoset geoset) {
+		return this.geoset.equals(geoset);
+	}
+
+	public boolean controlsGeoset2(Geoset geoset) {
+		return this.geoset.equals(geoset) || multiGeoId;
+	}
+
 	@Override
 	public void apply(final IdObjectVisitor visitor) {
 		visitor.bone(this);

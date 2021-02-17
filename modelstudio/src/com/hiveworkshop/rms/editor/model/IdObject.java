@@ -1,12 +1,12 @@
 package com.hiveworkshop.rms.editor.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hiveworkshop.rms.editor.model.visitor.IdObjectVisitor;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxGenericObject;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.util.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Write a description of class ObjectId here.
@@ -182,19 +182,28 @@ public abstract class IdObject extends AnimatedNode implements Named {
 	 * @deprecated Note that all object IDs are deleted and regenerated at save
 	 */
 	@Deprecated
+//	public int getParentId() {
+//		return parentId;
+//	}
 	public int getParentId() {
-		return parentId;
+		System.out.println("trying to get parent for bone: " + getName());
+		System.out.println("parent: " + parent);
+		if (parent == null) {
+			System.out.println("_____________________________________________________");
+			return -1;
+		}
+		return parent.getObjectId();
 	}
 
-	/**
-	 * @param parentId new Parent ID
-	 * @deprecated IF UNSURE, YOU SHOULD USE setParent(), note that all object IDs
-	 *             are deleted and regenerated at save
-	 */
-	@Deprecated
-	public void setParentId(final int parentId) {
-		this.parentId = parentId;
-	}
+//	/**
+//	 * @param parentId new Parent ID
+//	 * @deprecated IF UNSURE, YOU SHOULD USE setParent(), note that all object IDs
+//	 *             are deleted and regenerated at save
+//	 */
+//	@Deprecated
+//	public void setParentId(final int parentId) {
+//		this.parentId = parentId;
+//	}
 
 	public void setDontInheritTranslation(final boolean dontInheritTranslation) {
 		this.dontInheritTranslation = dontInheritTranslation;
@@ -257,7 +266,7 @@ public abstract class IdObject extends AnimatedNode implements Named {
 		return pivotPoint;
 	}
 
-	@Override
+	//	@Override
 	public IdObject getParent() {
 		return parent;
 	}

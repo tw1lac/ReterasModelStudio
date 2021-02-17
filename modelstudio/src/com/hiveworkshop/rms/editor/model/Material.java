@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.filesystem.sources.DataSource;
 import com.hiveworkshop.rms.parsers.blp.BLPHandler;
@@ -449,6 +450,28 @@ public class Material {
 		getLayers().add(5, new Layer("None", envTex));
 		for (final Layer l : getLayers()) {
 			l.setEmissive(1.0);
+		}
+	}
+
+	public void makeSD() {
+		if (getShaderString() != null) {
+			setShaderString(null);
+			final Layer layerZero = getLayers().get(0);
+			getLayers().clear();
+			getLayers().add(layerZero);
+			if (getTwoSided()) {
+				setTwoSided(false);
+				layerZero.setTwoSided(true);
+			}
+		}
+		for (final Layer layer : getLayers()) {
+			if (!Double.isNaN(layer.getEmissive())) {
+				layer.setEmissive(Double.NaN);
+			}
+			final AnimFlag<?> flag = layer.find("Emissive");
+			if (flag != null) {
+				layer.remove(flag);
+			}
 		}
 	}
 }

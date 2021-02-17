@@ -87,7 +87,7 @@ public final class RenderNode {
 	public void recalculateTransformation() {
 		if (dirty) {
 			dirty = false;
-			if (idObject.getParent() != null) {
+			if (idObject instanceof IdObject && ((IdObject) idObject).getParent() != null) {
 				final Vec3 computedLocation = locationHeap;
 				final Vec3 computedScaling;
 				computedLocation.set(localLocation);
@@ -95,7 +95,7 @@ public final class RenderNode {
 				if (dontInheritScaling) {
 					computedScaling = scalingHeap;
 
-					final Vec3 parentInverseScale = model.getRenderNode(idObject.getParent()).inverseWorldScale;
+					final Vec3 parentInverseScale = model.getRenderNode(((IdObject) idObject).getParent()).inverseWorldScale;
 					computedScaling.set(parentInverseScale);
 					computedScaling.multiply(localScale);
 
@@ -103,7 +103,7 @@ public final class RenderNode {
 				} else {
 					computedScaling = localScale;
 
-					final Vec3 parentScale = model.getRenderNode(idObject.getParent()).worldScale;
+					final Vec3 parentScale = model.getRenderNode(((IdObject) idObject).getParent()).worldScale;
 					worldScale.set(parentScale);
 					worldScale.multiply(localScale);
 				}
@@ -111,8 +111,8 @@ public final class RenderNode {
 				pivotHeap.set(idObject.getPivotPoint());
 				localMatrix.fromRotationTranslationScaleOrigin(localRotation, computedLocation, computedScaling, pivotHeap);
 
-				worldMatrix.set(Mat4.getProd(model.getRenderNode(idObject.getParent()).worldMatrix, localMatrix));
-				worldRotation.set(Quat.getProd(model.getRenderNode(idObject.getParent()).worldRotation, localRotation));
+				worldMatrix.set(Mat4.getProd(model.getRenderNode(((IdObject) idObject).getParent()).worldMatrix, localMatrix));
+				worldRotation.set(Quat.getProd(model.getRenderNode(((IdObject) idObject).getParent()).worldRotation, localRotation));
 			} else {
 
 				pivotHeap.set(idObject.getPivotPoint());
@@ -140,16 +140,18 @@ public final class RenderNode {
 	}
 
 	public void update() {
-		final AnimatedNode parent = idObject.getParent();
-		if (dirty || ((parent != null) && model.getRenderNode(idObject.getParent()).wasDirty)) {
-			dirty = true;
-			wasDirty = true;
-			recalculateTransformation();
-		} else {
-			wasDirty = false;
-		}
+		if (idObject instanceof IdObject) {
+			final AnimatedNode parent = ((IdObject) idObject).getParent();
+			if (dirty || ((parent != null) && model.getRenderNode(((IdObject) idObject).getParent()).wasDirty)) {
+				dirty = true;
+				wasDirty = true;
+				recalculateTransformation();
+			} else {
+				wasDirty = false;
+			}
 
-		updateChildren();
+			updateChildren();
+		}
 	}
 
 	public void updateChildren() {

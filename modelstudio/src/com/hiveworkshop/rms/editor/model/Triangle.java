@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 
 import java.util.List;
@@ -117,23 +118,21 @@ public class Triangle {
 	}
 
 	public boolean equalLocs(final Triangle t) {
-		boolean equal = true;
-		for (int i = 0; i < 3 && equal; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (!t.verts[i].equalLocs(verts[i]) || t.vertIds[i] != vertIds[i]) {
-				equal = false;
+				return false;
 			}
 		}
-		return equal;
+		return true;
 	}
 
 	public boolean sameVerts(final Triangle t) {
-		boolean equal = true;
-		for (int i = 0; i < 3 && equal; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (!contains(t.verts[i])) {
-				equal = false;
+				return false;
 			}
 		}
-		return equal;
+		return true;
 	}
 
 	public int indexOfRef(final GeosetVertex v) {
@@ -147,25 +146,21 @@ public class Triangle {
 	}
 
 	public boolean equalRefsNoIds(final Triangle t) {
-		boolean equal = true;
-		for (int i = 0; i < 3 && equal; i++) {
-            if (t.verts[i] != verts[i]) {
-                equal = false;
-                break;
-            }
+		for (int i = 0; i < 3; i++) {
+			if (t.verts[i] != verts[i]) {
+				return false;
+			}
 		}
-		return equal;
+		return true;
 	}
 
 	public boolean equalRefs(final Triangle t) {
-		boolean equal = true;
-		for (int i = 0; i < 3 && equal; i++) {
-            if (t.verts[i] != verts[i] || t.vertIds[i] != vertIds[i]) {
-                equal = false;
-                break;
-            }
+		for (int i = 0; i < 3; i++) {
+			if (t.verts[i] != verts[i] || t.vertIds[i] != vertIds[i]) {
+				return false;
+			}
 		}
-		return equal;
+		return true;
 	}
 
 	public GeosetVertex[] getAll() {
@@ -184,6 +179,14 @@ public class Triangle {
 		final double[] output = new double[3];
 		for (int i = 0; i < 3; i++) {
 			output[i] = (verts[i].getCoord(dim));
+		}
+		return output;
+	}
+
+	public Vec2[] getProjectedVerts(final byte axis1, final byte axis2) {
+		final Vec2[] output = new Vec2[3];
+		for (int i = 0; i < 3; i++) {
+			output[i] = new Vec2(verts[i].getCoord(axis1), verts[i].getCoord(axis2));
 		}
 		return output;
 	}

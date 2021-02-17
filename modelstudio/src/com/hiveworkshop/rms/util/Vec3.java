@@ -365,25 +365,39 @@ public class Vec3 {
     }
 
     public void translateCoord(final byte dim, final double value) {
-        switch (dim) {
-            case 0 -> x += value;
-            case 1 -> y += value;
-            case 2 -> z += value;
-            case -1 -> x -= value;
-            case -2 -> y -= value;
-            case 3 -> z -= value;
-        }
+	    switch (dim) {
+		    case 0 -> x += value;
+		    case 1 -> y += value;
+		    case 2 -> z += value;
+		    case -1 -> x -= value;
+		    case -2 -> y -= value;
+		    case 3 -> z -= value;
+	    }
     }
 
-    public static Vec3 getNormalized(final Vec3 a) {
-        return new Vec3(a).normalize();
-    }
+	public Vec3 minimize(Vec3 a) {
+		x = Math.min(x, a.x);
+		y = Math.min(y, a.y);
+		z = Math.min(z, a.z);
+		return this;
+	}
 
-    public Vec3 normalize() {
-        float len = length();
+	public Vec3 maximize(Vec3 a) {
+		x = Math.max(x, a.x);
+		y = Math.max(y, a.y);
+		z = Math.max(z, a.z);
+		return this;
+	}
 
-        if (len != 0) {
-            len = 1 / len;
+	public static Vec3 getNormalized(final Vec3 a) {
+		return new Vec3(a).normalize();
+	}
+
+	public Vec3 normalize() {
+		float len = length();
+
+		if (len != 0) {
+			len = 1 / len;
         }
         return scale(len);
     }

@@ -150,6 +150,9 @@ public class Vec2 {
 		return (float) Math.sqrt(lengthSquared());
 	}
 
+	public static Vec2 getScaled(Vec2 a, float factor) {
+		return new Vec2(a).scale(factor);
+	}
 
 	public Vec2 scale(final float factor) {
 		x = x * factor;
@@ -169,6 +172,9 @@ public class Vec2 {
 		return this;
 	}
 
+	public static Vec2 getSum(Vec2 a, Vec2 b) {
+		return new Vec2(a).add(b);
+	}
 
 	public Vec2 add(final Vec2 a) {
 		x = x + a.x;
@@ -177,7 +183,7 @@ public class Vec2 {
 		return this;
 	}
 
-	public static Vec2 getDif(Vec2 a, Vec2 b){
+	public static Vec2 getDif(Vec2 a, Vec2 b) {
 		return new Vec2(a).sub(b);
 	}
 
@@ -185,6 +191,18 @@ public class Vec2 {
 		x = x - a.x;
 		y = y - a.y;
 
+		return this;
+	}
+
+	public Vec2 minimize(Vec2 a) {
+		x = Math.min(x, a.x);
+		y = Math.min(y, a.y);
+		return this;
+	}
+
+	public Vec2 maximize(Vec2 a) {
+		x = Math.max(x, a.x);
+		y = Math.max(y, a.y);
 		return this;
 	}
 

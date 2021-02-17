@@ -8,6 +8,7 @@ import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 import com.hiveworkshop.rms.util.Vec3;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -85,6 +86,24 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 
 	public Vec3AnimFlag(Vec3AnimFlag af) {
 		super(af);
+	}
+
+	@Override
+	public void setValuesTo2(final AnimFlag<Vec3> af) {
+		this.setValuesTo(af);
+	}
+
+	public void setValuesTo(Vec3AnimFlag af) {
+		name = af.name;
+		globalSeq = af.globalSeq;
+		globalSeqId = af.globalSeqId;
+		hasGlobalSeq = af.hasGlobalSeq;
+		interpolationType = af.interpolationType;
+		typeid = af.typeid;
+		times = new ArrayList<>(af.times);
+		values = deepCopy(af.values);
+		inTans = deepCopy(af.inTans);
+		outTans = deepCopy(af.outTans);
 	}
 
 	public static Vec3AnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {

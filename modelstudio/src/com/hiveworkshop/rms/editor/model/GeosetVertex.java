@@ -227,8 +227,7 @@ public class GeosetVertex extends Vec3 {
     public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
                        final byte firstXYZ, final byte secondXYZ) {
         super.rotate(centerX, centerY, centerZ, radians, firstXYZ, secondXYZ);
-        // TODO fix bad design, use interface or something instead of bizarre
-        // override
+        // TODO fix bad design, use interface or something instead of bizarre override
         normal.rotate(0, 0, 0, radians, firstXYZ, secondXYZ);
         if (tangent != null) {
             rotateTangent(0, 0, 0, radians, firstXYZ, secondXYZ, tangent);

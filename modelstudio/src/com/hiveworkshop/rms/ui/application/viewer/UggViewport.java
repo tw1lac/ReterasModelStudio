@@ -159,7 +159,8 @@ public abstract class UggViewport extends BetterAWTGLCanvas implements RenderRes
 
 	void loadDefaultCameraFor(final ModelView modelView) {
 		ExtLog collisionExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
-		final List<CollisionShape> collisionShapes = modelView.getModel().sortedIdObjects(CollisionShape.class);
+//		final List<CollisionShape> collisionShapes = modelView.getModel().sortedIdObjects(CollisionShape.class);
+		final List<CollisionShape> collisionShapes = modelView.getModel().getColliders();
 		if (collisionShapes.size() > 0) {
 			for (final CollisionShape shape : collisionShapes) {
 				if ((shape != null) && (shape.getExtents() != null) && shape.getExtents().hasBoundsRadius()) {

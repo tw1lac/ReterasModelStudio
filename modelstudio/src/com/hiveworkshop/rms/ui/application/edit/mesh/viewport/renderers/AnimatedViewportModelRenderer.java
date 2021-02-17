@@ -12,6 +12,7 @@ import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.ViewportView;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.util.Mat4;
+import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 
 import java.awt.*;
@@ -208,6 +209,26 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 			Mat4 skinBonesMatrixSumHeap = processSdBones(bones);
 
 			processAndDraw(x, y, z, normalX, normalY, normalZ, skinBonesMatrixSumHeap);
+
+			return VertexVisitor.NO_ACTION;
+		}
+
+		@Override
+		public VertexVisitor hdVertex(Vec3 vert, Vec3 normal,
+		                              final Bone[] skinBones, final short[] skinBoneWeights) {
+			Mat4 skinBonesMatrixSumHeap = processHdBones2(skinBones, skinBoneWeights);
+
+			processAndDraw(vert.x, vert.y, vert.z, normal.x, normal.y, normal.z, skinBonesMatrixSumHeap);
+
+			return VertexVisitor.NO_ACTION;
+		}
+
+		@Override
+		public VertexVisitor vertex(Vec3 vert, Vec3 normal,
+		                            final List<Bone> bones) {
+			Mat4 skinBonesMatrixSumHeap = processSdBones(bones);
+
+			processAndDraw(vert.x, vert.y, vert.z, normal.x, normal.y, normal.z, skinBonesMatrixSumHeap);
 
 			return VertexVisitor.NO_ACTION;
 		}

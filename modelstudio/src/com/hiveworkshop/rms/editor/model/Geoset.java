@@ -11,10 +11,7 @@ import jassimp.AiMesh;
 import java.awt.geom.Rectangle2D;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Geoset implements Named, VisibilitySource {
 	ExtLog extents;
@@ -622,9 +619,7 @@ public class Geoset implements Named, VisibilitySource {
 	}
 
 	public void applyMatricesToVertices(final EditableModel mdlr) {
-		final int sz = numVerteces();
-		for (int i = 0; i < sz; i++) {
-			final GeosetVertex gv = vertices.get(i);
+		for (final GeosetVertex gv : vertices) {
 			gv.clearBoneAttachments();
 			final Matrix mx = getMatrix(gv.getVertexGroup());
 			if (((gv.getVertexGroup() == -1) || (mx == null))) {
@@ -692,7 +687,8 @@ public class Geoset implements Named, VisibilitySource {
 		for (final GeosetVertex geosetVertex : vertices) {
 			if (geosetVertex.getSkinBones() != null) {
 				if (matrix.isEmpty()) {
-					final List<Bone> bones = mdlr.sortedIdObjects(Bone.class);
+//					final List<Bone> bones = mdlr.sortedIdObjects(Bone.class);
+					final List<Bone> bones = mdlr.getBones();
 					for (int j = 0; (j < bones.size()) && (j < 256); j++) {
 						final List<Bone> singleBoneList = new ArrayList<>();
 						singleBoneList.add(bones.get(j));
@@ -755,18 +751,18 @@ public class Geoset implements Named, VisibilitySource {
 	}
 
 	@Override
-	public void setVisibilityFlag(final AnimFlag a) {
-		if (a != null) {
-			forceGetGeosetAnim().setVisibilityFlag(a);
-		}
-	}
-
-	@Override
-	public AnimFlag getVisibilityFlag() {
+	public AnimFlag<?> getVisibilityFlag() {
 		if (geosetAnim != null) {
 			return geosetAnim.getVisibilityFlag();
 		}
 		return null;
+	}
+
+	@Override
+	public void setVisibilityFlag(final AnimFlag<?> a) {
+		if (a != null) {
+			forceGetGeosetAnim().setVisibilityFlag(a);
+		}
 	}
 
 	@Override
@@ -868,23 +864,45 @@ public class Geoset implements Named, VisibilitySource {
 
 	public ExtLog calculateExtent() {
 		double maximumDistanceFromCenter = 0;
-		double maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE, maxZ = -Double.MAX_VALUE;
-		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, minZ = Double.MAX_VALUE;
+		Vec3 max = new Vec3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+		Vec3 min = new Vec3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
 		for (final GeosetVertex geosetVertex : vertices) {
-			maxX = Math.max(geosetVertex.x, maxX);
-			maxY = Math.max(geosetVertex.y, maxY);
-			maxZ = Math.max(geosetVertex.z, maxZ);
-			minX = Math.min(geosetVertex.x, minX);
-			minY = Math.min(geosetVertex.y, minY);
-			minZ = Math.min(geosetVertex.z, minZ);
+			max.maximize(geosetVertex);
+			min.minimize(geosetVertex);
 
-			final double distanceFromCenter = Math.sqrt((geosetVertex.x * geosetVertex.x)
-					+ (geosetVertex.y * geosetVertex.y) + (geosetVertex.z * geosetVertex.z));
+			final double distanceFromCenter = geosetVertex.length();
 			if (distanceFromCenter > maximumDistanceFromCenter) {
 				maximumDistanceFromCenter = distanceFromCenter;
 			}
 		}
-		return new ExtLog(new Vec3(minX, minY, minZ), new Vec3(maxX, maxY, maxZ), maximumDistanceFromCenter);
+		return new ExtLog(min, max, maximumDistanceFromCenter);
+	}
+
+	public Map<Bone, List<GeosetVertex>> getBoneMap() {
+		Map<Bone, List<GeosetVertex>> boneMap = new HashMap<>();
+		for (GeosetVertex geosetVertex : vertices) {
+			Bone[] sb = geosetVertex.getSkinBones();
+			short[] bw = geosetVertex.getSkinBoneWeights();
+			if (sb != null && bw != null) {
+				for (int i = 0; i < sb.length; i++) {
+					if (!boneMap.containsKey(sb[i])) {
+						boneMap.put(sb[i], new ArrayList<>());
+					}
+					if (bw[i] > 0) {
+						System.out.println("added geoVert");
+						boneMap.get(sb[i]).add(geosetVertex);
+					}
+				}
+			} else {
+				for (Bone bone : geosetVertex.getBones()) {
+					if (!boneMap.containsKey(bone)) {
+						boneMap.put(bone, new ArrayList<>());
+					}
+					boneMap.get(bone).add(geosetVertex);
+				}
+			}
+		}
+		return boneMap;
 	}
 }

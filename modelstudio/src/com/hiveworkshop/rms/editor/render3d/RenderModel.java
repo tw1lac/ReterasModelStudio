@@ -137,7 +137,8 @@ public final class RenderModel {
 				objectToRenderNode.put(object, renderNode);
 			}
 		}
-		for (final ParticleEmitter2 particleEmitter : model.sortedIdObjects(ParticleEmitter2.class)) {
+//		for (final ParticleEmitter2 particleEmitter : (List<ParticleEmitter2>)model.sortedIdObjects(ParticleEmitter2.class)) {
+		for (final ParticleEmitter2 particleEmitter : model.getParticleEmitter2s()) {
 			particleEmitters2.add(new RenderParticleEmitter2(particleEmitter, renderResourceAllocator.allocateTexture(particleEmitter.getTexture(), particleEmitter)));
 		}
 		particleEmitters2.sort(Comparator.comparingInt(RenderParticleEmitter2::getPriorityPlane));
@@ -178,7 +179,10 @@ public final class RenderModel {
 		}
 		for (final AnimatedNode idObject : sortedNodes) {
 			final RenderNode node = getRenderNode(idObject);
-			final AnimatedNode idObjectParent = idObject.getParent();
+			AnimatedNode idObjectParent = null;
+			if (idObject instanceof IdObject) {
+				idObjectParent = ((IdObject) idObject).getParent();
+			}
 			final RenderNode parent = idObjectParent == null ? null : getRenderNode(idObjectParent);
 			final boolean objectVisible = idObject.getRenderVisibility(animatedRenderEnvironment) >= MAGIC_RENDER_SHOW_CONSTANT;
 

@@ -542,7 +542,22 @@ public abstract class AnimFlag<T> {
 		return null;
 	}
 
-	public void setValuesTo(final AnimFlag<T> af) {
+	public void setValuesTo(final AnimFlag<?> af) {
+		if (af instanceof IntAnimFlag && this instanceof IntAnimFlag) {
+			((IntAnimFlag) this).setValuesTo((IntAnimFlag) af);
+		} else if (af instanceof FloatAnimFlag && this instanceof FloatAnimFlag) {
+			((FloatAnimFlag) this).setValuesTo((FloatAnimFlag) af);
+		} else if (af instanceof Vec3AnimFlag && this instanceof Vec3AnimFlag) {
+			((Vec3AnimFlag) this).setValuesTo((Vec3AnimFlag) af);
+		} else if (af instanceof QuatAnimFlag && this instanceof QuatAnimFlag) {
+			((QuatAnimFlag) this).setValuesTo((QuatAnimFlag) af);
+		}
+	}
+
+
+	public abstract void setValuesTo2(final AnimFlag<T> af);
+
+	public void setValuesTo3(final AnimFlag<T> af) {
 		name = af.name;
 		globalSeq = af.globalSeq;
 		globalSeqId = af.globalSeqId;
@@ -555,7 +570,7 @@ public abstract class AnimFlag<T> {
 		outTans = deepCopy(af.outTans);
 	}
 
-	private List<T> deepCopy(final List<T> source) {
+	List<T> deepCopy(final List<T> source) {
 
 		final List<T> copy = new ArrayList<>();
 		for (final T item : source) {

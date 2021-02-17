@@ -8,6 +8,7 @@ import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
 import com.hiveworkshop.rms.ui.application.viewer.AnimatedRenderEnvironment;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,6 +68,24 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 
 	public IntAnimFlag(IntAnimFlag af) {
 		super(af);
+	}
+
+	@Override
+	public void setValuesTo2(final AnimFlag<Integer> af) {
+		this.setValuesTo(af);
+	}
+
+	public void setValuesTo(IntAnimFlag af) {
+		name = af.name;
+		globalSeq = af.globalSeq;
+		globalSeqId = af.globalSeqId;
+		hasGlobalSeq = af.hasGlobalSeq;
+		interpolationType = af.interpolationType;
+		typeid = af.typeid;
+		times = new ArrayList<>(af.times);
+		values = deepCopy(af.values);
+		inTans = deepCopy(af.inTans);
+		outTans = deepCopy(af.outTans);
 	}
 
 

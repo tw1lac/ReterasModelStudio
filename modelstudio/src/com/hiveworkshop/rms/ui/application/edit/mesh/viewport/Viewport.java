@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Viewport extends JPanel
-		implements MouseListener, ActionListener, MouseWheelListener, CoordinateSystem, ViewportView, MouseMotionListener, ModelEditorChangeListener {
+		implements MouseListener, MouseWheelListener, CoordinateSystem, ViewportView, MouseMotionListener, ModelEditorChangeListener {
 	byte m_d1;
 	byte m_d2;
 	double m_a = 0;
@@ -391,10 +391,6 @@ public class Viewport extends JPanel
 	@Override
 	public double geomY(final double y) {
 		return -(((y - (getHeight() / 2.0)) / m_zoom) - m_b);
-	}
-
-	@Override
-	public void actionPerformed(final ActionEvent e) {
 	}
 
 	private void createFace() {
