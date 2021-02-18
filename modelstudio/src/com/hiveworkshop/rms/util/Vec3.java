@@ -55,30 +55,28 @@ public class Vec3 {
         }
     }
 
-    public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
-                       final byte firstXYZ, final byte secondXYZ) {
-        final double x1 = getCoord(firstXYZ);
-        final double y1 = getCoord(secondXYZ);
-        final double cx = getCx(centerX, centerY, centerZ, firstXYZ);// = coordinateSystem.geomX(centerX);
-        final double dx = x1 - cx;
-        final double cy = getCx(centerX, centerY, centerZ, secondXYZ);// = coordinateSystem.geomY(centerY);
-        final double dy = y1 - cy;
-        final double r = Math.sqrt((dx * dx) + (dy * dy));
-        double verAng = Math.acos(dx / r);
-        if (dy < 0) {
-            verAng = -verAng;
-        }
-        // if( getDimEditable(dim1) )
-        double newFirstCoord = (Math.cos(verAng + radians) * r) + cx;
-        if (!Double.isNaN(newFirstCoord)) {
-            setCoord(firstXYZ, newFirstCoord);
-        }
-        // if( getDimEditable(dim2) )
-        double newSecondCoord = (Math.sin(verAng + radians) * r) + cy;
-        if (!Double.isNaN(newSecondCoord)) {
-            setCoord(secondXYZ, newSecondCoord);
-        }
-        return this;
+    protected static double getCenterDimCoord(double centerX, double centerY, double centerZ, byte dim) {
+        return switch (dim) {
+            case 0 -> centerX;
+            case 1 -> centerY;
+            case -1 -> -centerX;
+            case -2 -> -centerY;
+            case -3 -> -centerZ;
+            case 2 -> centerZ;
+            default -> centerZ;
+        };
+    }
+
+    protected static double getCenterDimCoord(Vec3 center, byte dim) {
+        return switch (dim) {
+            case 0 -> center.x;
+            case 1 -> center.y;
+            case -1 -> -center.x;
+            case -2 -> -center.y;
+            case -3 -> -center.z;
+            case 2 -> center.z;
+            default -> center.z;
+        };
     }
 
     public static void rotateVertex(final Vec3 center, final Vec3 axis, final double radians, final Vec3 vertex) {
@@ -134,16 +132,54 @@ public class Vec3 {
         throw new UnsupportedOperationException("NYI");
     }
 
-    private static double getCx(double centerX, double centerY, double centerZ, byte firstXYZ) {
-        return switch (firstXYZ) {
-            case 0 -> centerX;
-            case 1 -> centerY;
-            case -1 -> -centerX;
-            case -2 -> -centerY;
-            case -3 -> -centerZ;
-            case 2 -> centerZ;
-            default -> centerZ;
-        };
+    public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
+                       final byte firstXYZ, final byte secondXYZ) {
+        final double x1 = getCoord(firstXYZ);
+        final double y1 = getCoord(secondXYZ);
+        final double cx = getCenterDimCoord(centerX, centerY, centerZ, firstXYZ);// = coordinateSystem.geomX(centerX);
+        final double dx = x1 - cx;
+        final double cy = getCenterDimCoord(centerX, centerY, centerZ, secondXYZ);// = coordinateSystem.geomY(centerY);
+        final double dy = y1 - cy;
+        final double r = Math.sqrt((dx * dx) + (dy * dy));
+        double verAng = Math.acos(dx / r);
+        if (dy < 0) {
+            verAng = -verAng;
+        }
+        // if( getDimEditable(dim1) )
+        double newFirstCoord = (Math.cos(verAng + radians) * r) + cx;
+        if (!Double.isNaN(newFirstCoord)) {
+            setCoord(firstXYZ, newFirstCoord);
+        }
+        // if( getDimEditable(dim2) )
+        double newSecondCoord = (Math.sin(verAng + radians) * r) + cy;
+        if (!Double.isNaN(newSecondCoord)) {
+            setCoord(secondXYZ, newSecondCoord);
+        }
+        return this;
+    }
+
+    public Vec3 rotate(Vec3 center, final double radians,
+                       final byte firstXYZ, final byte secondXYZ) {
+        final double x1 = getCoord(firstXYZ);
+        final double y1 = getCoord(secondXYZ);
+        final double cx = getCenterDimCoord(center, firstXYZ);
+        final double dx = x1 - cx;
+        final double cy = getCenterDimCoord(center, secondXYZ);
+        final double dy = y1 - cy;
+        final double r = Math.sqrt((dx * dx) + (dy * dy));
+        double verAng = Math.acos(dx / r);
+        if (dy < 0) {
+            verAng = -verAng;
+        }
+        double newFirstCoord = (Math.cos(verAng + radians) * r) + cx;
+        if (!Double.isNaN(newFirstCoord)) {
+            setCoord(firstXYZ, newFirstCoord);
+        }
+        double newSecondCoord = (Math.sin(verAng + radians) * r) + cy;
+        if (!Double.isNaN(newSecondCoord)) {
+            setCoord(secondXYZ, newSecondCoord);
+        }
+        return this;
     }
 
     public static Vec3 centerOfGroup(final Collection<? extends Vec3> group) {

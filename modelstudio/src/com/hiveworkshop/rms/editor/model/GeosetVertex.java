@@ -2,6 +2,7 @@ package com.hiveworkshop.rms.editor.model;
 
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
+import com.hiveworkshop.rms.util.Vec4;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,8 @@ public class GeosetVertex extends Vec3 {
     private Bone[] skinBones;
     private short[] skinBoneWeights;
     private float[] tangent;
+    private Vec4 tang;
+    private SkinBone[] sskinBones;
 
     Geoset geoset;
 
@@ -38,43 +41,6 @@ public class GeosetVertex extends Vec3 {
     public GeosetVertex(final double x, final double y, final double z, final Vec3 n) {
         super(x, y, z);
         normal = n;
-    }
-
-    public void initV900() {
-        skinBoneIndexes = new byte[4];
-        skinBones = new Bone[4];
-        skinBoneWeights = new short[4];
-        tangent = new float[4];
-    }
-
-    public void un900Heuristic() {
-        if (tangent != null) {
-            tangent = null;
-        }
-        if (skinBones != null) {
-            bones.clear();
-            int index = 0;
-            boolean fallback = false;
-            for (final Bone bone : skinBones) {
-                if (bone != null) {
-                    fallback = true;
-                    if (skinBoneWeights[index] > 110) {
-                        bones.add(bone);
-                    }
-                }
-                index++;
-            }
-            if (bones.isEmpty() && fallback) {
-                for (final Bone bone : skinBones) {
-                    if (bone != null) {
-                        bones.add(bone);
-                    }
-                }
-            }
-            skinBones = null;
-            skinBoneWeights = null;
-            skinBoneIndexes = null;
-        }
     }
 
     public GeosetVertex(final GeosetVertex old) {
@@ -99,6 +65,47 @@ public class GeosetVertex extends Vec3 {
         }
         if (old.tangent != null) {
             tangent = old.tangent.clone();
+            tang = new Vec4(old.tang);
+        }
+    }
+
+    public void initV900() {
+        skinBoneIndexes = new byte[4];
+        skinBones = new Bone[4];
+        skinBoneWeights = new short[4];
+        tangent = new float[4];
+        sskinBones = new SkinBone[4];
+        tang = new Vec4(0, 0, 0, 0);
+    }
+
+    public void un900Heuristic() {
+        if (tangent != null) {
+            tangent = null;
+            tang = null;
+        }
+        if (skinBones != null) {
+            bones.clear();
+            int index = 0;
+            boolean fallback = false;
+            for (final Bone bone : skinBones) {
+                if (bone != null) {
+                    fallback = true;
+                    if (skinBoneWeights[index] > 110) {
+                        bones.add(bone);
+                    }
+                }
+                index++;
+            }
+            if (bones.isEmpty() && fallback) {
+                for (final Bone bone : skinBones) {
+                    if (bone != null) {
+                        bones.add(bone);
+                    }
+                }
+            }
+            skinBones = null;
+            skinBoneWeights = null;
+            skinBoneIndexes = null;
         }
     }
 
@@ -210,8 +217,18 @@ public class GeosetVertex extends Vec3 {
         return tangent;
     }
 
+    public Vec4 getTang() {
+        return tang;
+    }
+
     public void setTangent(final float[] tangent) {
         this.tangent = tangent;
+        tang = new Vec4(tangent);
+    }
+
+    public void setTangent(Vec4 tangent) {
+        this.tangent = tangent.toFloatArray();
+        tang = tangent;
     }
 
     public void setGeoset(final Geoset geoset) {
@@ -227,66 +244,71 @@ public class GeosetVertex extends Vec3 {
     public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
                        final byte firstXYZ, final byte secondXYZ) {
         super.rotate(centerX, centerY, centerZ, radians, firstXYZ, secondXYZ);
-        // TODO fix bad design, use interface or something instead of bizarre override
         normal.rotate(0, 0, 0, radians, firstXYZ, secondXYZ);
         if (tangent != null) {
-            rotateTangent(0, 0, 0, radians, firstXYZ, secondXYZ, tangent);
+//            rotateTangent(0, 0, 0, radians, firstXYZ, secondXYZ, tangent);
+            tang.set(tang.getVec3().rotate(0, 0, 0, radians, firstXYZ, secondXYZ));
+            tangent = tang.toFloatArray();
+//            rotateTangent(0, 0, 0, radians, firstXYZ, secondXYZ);
         }
         return this;
     }
 
-    public static void rotateTangent(final double centerX, final double centerY, final double centerZ,
-                                     final double radians, final byte firstXYZ, final byte secondXYZ, final float[] vertex) {
-        final double x1 = getVertexCoord(firstXYZ, vertex);
-        final double y1 = getVertexCoord(secondXYZ, vertex);
-        final double cx = getCenter(centerX, centerY, centerZ, firstXYZ);// = coordinateSystem.geomX(centerX);
-        final double dx = x1 - cx;
-        final double cy = getCenter(centerX, centerY, centerZ, secondXYZ);// = coordinateSystem.geomY(centerY);
-        final double dy = y1 - cy;
-        final double r = Math.sqrt((dx * dx) + (dy * dy));
-        double verAng = Math.acos(dx / r);
-        if (dy < 0) {
-            verAng = -verAng;
+    @Override
+    public Vec3 rotate(Vec3 center, final double radians,
+                       final byte firstXYZ, final byte secondXYZ) {
+        super.rotate(center, radians, firstXYZ, secondXYZ);
+        normal.rotate(0, 0, 0, radians, firstXYZ, secondXYZ);
+        if (tangent != null) {
+//            rotateTangent(0, 0, 0, radians, firstXYZ, secondXYZ, tangent);
+            tang.set(tang.getVec3().rotate(0, 0, 0, radians, firstXYZ, secondXYZ));
+            tangent = tang.toFloatArray();
         }
-        // if( getDimEditable(dim1) )
-        double nextDim = (Math.cos(verAng + radians) * r) + cx;
-        if (!Double.isNaN(nextDim)) {
-            setVertexCoord(firstXYZ, vertex, (float) nextDim);
-        }
-        // if( getDimEditable(dim2) )
-        nextDim = (Math.sin(verAng + radians) * r) + cy;
-        if (!Double.isNaN(nextDim)) {
-            setVertexCoord(secondXYZ, vertex, (float) ((Math.sin(verAng + radians) * r) + cy));
-        }
+        return this;
     }
 
-    private static double getCenter(double centerX, double centerY, double centerZ, byte secondXYZ) {
-        return switch (secondXYZ) {
-            case 0 -> centerX;
-            case 1 -> centerY;
-            case -1 -> -centerX;
-            case -2 -> -centerY;
-            case -3 -> -centerZ;
-            case 2 -> centerZ;
-            default -> centerZ;
-        };
-    }
-
-    private static void setVertexCoord(byte firstXYZ, float[] vertex, float nextDim) {
-        if (firstXYZ < 0) {
-            firstXYZ = (byte) (-firstXYZ - 1);
-            nextDim = -nextDim;
-        }
-        vertex[firstXYZ] = nextDim;
-    }
-
-    private static float getVertexCoord(byte firstXYZ, float[] vertex) {
-        if(firstXYZ < 0) {
-            firstXYZ = (byte)(-firstXYZ-1);
-            return -vertex[firstXYZ];
-        }
-        return vertex[firstXYZ];
-    }
+//    public static void rotateTangent(final double centerX, final double centerY, final double centerZ,
+//                                     final double radians,
+//                                     final byte firstXYZ, final byte secondXYZ,
+//                                     final float[] vertex) {
+//        final double x1 = getVertexCoord(firstXYZ, vertex);
+//        final double y1 = getVertexCoord(secondXYZ, vertex);
+//        final double cx = getCenter(centerX, centerY, centerZ, firstXYZ);// = coordinateSystem.geomX(centerX);
+//        final double dx = x1 - cx;
+//        final double cy = getCenter(centerX, centerY, centerZ, secondXYZ);// = coordinateSystem.geomY(centerY);
+//        final double dy = y1 - cy;
+//        final double r = Math.sqrt((dx * dx) + (dy * dy));
+//        double verAng = Math.acos(dx / r);
+//        if (dy < 0) {
+//            verAng = -verAng;
+//        }
+//        // if( getDimEditable(dim1) )
+//        double newFirstCoord = (Math.cos(verAng + radians) * r) + cx;
+//        if (!Double.isNaN(newFirstCoord)) {
+//            setVertexCoord(firstXYZ, vertex, (float) newFirstCoord);
+//        }
+//        // if( getDimEditable(dim2) )
+//        double newSecondCoord = (Math.sin(verAng + radians) * r) + cy;
+//        if (!Double.isNaN(newSecondCoord)) {
+//            setVertexCoord(secondXYZ, vertex, (float) newSecondCoord);
+//        }
+//    }
+//
+//    private static void setVertexCoord(byte firstXYZ, float[] vertex, float nextDim) {
+//        if (firstXYZ < 0) {
+//            firstXYZ = (byte) (-firstXYZ - 1);
+//            nextDim = -nextDim;
+//        }
+//        vertex[firstXYZ] = nextDim;
+//    }
+//
+//    private static float getVertexCoord(byte firstXYZ, float[] vertex) {
+//        if(firstXYZ < 0) {
+//            firstXYZ = (byte)(-firstXYZ-1);
+//            return -vertex[firstXYZ];
+//        }
+//        return vertex[firstXYZ];
+//    }
 
     public Vec3 createNormal() {
         final Vec3 sum = new Vec3();
@@ -309,9 +331,7 @@ public class GeosetVertex extends Vec3 {
             }
         }
 
-        sum.normalize();
-
-        return sum;
+        return sum.normalize();
     }
 
     public Vec3 createNormal(final List<GeosetVertex> matches, double maxAngle) {
@@ -323,9 +343,8 @@ public class GeosetVertex extends Vec3 {
             uniqueNormals.add(matchNormal);
         }
         uniqueNormals.stream().filter(n -> normal.degAngleTo(n) < maxAngle).forEach(sum::add);
-        sum.normalize();
 
-        return sum;
+        return sum.normalize();
     }
 
 
@@ -342,9 +361,7 @@ public class GeosetVertex extends Vec3 {
             }
         }
 
-        sum.normalize();
-
-        return sum;
+        return sum.normalize();
     }
 
     public void rigBones(List<Bone> matrixBones) {
@@ -363,6 +380,40 @@ public class GeosetVertex extends Vec3 {
                     skinBoneWeights[i] += offset;
                 }
             }
+        }
+    }
+
+    public short[] getSkinBoneEntry() {
+        short[] skinEntry = {0, 0, 0, 0, 0, 0, 0, 0};
+
+        for (int i = 0; i < sskinBones.length && i < 4; i++) {
+            skinEntry[i] = (short) sskinBones[i].weight;
+            skinEntry[i + 4] = (short) sskinBones[i].getBoneId();
+        }
+        return skinEntry;
+    }
+
+    public class SkinBone {
+        int weight;
+        Bone bone;
+
+        SkinBone(int weight, Bone bone) {
+            this.weight = weight;
+            this.bone = bone;
+        }
+
+        public SkinBone setBone(Bone bone) {
+            this.bone = bone;
+            return this;
+        }
+
+        public SkinBone setWeight(int weight) {
+            this.weight = weight;
+            return this;
+        }
+
+        int getBoneId() {
+            return geoset.getParentModel().getObjectId(bone);
         }
     }
 }
