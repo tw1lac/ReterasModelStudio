@@ -401,20 +401,6 @@ public class ViewportModelRenderer implements ModelVisitor {
 		}
 
 		@Override
-		public VertexVisitor hdVertex(final double x, final double y, final double z,
-		                              final double normalX, final double normalY, final double normalZ,
-		                              final Bone[] skinBones, final short[] skinBoneWeights) {
-			return vertex(new Vec3(x, y, z), new Vec3(normalX, normalY, normalZ), null);
-		}
-
-		@Override
-		public VertexVisitor vertex(final double x, final double y, final double z,
-		                            final double normalX, final double normalY, final double normalZ,
-		                            final List<Bone> bones) {
-			return vertex(new Vec3(x, y, z), new Vec3(normalX, normalY, normalZ), null);
-		}
-
-		@Override
 		public void triangleFinished() {
 			if (previousVertices.size() > 1) {
 				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);

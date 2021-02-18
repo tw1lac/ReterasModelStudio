@@ -77,20 +77,6 @@ public class UVViewportModelRenderer implements MeshVisitor {
 		}
 
 		@Override
-		public VertexVisitor vertex(final double x, final double y, final double z,
-		                            final double normalX, final double normalY, final double normalZ,
-		                            final List<Bone> bones) {
-			return vertexRenderer.reset();
-		}
-
-		@Override
-		public VertexVisitor hdVertex(final double x, final double y, final double z,
-		                              final double normalX, final double normalY, final double normalZ,
-		                              final Bone[] skinBones, final short[] skinBoneWeights) {
-			return vertexRenderer.reset();
-		}
-
-		@Override
 		public VertexVisitor vertex(Vec3 vert, Vec3 normal, final List<Bone> bones) {
 			return vertexRenderer.reset();
 		}

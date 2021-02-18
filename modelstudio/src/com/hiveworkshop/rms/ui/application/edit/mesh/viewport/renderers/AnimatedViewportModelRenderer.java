@@ -159,120 +159,35 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 		}
 
 		@Override
-		public void geosetFinished() {}
+		public void geosetFinished() {
+		}
 	}
 
-	private float getNormalCoord(byte dimension, String exceptionString, Vec4 normalSumHeap) {
-		return switch (dimension) {
-			case 0 -> normalSumHeap.x;
-			case 1 -> normalSumHeap.y;
-			case 2 -> normalSumHeap.z;
-			case -1 -> -normalSumHeap.x;
-			case -2 -> -normalSumHeap.y;
-			case -3 -> -normalSumHeap.z;
-			default -> throw new IllegalStateException(exceptionString);
-		};
-	}
+	public void drawNormal(float firstCoord, float secondCoord, Point point, Vec4 normalSumHeap) {
+		final Color triangleColor = graphics.getColor();
 
-	private float getCoord(byte dimension, Vec4 vertexSumHeap, String exceptionString) {
-		return switch (dimension) {
-			case 0 -> vertexSumHeap.x;
-			case 1 -> vertexSumHeap.y;
-			case 2 -> vertexSumHeap.z;
-			default -> throw new IllegalStateException(exceptionString);
-		};
-	}
+		final float firstNormalCoord = normalSumHeap.getVec3().getCoord(xDimension);
+		final float secondNormalCoord = normalSumHeap.getVec3().getCoord(yDimension);
 
-	private final class TriangleRendererImpl implements TriangleVisitor {
-		private final List<Point> previousVertices = new ArrayList<>();
+		graphics.setColor(programPreferences.getNormalsColor());
+		final double zoom = CoordinateSystem.Util.getZoom(coordinateSystem);
 
-		public TriangleRendererImpl reset() {
-			previousVertices.clear();
-			return this;
-		}
+		double normXsize = (firstNormalCoord * 12) / zoom;
+		double normYsize = (secondNormalCoord * 12) / zoom;
+		double normEndX3 = coordinateSystem.convertX(firstCoord + normXsize);
+		double normEndY3 = coordinateSystem.convertY(secondCoord + normYsize);
+		final Point endPoint3 = new Point((int) normEndX3, (int) normEndY3);
 
-		@Override
-		public VertexVisitor hdVertex(final double x, final double y, final double z,
-		                              final double normalX, final double normalY, final double normalZ,
-		                              final Bone[] skinBones, final short[] skinBoneWeights) {
-			Mat4 skinBonesMatrixSumHeap = processHdBones2(skinBones, skinBoneWeights);
+		double normEndX2 = coordinateSystem.convertX(firstCoord + (firstNormalCoord * 12 / zoom));
+		double normEndY2 = coordinateSystem.convertY(secondCoord + (secondNormalCoord * 12 / zoom));
+		final Point endPoint2 = new Point((int) normEndX2, (int) normEndY2);
 
-			processAndDraw(x, y, z, normalX, normalY, normalZ, skinBonesMatrixSumHeap);
+		double normEndX = firstCoord + (firstNormalCoord * 12 / zoom);
+		double normEndY = secondCoord + (secondNormalCoord * 12 / zoom);
+		final Point endPoint = new Point((int) coordinateSystem.convertX(normEndX), (int) coordinateSystem.convertY(normEndY));
 
-			return VertexVisitor.NO_ACTION;
-		}
-
-		@Override
-		public VertexVisitor vertex(final double x, final double y, final double z,
-		                            final double normalX, final double normalY, final double normalZ,
-		                            final List<Bone> bones) {
-			Mat4 skinBonesMatrixSumHeap = processSdBones(bones);
-
-			processAndDraw(x, y, z, normalX, normalY, normalZ, skinBonesMatrixSumHeap);
-
-			return VertexVisitor.NO_ACTION;
-		}
-
-		@Override
-		public VertexVisitor hdVertex(Vec3 vert, Vec3 normal,
-		                              final Bone[] skinBones, final short[] skinBoneWeights) {
-			Mat4 skinBonesMatrixSumHeap = processHdBones2(skinBones, skinBoneWeights);
-
-			processAndDraw(vert.x, vert.y, vert.z, normal.x, normal.y, normal.z, skinBonesMatrixSumHeap);
-
-			return VertexVisitor.NO_ACTION;
-		}
-
-		@Override
-		public VertexVisitor vertex(Vec3 vert, Vec3 normal,
-		                            final List<Bone> bones) {
-			Mat4 skinBonesMatrixSumHeap = processSdBones(bones);
-
-			processAndDraw(vert.x, vert.y, vert.z, normal.x, normal.y, normal.z, skinBonesMatrixSumHeap);
-
-			return VertexVisitor.NO_ACTION;
-		}
-
-		public void processAndDraw(double x, double y, double z,
-		                           double normalX, double normalY, double normalZ,
-		                           Mat4 skinBonesMatrixSumHeap) {
-			Vec4 vertexHeap = new Vec4(x, y, z, 1);
-			Vec4 vertexSumHeap = Vec4.getTransformed(vertexHeap, skinBonesMatrixSumHeap);
-
-			Vec4 normalHeap = new Vec4(normalX, normalY, normalZ, 0);
-			Vec4 normalSumHeap = Vec4.getTransformed(normalHeap, skinBonesMatrixSumHeap);
-			normalizeHeap(normalSumHeap);
-
-			drawLineFromVert(normalHeap, vertexSumHeap);
-		}
-
-		public void drawLineFromVert(Vec4 normalSumHeap, Vec4 vertexSumHeap) {
-			final float firstCoord = getCoord(xDimension, vertexSumHeap, "Invalid x dimension");
-			final float secondCoord = getCoord(yDimension, vertexSumHeap, "Invalid y dimension");
-			final Point point = new Point((int) coordinateSystem.convertX(firstCoord), (int) coordinateSystem.convertY(secondCoord));
-
-			if (previousVertices.size() > 0) {
-				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
-				graphics.drawLine(previousPoint.x, previousPoint.y, point.x, point.y);
-			}
-			previousVertices.add(point);
-			// graphics.setColor(programPreferences.getVertexColor());
-			// graphics.fillRect((int) firstCoord - vertexSize / 2, (int)
-			// secondCoord - vertexSize / 2, vertexSize, vertexSize);
-			if (programPreferences.showNormals()) {
-				drawNormal(firstCoord, secondCoord, point, normalSumHeap);
-			}
-		}
-
-		@Override
-		public void triangleFinished() {
-			if (previousVertices.size() > 1) {
-				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
-				final Point point = previousVertices.get(0);
-				graphics.drawLine(previousPoint.x, previousPoint.y, point.x, point.y);
-			}
-		}
-
+		graphics.drawLine(point.x, point.y, endPoint.x, endPoint.y);
+		graphics.setColor(triangleColor);
 	}
 
 	public Mat4 processHdBones2(Bone[] skinBones, short[] skinBoneWeights) {
@@ -302,7 +217,7 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 			for (final Bone bone : bones) {
 				bonesMatrixSumHeap.add(renderModel.getRenderNode(bone).getWorldMatrix());
 			}
-			return bonesMatrixSumHeap.uniformScale(1f/boneCount);
+			return bonesMatrixSumHeap.uniformScale(1f / boneCount);
 		}
 		return bonesMatrixSumHeap.setIdentity();
 	}
@@ -315,31 +230,70 @@ public class AnimatedViewportModelRenderer implements ModelVisitor {
 		}
 	}
 
-	public void drawNormal(float firstCoord, float secondCoord, Point point, Vec4 normalSumHeap) {
-		final Color triangleColor = graphics.getColor();
+	private final class TriangleRendererImpl implements TriangleVisitor {
+		private final List<Point> previousVertices = new ArrayList<>();
 
-		final float firstNormalCoord = getNormalCoord(xDimension, "Invalid x dimension", normalSumHeap);
-		final float secondNormalCoord = getNormalCoord(yDimension, "Invalid y dimension", normalSumHeap);
+		public TriangleRendererImpl reset() {
+			previousVertices.clear();
+			return this;
+		}
 
-		graphics.setColor(programPreferences.getNormalsColor());
-		final double zoom = CoordinateSystem.Util.getZoom(coordinateSystem);
+		@Override
+		public VertexVisitor hdVertex(Vec3 vert, Vec3 normal, final Bone[] skinBones, final short[] skinBoneWeights) {
+			Mat4 skinBonesMatrixSumHeap = processHdBones2(skinBones, skinBoneWeights);
 
-		double normXsize = (firstNormalCoord * 12) / zoom;
-		double normYsize = (secondNormalCoord * 12) / zoom;
-		double normEndX3 = coordinateSystem.convertX(firstCoord + normXsize);
-		double normEndY3 = coordinateSystem.convertY(secondCoord + normYsize);
-		final Point endPoint3 = new Point((int) normEndX3, (int) normEndY3);
+			processAndDraw(vert, normal, skinBonesMatrixSumHeap);
 
-		double normEndX2 = coordinateSystem.convertX(firstCoord + (firstNormalCoord * 12 / zoom));
-		double normEndY2 = coordinateSystem.convertY(secondCoord + (secondNormalCoord * 12 / zoom));
-		final Point endPoint2 = new Point((int) normEndX2, (int) normEndY2);
+			return VertexVisitor.NO_ACTION;
+		}
 
-		double normEndX = firstCoord + (firstNormalCoord * 12 / zoom);
-		double normEndY = secondCoord + (secondNormalCoord * 12 / zoom);
-		final Point endPoint = new Point((int) coordinateSystem.convertX(normEndX), (int) coordinateSystem.convertY(normEndY));
+		@Override
+		public VertexVisitor vertex(Vec3 vert, Vec3 normal, final List<Bone> bones) {
+			Mat4 skinBonesMatrixSumHeap = processSdBones(bones);
 
-		graphics.drawLine(point.x, point.y, endPoint.x, endPoint.y);
-		graphics.setColor(triangleColor);
+			processAndDraw(vert, normal, skinBonesMatrixSumHeap);
+
+			return VertexVisitor.NO_ACTION;
+		}
+
+		public void processAndDraw(Vec3 v, Vec3 normal, Mat4 skinBonesMatrixSumHeap) {
+			Vec4 vertexHeap = new Vec4(v, 1);
+			Vec4 vertexSumHeap = Vec4.getTransformed(vertexHeap, skinBonesMatrixSumHeap);
+
+			Vec4 normalHeap = new Vec4(normal, 0);
+			Vec4 normalSumHeap = Vec4.getTransformed(normalHeap, skinBonesMatrixSumHeap);
+			normalizeHeap(normalSumHeap);
+
+			drawLineFromVert(normalHeap, vertexSumHeap);
+		}
+
+		public void drawLineFromVert(Vec4 normalSumHeap, Vec4 vertexSumHeap) {
+			final float firstCoord = vertexSumHeap.getVec3().getCoord(xDimension);
+			final float secondCoord = vertexSumHeap.getVec3().getCoord(yDimension);
+			final Point point = new Point((int) coordinateSystem.convertX(firstCoord), (int) coordinateSystem.convertY(secondCoord));
+
+			if (previousVertices.size() > 0) {
+				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
+				graphics.drawLine(previousPoint.x, previousPoint.y, point.x, point.y);
+			}
+			previousVertices.add(point);
+			// graphics.setColor(programPreferences.getVertexColor());
+			// graphics.fillRect((int) firstCoord - vertexSize / 2, (int)
+			// secondCoord - vertexSize / 2, vertexSize, vertexSize);
+			if (programPreferences.showNormals()) {
+				drawNormal(firstCoord, secondCoord, point, normalSumHeap);
+			}
+		}
+
+		@Override
+		public void triangleFinished() {
+			if (previousVertices.size() > 1) {
+				final Point previousPoint = previousVertices.get(previousVertices.size() - 1);
+				final Point point = previousVertices.get(0);
+				graphics.drawLine(previousPoint.x, previousPoint.y, point.x, point.y);
+			}
+		}
+
 	}
 
 }

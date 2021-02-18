@@ -2091,38 +2091,23 @@ public class EditableModel implements Named {
 		}
 	}
 
-	private void visitSdVert(Geoset geoset, GeosetVisitor geosetRenderer) {
-		for (final Triangle triangle : geoset.getTriangles()) {
-			final TriangleVisitor triangleRenderer = geosetRenderer.beginTriangle();
-			for (final GeosetVertex vertex : triangle.getVerts()) {
-				final VertexVisitor vertexRenderer;
-				// TODO redesign for nullable normals
-				if (vertex.getNormal() != null) {
-					vertexRenderer = triangleRenderer.vertex(vertex, vertex.getNormal(), vertex.getBoneAttachments());
-				} else {
-					vertexRenderer = triangleRenderer.vertex(vertex, new Vec3(0, 0, 0), vertex.getBoneAttachments());
-				}
-				for (final Vec2 tvert : vertex.getTverts()) {
-					vertexRenderer.textureCoords(tvert.x, tvert.y);
-				}
-				vertexRenderer.vertexFinished();
-			}
-			triangleRenderer.triangleFinished();
-		}
+	public boolean isHd(Geoset geoset) {
+		return (ModelUtils.isTangentAndSkinSupported(formatVersion))
+				&& (geoset.getVertices().size() > 0)
+				&& (geoset.getVertex(0).getSkinBones() != null);
 	}
 
-	private void visitHdVert(Geoset geoset, GeosetVisitor geosetRenderer) {
+	private void visitVert(Geoset geoset, GeosetVisitor geosetRenderer, boolean isHD) {
 		for (final Triangle triangle : geoset.getTriangles()) {
 			final TriangleVisitor triangleRenderer = geosetRenderer.beginTriangle();
 			for (final GeosetVertex vertex : triangle.getVerts()) {
 				final VertexVisitor vertexRenderer;
 				// TODO redesign for nullable normals
-				if (vertex.getNormal() != null) {
-					vertexRenderer = triangleRenderer.hdVertex(vertex, vertex.getNormal(),
-							vertex.getSkinBones(), vertex.getSkinBoneWeights());
+				Vec3 normal = vertex.getNormal() == null ? new Vec3(0, 0, 0) : vertex.getNormal();
+				if (isHD) {
+					vertexRenderer = triangleRenderer.hdVertex(vertex, normal, vertex.getSkinBones(), vertex.getSkinBoneWeights());
 				} else {
-					vertexRenderer = triangleRenderer.hdVertex(vertex, new Vec3(0, 0, 0),
-							vertex.getSkinBones(), vertex.getSkinBoneWeights());
+					vertexRenderer = triangleRenderer.vertex(vertex, normal, vertex.getBoneAttachments());
 				}
 				for (final Vec2 tvert : vertex.getTverts()) {
 					vertexRenderer.textureCoords(tvert.x, tvert.y);
