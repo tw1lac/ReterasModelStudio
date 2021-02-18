@@ -158,8 +158,10 @@ public final class RenderNode {
 		for (final AnimatedNode childNode : idObject.getChildrenNodes()) {
 			if (model.getRenderNode(childNode) == null) {
 				if (childNode instanceof IdObject) {
-					throw new NullPointerException("Cannot find child \"" + childNode.getName() + ":"
-							+ ((IdObject) childNode).getObjectId() + "\" of \"" + idObject.getName() + "\"");
+//					throw new NullPointerException("Cannot find child \"" + childNode.getName() + ":"
+//							+ ((IdObject) childNode).getObjectId() + "\" of \"" + idObject.getName() + "\"");
+					throw new NullPointerException("Cannot find child \"" + childNode.getName()
+							+ "\" of \"" + idObject.getName() + "\"");
 				} else {
 					throw new NullPointerException(
 							"Cannot find child \"" + childNode.getName() + "\" of \"" + idObject.getName() + "\"");

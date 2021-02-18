@@ -76,11 +76,11 @@ public abstract class IdObject extends AnimatedNode implements Named {
 		loadTimelines(object);
 	}
 
-	public void objectToMdlx(final MdlxGenericObject object) {
+	public void objectToMdlx(final MdlxGenericObject object, EditableModel model) {
 		object.name = getName();
-		object.objectId = getObjectId();
-		object.parentId = getParentId();
-		
+		object.objectId = getObjectId(model);
+		object.parentId = getParentId(model);
+
 		if (dontInheritTranslation) {
 			object.flags |= 0x1;
 		}
@@ -111,7 +111,7 @@ public abstract class IdObject extends AnimatedNode implements Named {
 
 		timelinesToMdlx(object);
 	}
-	
+
 	public void setName(final String text) {
 		name = text;
 	}
@@ -158,8 +158,6 @@ public abstract class IdObject extends AnimatedNode implements Named {
 	public abstract double getClickRadius(CoordinateSystem coordinateSystem);
 
 	/**
-	 *
-	 *
 	 * @return The Object ID
 	 * @deprecated Note that all object IDs are deleted and regenerated at save
 	 */
@@ -168,31 +166,36 @@ public abstract class IdObject extends AnimatedNode implements Named {
 		return objectId;
 	}
 
-	/**
-	 * @param objectId New object ID value
-	 * @deprecated Note that all object IDs are deleted and regenerated at save
-	 */
-	@Deprecated
-	public void setObjectId(final int objectId) {
-		this.objectId = objectId;
+	public int getObjectId(EditableModel model) {
+		return model.getObjectId(this);
 	}
+
+//	/**
+//	 * @param objectId New object ID value
+//	 * @deprecated Note that all object IDs are deleted and regenerated at save
+//	 */
+//	@Deprecated
+//	public void setObjectId(final int objectId) {
+//		this.objectId = objectId;
+//	}
 
 	/**
 	 * @return Parent ID
 	 * @deprecated Note that all object IDs are deleted and regenerated at save
 	 */
 	@Deprecated
-//	public int getParentId() {
-//		return parentId;
-//	}
 	public int getParentId() {
-		System.out.println("trying to get parent for bone: " + getName());
-		System.out.println("parent: " + parent);
+		return parent.getObjectId();
+	}
+
+	public int getParentId(EditableModel model) {
 		if (parent == null) {
+			System.out.println("trying to get parent for bone: " + getName());
+			System.out.println("parent: " + parent);
 			System.out.println("_____________________________________________________");
 			return -1;
 		}
-		return parent.getObjectId();
+		return model.getObjectId(parent);
 	}
 
 //	/**

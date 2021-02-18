@@ -30,10 +30,10 @@ public class Helper extends Bone { // Haha blizz
 		loadObject(helper);
 	}
 
-	public MdlxHelper toMdlxHelper() {
+	public MdlxHelper toMdlxHelper(EditableModel model) {
 		final MdlxHelper helper = new MdlxHelper();
 
-		objectToMdlx(helper);
+		objectToMdlx(helper, model);
 
 		return helper;
 	}

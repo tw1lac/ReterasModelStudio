@@ -48,7 +48,7 @@ public class EditableModel implements Named {
 	protected List<TextureAnim> texAnims = new ArrayList<>();
 	protected List<Geoset> geosets = new ArrayList<>();
 	protected List<GeosetAnim> geosetAnims = new ArrayList<>();
-	protected List<IdObject> idObjects = new ArrayList<>();
+	//	protected List<IdObject> idObjects = new ArrayList<>();
 	protected List<Vec3> pivots = new ArrayList<>();
 	protected List<Camera> cameras = new ArrayList<>();
 	private final List<FaceEffect> faceEffects = new ArrayList<>();
@@ -83,7 +83,7 @@ public class EditableModel implements Named {
 		texAnims = new ArrayList<>(other.texAnims);
 		geosets = new ArrayList<>(other.geosets);
 		geosetAnims = new ArrayList<>(other.geosetAnims);
-		idObjects = new ArrayList<>(other.idObjects);
+//		idObjects = new ArrayList<>(other.idObjects);
 		pivots = new ArrayList<>(other.pivots);
 		cameras = new ArrayList<>(other.cameras);
 		modelIdObjects = new ModelIdObjects(); // todo copy from other
@@ -94,14 +94,15 @@ public class EditableModel implements Named {
 
 	public EditableModel(final MdlxModel model) {
 		// Step 1: Convert the Model Chunk
-		// For MDL api, this is currently embedded right inside the
-		// MDL class
+		// For MDL api, this is currently embedded right inside the MDL class
 		Map<IdObject, Integer> parentMap = new HashMap<>();
 		Map<Integer, IdObject> idMap = new HashMap<>();
+		Map<IdObject, Integer> objIdMap = new HashMap<>();
+
 		modelIdObjects = new ModelIdObjects();
 		setFormatVersion(model.version);
 		setName(model.name);
-		setBlendTime((int)model.blendTime);
+		setBlendTime((int) model.blendTime);
 		setExtents(new ExtLog(model.extent));
 
 		// Step 2: Convert the Sequences
@@ -148,12 +149,13 @@ public class EditableModel implements Named {
 		}
 
 		// Step 9:
-		// convert "IdObjects" as I called them in my high school mdl code
-		// (nodes)
+		// convert "IdObjects" as I called them in my high school mdl code (nodes)
 
 		// Bones
 		for (final MdlxBone bone : model.bones) {
+			System.out.println("MdlxBone, id: " + bone.objectId + " name: " + bone.name);
 			Bone x = new Bone(bone);
+			objIdMap.put(x, bone.objectId);
 			idMap.put(bone.objectId, x);
 			parentMap.put(x, bone.parentId);
 			add(x);
@@ -162,6 +164,7 @@ public class EditableModel implements Named {
 		// Lights
 		for (final MdlxLight light : model.lights) {
 			Light x = new Light(light);
+			objIdMap.put(x, light.objectId);
 			idMap.put(light.objectId, x);
 			parentMap.put(x, light.parentId);
 			add(x);
@@ -169,7 +172,9 @@ public class EditableModel implements Named {
 
 		// Helpers
 		for (final MdlxHelper helper : model.helpers) {
+			System.out.println("MdlxHelper");
 			Helper x = new Helper(helper);
+			objIdMap.put(x, helper.objectId);
 			idMap.put(helper.objectId, x);
 			parentMap.put(x, helper.parentId);
 			add(x);
@@ -178,6 +183,7 @@ public class EditableModel implements Named {
 		// Attachment
 		for (final MdlxAttachment attachment : model.attachments) {
 			Attachment x = new Attachment(attachment);
+			objIdMap.put(x, attachment.objectId);
 			idMap.put(attachment.objectId, x);
 			parentMap.put(x, attachment.parentId);
 			add(x);
@@ -186,6 +192,7 @@ public class EditableModel implements Named {
 		// ParticleEmitter (number 1 kind)
 		for (final MdlxParticleEmitter emitter : model.particleEmitters) {
 			ParticleEmitter x = new ParticleEmitter(emitter);
+			objIdMap.put(x, emitter.objectId);
 			idMap.put(emitter.objectId, x);
 			parentMap.put(x, emitter.parentId);
 			add(x);
@@ -194,6 +201,7 @@ public class EditableModel implements Named {
 		// ParticleEmitter2
 		for (final MdlxParticleEmitter2 emitter : model.particleEmitters2) {
 			ParticleEmitter2 x = new ParticleEmitter2(emitter);
+			objIdMap.put(x, emitter.objectId);
 			idMap.put(emitter.objectId, x);
 			parentMap.put(x, emitter.parentId);
 			add(x);
@@ -202,6 +210,7 @@ public class EditableModel implements Named {
 		// PopcornFxEmitter
 		for (final MdlxParticleEmitterPopcorn emitter : model.particleEmittersPopcorn) {
 			ParticleEmitterPopcorn x = new ParticleEmitterPopcorn(emitter);
+			objIdMap.put(x, emitter.objectId);
 			idMap.put(emitter.objectId, x);
 			parentMap.put(x, emitter.parentId);
 			add(x);
@@ -210,6 +219,7 @@ public class EditableModel implements Named {
 		// RibbonEmitter
 		for (final MdlxRibbonEmitter emitter : model.ribbonEmitters) {
 			RibbonEmitter x = new RibbonEmitter(emitter);
+			objIdMap.put(x, emitter.objectId);
 			idMap.put(emitter.objectId, x);
 			parentMap.put(x, emitter.parentId);
 			add(x);
@@ -218,6 +228,7 @@ public class EditableModel implements Named {
 		// EventObject
 		for (final MdlxEventObject object : model.eventObjects) {
 			EventObject x = new EventObject(object);
+			objIdMap.put(x, object.objectId);
 			idMap.put(object.objectId, x);
 			parentMap.put(x, object.parentId);
 			add(x);
@@ -230,6 +241,7 @@ public class EditableModel implements Named {
 		// CollisionShape
 		for (final MdlxCollisionShape shape : model.collisionShapes) {
 			CollisionShape x = new CollisionShape(shape);
+			objIdMap.put(x, shape.objectId);
 			idMap.put(shape.objectId, x);
 			parentMap.put(x, shape.parentId);
 			add(x);
@@ -251,7 +263,22 @@ public class EditableModel implements Named {
 			int parentId = parentMap.get(idObject);
 			if (parentId != -1 && idMap.containsKey(parentId)) {
 				idObject.setParent(idMap.get(parentId));
+//				if(bindPose.size()>objIdMap.get(idObject)){
+//					idObject.setPivotPoint(pivots.get(objIdMap.get(idObject)));
+//				}
 			}
+			if (pivots.size() > objIdMap.get(idObject)) {
+				System.out.println("set pivot to: " + pivots.get(objIdMap.get(idObject)));
+				idObject.setPivotPoint(pivots.get(objIdMap.get(idObject)));
+			} else {
+				System.out.println("set {0, 0, 0} pivot");
+				idObject.setPivotPoint(new Vec3(0, 0, 0));
+
+			}
+			if (bindPose != null) {
+				idObject.setBindPose(bindPose.bindPose[objIdMap.get(idObject)]);
+			}
+//
 		}
 
 		doPostRead(); // fixes all the things
@@ -262,7 +289,7 @@ public class EditableModel implements Named {
 
 		modelIdObjects = new ModelIdObjects();
 		final Map<Material, Vec3> materialColors = new HashMap<>();
-		
+
 		for (final AiMaterial material : scene.getMaterials()) {
 			final Material editableMaterial = new Material(material, this);
 
@@ -307,43 +334,29 @@ public class EditableModel implements Named {
 		doPostRead();
 	}
 
-	public MdlxModel toMdlx() {
-		doSavePreps(); // restores all GeosetID, ObjectID, TextureID,
-		// MaterialID stuff all based on object references in the Java
-		// (this is so that you can write a program that does something like
-		// "mdl.add(new Bone())" without a problem, or even
-		// "mdl.add(otherMdl.getGeoset(5))" and have the geoset's textures and
-		// materials all be carried over with it via object references in java
-
-		// also this re-creates all matrices, which are consumed by the
-		// MatrixEater at runtime in doPostRead() in favor of each vertex
-		// having its own attachments list, no vertex groups)
-
-		final MdlxModel model = new MdlxModel();
-
-		model.version = getFormatVersion();
-		model.name = getName();
-		model.blendTime = getBlendTime();
-		model.extent = getExtents().toMdlx();
-
-		for (final Animation sequence : getAnims()) {
-			model.sequences.add(sequence.toMdlx());
+	/**
+	 * Please, for the love of Pete, don't actually do this.
+	 */
+	public static void convertToV800(final int targetLevelOfDetail, final EditableModel model) {
+		// Things to fix:
+		// 1.) format version
+		model.setFormatVersion(800);
+		// 2.) materials: only diffuse
+		for (final Bitmap tex : model.getTextures()) {
+			String path = tex.getPath();
+			if ((path != null) && !path.isEmpty()) {
+				final int dotIndex = path.lastIndexOf('.');
+				if ((dotIndex != -1) && !path.endsWith(".blp")) {
+					path = (path.substring(0, dotIndex));
+				}
+				if (!path.endsWith(".blp")) {
+					path += ".blp";
+				}
+				tex.setPath(path);
+			}
 		}
-
-		for (final Integer sequence : globalSeqs) {
-			model.globalSequences.add(sequence.longValue());
-		}
-
-		for (final Bitmap texture : textures) {
-			model.textures.add(texture.toMdlx());
-		}
-
-		for (final TextureAnim animation : texAnims) {
-			model.textureAnimations.add(animation.toMdlx());
-		}
-
-		for (final Material material : materials) {
-			model.materials.add(material.toMdlx());
+		for (final Material material : model.getMaterials()) {
+			material.makeSD();
 		}
 		// 3.) geosets:
 		// - Convert skin to matrices & vertex groups
@@ -426,16 +439,16 @@ public class EditableModel implements Named {
 				emitter.setPath(path.replace('/', '\\'));
 			}
 		}
-
-		for (final FaceEffect effect : faceEffects) {
-			model.faceEffects.add(effect.toMdlx());
+//		for (final Attachment emitter : (List<Attachment>)model.sortedIdObjects(Attachment.class)) {
+		for (final Attachment emitter : model.getAttachments()) {
+			final String path = emitter.getPath();
+			if (path != null) {
+				emitter.setPath(path.replace('/', '\\'));
+			}
 		}
 
-		if (bindPose != null) {
-			model.bindPose = bindPose.toMdlx();
-		}
-
-		return model;
+		model.setBindPoseChunk(null);
+		model.faceEffects.clear();
 	}
 
 	public File getFile() {
@@ -521,7 +534,7 @@ public class EditableModel implements Named {
 		// Need to do a real save, because of strings being passed by reference.
 		// Maybe other objects I didn't think about (or the code does by mistake).
 		final EditableModel newModel = new EditableModel(new MdlxModel(what.toMdlx().saveMdx()));
-		
+
 		newModel.setName(newName);
 		newModel.setFileRef(what.getFile());
 
@@ -604,14 +617,14 @@ public class EditableModel implements Named {
 				} else {
 					w = 1.0;
 				}
-				gv.setTangent(new float[] {v.x, v.y, v.z, (float) w});
+				gv.setTangent(v, (float) w);
 			}
 		}
 		int goodTangents = 0;
 		int badTangents = 0;
 		for (final Geoset theMesh : currentMDL.getGeosets()) {
 			for (final GeosetVertex gv : theMesh.getVertices()) {
-				final double dotProduct = gv.getNormal().dot(new Vec3(gv.getTangent()));
+				final double dotProduct = gv.getNormal().dot(gv.getTang().getVec3());
 //				System.out.println("dotProduct: " + dotProduct);
 				if (Math.abs(dotProduct) <= 0.000001) {
 					goodTangents += 1;
@@ -633,7 +646,7 @@ public class EditableModel implements Named {
 		}
 	}
 
-	// INTERNAL PARTS CODING
+
 	public void setName(final String text) {
 		name = text;
 	}
@@ -685,7 +698,6 @@ public class EditableModel implements Named {
 				return texture;
 			}
 		}
-
 		return null;
 	}
 
@@ -744,13 +756,145 @@ public class EditableModel implements Named {
 		cameras.add(x);
 	}
 
-	private void addIdObject(final IdObject x) {
-		modelIdObjects.addIdObject(x);
-//		idObjects.add(x);
+	public static void makeItHD(final EditableModel model) {
+		for (final Geoset geo : model.getGeosets()) {
+			final List<GeosetVertex> vertices = geo.getVertices();
+			for (final GeosetVertex gv : vertices) {
+				final Vec3 normal = gv.getNormal();
+				if (normal != null) {
+					gv.initV900();
+					gv.setTangent(normal, 1);
+				}
+				final int bones = Math.min(4, gv.getBoneAttachments().size());
+				final short weight = (short) (255 / bones);
+				final short offsetWeight = (short) (255 - (weight * bones));
+				for (int i = 0; i < bones; i++) {
+					gv.getSkinBones()[i] = gv.getBoneAttachments().get(i);
+					gv.getSkinBoneWeights()[i] = weight;
+					if (i == 0) {
+						gv.getSkinBoneWeights()[i] += offsetWeight;
+					}
+				}
+			}
+		}
+		for (final Material m : model.getMaterials()) {
+			m.makeHD();
+		}
+	}
+
+	public MdlxModel toMdlx() {
+		doSavePreps(); // restores all GeosetID, ObjectID, TextureID,
+		// MaterialID stuff all based on object references in the Java
+		// (this is so that you can write a program that does something like
+		// "mdl.add(new Bone())" without a problem, or even
+		// "mdl.add(otherMdl.getGeoset(5))" and have the geoset's textures and
+		// materials all be carried over with it via object references in java
+
+		// also this re-creates all matrices, which are consumed by the
+		// MatrixEater at runtime in doPostRead() in favor of each vertex
+		// having its own attachments list, no vertex groups)
+
+		final MdlxModel model = new MdlxModel();
+
+		model.version = getFormatVersion();
+		model.name = getName();
+		model.blendTime = getBlendTime();
+		model.extent = getExtents().toMdlx();
+
+		for (final Animation sequence : getAnims()) {
+			model.sequences.add(sequence.toMdlx());
+		}
+
+		for (final Integer sequence : globalSeqs) {
+			model.globalSequences.add(sequence.longValue());
+		}
+
+		for (final Bitmap texture : textures) {
+			model.textures.add(texture.toMdlx());
+		}
+
+		for (final TextureAnim animation : texAnims) {
+			model.textureAnimations.add(animation.toMdlx());
+		}
+
+		for (final Material material : materials) {
+			model.materials.add(material.toMdlx());
+		}
+
+		for (final Geoset geoset : geosets) {
+			model.geosets.add(geoset.toMdlx(this));
+		}
+
+		for (final GeosetAnim animation : geosetAnims) {
+			model.geosetAnimations.add(animation.toMdlx(this));
+		}
+
+		for (final Bone bone : getBones()) {
+			model.bones.add(bone.toMdlx(this));
+		}
+
+		for (final Light light : getLights()) {
+			model.lights.add(light.toMdlx(this));
+		}
+
+		for (final Helper helper : getHelpers()) {
+			model.helpers.add(helper.toMdlxHelper(this));
+		}
+
+		for (final Attachment attachment : getAttachments()) {
+			model.attachments.add(attachment.toMdlx(this));
+		}
+
+		for (final ParticleEmitter emitter : getParticleEmitters()) {
+			model.particleEmitters.add(emitter.toMdlx(this));
+		}
+
+		for (final ParticleEmitter2 emitter : getParticleEmitter2s()) {
+			model.particleEmitters2.add(emitter.toMdlx(this));
+		}
+
+		for (final ParticleEmitterPopcorn emitter : getPopcornEmitters()) {
+			model.particleEmittersPopcorn.add(emitter.toMdlx(this));
+		}
+
+		for (final RibbonEmitter emitter : getRibbonEmitters()) {
+			model.ribbonEmitters.add(emitter.toMdlx(this));
+		}
+
+		for (final EventObject object : getEvents()) {
+			model.eventObjects.add(object.toMdlx(this));
+		}
+
+		for (final Camera camera : getCameras()) {
+			model.cameras.add(camera.toMdlx());
+		}
+
+		for (final CollisionShape shape : getColliders()) {
+			model.collisionShapes.add(shape.toMdlx(this));
+		}
+
+		for (final Vec3 point : getPivots()) {
+			model.pivotPoints.add(point.toFloatArray());
+		}
+
+		for (final FaceEffect effect : faceEffects) {
+			model.faceEffects.add(effect.toMdlx());
+		}
+
+		if (bindPose != null) {
+			model.bindPose = bindPose.toMdlx();
+		}
+
+		return model;
 	}
 
 	public void addFaceEffect(final FaceEffect faceEffect) {
 		faceEffects.add(faceEffect);
+	}
+
+	private void addIdObject(final IdObject x) {
+		modelIdObjects.addIdObject(x);
+//		idObjects.add(x);
 	}
 
 	public IdObject getIdObject(final int index) {
@@ -790,38 +934,49 @@ public class EditableModel implements Named {
 		return geosets.indexOf(g);
 	}
 
-	public static void makeItHD(final EditableModel model) {
-		for (final Geoset geo : model.getGeosets()) {
-			final List<GeosetVertex> vertices = geo.getVertices();
-			for (final GeosetVertex gv : vertices) {
-				final Vec3 normal = gv.getNormal();
-				if (normal != null) {
-					gv.initV900();
-					final float[] tangent = gv.getTangent();
-					for (int i = 0; i < 3; i++) {
-						tangent[i] = normal.getCoord((byte) i);
-					}
-					tangent[3] = 1;
-				}
-				final int bones = Math.min(4, gv.getBoneAttachments().size());
-				final short weight = (short) (255 / bones);
-				final short offsetWeight = (short) (255 - (weight * bones));
-				for (int i = 0; i < bones; i++) {
-					gv.getSkinBones()[i] = gv.getBoneAttachments().get(i);
-					gv.getSkinBoneWeights()[i] = weight;
-					if (i == 0) {
-						gv.getSkinBoneWeights()[i] += offsetWeight;
-					}
-				}
-			}
-		}
-		for (final Material m : model.getMaterials()) {
-			m.makeHD();
-		}
+	public void clearToHeader() {
+		anims.clear();
+		globalSeqs.clear();
+		textures.clear();
+		materials.clear();
+		texAnims.clear();
+		geosets.clear();
+		geosetAnims.clear();
+//		idObjects.clear();
+		pivots.clear();
+		cameras.clear();
+		modelIdObjects.clearAll();
 	}
 
 	public void clearAnimations() {
 		anims.clear();
+	}
+
+	public IdObject getObject(final String name) {
+		return modelIdObjects.getObject(name);
+//		for (final IdObject obj : idObjects) {
+//			if (obj.name.equalsIgnoreCase(name)) {
+//				return obj;
+//			}
+//		}
+//		return null;
+	}
+
+	// public void setGeosetVisible(int index, boolean flag)
+	// {  Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setVisible(flag); }
+	// public void setGeosetHighlight(int index, boolean flag)
+	// {Geoset geo = (Geoset)m_geosets.get(index);
+	// geo.setHighlight(flag); }
+	public void clearGeosets() {
+		geosets.clear();
+	}
+
+	public int getObjectId(final IdObject idObject) {
+//		System.out.println("getting Id of " + idObject.name);
+//		System.out.println("id: " + modelIdObjects.getObjectId(idObject));
+		return modelIdObjects.getObjectId(idObject);
+//		return idObjects.indexOf(idObject);
 	}
 
 	/**
@@ -882,14 +1037,8 @@ public class EditableModel implements Named {
 		clearAnimations();
 	}
 
-	// public void setGeosetVisible(int index, boolean flag)
-	// {  Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setVisible(flag); }
-	// public void setGeosetHighlight(int index, boolean flag)
-	// {Geoset geo = (Geoset)m_geosets.get(index);
-	// geo.setHighlight(flag); }
-	public void clearGeosets() {
-		geosets.clear();
+	public int getGeosetsSize() {
+		return geosets.size();
 	}
 
 	public List<Animation> addAnimationsFrom(EditableModel other, final List<Animation> anims) {
@@ -977,6 +1126,10 @@ public class EditableModel implements Named {
 		// i think we're done????
 	}
 
+	public int getAnimsSize() {
+		return anims.size();
+	}
+
 	public void copyVisibility(final Animation visibilitySource, final Animation target) {
 		final List<VisibilitySource> allVisibilitySources = getAllVisibilitySources();
 		for (final VisibilitySource source : allVisibilitySources) {
@@ -987,20 +1140,13 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public int getGeosetsSize() {
-		return geosets.size();
-	}
-
 	public int getIdObjectsSize() {
 		return modelIdObjects.getIdObjectsSize();
 //		return idObjects.size();
 	}
 
-	public int getAnimsSize() {
-		return anims.size();
-	}
-
 	public void doPostRead() {
+		System.out.println("doPostRead for model: " + name);
 		updateIdObjectReferences();
 		for (final Geoset geo : geosets) {
 			geo.updateToObjects(this);
@@ -1082,6 +1228,25 @@ public class EditableModel implements Named {
 		}
 	}
 
+	public void clearTexAnims() {
+		if (texAnims != null) {
+			texAnims.clear();
+		} else {
+			texAnims = new ArrayList<>();
+		}
+	}
+
+	public void rebuildTextureAnimList() {
+		clearTexAnims();
+		for (final Material m : materials) {
+			for (final Layer lay : m.layers) {
+				if ((lay.textureAnim != null) && !texAnims.contains(lay.textureAnim)) {
+					texAnims.add(lay.textureAnim);
+				}
+			}
+		}
+	}
+
 	public int countIdObjectsOfClass(final Class what) {
 		int idoCount = 0;
 //		for (final IdObject obj : idObjects) {
@@ -1100,7 +1265,6 @@ public class EditableModel implements Named {
 				materials.add(g.material);
 			}
 		}
-//		final List<RibbonEmitter> ribbons = (List<RibbonEmitter>) sortedIdObjects(RibbonEmitter.class);
 		final List<RibbonEmitter> ribbons = getRibbonEmitters();
 		for (final RibbonEmitter r : ribbons) {
 			if ((r.material != null) && !materials.contains(r.material)) {
@@ -1113,23 +1277,10 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public void clearTexAnims() {
-		if (texAnims != null) {
-			texAnims.clear();
-		} else {
-			texAnims = new ArrayList<>();
-		}
-	}
-
-	public void rebuildTextureAnimList() {
-		clearTexAnims();
-		for (final Material m : materials) {
-			for (final Layer lay : m.layers) {
-				if ((lay.textureAnim != null) && !texAnims.contains(lay.textureAnim)) {
-					texAnims.add(lay.textureAnim);
-				}
-			}
-		}
+	public void rebuildLists() {
+		rebuildMaterialList();
+		rebuildTextureList();// texture anims handled inside textures
+		rebuildGlobalSeqList();
 	}
 
 	public void rebuildTextureList() {
@@ -1174,7 +1325,7 @@ public class EditableModel implements Named {
 				// keep those Ids straight, will be -1 if null
 			}
 		}
-		final List<ParticleEmitter2> particles = (List<ParticleEmitter2>) sortedIdObjects(ParticleEmitter2.class);
+		final List<ParticleEmitter2> particles = getParticleEmitter2s();
 		for (final ParticleEmitter2 pe : particles) {
 			boolean good = true;
 			if ((pe.texture != null) && !textures.contains(pe.texture)) {
@@ -1213,11 +1364,7 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public void rebuildLists() {
-		rebuildMaterialList();
-		rebuildTextureList();// texture anims handled inside textures
-		rebuildGlobalSeqList();
-	}
+
 
 	// The below commented stuff is now an internal part of list rebuilding
 	// public void updateIdsAcrossModel()
@@ -1232,31 +1379,34 @@ public class EditableModel implements Named {
 	// }
 	// }
 	public void updateIdObjectReferences() {
-//		final List<Bone> bones = (List<Bone>) sortedIdObjects(Bone.class);
-//		final List<? extends Bone> helpers = (List<? extends Bone>) sortedIdObjects(Helper.class);
 		final List<Bone> bones = getBones();
 		final List<? extends Bone> helpers = getHelpers();
 		bones.addAll(helpers);
 		boolean canWarnPivot = true;
-		for (int i = 0; i < modelIdObjects.getIdObjectsSize(); i++) {
-			final IdObject obj = modelIdObjects.getIdObject(i);
-			if (obj.parentId != -1) {
-				obj.setParent(modelIdObjects.getIdObject(obj.parentId));
-			}
-			if (i >= pivots.size()) {
-				if (canWarnPivot) {
-					JOptionPane.showMessageDialog(null,
-							"Error: More objects than PivotPoints were found." +
-									"\nAdditional pivot at {0,0,0} will be added.");
-					canWarnPivot = false;
-				}
-				pivots.add(new Vec3(0, 0, 0));
-			}
-			obj.setPivotPoint(pivots.get(i));
-			if (bindPose != null) {
-				obj.bindPose = bindPose.bindPose[i];
-			}
-		}
+		System.out.println("pivots: " + pivots.size());
+		System.out.println("idObjects: " + modelIdObjects.getIdObjectsSize());
+//		for (int i = 0; i < modelIdObjects.getIdObjectsSize(); i++) {
+//			final IdObject obj = modelIdObjects.getIdObject(i);
+////			if (obj.parentId != -1) {
+////				obj.setParent(modelIdObjects.getIdObject(obj.parentId));
+////			}
+//			if (i >= pivots.size()) {
+//				System.out.println("idOb size: " + modelIdObjects.getIdObjectsSize() + ", pivots: " + pivots.size() + ", i: " + i);
+//				if (canWarnPivot) {
+//					JOptionPane.showMessageDialog(null,
+//							"Error: More objects than PivotPoints were found." +
+//									"\nAdditional pivot at {0,0,0} will be added.");
+//					System.out.println("Error: More objects than PivotPoints were found." +
+//							"\nAdditional pivot at {0,0,0} will be added.");
+//					canWarnPivot = false;
+//				}
+//				pivots.add(new Vec3(0, 0, 0));
+//			}
+////			obj.setPivotPoint(pivots.get(i));
+////			if (bindPose != null) {
+////				obj.bindPose = bindPose.bindPose[i];
+////			}
+//		}
 		for (final Bone b : bones) {
 			if ((b.geosetId != -1) && (b.geosetId < geosets.size())) {
 				b.geoset = geosets.get(b.geosetId);
@@ -1294,8 +1444,6 @@ public class EditableModel implements Named {
 		}
 		// -- end injected ---
 
-//		final List<Bone> bones = (List<Bone>) sortedIdObjects(Bone.class);
-//		final List<? extends Bone> helpers = (List<? extends Bone>) sortedIdObjects(Helper.class);
 		final List<Bone> bones = getBones();
 		final List<? extends Bone> helpers = getHelpers();
 		bones.addAll(helpers);
@@ -1356,13 +1504,6 @@ public class EditableModel implements Named {
 
 	public <T extends IdObject> List<? extends IdObject> sortedIdObjects(final Class<T> objectClass) {
 		return modelIdObjects.getListByClass(objectClass);
-//		final List<T> objects = new ArrayList<>();
-//		for (final IdObject obj : idObjects) {
-//			if (obj.getClass() == objectClass) {
-//				objects.add((T)obj);
-//			}
-//		}
-//		return objects;
 	}
 
 	public List<AnimFlag<?>> getAllAnimFlags() {
@@ -1459,6 +1600,10 @@ public class EditableModel implements Named {
 		return null;
 	}
 
+	public void buildGlobSeqFrom(final Animation anim) {
+		buildGlobSeqFrom(anim, getAllAnimFlags());
+	}
+
 	public void addFlagToParent(final AnimFlag<?> aflg, final AnimFlag<?> added)
 	// aflg is the parent
 	{
@@ -1493,7 +1638,7 @@ public class EditableModel implements Named {
 				object.add(added);
 			}
 		}
-	
+
 		if (cameras != null) {
 			for (final Camera x : cameras) {
 				if (x.getSourceNode().has(aflg.getName()) || x.targetAnimFlags.contains(aflg)) {
@@ -1515,8 +1660,28 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public void buildGlobSeqFrom(final Animation anim) {
-		buildGlobSeqFrom(anim, getAllAnimFlags());
+	public List<VisibilitySource> getAllVisibilitySources() {
+		final List<AnimFlag<?>> animFlags = getAllAnimFlags();// laggggg!
+		final List<VisibilitySource> out = new ArrayList<>();
+		for (final AnimFlag<?> af : animFlags) {
+			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
+				out.add((VisibilitySource) getAnimFlagSource(af));
+			}
+		}
+		return out;
+	}
+
+	public int animTrackEnd() {
+		int highestEnd = 0;
+		for (final Animation a : anims) {
+			if (a.getStart() > highestEnd) {
+				highestEnd = a.getStart();
+			}
+			if (a.getEnd() > highestEnd) {
+				highestEnd = a.getEnd();
+			}
+		}
+		return highestEnd;
 	}
 
 	public GeosetAnim getGeosetAnimOfGeoset(final Geoset g) {
@@ -1592,13 +1757,11 @@ public class EditableModel implements Named {
 							final Bone b2 = (Bone) boneParent;
 							if (!b2.multiGeoId) {
 								if (b2.geoset == null) {
-									// The bone has been found by no prior
-									// matrices
+									// The bone has been found by no prior matrices
 									b2.geosetAnim = ga;
 									b2.geoset = g;
 								} else if (b2.geoset != g) {
-									// The bone has only been found by ONE
-									// matrix
+									// The bone has only been found by ONE matrix
 									b2.multiGeoId = true;
 									b2.geoset = null;
 									if (ga != null) {
@@ -1621,31 +1784,6 @@ public class EditableModel implements Named {
 		}
 	}
 
-	public List<VisibilitySource> getAllVisibilitySources() {
-		final List<AnimFlag<?>> animFlags = getAllAnimFlags();// laggggg!
-		final List<VisibilitySource> out = new ArrayList<>();
-		for (final AnimFlag<?> af : animFlags) {
-			if (af.getName().equals("Visibility") || af.getName().equals("Alpha")) {
-				out.add((VisibilitySource) getAnimFlagSource(af));
-			}
-		}
-		return out;
-	}
-
-	public int animTrackEnd() {
-		int highestEnd = 0;
-		for (final Animation a : anims) {
-			if (a.getStart() > highestEnd) {
-				highestEnd = a.getStart();
-			}
-			if (a.getEnd() > highestEnd) {
-				highestEnd = a.getEnd();
-			}
-		}
-		return highestEnd;
-	}
-
-	// Ultimate List functions
 	public void add(final Animation x) {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
@@ -1734,6 +1872,34 @@ public class EditableModel implements Named {
 		}
 	}
 
+	public boolean contains(final Animation x) {
+		return anims.contains(x);
+	}
+
+	public boolean contains(final Integer x) {
+		return globalSeqs.contains(x);
+	}
+
+	public boolean contains(final Bitmap x) {
+		return textures.contains(x);
+	}
+
+	public boolean contains(final Material x) {
+		return materials.contains(x);
+	}
+
+	public boolean contains(final TextureAnim x) {
+		return texAnims.contains(x);
+	}
+
+	public boolean contains(final Geoset x) {
+		return geosets.contains(x);
+	}
+
+	public boolean contains(final GeosetAnim x) {
+		return geosetAnims.contains(x);
+	}
+
 	public void add(final IdObject x) {
 		if (x == null) {
 			JOptionPane.showMessageDialog(null,
@@ -1750,6 +1916,10 @@ public class EditableModel implements Named {
 				}
 			}
 		}
+	}
+
+	public boolean contains(final Camera x) {
+		return cameras.contains(x);
 	}
 
 	public void add(final Camera x) {
@@ -1900,17 +2070,23 @@ public class EditableModel implements Named {
 		this.cameras = cameras;
 	}
 
+	public List<IdObject> getIdObjects() {
+		return new ArrayList<>(modelIdObjects.allObjects);
+//		return idObjects;
+	}
+
+	public void setIdObjects(final List<IdObject> idObjects) {
+		for (IdObject idObject : idObjects) {
+			modelIdObjects.addIdObject(idObject);
+		}
+//		this.idObjects = idObjects;
+	}
+
 	public void visit(final MeshVisitor renderer) {
 		int geosetId = 0;
 		for (final Geoset geoset : geosets) {
-			final GeosetVisitor geosetRenderer = renderer.beginGeoset(geosetId++, geoset.getMaterial(),
-					geoset.getGeosetAnim());
-			if ((ModelUtils.isTangentAndSkinSupported(formatVersion)) && (geoset.getVertices().size() > 0)
-					&& (geoset.getVertex(0).getSkinBones() != null)) {
-				visitHdVert(geoset, geosetRenderer);
-			} else {
-				visitSdVert(geoset, geosetRenderer);
-			}
+			final GeosetVisitor geosetRenderer = renderer.beginGeoset(geosetId++, geoset.getMaterial(), geoset.getGeosetAnim());
+			visitVert(geoset, geosetRenderer, isHd(geoset));
 			geosetRenderer.geosetFinished();
 		}
 	}
@@ -1975,9 +2151,9 @@ public class EditableModel implements Named {
 
 		for (final AnimFlag<?> flag : allAnimFlags) {
 			final List<Integer> indicesForDeletion = new ArrayList<>();
-			Entry lastEntry = null;
+			Entry<?> lastEntry = null;
 			for (int i = 0; i < flag.size(); i++) {
-				final Entry entry = flag.getEntry(i);
+				final Entry<?> entry = flag.getEntry(i);
 				if ((lastEntry != null) && (lastEntry.time.equals(entry.time))) {
 					indicesForDeletion.add(i);
 				}
@@ -1994,7 +2170,7 @@ public class EditableModel implements Named {
 					Object oldKeyframe = null;
 					final List<Integer> indicesForDeletion = new ArrayList<>();
 					for (int i = 0; i < flag.size(); i++) {
-						final Entry entry = flag.getEntry(i);
+						final Entry<?> entry = flag.getEntry(i);
 						//
 						// //Types of AnimFlags:
 						// // 0 Alpha
@@ -2115,6 +2291,18 @@ public class EditableModel implements Named {
 		}
 	}
 
+	public List<FaceEffect> getFaceEffects() {
+		return faceEffects;
+	}
+
+	public BindPose getBindPoseChunk() {
+		return bindPose;
+	}
+
+	public void setBindPoseChunk(final BindPose bindPoseChunk) {
+		bindPose = bindPoseChunk;
+	}
+
 	public void removeAllTimelinesForGlobalSeq(final Integer selectedValue) {
 		for (final Material m : materials) {
 			for (final Layer lay : m.layers) {
@@ -2146,7 +2334,7 @@ public class EditableModel implements Named {
 		for (final IdObject object : modelIdObjects.allObjects) {
 			object.removeAllTimelinesForGlobalSeq(selectedValue);
 		}
-	
+
 		if (cameras != null) {
 			for (final Camera x : cameras) {
 				x.getSourceNode().removeAllTimelinesForGlobalSeq(selectedValue);
@@ -2270,102 +2458,7 @@ public class EditableModel implements Named {
 		// i think we're done????
 	}
 
-	public static void recalculateTangents(final EditableModel currentMDL, final Component parent) {
-		// copied from
-		// https://github.com/TaylorMouse/MaxScripts/blob/master/Warcraft%203%20Reforged/GriffonStudios/GriffonStudios_Warcraft_3_Reforged_Export.ms#L169
-		int zeroAreaUVTris = 0;
-		currentMDL.doSavePreps(); // I wanted to use VertexId on the triangle
-		for (final Geoset theMesh : currentMDL.getGeosets()) {
-			final double[][] tan1 = new double[theMesh.getVertices().size()][];
-			final double[][] tan2 = new double[theMesh.getVertices().size()][];
-			for (int nFace = 0; nFace < theMesh.getTriangles().size(); nFace++) {
-				final Triangle face = theMesh.getTriangle(nFace);
 
-				final GeosetVertex v1 = face.getVerts()[0];
-				final GeosetVertex v2 = face.getVerts()[1];
-				final GeosetVertex v3 = face.getVerts()[2];
-
-				final Vec2 w1 = v1.getTVertex(0);
-				final Vec2 w2 = v2.getTVertex(0);
-				final Vec2 w3 = v3.getTVertex(0);
-
-				final double x1 = v2.x - v1.x;
-				final double x2 = v3.x - v1.x;
-				final double y1 = v2.y - v1.y;
-				final double y2 = v3.y - v1.y;
-				final double z1 = v2.z - v1.z;
-				final double z2 = v3.z - v1.z;
-
-				final double s1 = w2.x - w1.x;
-				final double s2 = w3.x - w1.x;
-				final double t1 = w2.y - w1.y;
-				final double t2 = w3.y - w1.y;
-
-				double tVertWeight = (s1 * t2) - (s2 * t1);
-				if (tVertWeight == 0) {
-					tVertWeight = 0.00000001;
-					zeroAreaUVTris++;
-				}
-
-				final double r = 1.0 / tVertWeight;
-
-				final double[] sdir = {((t2 * x1) - (t1 * x2)) * r, ((t2 * y1) - (t1 * y2)) * r, ((t2 * z1) - (t1 * z2)) * r};
-				final double[] tdir = {((s1 * x2) - (s2 * x1)) * r, ((s1 * y2) - (s2 * y1)) * r, ((s1 * z2) - (s2 * z1)) * r};
-
-				tan1[face.getId(0)] = sdir;
-				tan1[face.getId(1)] = sdir;
-				tan1[face.getId(2)] = sdir;
-
-				tan2[face.getId(0)] = tdir;
-				tan2[face.getId(1)] = tdir;
-				tan2[face.getId(2)] = tdir;
-			}
-			for (int vertexId = 0; vertexId < theMesh.getVertices().size(); vertexId++) {
-				final GeosetVertex gv = theMesh.getVertex(vertexId);
-				final Vec3 n = gv.getNormal();
-				final Vec3 t = new Vec3(tan1[vertexId]);
-
-//				final Vec3 v = new Vec3(t).sub(n).scale(n.dot(t)).normalize();
-				final Vec3 v = Vec3.getDiff(t, n).normalize();
-				final Vec3 cross = Vec3.getCross(n, t);
-
-				final Vec3 tanAsVert = new Vec3(tan2[vertexId]);
-
-				double w = cross.dot(tanAsVert);
-
-				if (w < 0.0) {
-					w = -1.0;
-				} else {
-					w = 1.0;
-				}
-				gv.setTangent(new float[] {v.x, v.y, v.z, (float) w });
-			}
-		}
-		int goodTangents = 0;
-		int badTangents = 0;
-		for (final Geoset theMesh : currentMDL.getGeosets()) {
-			for (final GeosetVertex gv : theMesh.getVertices()) {
-				final double dotProduct = gv.getNormal().dot(new Vec3(gv.getTangent()));
-//				System.out.println("dotProduct: " + dotProduct);
-				if (Math.abs(dotProduct) <= 0.000001) {
-					goodTangents += 1;
-				} else {
-					badTangents += 1;
-				}
-			}
-		}
-		if (parent != null) {
-			JOptionPane.showMessageDialog(parent,
-					"Tangent generation completed." +
-							"\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents + "" +
-							"\nFound " + zeroAreaUVTris + " uv triangles with no area");
-		} else {
-			System.out.println(
-					"Tangent generation completed." +
-							"\nGood tangents: " + goodTangents + ", bad tangents: " + badTangents +
-							"\nFound " + zeroAreaUVTris + " uv triangles with no area");
-		}
-	}
 
 	public static void recalculateTangentsOld(final EditableModel currentMDL) {
 		for (final Geoset theMesh : currentMDL.getGeosets()) {
@@ -2438,70 +2531,56 @@ public class EditableModel implements Named {
 	}
 
 	public List<IdObject> getAllObjects() {
-		return modelIdObjects.allObjects;
+		return new ArrayList<>(modelIdObjects.allObjects);
 	}
-
-	;
 
 	public List<Bone> getBones() {
-		return modelIdObjects.bones;
+		return new ArrayList<>(modelIdObjects.bones);
 	}
-
-	;
 
 	public List<Light> getLights() {
-		return modelIdObjects.lights;
+		return new ArrayList<>(modelIdObjects.lights);
 	}
-
-	;
 
 	public List<Helper> getHelpers() {
-		return modelIdObjects.helpers;
+		return new ArrayList<>(modelIdObjects.helpers);
 	}
-
-	;
 
 	public List<Attachment> getAttachments() {
-		return modelIdObjects.attachments;
+		return new ArrayList<>(modelIdObjects.attachments);
 	}
-
-	;
 
 	public List<ParticleEmitter> getParticleEmitters() {
-		return modelIdObjects.particleEmitters;
+		return new ArrayList<>(modelIdObjects.particleEmitters);
 	}
-
-	;
 
 	public List<ParticleEmitter2> getParticleEmitter2s() {
-		return modelIdObjects.particleEmitter2s;
+		return new ArrayList<>(modelIdObjects.particleEmitter2s);
 	}
-
-	;
 
 	public List<ParticleEmitterPopcorn> getPopcornEmitters() {
-		return modelIdObjects.popcornEmitters;
+		return new ArrayList<>(modelIdObjects.popcornEmitters);
 	}
-
-	;
 
 	public List<RibbonEmitter> getRibbonEmitters() {
-		return modelIdObjects.ribbonEmitters;
+		return new ArrayList<>(modelIdObjects.ribbonEmitters);
 	}
-
-	;
 
 	public List<EventObject> getEvents() {
-		return modelIdObjects.events;
+		return new ArrayList<>(modelIdObjects.events);
 	}
-
-	;
 
 	public List<CollisionShape> getColliders() {
-		return modelIdObjects.colliders;
+		return new ArrayList<>(modelIdObjects.colliders);
 	}
 
-	;
+	Map<Integer, IdObject> getIdToIdObjectMap() {
+		return modelIdObjects.getIdToIdObjectMap();
+	}
+
+	Map<IdObject, Integer> getIdObjectToIdMap() {
+		return modelIdObjects.getIdObjectToIdMap();
+	}
 
 	private static class ModelIdObjects {
 		final List<IdObject> allObjects;
@@ -2515,6 +2594,10 @@ public class EditableModel implements Named {
 		final List<RibbonEmitter> ribbonEmitters;
 		final List<EventObject> events;
 		final List<CollisionShape> colliders;
+
+		Map<Integer, IdObject> idToIdObjectMap;
+		Map<IdObject, Integer> idObjectToIdMap;
+
 
 		ModelIdObjects() {
 			allObjects = new ArrayList<>();
@@ -2536,7 +2619,7 @@ public class EditableModel implements Named {
 			} else if (idObject instanceof Helper) {
 				helpers.add((Helper) idObject);
 			} else if (idObject instanceof Bone) {
-				System.out.println("adding Bone");
+//				System.out.println("adding Bone");
 				bones.add((Bone) idObject);
 			} else if (idObject instanceof Attachment) {
 				attachments.add((Attachment) idObject);
@@ -2554,6 +2637,8 @@ public class EditableModel implements Named {
 				colliders.add((CollisionShape) idObject);
 			}
 			allObjects.add(idObject);
+			idToIdObjectMap = null;
+			idObjectToIdMap = null;
 		}
 
 		void removeIdObject(IdObject idObject) {
@@ -2579,9 +2664,11 @@ public class EditableModel implements Named {
 				colliders.remove(idObject);
 			}
 			allObjects.remove(idObject);
+			idToIdObjectMap = null;
+			idObjectToIdMap = null;
 		}
 
-		void sort() {
+		private void sort() {
 			allObjects.clear();
 			allObjects.addAll(bones);
 			allObjects.addAll(lights);
@@ -2607,6 +2694,9 @@ public class EditableModel implements Named {
 			ribbonEmitters.clear();
 			events.clear();
 			colliders.clear();
+
+			idToIdObjectMap = null;
+			idObjectToIdMap = null;
 		}
 
 		List<IdObject> getSorted() {
@@ -2614,8 +2704,11 @@ public class EditableModel implements Named {
 			return allObjects;
 		}
 
+		//		IdObject getIdObject(int index) {
+//			return allObjects.get(index);
+//		}
 		IdObject getIdObject(int index) {
-			return allObjects.get(index);
+			return getIdToIdObjectMap().get(index);
 		}
 
 		IdObject getObject(final String name) {
@@ -2627,40 +2720,86 @@ public class EditableModel implements Named {
 			return null;
 		}
 
-		int getObjectId(final IdObject what) {
-			System.out.println("allObjects.size(): " + allObjects.size());
-			return allObjects.indexOf(what);
+		int getObjectId(final IdObject idObject) {
+//			System.out.println("allObjects.size(): " + allObjects.size());
+			return getIdObjectToIdMap().getOrDefault(idObject, -1);
+		}
+
+		Map<Integer, IdObject> getIdToIdObjectMap() {
+			if (idToIdObjectMap == null) {
+				sort();
+				idToIdObjectMap = new HashMap<>();
+				for (int i = 0; i < allObjects.size(); i++) {
+					idToIdObjectMap.put(i, allObjects.get(i));
+				}
+			}
+			return idToIdObjectMap;
+		}
+
+		Map<IdObject, Integer> getIdObjectToIdMap() {
+			if (idObjectToIdMap == null) {
+				sort();
+				idObjectToIdMap = new HashMap<>();
+				for (int i = 0; i < allObjects.size(); i++) {
+					idObjectToIdMap.put(allObjects.get(i), i);
+				}
+			}
+			return idObjectToIdMap;
 		}
 
 		int getIdObjectsSize() {
 			return allObjects.size();
 		}
 
-		boolean contains(final IdObject x) {
-			return allObjects.contains(x);
+		boolean contains(final IdObject idObject) {
+			if (idObjectToIdMap != null) {
+				return idObjectToIdMap.containsKey(idObject);
+			}
+			if (idObject instanceof Light) {
+				return lights.contains(idObject);
+			} else if (idObject instanceof Helper) {
+				return helpers.contains(idObject);
+			} else if (idObject instanceof Bone) {
+				return bones.contains(idObject);
+			} else if (idObject instanceof Attachment) {
+				return attachments.contains(idObject);
+			} else if (idObject instanceof ParticleEmitter) {
+				return particleEmitters.contains(idObject);
+			} else if (idObject instanceof ParticleEmitter2) {
+				return particleEmitter2s.contains(idObject);
+			} else if (idObject instanceof ParticleEmitterPopcorn) {
+				return popcornEmitters.contains(idObject);
+			} else if (idObject instanceof RibbonEmitter) {
+				return ribbonEmitters.contains(idObject);
+			} else if (idObject instanceof EventObject) {
+				return events.contains(idObject);
+			} else if (idObject instanceof CollisionShape) {
+				return colliders.contains(idObject);
+			}
+			return false;
 		}
 
 		public <T extends IdObject> List<? extends IdObject> getListByClass(final Class<T> objectClass) {
 			if (objectClass.equals(Light.class)) {
-				return lights;
+				return new ArrayList<>(lights);
 			} else if (objectClass.equals(Helper.class)) {
-				return helpers;
+				return new ArrayList<>(helpers);
 			} else if (objectClass.equals(Bone.class)) {
-				return bones;
+				return new ArrayList<>(bones);
 			} else if (objectClass.equals(Attachment.class)) {
-				return attachments;
+				return new ArrayList<>(attachments);
 			} else if (objectClass.equals(ParticleEmitter.class)) {
-				return particleEmitters;
+				return new ArrayList<>(particleEmitters);
 			} else if (objectClass.equals(ParticleEmitter2.class)) {
-				return particleEmitter2s;
+				return new ArrayList<>(particleEmitter2s);
 			} else if (objectClass.equals(ParticleEmitterPopcorn.class)) {
-				return popcornEmitters;
+				return new ArrayList<>(popcornEmitters);
 			} else if (objectClass.equals(RibbonEmitter.class)) {
-				return ribbonEmitters;
+				return new ArrayList<>(ribbonEmitters);
 			} else if (objectClass.equals(EventObject.class)) {
-				return events;
+				return new ArrayList<>(events);
 			} else if (objectClass.equals(CollisionShape.class)) {
-				return colliders;
+				return new ArrayList<>(colliders);
 			}
 			return null;
 		}
