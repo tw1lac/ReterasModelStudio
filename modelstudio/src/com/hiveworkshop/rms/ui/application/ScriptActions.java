@@ -76,13 +76,11 @@ public class ScriptActions {
             newGeoset.updateToObjects(current);
             System.out.println("putting " + newGeoset.numUVLayers() + " into a nice " + host.numUVLayers());
             for (int i = 0; i < newGeoset.numVerteces(); i++) {
-                final GeosetVertex ver = newGeoset.getVertex(i);
-                host.add(ver);
-                ver.setGeoset(host);// geoset = host;
-                // for( int z = 0; z < host.n.numUVLayers(); z++ )
-                // {
-                // host.getUVLayer(z).addTVertex(newGeoset.getVertex(i).getTVertex(z));
-                // }
+	            final GeosetVertex ver = newGeoset.getVertex(i);
+	            host.add(ver);
+	            ver.setGeoset(host);// geoset = host;
+	            // for( int z = 0; z < host.n.numUVLayers(); z++ ){
+	            // host.getUVLayer(z).addTVertex(newGeoset.getVertex(i).getTVertex(z));}
             }
             for (int i = 0; i < newGeoset.numTriangles(); i++) {
                 final Triangle tri = newGeoset.getTriangle(i);
@@ -507,14 +505,174 @@ public class ScriptActions {
                     System.out.println(x + "," + y + "," + z);
 
                     final ModelUtils.Mesh mesh = ModelUtils.createBox(new Vec3(x * 10, y * 10, z * 10),
-                            new Vec3((x * 10) + (sX * 10), (y * 10) + (sY * 10), (z * 10) + (sZ * 10)), 1, 1,
-                            1, geo);
-                    geo.getVertices().addAll(mesh.getVertices());
-                    geo.getTriangles().addAll(mesh.getTriangles());
+		                    new Vec3((x * 10) + (sX * 10), (y * 10) + (sY * 10), (z * 10) + (sZ * 10)), 1, 1,
+		                    1, geo);
+	                geo.getVertices().addAll(mesh.getVertices());
+	                geo.getTriangles().addAll(mesh.getTriangles());
                 }
             }
 
         }
-        mainPanel.modelStructureChangeListener.geosetsAdded(new ArrayList<>(mainPanel.currentMDL().getGeosets()));
+	    mainPanel.modelStructureChangeListener.geosetsAdded(new ArrayList<>(mainPanel.currentMDL().getGeosets()));
     }
+
+	/**
+	 * Please, for the love of Pete, don't actually do this.
+	 */
+	public static void convertToV800(final int targetLevelOfDetail, final EditableModel model) {
+		// Things to fix:
+		// 1.) format version
+		model.setFormatVersion(800);
+		// 2.) materials: only diffuse
+		for (final Bitmap tex : model.getTextures()) {
+			String path = tex.getPath();
+			if ((path != null) && !path.isEmpty()) {
+				final int dotIndex = path.lastIndexOf('.');
+				if ((dotIndex != -1) && !path.endsWith(".blp")) {
+					path = (path.substring(0, dotIndex));
+				}
+				if (!path.endsWith(".blp")) {
+					path += ".blp";
+				}
+				tex.setPath(path);
+			}
+		}
+		for (final Material material : model.getMaterials()) {
+			material.makeSD();
+		}
+		// 3.) geosets:
+		// - Convert skin to matrices & vertex groups
+		final List<Geoset> wrongLOD = new ArrayList<>();
+		for (final Geoset geo : model.getGeosets()) {
+			for (final GeosetVertex vertex : geo.getVertices()) {
+				vertex.un900Heuristic();
+			}
+			if (geo.getLevelOfDetail() != targetLevelOfDetail) {
+				// wrong lod
+				wrongLOD.add(geo);
+			}
+		}
+		// - Probably overwrite normals with tangents, maybe, or maybe not
+		// - Eradicate anything that isn't LOD==X
+		if (model.getGeosets().size() > wrongLOD.size()) {
+			for (final Geoset wrongLODGeo : wrongLOD) {
+				model.remove(wrongLODGeo);
+				final GeosetAnim geosetAnim = wrongLODGeo.getGeosetAnim();
+				if (geosetAnim != null) {
+					model.remove(geosetAnim);
+				}
+			}
+		}
+		// 4.) remove popcorn
+		// - add hero glow from popcorn if necessary
+		final List<IdObject> incompatibleObjects = new ArrayList<>();
+		for (int idObjIdx = 0; idObjIdx < model.getIdObjectsSize(); idObjIdx++) {
+			final IdObject idObject = model.getIdObject(idObjIdx);
+			if (idObject instanceof ParticleEmitterPopcorn) {
+				incompatibleObjects.add(idObject);
+				if (((ParticleEmitterPopcorn) idObject).getPath().toLowerCase().contains("hero_glow")) {
+					System.out.println("HERO HERO HERO");
+					final Bone dummyHeroGlowNode = new Bone("hero_reforged");
+					// this model needs hero glow
+					final Geoset heroGlow = new Geoset();
+					final ModelUtils.Mesh heroGlowPlane = ModelUtils.createPlane((byte) 0, (byte) 1, new Vec3(0, 0, 1), 0, -64,
+							-64, 64, 64, 1);
+					heroGlow.getVertices().addAll(heroGlowPlane.getVertices());
+					for (final GeosetVertex gv : heroGlow.getVertices()) {
+						gv.setGeoset(heroGlow);
+						gv.getBones().clear();
+						gv.getBones().add(dummyHeroGlowNode);
+					}
+					heroGlow.getTriangles().addAll(heroGlowPlane.getTriangles());
+					heroGlow.setUnselectable(true);
+					final Bitmap heroGlowBitmap = new Bitmap("");
+					heroGlowBitmap.setReplaceableId(2);
+					final Layer layer = new Layer("Additive", heroGlowBitmap);
+					layer.setUnshaded(true);
+					layer.setUnfogged(true);
+					heroGlow.setMaterial(new Material(layer));
+					model.add(dummyHeroGlowNode);
+					model.add(heroGlow);
+
+				}
+			}
+		}
+		for (final IdObject incompat : incompatibleObjects) {
+			model.remove(incompat);
+		}
+		// 5.) remove other unsupported stuff
+		for (final IdObject obj : model.getIdObjects()) {
+			obj.setBindPose(null);
+		}
+		for (final Camera camera : model.getCameras()) {
+			camera.setBindPose(null);
+		}
+		// 6.) fix dump bug with paths:
+		for (final Bitmap tex : model.getTextures()) {
+			final String path = tex.getPath();
+			if (path != null) {
+				tex.setPath(path.replace('/', '\\'));
+			}
+		}
+//		for (final ParticleEmitter emitter : (List<ParticleEmitter>)model.sortedIdObjects(ParticleEmitter.class)) {
+		for (final ParticleEmitter emitter : model.getParticleEmitters()) {
+			final String path = emitter.getPath();
+			if (path != null) {
+				emitter.setPath(path.replace('/', '\\'));
+			}
+		}
+//		for (final Attachment emitter : (List<Attachment>)model.sortedIdObjects(Attachment.class)) {
+		for (final Attachment emitter : model.getAttachments()) {
+			final String path = emitter.getPath();
+			if (path != null) {
+				emitter.setPath(path.replace('/', '\\'));
+			}
+		}
+
+		model.setBindPoseChunk(null);
+		model.getFaceEffects().clear();
+	}
+
+	public static void makeItHD2(final EditableModel model) {
+		for (final Geoset geo : model.getGeosets()) {
+			final List<GeosetVertex> vertices = geo.getVertices();
+			for (final GeosetVertex gv : vertices) {
+				final Vec3 normal = gv.getNormal();
+				if (normal != null) {
+					gv.initV900();
+					gv.setTangent(normal, 1);
+				}
+				final int bones = Math.min(4, gv.getBoneAttachments().size());
+				final short weight = (short) (255 / bones);
+				for (int i = 0; i < bones; i++) {
+					if (i == 0) {
+						gv.setSkinBone(gv.getBoneAttachments().get(i), (short) (weight + (255 % bones)), i);
+					} else {
+						gv.setSkinBone(gv.getBoneAttachments().get(i), weight, i);
+
+					}
+				}
+			}
+		}
+		for (final Material m : model.getMaterials()) {
+			m.makeHD();
+		}
+	}
+
+	public static void makeItHD(final EditableModel model) {
+		for (final Geoset geo : model.getGeosets()) {
+			final List<GeosetVertex> vertices = geo.getVertices();
+			for (final GeosetVertex gv : vertices) {
+				final Vec3 normal = gv.getNormal();
+				gv.initV900();
+				if (normal != null) {
+					gv.setTangent(normal, 1);
+				}
+				gv.magicSkinBones();
+			}
+		}
+		for (final Material m : model.getMaterials()) {
+			m.makeHD();
+		}
+	}
 }

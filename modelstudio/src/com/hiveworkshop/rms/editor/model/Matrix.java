@@ -22,6 +22,17 @@ public class Matrix {
 		m_boneIds.add(id);
 	}
 
+	public Matrix(final List<Bone> newBones) {
+		bones = new ArrayList<>(newBones);
+	}
+
+	public Matrix(final int[] boneIds) {
+		m_boneIds = new ArrayList<>();
+		for (int boneId : boneIds) {
+			m_boneIds.add(boneId);
+		}
+	}
+
 	public String getName() {
 		StringBuilder out = new StringBuilder();
 		if (bones != null) {
@@ -55,32 +66,28 @@ public class Matrix {
 		} else {
 			m_boneIds.clear();
 		}
+		List<Bone> bonesToRemove = new ArrayList<>();
 		for (Bone bone : bones) {
 			final int newId = mdlr.getObjectId(bone);
-			System.out.println(newId);
+//			System.out.println("new id: " + newId + " for bone: " + bone.getName());
 			if (newId >= 0) {
 				m_boneIds.add(newId);
 			} else {
+				bonesToRemove.add(bone);
 				new Exception("Matrix error").printStackTrace();
 				if ((System.currentTimeMillis() - lastPopupTimeHack) > 2000) {
-					JOptionPane.showMessageDialog(null,
-							"Error: A matrix's bone reference was missing in the model!" +
-									"\nDid you move geometry between models and forget to update bones?");
-
-					System.out.println("Error: A matrix's bone reference was missing in the model!" +
-							"\nDid you move geometry between models and forget to update bones?");
+//					JOptionPane.showMessageDialog(null, "Error: A matrix's bone reference was missing in the model!" + "\nDid you move geometry between models and forget to update bones?");
+					System.out.println("Error: A matrix's bone reference was missing in the model!" + "\nDid you move geometry between models and forget to update bones?");
 					lastPopupTimeHack = System.currentTimeMillis();
 				}
 			}
 		}
 		if (((bones.size() != 0) && (m_boneIds.size() == 0)) || (m_boneIds.size() < bones.size())) {
+			bones.removeAll(bonesToRemove);
 			new Exception("Matrix error").printStackTrace();
 			if ((System.currentTimeMillis() - lastPopupTimeHack) > 2000) {
-				JOptionPane.showMessageDialog(null, "Error: bad sizes in matrix (" + (bones.size() - m_boneIds.size())
-						+ " as difference, should be same size)");
-
-				System.out.println("Error: bad sizes in matrix (" + (bones.size() - m_boneIds.size())
-						+ " as difference, should be same size)");
+				JOptionPane.showMessageDialog(null, "Error: bad sizes in matrix (" + (bones.size() - m_boneIds.size()) + " as difference, should be same size)\n Bad bones was removed from the matrix.");
+				System.out.println("Error: bad sizes in matrix (" + (bones.size() - m_boneIds.size()) + " as difference, should be same size)");
 				lastPopupTimeHack = System.currentTimeMillis();
 			}
 		}
@@ -94,29 +101,13 @@ public class Matrix {
 		}
         for (Integer m_boneId : m_boneIds) {
             final Bone b = mdlr.getBone(m_boneId);
-            // if( b.getClass() == Helper.class )
-            // {
-            // JOptionPane.showMessageDialog(null,"Error: Holy fo shizzle my
-            // grizzle! There's geometry attached to Helper "+b.getName()+" and
-            // that is very bad!");
-            // }
+	        // if( b.getClass() == Helper.class ) { JOptionPane.showMessageDialog(null,"Error: Holy fo shizzle my grizzle! There's geometry attached to Helper "+b.getName()+" and that is very bad!"); }
             if (b != null) {
                 bones.add(b);
             } else {
 //				JOptionPane.showMessageDialog(null, "Error: A matrix's bone id was not referencing a real bone!");
                 System.err.println("Error: A matrix's bone id was not referencing a real bone! " + m_boneId);
             }
-        }
-	}
-
-	public Matrix(final List<Bone> newBones) {
-		bones = new ArrayList<>(newBones);
-	}
-
-	public Matrix(final int[] boneIds) {
-		m_boneIds = new ArrayList<>();
-        for (int boneId : boneIds) {
-            m_boneIds.add(boneId);
         }
 	}
 
@@ -132,10 +123,13 @@ public class Matrix {
 		return m_boneIds.get(index);
 	}
 
+	public int getBoneId(final int index, EditableModel model) {
+		return model.getObjectId(bones.get(index));
+	}
+
 	public int size() {
-		if ((m_boneIds != null) && (m_boneIds.size() > 0)) {
-			return m_boneIds.size();
-		} else if ((bones != null) && (bones.size() > 0)) {
+//		if ((m_boneIds != null) && (m_boneIds.size() > 0)) { return m_boneIds.size(); } else
+		if ((bones != null) && (bones.size() > 0)) {
 			return bones.size();
 		}
 		// JOptionPane.showMessageDialog(null,"Warning: A matrix with no contents was used!");
@@ -147,13 +141,12 @@ public class Matrix {
 		if (other.size() != size()) {
 			return false;
 		}
-		boolean same = true;
-		for (int i = 0; (i < size()) && same; i++) {
+		for (int i = 0; i < size(); i++) {
 			if (bones.get(i) != other.bones.get(i)) {
-				same = false;
+				return false;
 			}
 		}
-		return same;
+		return true;
 	}
 
 	public List<Bone> getBones() {

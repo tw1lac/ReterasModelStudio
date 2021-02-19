@@ -21,7 +21,7 @@ import java.util.List;
 public class GeosetVertex extends Vec3 {
     Matrix matrixRef;
     private Vec3 normal = new Vec3();
-    public int VertexGroup = -1;
+    public int vertexGroup = -1;
     List<Vec2> tverts = new ArrayList<>();
     List<Bone> bones = new ArrayList<>();
     List<Triangle> triangles = new ArrayList<>();
@@ -78,6 +78,20 @@ public class GeosetVertex extends Vec3 {
         tangent = new Vec4(0, 0, 0, 0);
     }
 
+    public void magicSkinBones() {
+        final int bonesNum = Math.min(4, bones.size());
+        final short weight = (short) (255 / bonesNum);
+
+        for (int i = 0; i < 4; i++) {
+            if (i < bonesNum) {
+                setSkinBone(bones.get(i), weight, i);
+            } else {
+                setSkinBone((short) 0, i);
+            }
+        }
+        setSkinBone(bones.get(0), (short) (weight + (255 % bonesNum)), 0);
+    }
+
     public void un900Heuristic() {
         if (tangent != null) {
             tangent = null;
@@ -108,6 +122,34 @@ public class GeosetVertex extends Vec3 {
         }
     }
 
+    public void un900Heuristic2() {
+        if (tangent != null) {
+            tangent = null;
+        }
+        if (sskinBones != null) {
+            bones.clear();
+            boolean fallback = false;
+            for (final SkinBone skinBone : sskinBones) {
+                if (skinBone != null && skinBone.getBone() != null) {
+                    fallback = true;
+                    if (skinBone.getWeight() > 110) {
+                        bones.add(skinBone.getBone());
+                    }
+                }
+            }
+            if (bones.isEmpty() && fallback) {
+                for (final SkinBone skinBone : sskinBones) {
+                    if (skinBone != null && skinBone.getBone() != null) {
+                        bones.add(skinBone.getBone());
+                    }
+                }
+            }
+            skinBones = null;
+            skinBoneWeights = null;
+            skinBoneIndexes = null;
+        }
+    }
+
     public void addTVertex(final Vec2 v) {
         tverts.add(v);
     }
@@ -120,12 +162,12 @@ public class GeosetVertex extends Vec3 {
         }
     }
 
-    public void setVertexGroup(final int k) {
-        VertexGroup = k;
+    public int getVertexGroup() {
+        return vertexGroup;
     }
 
-    public int getVertexGroup() {
-        return VertexGroup;
+    public void setVertexGroup(final int k) {
+        vertexGroup = k;
     }
 
     public void clearBoneAttachments() {
@@ -246,9 +288,36 @@ public class GeosetVertex extends Vec3 {
             if (this.sskinBones[i] == null) {
                 this.sskinBones[i] = new SkinBone(skinBoneWeights[i], skinBones[i]);
             } else {
-                this.sskinBones[i].setWeight(skinBoneWeights[i]);
-                this.sskinBones[i].setBone(skinBones[i]);
+                this.sskinBones[i].set(skinBoneWeights[i], skinBones[i]);
             }
+        }
+    }
+
+    public void setSkinBone(final Bone skinBone, final short skinBoneWeight, int i) {
+        this.skinBones[i] = skinBone;
+        this.skinBoneWeights[i] = skinBoneWeight;
+        if (this.sskinBones[i] == null) {
+            this.sskinBones[i] = new SkinBone(skinBoneWeight, skinBone);
+        } else {
+            this.sskinBones[i].set(skinBoneWeight, skinBone);
+        }
+    }
+
+    public void setSkinBone(final Bone skinBone, int i) {
+        this.skinBones[i] = skinBone;
+        if (this.sskinBones[i] == null) {
+            this.sskinBones[i] = new SkinBone(skinBone);
+        } else {
+            this.sskinBones[i].setBone(skinBone);
+        }
+    }
+
+    public void setSkinBone(final short skinBoneWeight, int i) {
+        this.skinBoneWeights[i] = skinBoneWeight;
+        if (this.sskinBones[i] == null) {
+            this.sskinBones[i] = new SkinBone(skinBoneWeight);
+        } else {
+            this.sskinBones[i].setWeight(skinBoneWeight);
         }
     }
 
@@ -455,14 +524,17 @@ public class GeosetVertex extends Vec3 {
 
         for (int i = 0; i < sskinBones.length && i < 4; i++) {
             skinEntry[i] = sskinBones[i].weight;
-            skinEntry[i + 4] = (short) sskinBones[i].getBoneId();
+            skinEntry[i + 4] = (short) sskinBones[i].getBoneId(geoset.getParentModel());
         }
         return skinEntry;
     }
 
-    public class SkinBone {
+    public static class SkinBone {
         short weight;
         Bone bone;
+
+        SkinBone() {
+        }
 
         SkinBone(SkinBone skinBone) {
             this.weight = skinBone.weight;
@@ -484,6 +556,12 @@ public class GeosetVertex extends Vec3 {
             this.bone = bone;
         }
 
+        public SkinBone set(short weight, Bone bone) {
+            this.bone = bone;
+            this.weight = weight;
+            return this;
+        }
+
         public Bone getBone() {
             return bone;
         }
@@ -502,8 +580,8 @@ public class GeosetVertex extends Vec3 {
             return this;
         }
 
-        int getBoneId() {
-            return geoset.getParentModel().getObjectId(bone);
+        int getBoneId(EditableModel model) {
+            return model.getObjectId(bone);
         }
     }
 }

@@ -232,20 +232,28 @@ public class Vec3 {
         return "{" + x + ", " + y + ", " + z + "}";
     }
 
-    public double[] toArray() {
-        return new double[]{x, y, z};
+    public float[] toArray() {
+        return new float[] {x, y, z};
     }
 
     public float[] toFloatArray() {
-        return new float[]{x, y, z};
+        return new float[] {x, y, z};
+    }
+
+    public double[] toDoubleArray() {
+        return new double[] {x, y, z};
+    }
+
+    public Float[] toFloatArray2() {
+        return new Float[] {x, y, z};
     }
 
     public short[] toShortArray() {
-        return new short[]{(short) x, (short) y, (short) z};
+        return new short[] {(short) x, (short) y, (short) z};
     }
 
     public long[] toLongArray() {
-        return new long[]{(long) x, (long) y, (long) z};
+        return new long[] {(long) x, (long) y, (long) z};
     }
 
     public float distance(final float ax, final float ay, final float az) {
@@ -254,7 +262,6 @@ public class Vec3 {
         final float dz = az - z;
 
         return (float) Math.sqrt((dx * dx) + (dy * dy) + (dz * dz));
-
     }
 
     public float distance(final Vec3 a) {

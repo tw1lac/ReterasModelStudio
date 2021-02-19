@@ -130,6 +130,14 @@ public class Vec2 {
 		return (float) Math.sqrt((dx * dx) + (dy * dy));
 	}
 
+	public Float[] toFloatArray() {
+		return new Float[] {x, y};
+	}
+
+	public float[] toArray() {
+		return new float[] {x, y};
+	}
+
 	public Vec2 normalize() {
 		float len = lengthSquared();
 
