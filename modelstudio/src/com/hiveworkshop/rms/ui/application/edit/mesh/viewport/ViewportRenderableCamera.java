@@ -9,7 +9,6 @@ import com.hiveworkshop.rms.parsers.mdlx.util.MdxUtils;
 import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.axes.CoordinateSystem;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
 import com.hiveworkshop.rms.util.Mat4;
-import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 
@@ -28,12 +27,6 @@ public class ViewportRenderableCamera {
 	private static final Vec3 endVector = new Vec3(0, 0, 0);
 	private static final Vec3 vector3heap = new Vec3(0, 0, 0);
 	private static final Vec3 Z_DIMENSION = new Vec3(0, 0, 1);
-	private static final Quat quatHeap = new Quat();
-	private static final Quat quatRotHeap = new Quat(0, 0, 0, 0);
-	private static final Vec4 vectorHeap = new Vec4();
-	private static final Vec3 ZEROES = new Vec3(0, 0, 0);
-	private static final Vec3 ONES = new Vec3(1, 1, 1);
-	private static final Vec3 quatRotAxisHeap = new Vec3(0, 0, 0);
 
 	public ViewportRenderableCamera() {
 		EditableModel camera;
