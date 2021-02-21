@@ -1,33 +1,15 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.*;
-import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import com.hiveworkshop.rms.util.IterableListModel;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class VisibilityEditPanel {
-//	JList<VisibilityPanel> visTabs = new JList<>();
-//	EditableModel currentModel;
-//	EditableModel importedModel;
-//
-//	DefaultListModel<VisibilityPanel> visComponents;
-//	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
-//	JButton allMatrOriginal = new JButton("Reset all Matrices");
-//	JButton allMatrSameName = new JButton("Set all to available, original names");
-//	DefaultListModel<BoneShell> futureBoneListEx = new DefaultListModel<>();
-//	List<DefaultListModel<BoneShell>> futureBoneListExFixableItems = new ArrayList<>();
-//	ArrayList<BoneShell> oldHelpers;
-//	ArrayList<BoneShell> newHelpers;
-//	ArrayList<VisibilityShell> allVisShells;
-//	ArrayList<Object> visSourcesOld;
-//	ArrayList<Object> visSourcesNew;
-//	DefaultListModel<ObjectPanel> objectPanels = new DefaultListModel<>();
-//	JList<ObjectPanel> objectTabs = new JList<>(objectPanels);
-//	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
 	JList<VisibilityPanel> visTabs;
 	EditableModel currentModel;
@@ -37,15 +19,10 @@ public class VisibilityEditPanel {
 	ArrayList<VisibilityPanel> allVisShellPanes;
 	JButton allMatrOriginal;
 	JButton allMatrSameName;
-	DefaultListModel<BoneShell> futureBoneListEx;
-	List<DefaultListModel<BoneShell>> futureBoneListExFixableItems;
-	ArrayList<BoneShell> oldHelpers;
-	ArrayList<BoneShell> newHelpers;
 	ArrayList<VisibilityShell> allVisShells;
-	//	ArrayList<VisibilityShell> allVisShells;
 	ArrayList<Object> visSourcesOld;
 	ArrayList<Object> visSourcesNew;
-	Vector<ObjectPanel> objectPanels;
+	IterableListModel<ObjectPanel> objectPanels;
 	JList<ObjectPanel> objectTabs;
 	JTabbedPane geosetTabs;
 
@@ -56,12 +33,8 @@ public class VisibilityEditPanel {
 	                           ArrayList<VisibilityPanel> allVisShellPanes,
 	                           JButton allMatrOriginal,
 	                           JButton allMatrSameName,
-	                           DefaultListModel<BoneShell> futureBoneListEx,
-	                           List<DefaultListModel<BoneShell>> futureBoneListExFixableItems,
-	                           ArrayList<BoneShell> oldHelpers,
-	                           ArrayList<BoneShell> newHelpers,
 	                           ArrayList<Object> visSourcesNew,
-	                           Vector<ObjectPanel> objectPanels,
+	                           IterableListModel<ObjectPanel> objectPanels,
 	                           JList<ObjectPanel> objectTabs,
 	                           JTabbedPane geosetTabs
 	) {
@@ -73,12 +46,6 @@ public class VisibilityEditPanel {
 		this.allVisShellPanes = allVisShellPanes;
 		this.allMatrOriginal = allMatrOriginal;
 		this.allMatrSameName = allMatrSameName;
-		this.futureBoneListEx = futureBoneListEx;
-		this.futureBoneListExFixableItems = futureBoneListExFixableItems;
-		this.oldHelpers = oldHelpers;
-		this.newHelpers = newHelpers;
-//		this.allVisShells = allVisShells;
-//		this.visSourcesOld = visSourcesOld;
 		this.visSourcesNew = visSourcesNew;
 		this.objectPanels = objectPanels;
 		this.objectTabs = objectTabs;
@@ -86,54 +53,32 @@ public class VisibilityEditPanel {
 	}
 
 	private static void visTabsValueChanged(MultiVisibilityPanel multiVisPanel, CardLayout visCardLayout, JPanel visPanelCards, JList<VisibilityPanel> visTabs) {
-		if (visTabs.getSelectedValuesList().toArray().length < 1) {
+		List<VisibilityPanel> selectedValuesList = visTabs.getSelectedValuesList();
+		if (selectedValuesList.size() < 1) {
 			visCardLayout.show(visPanelCards, "blank");
-		} else if (visTabs.getSelectedValuesList().toArray().length == 1) {
+		} else if (selectedValuesList.size() == 1) {
 			visCardLayout.show(visPanelCards, visTabs.getSelectedValue().title.getText());
-		} else if (visTabs.getSelectedValuesList().toArray().length > 1) {
+		} else {
 			visCardLayout.show(visPanelCards, "multiple");
-			final Object[] selected = visTabs.getSelectedValuesList().toArray();
 
-			boolean dif = false;
-			boolean set = false;
-			boolean selectedt = false;
+			int tempIndexOld = selectedValuesList.get(0).oldSourcesBox.getSelectedIndex();
+			int tempIndexNew = selectedValuesList.get(0).newSourcesBox.getSelectedIndex();
+			boolean selectedt = selectedValuesList.get(0).favorOld.isSelected();
 
-			boolean difBoxOld = false;
-			boolean difBoxNew = false;
-			int tempIndexOld = -99;
-			int tempIndexNew = -99;
 
-			for (int i = 0; (i < selected.length) && !dif; i++) {
-				final VisibilityPanel temp = (VisibilityPanel) selected[i];
-				if (!set) {
-					set = true;
-					selectedt = temp.favorOld.isSelected();
-				} else if (selectedt != temp.favorOld.isSelected()) {
-					dif = true;
-				}
-
-				if (tempIndexOld == -99) {
-					tempIndexOld = temp.oldSourcesBox.getSelectedIndex();
-				}
-				if (tempIndexOld != temp.oldSourcesBox.getSelectedIndex()) {
-					difBoxOld = true;
-				}
-
-				if (tempIndexNew == -99) {
-					tempIndexNew = temp.newSourcesBox.getSelectedIndex();
-				}
-				if (tempIndexNew != temp.newSourcesBox.getSelectedIndex()) {
-					difBoxNew = true;
-				}
-			}
+			boolean dif = selectedValuesList.stream().anyMatch(visibilityPanel -> visibilityPanel.favorOld.isSelected());
 			if (!dif) {
 				multiVisPanel.favorOld.setSelected(selectedt);
 			}
+
+			boolean difBoxOld = selectedValuesList.stream().anyMatch(visibilityPanel -> visibilityPanel.oldSourcesBox.getSelectedIndex() != tempIndexOld);
 			if (difBoxOld) {
 				multiVisPanel.setMultipleOld();
 			} else {
 				multiVisPanel.oldSourcesBox.setSelectedIndex(tempIndexOld);
 			}
+
+			boolean difBoxNew = selectedValuesList.stream().anyMatch(visibilityPanel -> visibilityPanel.newSourcesBox.getSelectedIndex() != tempIndexNew);
 			if (difBoxNew) {
 				multiVisPanel.setMultipleNew();
 			} else {
@@ -177,15 +122,19 @@ public class VisibilityEditPanel {
 	}
 
 	public JPanel makeVisPanel(EditableModel currentModel) {
-		JPanel visPanel = new JPanel();
-		JSplitPane splitPane;
+		JPanel visPanel = new JPanel(new MigLayout("gap 0", ""));
+		visPanel.setMaximumSize(new Dimension(500, 500));
+		visPanel.setPreferredSize(new Dimension(500, 500));
+		visPanel.setMaximumSize(new Dimension(500, 500));
 //		addTab("Visibility", orangeIcon, visPanel, "Controls the visibility of portions of the model.");
 
 		initVisibilityList();
 		visibilityList();
 
 		CardLayout visCardLayout = new CardLayout();
+		visCardLayout.maximumLayoutSize(visPanel);
 		JPanel visPanelCards = new JPanel(visCardLayout);
+		visPanelCards.setMaximumSize(new Dimension(500, 500));
 
 		final VisShellBoxCellRenderer visRenderer = new VisShellBoxCellRenderer();
 		for (final VisibilityShell vs : allVisShells) {
@@ -203,7 +152,7 @@ public class VisibilityEditPanel {
 		visTabs.setCellRenderer(new VisPaneListCellRenderer(currentModel));
 		visTabs.addListSelectionListener(e -> visTabsValueChanged(multiVisPanel, visCardLayout, visPanelCards, visTabs));
 		visTabs.setSelectedIndex(0);
-		visPanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
+//		visPanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
 
 		JButton allInvisButton = new JButton("All Invisible in Exotic Anims");
 		allInvisButton.addActionListener(e -> allVisButton(allVisShellPanes, currentModel, VisibilityPanel.NOTVISIBLE));
@@ -220,26 +169,15 @@ public class VisibilityEditPanel {
 		selSimButton.setToolTipText("Similar components will be selected as visibility sources in exotic animations.");
 		visPanel.add(selSimButton);
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(visTabs), visPanelCards);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(visTabs), visPanelCards);
 
-		setLayout(visPanel, splitPane, allInvisButton, allVisButton, selSimButton);
+		visPanel.add(allInvisButton, "wrap");
+		visPanel.add(allVisButton, "wrap");
+		visPanel.add(selSimButton, "wrap");
+		visPanel.add(splitPane, "wrap");
 
+		System.out.println("done visPanel");
 		return visPanel;
-	}
-
-	private void setLayout(JPanel visPanel, JSplitPane splitPane, JButton allInvisButton, JButton allVisButton, JButton selSimButton) {
-		final GroupLayout visLayout = new GroupLayout(visPanel);
-		visLayout.setHorizontalGroup(visLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(allInvisButton)// .addGap(8)
-				.addComponent(allVisButton)
-				.addComponent(selSimButton)
-				.addComponent(splitPane));
-		visLayout.setVerticalGroup(visLayout.createSequentialGroup()
-				.addComponent(allInvisButton).addGap(8)
-				.addComponent(allVisButton).addGap(8)
-				.addComponent(selSimButton).addGap(8)
-				.addComponent(splitPane));
-		visPanel.setLayout(visLayout);
 	}
 
 	public void initVisibilityList() {
@@ -264,42 +202,42 @@ public class VisibilityEditPanel {
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object l : model.sortedIdObjects(Light.class)) {
+		for (final Object l : model.getLights()) {
 			final VisibilityShell vs = new VisibilityShell((Named) l, model);
 			if (!tempList.contains(l)) {
 				tempList.add(l);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object a : model.sortedIdObjects(Attachment.class)) {
+		for (final Object a : model.getAttachments()) {
 			final VisibilityShell vs = new VisibilityShell((Named) a, model);
 			if (!tempList.contains(a)) {
 				tempList.add(a);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitter.class)) {
+		for (final Object x : model.getParticleEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitter2.class)) {
+		for (final Object x : model.getParticleEmitter2s()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(RibbonEmitter.class)) {
+		for (final Object x : model.getRibbonEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
+		for (final Object x : model.getPopcornEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
@@ -323,42 +261,42 @@ public class VisibilityEditPanel {
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object l : model.sortedIdObjects(Light.class)) {
+		for (final Object l : model.getLights()) {
 			final VisibilityShell vs = new VisibilityShell((Named) l, model);
 			if (!tempList.contains(l)) {
 				tempList.add(l);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object a : model.sortedIdObjects(Attachment.class)) {
+		for (final Object a : model.getAttachments()) {
 			final VisibilityShell vs = new VisibilityShell((Named) a, model);
 			if (!tempList.contains(a)) {
 				tempList.add(a);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitter.class)) {
+		for (final Object x : model.getParticleEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitter2.class)) {
+		for (final Object x : model.getParticleEmitter2s()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(RibbonEmitter.class)) {
+		for (final Object x : model.getRibbonEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
 				allVisShells.add(vs);
 			}
 		}
-		for (final Object x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
+		for (final Object x : model.getPopcornEmitters()) {
 			final VisibilityShell vs = new VisibilityShell((Named) x, model);
 			if (!tempList.contains(x)) {
 				tempList.add(x);
@@ -395,7 +333,161 @@ public class VisibilityEditPanel {
 //		visComponents = new DefaultListModel<>();
 	}
 
+//	public void initVisibilityList() {
+//		visSourcesOld = new ArrayList<>();
+//		visSourcesNew = new ArrayList<>();
+//		allVisShells = new ArrayList<>();
+//		EditableModel model = currentModel;
+//		final List tempList = new ArrayList();
+//		for (final Material mat : model.getMaterials()) {
+//			for (final Layer lay : mat.getLayers()) {
+//				final VisibilityShell vs = new VisibilityShell(lay, model);
+//				if (!tempList.contains(lay)) {
+//					tempList.add(lay);
+//					allVisShells.add(vs);
+//				}
+//			}
+//		}
+//		for (final Geoset ga : model.getGeosets()) {
+//			final VisibilityShell vs = new VisibilityShell(ga, model);
+//			if (!tempList.contains(ga)) {
+//				tempList.add(ga);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object l : model.sortedIdObjects(Light.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) l, model);
+//			if (!tempList.contains(l)) {
+//				tempList.add(l);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object a : model.sortedIdObjects(Attachment.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) a, model);
+//			if (!tempList.contains(a)) {
+//				tempList.add(a);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitter.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitter2.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(RibbonEmitter.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		model = importedModel;
+//		for (final Material mat : model.getMaterials()) {
+//			for (final Layer lay : mat.getLayers()) {
+//				final VisibilityShell vs = new VisibilityShell(lay, model);
+//				if (!tempList.contains(lay)) {
+//					tempList.add(lay);
+//					allVisShells.add(vs);
+//				}
+//			}
+//		}
+//		for (final Geoset ga : model.getGeosets()) {
+//			final VisibilityShell vs = new VisibilityShell(ga, model);
+//			if (!tempList.contains(ga)) {
+//				tempList.add(ga);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object l : model.sortedIdObjects(Light.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) l, model);
+//			if (!tempList.contains(l)) {
+//				tempList.add(l);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object a : model.sortedIdObjects(Attachment.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) a, model);
+//			if (!tempList.contains(a)) {
+//				tempList.add(a);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitter.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitter2.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(RibbonEmitter.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//		for (final Object x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
+//			final VisibilityShell vs = new VisibilityShell((Named) x, model);
+//			if (!tempList.contains(x)) {
+//				tempList.add(x);
+//				allVisShells.add(vs);
+//			}
+//		}
+//
+//		System.out.println("allVisShells:");
+//		for (final VisibilityShell vs : allVisShells) {
+//			System.out.println(vs.source.getName());
+//		}
+//
+//		System.out.println("new/old:");
+//		for (final Object o : currentModel.getAllVisibilitySources()) {
+//			if (o.getClass() != GeosetAnim.class) {
+//				visSourcesOld.add(shellFromObject(allVisShells, o));
+//				System.out.println(shellFromObject(allVisShells, o).source.getName());
+//			} else {
+//				visSourcesOld.add(shellFromObject(allVisShells, ((GeosetAnim) o).getGeoset()));
+//				System.out.println(shellFromObject(allVisShells, ((GeosetAnim) o).getGeoset()).source.getName());
+//			}
+//		}
+//		visSourcesOld.add(VisibilityPanel.NOTVISIBLE);
+//		visSourcesOld.add(VisibilityPanel.VISIBLE);
+//		for (final Object o : importedModel.getAllVisibilitySources()) {
+//			if (o.getClass() != GeosetAnim.class) {
+//				visSourcesNew.add(shellFromObject(allVisShells, o));
+//			} else {
+//				visSourcesNew.add(shellFromObject(allVisShells, ((GeosetAnim) o).getGeoset()));
+//			}
+//		}
+//		visSourcesNew.add(VisibilityPanel.NOTVISIBLE);
+//		visSourcesNew.add(VisibilityPanel.VISIBLE);
+////		visComponents = new DefaultListModel<>();
+//	}
+
 	public DefaultListModel<VisibilityPanel> visibilityList() {
+		System.out.println("visibilityList");
 		final Object selection = visTabs.getSelectedValue();
 		visComponents.clear();
 		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
@@ -417,6 +509,8 @@ public class VisibilityEditPanel {
 				}
 			}
 		}
+
+		System.out.println("CurrModel");
 		// The current's
 		final EditableModel model = currentModel;
 		for (final Object l : model.sortedIdObjects(Light.class)) {
@@ -456,8 +550,7 @@ public class VisibilityEditPanel {
 			}
 		}
 
-		for (int i = 0; i < objectPanels.size(); i++) {
-			final ObjectPanel op = objectPanels.get(i);
+		for (final ObjectPanel op : objectPanels) {
 			if (op.doImport.isSelected() && (op.object != null))
 			// we don't touch camera "object" panels (which aren't idobjects)
 			{
@@ -467,6 +560,8 @@ public class VisibilityEditPanel {
 				}
 			}
 		}
+
+		System.out.println("done visConp");
 		visTabs.setSelectedValue(selection, true);
 		return visComponents;
 	}

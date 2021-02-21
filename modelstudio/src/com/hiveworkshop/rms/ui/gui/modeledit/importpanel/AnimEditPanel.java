@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
+import com.hiveworkshop.rms.util.IterableListModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +12,10 @@ public class AnimEditPanel {
 	public static final ImageIcon orangeIcon = RMSIcons.orangeIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/BlankOrange_small.png"));
 
 	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-	DefaultListModel<AnimShell> existingAnims;
+	IterableListModel<AnimShell> existingAnims;
 	JCheckBox clearExistingAnims;
 
-	public AnimEditPanel(JTabbedPane animTabs, DefaultListModel<AnimShell> existingAnims, JCheckBox clearExistingAnims) {
+	public AnimEditPanel(JTabbedPane animTabs, IterableListModel<AnimShell> existingAnims, JCheckBox clearExistingAnims) {
 		this.animTabs = animTabs;
 		this.existingAnims = existingAnims;
 		this.clearExistingAnims = clearExistingAnims;
@@ -75,9 +76,9 @@ public class AnimEditPanel {
 		JPanel animPanel = new JPanel();
 //		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
 
-//		existingAnims = new DefaultListModel<>();
-		for (int i = 0; i < currentModel.getAnims().size(); i++) {
-			existingAnims.addElement(new AnimShell(currentModel.getAnims().get(i)));
+//		existingAnims = new IterableListModel<>();
+		for (Animation animation : currentModel.getAnims()) {
+			existingAnims.addElement(new AnimShell(animation));
 		}
 
 		final AnimListCellRenderer animsRenderer = new AnimListCellRenderer();
@@ -98,11 +99,8 @@ public class AnimEditPanel {
 		uncheckAllAnims.addActionListener(e -> uncheckAllAnims(animTabs, false));
 		animPanel.add(uncheckAllAnims);
 
-//		clearExistingAnims = new JCheckBox("Clear pre-existing animations");
-
 		// Build the animTabs list of AnimPanels
-		for (int i = 0; i < importedModel.getAnims().size(); i++) {
-			final Animation anim = importedModel.getAnim(i);
+		for (Animation anim : importedModel.getAnims()) {
 			final AnimPanel iAnimPanel = new AnimPanel(anim, existingAnims, animsRenderer);
 
 			animTabs.addTab(anim.getName(), orangeIcon, iAnimPanel, "Click to modify data for this animation sequence.");

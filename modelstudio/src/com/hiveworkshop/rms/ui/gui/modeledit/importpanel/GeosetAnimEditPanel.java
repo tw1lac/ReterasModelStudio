@@ -37,8 +37,8 @@ public class GeosetAnimEditPanel {
 
 	private static void updateAnimTabs(ImportPanel importPanel) {
 		((AnimPanel) importPanel.animTabs.getSelectedComponent()).updateSelectionPicks();
-		importPanel.getFutureBoneList();
-		importPanel.getFutureBoneListExtended(false);
+		importPanel.mht.getFutureBoneList();
+		importPanel.mht.getFutureBoneListExtended(false);
 		importPanel.visibilityList();
 		// ((BoneAttachmentPane)geosetAnimTabs.getSelectedComponent()).refreshLists();
 		importPanel.repaint();

@@ -51,9 +51,20 @@ public class IterableListModel<T> extends DefaultListModel<T> implements Iterabl
 		return (T[]) o;
 	}
 
+	public void remove(T t) {
+		for (int i = 0; i < size(); i++) {
+			if (get(i) == t || get(i).equals(t)) {
+				remove(i);
+				return;
+			}
+		}
+	}
+
 
 	public void addAll(IterableListModel<? extends T> c) {
-		c.forEach(this::addElement);
+		if (c.size() > 0) {
+			c.forEach(this::addElement);
+		}
 	}
 
 	public void addAll(Collection<? extends T> c) {

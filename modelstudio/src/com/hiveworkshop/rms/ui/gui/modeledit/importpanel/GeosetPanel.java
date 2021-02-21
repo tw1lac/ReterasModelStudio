@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.editor.model.Material;
+import com.hiveworkshop.rms.util.IterableListModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.awt.*;
 
 class GeosetPanel extends JPanel implements ChangeListener {
 	// Geoset/Skin panel for controlling materials and geosets
-	DefaultListModel<Material> materials;
+	IterableListModel<Material> materials;
 	JList<Material> materialList;
 	JScrollPane materialListPane;
 	JCheckBox doImport;
@@ -27,7 +28,8 @@ class GeosetPanel extends JPanel implements ChangeListener {
 
 	public GeosetPanel(final boolean imported, // Is this Geoset an imported one, or an original?
 	                   final EditableModel model, final int geoIndex, // which geoset is this for? (starts with 0)
-	                   final DefaultListModel<Material> materials, final MaterialListCellRenderer renderer) {
+	                   final IterableListModel<Material> materials, final MaterialListCellRenderer renderer, ImportPanel importPanel) {
+		impPanel = importPanel;
 		this.materials = materials;
 		this.model = model;
 		this.renderer = renderer;
@@ -61,23 +63,6 @@ class GeosetPanel extends JPanel implements ChangeListener {
 
 		materialListPane = new JScrollPane(materialList);
 		add(materialListPane, "grow");
-
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//						.addComponent(geoTitle)
-//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//								.addComponent(doImport)
-//								.addComponent(materialText)
-//								.addComponent(materialListPane))).addGap(8));
-//
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(geoTitle).addGap(16)
-//				.addComponent(doImport)
-//				.addComponent(materialText)
-//				.addComponent(materialListPane));
-//
-//		setLayout(layout);
 	}
 
 	@Override
@@ -92,13 +77,13 @@ class GeosetPanel extends JPanel implements ChangeListener {
 		}
 	}
 
-	@Override
-	public void stateChanged(final ChangeEvent e) {
-		materialText.setEnabled(doImport.isSelected());
-		materialList.setEnabled(doImport.isSelected());
-		materialListPane.setEnabled(doImport.isSelected());
-
-		ImportPanel.informGeosetVisibility(getImportPanel().geosetAnimTabs, geoset, doImport.isSelected());
+	public static void informGeosetVisibility(JTabbedPane geosetAnimTabs, final Geoset g, final boolean flag) {
+		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
+			final BoneAttachmentPanel geoPanel = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
+			if (geoPanel.geoset == g) {
+				geosetAnimTabs.setEnabledAt(i, flag);
+			}
+		}
 	}
 
 	public void setMaterials(EditableModel currentModel, EditableModel importedModel) {
@@ -111,18 +96,16 @@ class GeosetPanel extends JPanel implements ChangeListener {
 		}
 	}
 
-	public ImportPanel getImportPanel() {
-		if (impPanel == null) {
-			Container temp = getParent();
-			while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
-				temp = temp.getParent();
-			}
-			impPanel = (ImportPanel) temp;
-		}
-		return impPanel;
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		materialText.setEnabled(doImport.isSelected());
+		materialList.setEnabled(doImport.isSelected());
+		materialListPane.setEnabled(doImport.isSelected());
+
+		informGeosetVisibility(impPanel.geosetAnimTabs, geoset, doImport.isSelected());
 	}
 
 	public Material getSelectedMaterial() {
-		return (Material) materialList.getSelectedValue();
+		return materialList.getSelectedValue();
 	}
 }

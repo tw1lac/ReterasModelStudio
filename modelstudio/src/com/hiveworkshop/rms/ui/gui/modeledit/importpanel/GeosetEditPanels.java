@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.Material;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
+import com.hiveworkshop.rms.util.IterableListModel;
 
 import javax.swing.*;
 
@@ -11,10 +12,12 @@ public class GeosetEditPanels {
 	public static final ImageIcon greenIcon = RMSIcons.greenIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/Blank_small.png"));
 	public static final ImageIcon geoIcon = RMSIcons.geoIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/geo_small.png"));
 	JTabbedPane geosetTabs;// = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-//	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	//	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	ImportPanel importPanel;
 
-	public GeosetEditPanels(JTabbedPane geosetTabs) {
+	public GeosetEditPanels(JTabbedPane geosetTabs, ImportPanel importPanel) {
 		this.geosetTabs = geosetTabs;
+		this.importPanel = importPanel;
 	}
 
 	private static void importAllGeos(JTabbedPane geosetTabs, boolean b) {
@@ -28,7 +31,7 @@ public class GeosetEditPanels {
 		JPanel geosetsPanel = new JPanel();
 //		addTab("Geosets", geoIcon, geosetsPanel, "Controls which geosets will be imported.");
 
-		final DefaultListModel<Material> materials = new DefaultListModel<>();
+		final IterableListModel<Material> materials = new IterableListModel<>();
 		materials.addAll(currentModel.getMaterials());
 		materials.addAll(importedModel.getMaterials());
 //		for (int i = 0; i < currentModel.getMaterials().size(); i++) {
@@ -38,7 +41,7 @@ public class GeosetEditPanels {
 //			materials.addElement(importedModel.getMaterials().get(i));
 //		}
 		// A list of all materials available for use during this import, in
-		// the form of a DefaultListModel
+		// the form of a IterableListModel
 
 		final MaterialListCellRenderer materialsRenderer = new MaterialListCellRenderer(currentModel);
 		// All material lists will know which materials come from the
@@ -46,12 +49,12 @@ public class GeosetEditPanels {
 
 		// Build the geosetTabs list of GeosetPanels
 		for (int i = 0; i < currentModel.getGeosets().size(); i++) {
-			final GeosetPanel geoPanel = new GeosetPanel(false, currentModel, i, materials, materialsRenderer);
+			final GeosetPanel geoPanel = new GeosetPanel(false, currentModel, i, materials, materialsRenderer, importPanel);
 
 			geosetTabs.addTab(currentModel.getName() + " " + (i + 1), greenIcon, geoPanel, "Click to modify material data for this geoset.");
 		}
 		for (int i = 0; i < importedModel.getGeosets().size(); i++) {
-			final GeosetPanel geoPanel = new GeosetPanel(true, importedModel, i, materials, materialsRenderer);
+			final GeosetPanel geoPanel = new GeosetPanel(true, importedModel, i, materials, materialsRenderer, importPanel);
 
 			geosetTabs.addTab(importedModel.getName() + " " + (i + 1), orangeIcon, geoPanel, "Click to modify importing and material data for this geoset.");
 		}

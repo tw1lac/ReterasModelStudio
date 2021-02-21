@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.gui.modeledit.MatrixShell;
+import com.hiveworkshop.rms.util.IterableListModel;
 import com.hiveworkshop.rms.util.Vec3;
 import net.miginfocom.swing.MigLayout;
 
@@ -16,13 +17,13 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 
 	// Old bone refs (matrices)
 	JLabel oldBoneRefsLabel;
-	DefaultListModel<MatrixShell> oldBoneRefs;
+	IterableListModel<MatrixShell> oldBoneRefs;
 	JList<MatrixShell> oldBoneRefsList;
 	JScrollPane oldBoneRefsPane;
 
 	// New refs
 	JLabel newRefsLabel;
-	DefaultListModel<BoneShell> newRefs;
+	IterableListModel<BoneShell> newRefs;
 	JList<BoneShell> newRefsList;
 	JScrollPane newRefsPane;
 	JButton removeNewRef;
@@ -31,7 +32,7 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 
 	// Bones (all available -- NEW AND OLD)
 	JLabel bonesLabel;
-	DefaultListModel<BoneShell> bones;
+	IterableListModel<BoneShell> bones;
 	JList<BoneShell> bonesList;
 	JScrollPane bonesPane;
 	JButton useBone;
@@ -68,7 +69,7 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 		oldBoneRefsPane = new JScrollPane(oldBoneRefsList);
 
 		newRefsLabel = new JLabel("New Refs");
-		newRefs = new DefaultListModel<>();
+		newRefs = new IterableListModel<>();
 		newRefsList = new JList<>(newRefs);
 		newRefsList.setCellRenderer(renderer);
 		newRefsPane = new JScrollPane(newRefsList);
@@ -248,7 +249,7 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 
 	public void buildOldRefsList() {
 		if (oldBoneRefs == null) {
-			oldBoneRefs = new DefaultListModel<>();
+			oldBoneRefs = new IterableListModel<>();
 		} else {
 			oldBoneRefs.clear();
 		}
@@ -313,7 +314,7 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 	}
 
 	public void updateBonesList() {
-		bones = getImportPanel().getFutureBoneList();
+		bones = getImportPanel().mht.getFutureBoneList();
 	}
 
 	public ImportPanel getImportPanel() {

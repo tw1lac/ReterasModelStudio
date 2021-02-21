@@ -39,10 +39,14 @@ class BoneShellListCellRenderer extends AbstractSnapshottingListCellRenderer2D<B
 	                                              final boolean iss, final boolean chf) {
 		setBackground(new Color(220, 180, 255));
 		super.getListCellRendererComponent(list, value, index, iss, chf);
-		setText(value.toString()/*
-		 * ((BoneShell) value).bone.getClass().getSimpleName() + " \"" +
-		 * ((BoneShell) value).bone.getName() + "\""
-		 */);
+		if (value == null) {
+			setText("value.toString()");
+		} else {
+			setText(value.toString()/*
+			 * ((BoneShell) value).bone.getClass().getSimpleName() + " \"" +
+			 * ((BoneShell) value).bone.getName() + "\""
+			 */);
+		}
 		// setIcon(new
 		// ImageIcon(Material.mergeImageScaled(ImportPanel.boneIcon.getImage(),
 		// ((ImageIcon) getIcon()).getImage(), 64, 64, 64, 64)));

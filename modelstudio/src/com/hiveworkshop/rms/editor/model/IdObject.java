@@ -190,9 +190,9 @@ public abstract class IdObject extends AnimatedNode implements Named {
 
 	public int getParentId(EditableModel model) {
 		if (parent == null) {
-			System.out.println("trying to get parent for bone: " + getName());
-			System.out.println("parent: " + parent);
-			System.out.println("_____________________________________________________");
+//			System.out.println("trying to get parent for bone: " + getName());
+//			System.out.println("parent: " + parent);
+//			System.out.println("_____________________________________________________");
 			return -1;
 		}
 		return model.getObjectId(parent);

@@ -56,8 +56,12 @@ public abstract class AbstractSnapshottingListCellRenderer2D<TYPE> extends Defau
 				graphics.setColor(backgroundColor.brighter());
 				graphics.fill3DRect(EIGHTH_SIZE, EIGHTH_SIZE, SIZE - QUARTER_SIZE, SIZE - QUARTER_SIZE, true);
 
-				makeBoneIcon(backgroundColor, matrixShell, graphics, otherDisplay, value);
-				makeBoneIcon(backgroundColor, matrixShell, graphics, modelDisplay, value);
+				if (matrixShell == null) {
+					System.out.println("matrixShell Null! value: " + value);
+				} else {
+					makeBoneIcon(backgroundColor, matrixShell, graphics, otherDisplay, value);
+					makeBoneIcon(backgroundColor, matrixShell, graphics, modelDisplay, value);
+				}
 
 				graphics.dispose();
 				myIcon = new ImageIcon(image);
@@ -66,7 +70,13 @@ public abstract class AbstractSnapshottingListCellRenderer2D<TYPE> extends Defau
 			}
 			matrixShellToCachedRenderer.put(matrixShell, myIcon);
 		}
-		super.getListCellRendererComponent(list, matrixShell.toString(), index, iss, chf);
+		if (value == null) {
+			System.out.println("value Null! value: " + value);
+			super.getListCellRendererComponent(list, "null", index, iss, chf);
+
+		} else {
+			super.getListCellRendererComponent(list, matrixShell.toString(), index, iss, chf);
+		}
 		setIcon(myIcon);
 		return this;
 	}

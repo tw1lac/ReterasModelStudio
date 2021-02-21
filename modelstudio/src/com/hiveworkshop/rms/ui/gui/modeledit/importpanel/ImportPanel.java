@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
-import com.hiveworkshop.rms.editor.model.EventObject;
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.animflag.FloatAnimFlag;
@@ -9,6 +8,8 @@ import com.hiveworkshop.rms.ui.application.edit.ModelStructureChangeListener;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
+import com.hiveworkshop.rms.util.IterableListModel;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -17,8 +18,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
 
 /**
  * The panel to handle the import function.
@@ -41,196 +42,126 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 	JFrame frame;
 
-	EditableModel currentModel;
-	EditableModel importedModel;
-
 	// Geosets
 	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
-	//	Vector<BonePanel> bbp = new Vector<>();
-//	List<BonePanel> bonePanels = new ArrayList<>();
-	private final Map<Bone, BonePanel> boneToPanel = new HashMap<>();
-	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-	// Animation
-//	JCheckBox clearExistingAnims;
+
+	public final BoneShellListCellRenderer boneShellRenderer;
 	JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
+	// Animation
+	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
 	// Bones
-//	JPanel bonesPanel = new JPanel();
-//	DefaultListModel<AnimShell> existingAnims;
-	DefaultListModel<AnimShell> existingAnims = new DefaultListModel<>();
-	JCheckBox clearExistingBones = new JCheckBox("Clear pre-existing bones and helpers");
-	//	DefaultListModel<BonePanel> bonePanels = new DefaultListModel<>();
-	Vector<BonePanel> bonePanels = new Vector<>();
-	JList<BonePanel> boneTabs = new JList<>(bonePanels);
-	//	DefaultListModel<BoneShell> existingBones;
-	DefaultListModel<BoneShell> existingBones = new DefaultListModel<>();
+//	IterableListModel<BonePanel> bonePanels = new IterableListModel<>();
+//	JList<BonePanel> boneTabs = new JList<>(bonePanels);
 
 	// Matrices
 	JPanel geosetAnimPanel = new JPanel();
 	JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
-	DefaultListModel<BoneShell> futureBoneList = new DefaultListModel<>();
-	List<BoneShell> oldBones;
-	List<BoneShell> newBones;
-
 	JButton allMatrOriginal = new JButton("Reset all Matrices");
 	JButton allMatrSameName = new JButton("Set all to available, original names");
-
-	private final Set<BoneShell> futureBoneListExQuickLookupSet = new HashSet<>();
-	private final BoneShellListCellRenderer boneShellRenderer;
-
+	IterableListModel<AnimShell> existingAnims = new IterableListModel<>();
 	// Objects
-//	DefaultListModel<ObjectPanel> objectPanels = new DefaultListModel<>();
-	Vector<ObjectPanel> objectPanels = new Vector<>();
-	//	List<ObjectPanel> objectPanels = new ArrayList<>();
-//	JList<ObjectPanel> objectTabs = new JList<ObjectPanel>((Vector<? extends ObjectPanel>) objectPanels);
+	IterableListModel<ObjectPanel> objectPanels = new IterableListModel<>();
 	JList<ObjectPanel> objectTabs = new JList<>(objectPanels);
 
 	// Visibility
 	JList<VisibilityPanel> visTabs = new JList<>();
 
+
+	IterableListModel<VisibilityPanel> visibilityPanels = new IterableListModel<>();
+	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
+
+	ArrayList<Object> visSourcesNew;
+
+	ModelHolderThing mht;
+
+	private ModelStructureChangeListener callback;
 	boolean importSuccess = false;
 	boolean importStarted = false;
 	boolean importEnded = false;
-
-	private ModelStructureChangeListener callback;
-
-	//	DefaultListModel<VisibilityPanel> visComponents;
-	DefaultListModel<VisibilityPanel> visComponents = new DefaultListModel<>();
-	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
-	DefaultListModel<BoneShell> futureBoneListEx = new DefaultListModel<>();
-	List<DefaultListModel<BoneShell>> futureBoneListExFixableItems = new ArrayList<>();
-	ArrayList<BoneShell> oldHelpers;
-	ArrayList<BoneShell> newHelpers;
-	ArrayList<Object> visSourcesNew;
 
 	public ImportPanel(final EditableModel a, final EditableModel b) {
 		this(a, b, true);
 	}
 
 
-	public ImportPanel(final EditableModel currentModel, final EditableModel importedModel, final boolean visibleOnStart) {
+	public ImportPanel(final EditableModel currentModel1, final EditableModel importedModel1, final boolean visibleOnStart) {
 		super();
-		if (currentModel.getName().equals(importedModel.getName())) {
-			importedModel.setFileRef(new File(importedModel.getFile().getParent() + "/" + importedModel.getName() + " (Imported)" + ".mdl"));
-			frame = new JFrame("Importing " + currentModel.getName() + " into itself");
+		mht = new ModelHolderThing(currentModel1, importedModel1);
+		if (mht.currentModel.getName().equals(mht.importModel.getName())) {
+			mht.importModel.setFileRef(new File(mht.importModel.getFile().getParent() + "/" + mht.importModel.getName() + " (Imported)" + ".mdl"));
+			frame = new JFrame("Importing " + mht.currentModel.getName() + " into itself");
 		} else {
-			frame = new JFrame("Importing " + importedModel.getName() + " into " + currentModel.getName());
+			frame = new JFrame("Importing " + mht.importModel.getName() + " into " + mht.currentModel.getName());
 		}
-		currentModel.doSavePreps();
+		mht.currentModel.doSavePreps();
 		try {
 			frame.setIconImage(RMSIcons.MDLIcon.getImage());
 		} catch (final Exception e) {
 			JOptionPane.showMessageDialog(null, "Error: Image files were not found! Due to bad programming, this might break the program!");
 		}
-		this.currentModel = currentModel;
-		this.importedModel = importedModel;
-		final ModelViewManager currentModelManager = new ModelViewManager(currentModel);
-		final ModelViewManager importedModelManager = new ModelViewManager(importedModel);
+//		this.currentModel = currentModel;
+//		this.importedModel = importedModel;
+		final ModelViewManager currentModelManager = new ModelViewManager(mht.currentModel);
+		final ModelViewManager importedModelManager = new ModelViewManager(mht.importModel);
 
 		// Geoset Panel
-		GeosetEditPanels geosetEditPanels = new GeosetEditPanels(geosetTabs);
-		addTab("Geosets", geoIcon, geosetEditPanels.makeGeosetPanel(currentModel, importedModel), "Controls which geosets will be imported.");
-//		makeGeosetPanel(currentModel, importedModel);
+		GeosetEditPanels geosetEditPanels = new GeosetEditPanels(geosetTabs, this);
+		addTab("Geosets", geoIcon, geosetEditPanels.makeGeosetPanel(mht.currentModel, mht.importModel), "Controls which geosets will be imported.");
 		System.out.println("Geosets");
 
 		// Animation Panel
-		AnimEditPanel animEditPanel = new AnimEditPanel(animTabs,
-				existingAnims,
-				clearExistingAnims);
-		addTab("Animation", animIcon, animEditPanel.makeAnimationPanel(currentModel, importedModel), "Controls which animations will be imported.");
-//		makeAnimationPanel(currentModel, importedModel);
+		AnimEditPanel animEditPanel = new AnimEditPanel(animTabs, existingAnims, clearExistingAnims);
+		addTab("Animation", animIcon, animEditPanel.makeAnimationPanel(mht.currentModel, mht.importModel), "Controls which animations will be imported.");
 		System.out.println("Animation");
 
 		// Bone Panel
 		boneShellRenderer = new BoneShellListCellRenderer(currentModelManager, importedModelManager);
 		final BonePanelListCellRenderer bonePanelRenderer = new BonePanelListCellRenderer(currentModelManager, importedModelManager);
 
-		BonesEditPanel bonesEditPanel = new BonesEditPanel(existingBones,
-				clearExistingBones,
-				boneShellRenderer,
-				geosetAnimTabs,
-				this, boneToPanel);
-//		bonesPanel = bonesEditPanel.makeBonePanel(currentModel, importedModel, bonePanelRenderer);
-		addTab("Bones", boneIcon, bonesEditPanel.makeBonePanel(currentModel, importedModel, bonePanelRenderer), "Controls which bones will be imported.");
-//		makeBonePanel(currentModel, importedModel, bonePanelRenderer);
+		BonesEditPanel bonesEditPanel = new BonesEditPanel(mht, objectPanels, boneShellRenderer, geosetAnimTabs, this);
+
+		addTab("Bones", boneIcon, bonesEditPanel.makeBonePanel(bonePanelRenderer), "Controls which bones will be imported.");
+
 		System.out.println("Bones");
 
 		// Matrices Panel + Build the geosetAnimTabs list of GeosetPanels
-		GeosetAnimEditPanel geosetAnimEditPanel = new GeosetAnimEditPanel(geosetAnimPanel,
-				geosetAnimTabs,
-				this,
-				allMatrOriginal,
-				allMatrSameName);
-		geosetAnimEditPanel.makeGeosetAnimPanel(currentModel, importedModel);
+		GeosetAnimEditPanel geosetAnimEditPanel = new GeosetAnimEditPanel(geosetAnimPanel, geosetAnimTabs, this, allMatrOriginal, allMatrSameName);
+		geosetAnimEditPanel.makeGeosetAnimPanel(mht.currentModel, mht.importModel);
+
 		addTab("Matrices", greenIcon, geosetAnimPanel, "Controls which bones geosets are attached to.");
-//		final ParentToggleRenderer ptr = makeMatricesPanle(currentModelManager, importedModelManager);
-//		MakeGeosetAnimPanel(currentModel, importedModel, ptr);
 
 		// Objects Panel
-//		ObjectsEditPanel objectsEditPanel = new ObjectsEditPanel(clearExistingBones, oldHelpers, newHelpers, currentModel, importedModel, this,
-//				objectPanels, boneToPanel, objectTabs, bonesPanel,
-//				futureBoneListExQuickLookupSet,
-//				futureBoneListEx,
-//				futureBoneListExFixableItems);
-		ObjectsEditPanel objectsEditPanel = new ObjectsEditPanel(
-				clearExistingBones,
-				oldHelpers,
-				newHelpers,
-				currentModel,
-				importedModel,
-				this,
-				objectPanels,
-				boneToPanel,
-				objectTabs,
-				futureBoneListExQuickLookupSet,
-				futureBoneListEx,
-				futureBoneListExFixableItems);
-//		ObjectsEditPanel objectsEditPanel = new ObjectsEditPanel(
-//				clearExistingBones,
-//				oldHelpers,
-//				newHelpers,
-//				currentModel,
-//				importedModel,
-//				this,
-//				objectPanels,
-//				boneToPanel,
-//				objectTabs,
-//				futureBoneListExQuickLookupSet,
-//				futureBoneListEx,
-//				futureBoneListExFixableItems);
-		addTab("Objects", objIcon, objectsEditPanel.makeObjecsPanel(importedModel), "Controls which objects are imported.");
+		ObjectsEditPanel objectsEditPanel = new ObjectsEditPanel(this, objectPanels, objectTabs);
+
+
+		addTab("Objects", objIcon, objectsEditPanel.makeObjecsPanel(mht.importModel), "Controls which objects are imported.");
+
 //		makeObjecsPanel(importedModel);
 
 		// Visibility Panel
 		VisibilityEditPanel visibilityEditPanel = new VisibilityEditPanel(
-				visTabs,
-				currentModel,
-				importedModel,
-				visComponents,
-				allVisShellPanes,
-				allMatrOriginal,
-				allMatrSameName,
-				futureBoneListEx,
-				futureBoneListExFixableItems,
-				oldHelpers,
-				newHelpers,
-				visSourcesNew,
-				objectPanels,
-				objectTabs,
-				geosetTabs);
-		addTab("Visibility", orangeIcon, visibilityEditPanel.makeVisPanel(currentModel), "Controls the visibility of portions of the model.");
-//		makeVisPanel(currentModel);
+				visTabs, mht.currentModel, mht.importModel,
+				visibilityPanels, allVisShellPanes, allMatrOriginal,
+				allMatrSameName, visSourcesNew,
+				objectPanels, objectTabs, geosetTabs);
+		addTab("Visibility", orangeIcon, visibilityEditPanel.makeVisPanel(mht.currentModel), "Controls the visibility of portions of the model.");
 
 		// Listen all
 		addChangeListener(e -> updateAnimTabs(this));
 
-		footerFinalPanel();
+		JPanel footerPanel = getFooterPanel();
 
-		this.setMaximumSize(new Dimension(1920, 1080));
+		setPreferredSize(new Dimension(1024, 780));
+
+		final JPanel containerPanel = new JPanel(new MigLayout("gap 0, fill", "[grow]", "[grow]"));
+		containerPanel.add(this, "wrap");
+		containerPanel.add(footerPanel);
+		frame.setContentPane(containerPanel);
+
 		frame.setBounds(0, 0, 1024, 780);
-		frame.setMaximumSize(new Dimension(1920, 1080));
 		frame.setLocationRelativeTo(null);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -239,17 +170,10 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 		});
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		// frame.pack();
 		frame.setVisible(visibleOnStart);
+		frame.pack();
 	}
 
-
-	private static void importAllGeos(JTabbedPane geosetTabs, boolean b) {
-		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
-			final GeosetPanel geoPanel = (GeosetPanel) geosetTabs.getComponentAt(i);
-			geoPanel.setSelected(b);
-		}
-	}
 
 	private static void uncheckAllAnims(JTabbedPane animTabs, boolean b) {
 		for (int i = 0; i < animTabs.getTabCount(); i++) {
@@ -258,27 +182,10 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 	}
 
-	private static void importAllBones(Vector<BonePanel> bonePanels, int selsctionIndex) {
-		for (final BonePanel bonePanel : bonePanels) {
-			bonePanel.setSelectedIndex(selsctionIndex);
-		}
-	}
-
-	private static void importAllObjs(Vector<ObjectPanel> objectPanels, boolean b) {
-		for (final ObjectPanel objectPanel : objectPanels) {
-			objectPanel.doImport.setSelected(b);
-		}
-	}
-
 	private static void selSimButton(ArrayList<VisibilityPanel> allVisShellPanes) {
 		for (final VisibilityPanel vPanel : allVisShellPanes) {
 			vPanel.selectSimilarOptions();
 		}
-	}
-
-	private static void applyImport(ImportPanel importPanel) {
-		importPanel.doImport();
-		importPanel.frame.setVisible(false);
 	}
 
 	private static void cancelImport(ImportPanel importPanel) {
@@ -328,23 +235,6 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	 * = bonePanels.get(i); if( bonePanel != source ) {
 	 * bonePanel.reorderToModel(existingBones); } } }
 	 **/
-	public static void informGeosetVisibility(JTabbedPane geosetAnimTabs, final Geoset g, final boolean flag) {
-		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
-			final BoneAttachmentPanel geoPanel = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
-			if (geoPanel.geoset == g) {
-				geosetAnimTabs.setEnabledAt(i, flag);
-			}
-		}
-	}
-
-	public static VisibilityPanel visPaneFromObject(ArrayList<VisibilityPanel> allVisShellPanes, final Object o) {
-		for (final VisibilityPanel vp : allVisShellPanes) {
-			if (vp.sourceShell.source == o) {
-				return vp;
-			}
-		}
-		return null;
-	}
 
 	public static VisibilityPanel visPaneFromObject(ArrayList<VisibilityPanel> allVisShellPanes, final Named o) {
 		for (final VisibilityPanel vp : allVisShellPanes) {
@@ -355,55 +245,6 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		return null;
 	}
 
-	public static void setSelectedItem(JList<BonePanel> boneTabs, final String what) {
-		final Object[] selected = boneTabs.getSelectedValuesList().toArray();
-		for (Object o : selected) {
-			final BonePanel temp = (BonePanel) o;
-			temp.setSelectedValue(what);
-		}
-	}
-
-	/**
-	 * The method run when the user pushes the "Set Parent for All" button in the
-	 * MultiBone panel.
-	 */
-	public static void setParentMultiBones(ImportPanel importPanel) {
-		final JList<BoneShell> list = new JList<>(importPanel.getFutureBoneListExtended(true));
-		list.setCellRenderer(importPanel.boneShellRenderer);
-		final int x = JOptionPane.showConfirmDialog(importPanel, new JScrollPane(list), "Set Parent for All Selected Bones",
-				JOptionPane.OK_CANCEL_OPTION);
-		if (x == JOptionPane.OK_OPTION) {
-			final Object[] selected = importPanel.boneTabs.getSelectedValuesList().toArray();
-			for (Object o : selected) {
-				final BonePanel temp = (BonePanel) o;
-				temp.setParent(list.getSelectedValue());
-			}
-		}
-	}
-
-	public static void setObjGroupSelected(JList<ObjectPanel> objectTabs, final boolean flag) {
-		final Object[] selected = objectTabs.getSelectedValuesList().toArray();
-		for (Object o : selected) {
-			final ObjectPanel temp = (ObjectPanel) o;
-			temp.doImport.setSelected(flag);
-		}
-	}
-
-	public static void setVisGroupSelected(JList<VisibilityPanel> visTabs, final boolean flag) {
-		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-		for (Object o : selected) {
-			final VisibilityPanel temp = (VisibilityPanel) o;
-			temp.favorOld.setSelected(flag);
-		}
-	}
-
-	public static void setVisGroupItemOld(JList<VisibilityPanel> visTabs, final Object o) {
-		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-		for (Object value : selected) {
-			final VisibilityPanel temp = (VisibilityPanel) value;
-			temp.oldSourcesBox.setSelectedItem(o);
-		}
-	}
 
 	/**
 	 * Provides a Runnable to the ImportPanel that will be run after the import has
@@ -413,315 +254,76 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		this.callback = callback;
 	}
 
-	public static void setVisGroupItemNew(JList<VisibilityPanel> visTabs, final Object o) {
-		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-		for (Object value : selected) {
-			final VisibilityPanel temp = (VisibilityPanel) value;
-			temp.newSourcesBox.setSelectedItem(o);
-		}
-	}
 
 	private static void updateAnimTabs(ImportPanel importPanel) {
 		((AnimPanel) importPanel.animTabs.getSelectedComponent()).updateSelectionPicks();
-		importPanel.getFutureBoneList();
-		importPanel.getFutureBoneListExtended(false);
+		importPanel.mht.getFutureBoneList();
+		importPanel.mht.getFutureBoneListExtended(false);
 		importPanel.visibilityList();
 		// ((BoneAttachmentPane)geosetAnimTabs.getSelectedComponent()).refreshLists();
 		importPanel.repaint();
 	}
 
-	private void footerFinalPanel() {
+	private static void clearSelectedBones(IterableListModel<BoneShell> existingBones, ModelHolderThing modelHolderThing) {
+		for (int i = 0; i < existingBones.size(); i++) {
+			final BoneShell bs = existingBones.get(i);
+			if (bs.importBone != null && modelHolderThing.shouldImportBone(bs.importBone)) {
+				bs.bone.copyMotionFrom(bs.importBone);
+			}
+		}
+	}
+
+	private static void importAllGeos(JTabbedPane geosetTabs, boolean b) {
+		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
+			final GeosetPanel geoPanel = (GeosetPanel) geosetTabs.getComponentAt(i);
+			geoPanel.setSelected(b);
+		}
+	}
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		updateAnimTabs(this);
+	}
+
+	private static void importAllBones(IterableListModel<BoneShell> boneShells, int selectionIndex) {
+		for (final BoneShell boneShell : boneShells) {
+			boneShell.importStatus = selectionIndex;
+		}
+	}
+
+	private static void importAllObjs(IterableListModel<ObjectPanel> objectPanels, boolean b) {
+		for (final ObjectPanel objectPanel : objectPanels) {
+			objectPanel.doImport.setSelected(b);
+		}
+	}
+
+	private static void applyImport(ImportPanel importPanel) {
+		importPanel.doImport();
+		importPanel.frame.setVisible(false);
+	}
+
+	private JPanel getFooterPanel() {
+		JPanel footerPanel = new JPanel(new MigLayout("gap 0", "[grow, left]8[grow, right]"));
+
 		JButton okayButton = new JButton("Finish");
 		okayButton.addActionListener(e -> applyImport(this));
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(e -> cancelImport(this));
 
-		final JPanel finalPanel = new JPanel();
-		final GroupLayout layout = new GroupLayout(finalPanel);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(this)
-				.addGroup(layout.createSequentialGroup()
-						.addComponent(cancelButton)
-						.addComponent(okayButton)));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addComponent(this).addGap(8)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(cancelButton)
-						.addComponent(okayButton)));
-		finalPanel.setLayout(layout);
-
-		// Later add a Yes/No confirmation of "do you wish to cancel this
-		// import?" when you close the window.
-		frame.setContentPane(finalPanel);
+		footerPanel.add(okayButton);
+		footerPanel.add(cancelButton);
+		return footerPanel;
 	}
 
-	public DefaultListModel<BoneShell> getFutureBoneList() {
-		if (oldBones == null) {
-			oldBones = new ArrayList<>();
-			newBones = new ArrayList<>();
-//			final List<Bone> oldBonesRefs = currentModel.sortedIdObjects(Bone.class);
-			final List<Bone> oldBonesRefs = currentModel.getBones();
-			for (final Bone b : oldBonesRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = currentModel.getName();
-				oldBones.add(bs);
-			}
-//			final List<Bone> newBonesRefs = importedModel.sortedIdObjects(Bone.class);
-			final List<Bone> newBonesRefs = importedModel.getBones();
-			for (final Bone b : newBonesRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = importedModel.getName();
-				bs.panel = boneToPanel.get(b);
-				newBones.add(bs);
-			}
-		}
-		if (!clearExistingBones.isSelected()) {
-			for (final BoneShell b : oldBones) {
-				if (!futureBoneList.contains(b)) {
-					futureBoneList.addElement(b);
-				}
-			}
-		} else {
-			for (final BoneShell b : oldBones) {
-				if (futureBoneList.contains(b)) {
-					futureBoneList.removeElement(b);
-				}
-			}
-		}
-		for (final BoneShell b : newBones) {
-			if (b.panel.importTypeBox.getSelectedItem() == BonePanel.IMPORT) {
-				if (!futureBoneList.contains(b)) {
-					futureBoneList.addElement(b);
-				}
-			} else {
-				if (futureBoneList.contains(b)) {
-					futureBoneList.removeElement(b);
-				}
-			}
-		}
-		return futureBoneList;
-	}
-
-	public DefaultListModel<BoneShell> getFutureBoneListExtended(final boolean newSnapshot) {
-		long totalAddTime = 0;
-		long addCount = 0;
-		long totalRemoveTime = 0;
-		long removeCount = 0;
-		if (oldHelpers == null) {
-			oldHelpers = new ArrayList<>();
-			newHelpers = new ArrayList<>();
-
-//			List<? extends Bone> oldHelpersRefs = currentModel.sortedIdObjects(Bone.class);
-			List<? extends Bone> oldHelpersRefs = currentModel.getBones();
-			for (final Bone b : oldHelpersRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = currentModel.getName();
-				bs.showClass = true;
-				oldHelpers.add(bs);
-			}
-//			oldHelpersRefs = currentModel.sortedIdObjects(Helper.class);
-			oldHelpersRefs = currentModel.getHelpers();
-			for (final Bone b : oldHelpersRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = currentModel.getName();
-				bs.showClass = true;
-				oldHelpers.add(bs);
-			}
-
-//			List<? extends Bone> newHelpersRefs = importedModel.sortedIdObjects(Bone.class);
-			List<? extends Bone> newHelpersRefs = importedModel.getBones();
-			for (final Bone b : newHelpersRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = importedModel.getName();
-				bs.showClass = true;
-				bs.panel = boneToPanel.get(b);
-				newHelpers.add(bs);
-			}
-//			newHelpersRefs = importedModel.sortedIdObjects(Helper.class);
-			newHelpersRefs = importedModel.getHelpers();
-			for (final Bone b : newHelpersRefs) {
-				final BoneShell bs = new BoneShell(b);
-				bs.modelName = importedModel.getName();
-				bs.showClass = true;
-				bs.panel = boneToPanel.get(b);
-				newHelpers.add(bs);
-			}
-		}
-		if (!clearExistingBones.isSelected()) {
-			for (final BoneShell b : oldHelpers) {
-				if (!futureBoneListExQuickLookupSet.contains(b)) {
-					final long startTime = System.nanoTime();
-					futureBoneListEx.addElement(b);
-					final long endTime = System.nanoTime();
-					totalAddTime += (endTime - startTime);
-					addCount++;
-					futureBoneListExQuickLookupSet.add(b);
-				}
-			}
-		} else {
-			for (final BoneShell b : oldHelpers) {
-				if (futureBoneListExQuickLookupSet.remove(b)) {
-					final long startTime = System.nanoTime();
-					futureBoneListEx.removeElement(b);
-					final long endTime = System.nanoTime();
-					totalRemoveTime += (endTime - startTime);
-					removeCount++;
-				}
-			}
-		}
-		for (final BoneShell b : newHelpers) {
-			b.panel = boneToPanel.get(b.bone);
-			if (b.panel != null) {
-				if (b.panel.importTypeBox.getSelectedItem() == BonePanel.IMPORT) {
-					if (!futureBoneListExQuickLookupSet.contains(b)) {
-						final long startTime = System.nanoTime();
-						futureBoneListEx.addElement(b);
-						final long endTime = System.nanoTime();
-						totalAddTime += (endTime - startTime);
-						addCount++;
-						futureBoneListExQuickLookupSet.add(b);
-					}
-				} else {
-					if (futureBoneListExQuickLookupSet.remove(b)) {
-						final long startTime = System.nanoTime();
-						futureBoneListEx.removeElement(b);
-						final long endTime = System.nanoTime();
-						totalRemoveTime += (endTime - startTime);
-						removeCount++;
-					}
-				}
-			}
-		}
-		if (addCount != 0) {
-			System.out.println("average add time: " + (totalAddTime / addCount));
-			System.out.println("add count: " + addCount);
-		}
-		if (removeCount != 0) {
-			System.out.println("average remove time: " + (totalRemoveTime / removeCount));
-			System.out.println("remove count: " + removeCount);
-		}
-
-		final DefaultListModel<BoneShell> listModelToReturn;
-		if (newSnapshot || futureBoneListExFixableItems.isEmpty()) {
-			final DefaultListModel<BoneShell> futureBoneListReplica = new DefaultListModel<>();
-			futureBoneListExFixableItems.add(futureBoneListReplica);
-			listModelToReturn = futureBoneListReplica;
-		} else {
-			listModelToReturn = futureBoneListExFixableItems.get(0);
-		}
-		// We CANT call clear, we have to preserve
-		// the parent list
-		for (final DefaultListModel<BoneShell> model : futureBoneListExFixableItems) {
-			// clean things that should not be there
-			for (int i = model.getSize() - 1; i >= 0; i--) {
-				final BoneShell previousElement = model.get(i);
-				if (!futureBoneListExQuickLookupSet.contains(previousElement)) {
-					model.remove(i);
-				}
-			}
-			// add back things who should be there
-			for (int i = 0; i < futureBoneListEx.getSize(); i++) {
-				final BoneShell elementAt = futureBoneListEx.getElementAt(i);
-				if (!model.contains(elementAt)) {
-					model.addElement(elementAt);
-				}
-			}
-		}
-//		for(DefaultListModel<BoneShell> model: futureBoneListExFixableItems) {
-//			model.clear();
-//			for(int i = 0; i < futureBoneListEx.getSize(); i++) {
-//				model.addElement(futureBoneListEx.getElementAt(i));
-//			}
-//		}
-		return listModelToReturn;
-//		return futureBoneListEx;
-	}
-
-//	public DefaultListModel<VisibilityPanel> visibilityList() {
-//		final Object selection = visTabs.getSelectedValue();
-//		visComponents.clear();
-//		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
-//			final GeosetPanel gp = (GeosetPanel) geosetTabs.getComponentAt(i);
-//			for (final Layer l : gp.getSelectedMaterial().getLayers()) {
-//				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, l);
-//				if (!visComponents.contains(vs) && (vs != null)) {
-//					visComponents.addElement(vs);
-//				}
-//			}
-//		}
-//		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
-//			final GeosetPanel gp = (GeosetPanel) geosetTabs.getComponentAt(i);
-//			if (gp.doImport.isSelected()) {
-//				final Geoset ga = gp.geoset;
-//				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, ga);
-//				if (!visComponents.contains(vs) && (vs != null)) {
-//					visComponents.addElement(vs);
-//				}
-//			}
-//		}
-//		// The current's
-//		final EditableModel model = currentModel;
-//		for (final Named l : model.sortedIdObjects(Light.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, l);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//		for (final Named a : model.sortedIdObjects(Attachment.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, a);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//		for (final Named x : model.sortedIdObjects(ParticleEmitter.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//		for (final Named x : model.sortedIdObjects(ParticleEmitter2.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//		for (final Named x : model.sortedIdObjects(RibbonEmitter.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//		for (final Named x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
-//			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-//			if (!visComponents.contains(vs) && (vs != null)) {
-//				visComponents.addElement(vs);
-//			}
-//		}
-//
-//		for (int i = 0; i < objectPanels.size(); i++) {
-//			final ObjectPanel op = objectPanels.get(i);
-//			if (op.doImport.isSelected() && (op.object != null))
-//			// we don't touch camera "object" panels (which aren't idobjects)
-//			{
-//				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, op.object);
-//				if (!visComponents.contains(vs) && (vs != null)) {
-//					visComponents.addElement(vs);
-//				}
-//			}
-//		}
-//		visTabs.setSelectedValue(selection, true);
-//		return visComponents;
-//	}
-
-	public DefaultListModel<VisibilityPanel> visibilityList() {
+	public IterableListModel<VisibilityPanel> visibilityList() {
 		final Object selection = visTabs.getSelectedValue();
-		visComponents.clear();
+		visibilityPanels.clear();
 		for (int i = 0; i < geosetTabs.getTabCount(); i++) {
 			final GeosetPanel gp = (GeosetPanel) geosetTabs.getComponentAt(i);
 			for (final Layer l : gp.getSelectedMaterial().getLayers()) {
 				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, l);
-				if (!visComponents.contains(vs) && (vs != null)) {
-					visComponents.addElement(vs);
+				if (!visibilityPanels.contains(vs) && (vs != null)) {
+					visibilityPanels.addElement(vs);
 				}
 			}
 		}
@@ -730,56 +332,56 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			if (gp.doImport.isSelected()) {
 				final Geoset ga = gp.geoset;
 				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, ga);
-				if (!visComponents.contains(vs) && (vs != null)) {
-					visComponents.addElement(vs);
+				if (!visibilityPanels.contains(vs) && (vs != null)) {
+					visibilityPanels.addElement(vs);
 				}
 			}
 		}
 		// The current's
 
-		final EditableModel model = currentModel;
+		final EditableModel model = mht.currentModel;
 		for (IdObject idObject : model.getIdObjects()) {
 			if (!(idObject instanceof Bone) && !(idObject instanceof EventObject) && !(idObject instanceof CollisionShape)) {
 				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, idObject);
-				if (!visComponents.contains(vs) && (vs != null)) {
-					visComponents.addElement(vs);
+				if (!visibilityPanels.contains(vs) && (vs != null)) {
+					visibilityPanels.addElement(vs);
 				}
 			}
 		}
-		for (final Named x : model.sortedIdObjects(Light.class)) {
+		for (final Named x : model.getLights()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
-		for (final Named x : model.sortedIdObjects(Attachment.class)) {
+		for (final Named x : model.getAttachments()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
-		for (final Named x : model.sortedIdObjects(ParticleEmitter.class)) {
+		for (final Named x : model.getParticleEmitters()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
-		for (final Named x : model.sortedIdObjects(ParticleEmitter2.class)) {
+		for (final Named x : model.getParticleEmitter2s()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
-		for (final Named x : model.sortedIdObjects(RibbonEmitter.class)) {
+		for (final Named x : model.getPopcornEmitters()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
-		for (final Named x : model.sortedIdObjects(ParticleEmitterPopcorn.class)) {
+		for (final Named x : model.getPopcornEmitters()) {
 			final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, x);
-			if (!visComponents.contains(vs) && (vs != null)) {
-				visComponents.addElement(vs);
+			if (!visibilityPanels.contains(vs) && (vs != null)) {
+				visibilityPanels.addElement(vs);
 			}
 		}
 
@@ -788,18 +390,24 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			// we don't touch camera "object" panels (which aren't idobjects)
 			{
 				final VisibilityPanel vs = visPaneFromObject(allVisShellPanes, op.object);
-				if (!visComponents.contains(vs) && (vs != null)) {
-					visComponents.addElement(vs);
+				if (!visibilityPanels.contains(vs) && (vs != null)) {
+					visibilityPanels.addElement(vs);
 				}
 			}
 		}
 		visTabs.setSelectedValue(selection, true);
-		return visComponents;
+		return visibilityPanels;
 	}
 
-	@Override
-	public void stateChanged(final ChangeEvent e) {
-		updateAnimTabs(this);
+	private void getSingelAnimation(Animation pickedAnim) {
+		uncheckAllAnims(animTabs, false);
+		for (int i = 0; i < animTabs.getTabCount(); i++) {
+			final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
+			if (aniPanel.anim.getName().equals(pickedAnim.getName())) {
+				aniPanel.doImport.setSelected(true);
+			}
+		}
+		clearExistingAnims.doClick();// turn it back off
 	}
 
 	public void doImport() {
@@ -808,25 +416,18 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			// AFTER WRITING THREE THOUSAND LINES OF INTERFACE, FINALLLLLLLLLLLLYYYYYYYYY
 			// The engine for actually performing the model to model import.
 
-			if (currentModel == importedModel) {
+			if (mht.currentModel == mht.importModel) {
 				JOptionPane.showMessageDialog(null, "The program has confused itself.");
 			}
 
 			for (int i = 0; i < geosetTabs.getTabCount(); i++) {
 				final GeosetPanel gp = (GeosetPanel) geosetTabs.getComponentAt(i);
-				gp.setMaterials(currentModel, importedModel);
-//				gp.geoset.setMaterial(gp.getSelectedMaterial());
-//				if (gp.doImport.isSelected() && (gp.model == importedModel)) {
-//					currentModel.add(gp.geoset);
-//					if (gp.geoset.getGeosetAnim() != null) {
-//						currentModel.add(gp.geoset.getGeosetAnim());
-//					}
-//				}
+				gp.setMaterials(mht.currentModel, mht.importModel);
 			}
 			// note to self: remember to scale event objects with time
 
 			final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
-			final java.util.List<AnimFlag<?>> impFlags = importedModel.getAllAnimFlags();
+			final java.util.List<AnimFlag<?>> impFlags = mht.importModel.getAllAnimFlags();
 			for (final AnimFlag<?> af : impFlags) {
 				if (!af.hasGlobalSeq()) {
 					newImpFlags.add(AnimFlag.buildEmptyFrom(af));
@@ -836,20 +437,13 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 
 			final List<EventObject> newImpEventObjs = new ArrayList<>();
-//			final List<EventObject> impEventObjs = importedModel.sortedIdObjects(EventObject.class);
-			final List<EventObject> impEventObjs = importedModel.getEvents();
+			final List<EventObject> impEventObjs = mht.importModel.getEvents();
 			for (final Object e : impEventObjs) {
 				newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
 			}
-			final boolean clearAnims = clearExistingAnims.isSelected();
-			if (clearAnims) {
-				final java.util.List<AnimFlag<?>> curFlags = currentModel.getAllAnimFlags();
-				final List<EventObject> curEventObjs = currentModel.getEvents();
-//				final List<EventObject> curEventObjs = currentModel.sortedIdObjects(EventObject.class);
-				for (final Animation anim : currentModel.getAnims()) {
-					anim.clearData(curFlags, curEventObjs);
-				}
-				currentModel.getAnims().clear();
+
+			if (clearExistingAnims.isSelected()) {
+				clearCurrModelAnims();
 			}
 
 
@@ -857,14 +451,12 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			for (int i = 0; i < animTabs.getTabCount(); i++) {
 				final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
 				if (aniPanel.doImport.isSelected()) {
-					aniPanel.doImportSelectedAnims(currentModel, importedModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
-//					doImportSelectedAnims(newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs, aniPanel);
+					aniPanel.doImportSelectedAnims(mht.currentModel, mht.importModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
 				}
 			}
 
-			final boolean clearBones = clearExistingBones.isSelected();
-			if (!clearAnims) {
-				doClearAnims(newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs, clearBones);
+			if (!clearExistingAnims.isSelected()) {
+				clearSelectedCurrModelAnims(newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs, mht.clearExistingBones.isSelected());
 			}
 			// Now, rebuild the old animflags with the new
 			for (final AnimFlag<?> af : impFlags) {
@@ -874,29 +466,32 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				((EventObject) e).setValuesTo(newImpEventObjs.get(impEventObjs.indexOf(e)));
 			}
 
-			if (clearBones) {
-				for (final IdObject o : currentModel.sortedIdObjects(Bone.class)) {
-					currentModel.remove(o);
+			if (mht.clearExistingBones.isSelected()) {
+				for (final IdObject o : mht.currentModel.sortedIdObjects(Bone.class)) {
+					mht.currentModel.remove(o);
 				}
-				for (final IdObject o : currentModel.sortedIdObjects(Helper.class)) {
-					currentModel.remove(o);
+				for (final IdObject o : mht.currentModel.sortedIdObjects(Helper.class)) {
+					mht.currentModel.remove(o);
 				}
 			}
 
 			final List<IdObject> objectsAdded = new ArrayList<>();
 
-			for (BonePanel bonePanel : bonePanels) {
-				bonePanel.getSelectedBones(objectsAdded, currentModel);
-			}
-			if (!clearBones) {
-				for (int i = 0; i < existingBones.size(); i++) {
-					final BoneShell bs = existingBones.get(i);
-					if (bs.importBone != null) {
-						if (boneToPanel.get(bs.importBone).importTypeBox.getSelectedIndex() == 1) {
-							bs.bone.copyMotionFrom(bs.importBone);
-						}
-					}
+			for (BoneShell boneShell : mht.boneShells) {
+				if (boneShell.importStatus == 0) {
+					mht.currentModel.add(boneShell.bone);
+					objectsAdded.add(boneShell.bone);
+					boneShell.bone.setParent(boneShell.newParent);
+				} else {
+					boneShell.bone.setParent(null);
 				}
+			}
+
+//			for (BonePanel bonePanel : mht.bonePanels) {
+//				bonePanel.getSelectedBones(objectsAdded, mht.currentModel);
+//			}
+			if (!mht.clearExistingBones.isSelected()) {
+				clearSelectedBones(mht.existingBones, mht);
 			}
 
 //			applyMatrices();
@@ -910,28 +505,28 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 
 
-			currentModel.updateObjectIds();
-			for (final Geoset g : currentModel.getGeosets()) {
-				g.applyMatricesToVertices(currentModel);
+			mht.currentModel.updateObjectIds();
+			for (final Geoset g : mht.currentModel.getGeosets()) {
+				g.applyMatricesToVertices(mht.currentModel);
 			}
 
 			// Objects!
 			final List<Camera> camerasAdded = new ArrayList<>();
 			for (final ObjectPanel objectPanel : objectPanels) {
 //				addSelectedObjects(objectPanel, objectsAdded, camerasAdded);
-				objectPanel.addSelectedObjects(objectsAdded, camerasAdded, currentModel);
+				objectPanel.addSelectedObjects(objectsAdded, camerasAdded, mht.currentModel);
 			}
 
-			final List<Animation> oldAnims = new ArrayList<>(currentModel.getAnims());
+			final List<Animation> oldAnims = new ArrayList<>(mht.currentModel.getAnims());
 			final List<FloatAnimFlag> finalVisFlags = new ArrayList<>();
-			for (int i = 0; i < visComponents.size(); i++) {
-				final VisibilityPanel vPanel = visComponents.get(i);
-				vPanel.addSelectedVisFlags(oldAnims, newAnims, clearAnims, finalVisFlags, currentModel, importedModel);
+			for (int i = 0; i < visibilityPanels.size(); i++) {
+				final VisibilityPanel vPanel = visibilityPanels.get(i);
+				vPanel.addSelectedVisFlags(oldAnims, newAnims, clearExistingAnims.isSelected(), finalVisFlags, mht.currentModel, mht.importModel);
 //				addSelectedVisFlags(vPanel, oldAnims, newAnims, clearAnims, finalVisFlags);
 			}
 
-			for (int i = 0; i < visComponents.size(); i++) {
-				final VisibilityPanel vPanel = visComponents.get(i);
+			for (int i = 0; i < visibilityPanels.size(); i++) {
+				final VisibilityPanel vPanel = visibilityPanels.get(i);
 				final VisibilitySource temp = ((VisibilitySource) vPanel.sourceShell.source);
 				final AnimFlag<?> visFlag = finalVisFlags.get(i);// might be null
 				if (visFlag.size() > 0) {
@@ -965,7 +560,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			final List<Geoset> geosetsAdded = new ArrayList<>();
 			for (int i = 0; i < geosetTabs.getTabCount(); i++) {
 				final GeosetPanel gp = (GeosetPanel) geosetTabs.getComponentAt(i);
-				if (gp.doImport.isSelected() && (gp.model == importedModel)) {
+				if (gp.doImport.isSelected() && (gp.model == mht.importModel)) {
 					geosetsAdded.add(gp.geoset);
 				}
 			}
@@ -974,7 +569,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				callback.nodesAdded(objectsAdded);
 				callback.camerasAdded(camerasAdded);
 			}
-			for (final AnimFlag<?> flag : currentModel.getAllAnimFlags()) {
+			for (final AnimFlag<?> flag : mht.currentModel.getAllAnimFlags()) {
 				flag.sort();
 			}
 		} catch (final Exception e) {
@@ -985,220 +580,29 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		importEnded = true;
 	}
 
-//	private void addSelectedVisFlags(VisibilityPanel vPanel, List<Animation> oldAnims, List<Animation> newAnims, boolean clearAnims, List<FloatAnimFlag> finalVisFlags) {
-//		final VisibilitySource temp = ((VisibilitySource) vPanel.sourceShell.source);
-//		final AnimFlag<?> visFlag = temp.getVisibilityFlag();// might be null
-//		final FloatAnimFlag newVisFlag;
-//		boolean tans = false;
-//		if (visFlag != null) {
-//			newVisFlag = (FloatAnimFlag) AnimFlag.buildEmptyFrom(visFlag);
-//			tans = visFlag.tans();
-//		} else {
-//			newVisFlag = new FloatAnimFlag(temp.visFlagName());
-//		}
-//		// newVisFlag = new AnimFlag(temp.visFlagName());
-//		final Object oldSource = vPanel.oldSourcesBox.getSelectedItem();
-//		FloatAnimFlag flagOld = getVisAnimFlag(oldAnims, tans, oldSource);
-//		final Object newSource = vPanel.newSourcesBox.getSelectedItem();
-//		FloatAnimFlag flagNew = getVisAnimFlag(newAnims, tans, newSource);
-//		if ((vPanel.favorOld.isSelected() && vPanel.sourceShell.model == currentModel && !clearAnims)
-//				|| (!vPanel.favorOld.isSelected() && vPanel.sourceShell.model == importedModel)) {
-//			// this is an element favoring existing animations over imported
-//			deleteFlagAnimations(oldAnims, flagNew);
-//			// All entries for visibility are deleted from imported sources during existing animation times
-//		} else {
-//			// this is an element not favoring existing over imported
-//			deleteFlagAnimations(newAnims, flagOld);
-//			// All entries for visibility are deleted from original-based sources during imported animation times
-//		}
-//		if (flagOld != null) {
-//			newVisFlag.copyFrom(flagOld);
-//		}
-//		if (flagNew != null) {
-//			newVisFlag.copyFrom(flagNew);
-//		}
-//		finalVisFlags.add(newVisFlag);
-//	}
+	private void clearCurrModelAnims() {
+		final List<AnimFlag<?>> curFlags = mht.currentModel.getAllAnimFlags();
+		final List<EventObject> curEventObjs = mht.currentModel.getEvents();
+		for (final Animation anim : mht.currentModel.getAnims()) {
+			anim.clearData(curFlags, curEventObjs);
+		}
+		mht.currentModel.clearAnimations();
+	}
 
-//	private static void deleteFlagAnimations(List<Animation> anims, FloatAnimFlag flag) {
-//		for (final Animation a : anims) {
-//			if (flag != null) {
-//				if (!flag.hasGlobalSeq()) {
-//					flag.deleteAnim(a);
-//				}
-//			}
-//		}
-//	}
+	private void clearSelectedCurrModelAnims(List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs, boolean clearBones) {
+		for (AnimShell animShell : existingAnims) {
 
-//	private static FloatAnimFlag getVisAnimFlag(List<Animation> anims, boolean tans, Object source) {
-//		FloatAnimFlag flag = null;
-//		if (source != null){
-//			if (source.getClass() == String.class) {
-//				if (source == VisibilityPanel.NOTVISIBLE) {
-//					flag = new FloatAnimFlag("temp");
-//					for (final Animation a : anims) {
-//						if (tans) {
-//							flag.addEntry(a.getStart(), (float) 0, (float) 0, (float) 0);
-//						} else {
-//							flag.addEntry(a.getStart(), (float) 0);
-//						}
-//					}
-//				}
-//			} else {
-//				flag = (FloatAnimFlag) ((VisibilitySource) ((VisibilityShell) source).source).getVisibilityFlag();
-//			}
-//		}
-//		return flag;
-//	}
-
-//	private void addSelectedObjects(ObjectPanel objectPanel, List<IdObject> objectsAdded, List<Camera> camerasAdded) {
-//		if (objectPanel.doImport.isSelected()) {
-//			if (objectPanel.object != null) {
-//				final BoneShell mbs = objectPanel.parentsList.getSelectedValue();
-//				if (mbs != null) {
-//					objectPanel.object.setParent(mbs.bone);
-//				} else {
-//					objectPanel.object.setParent(null);
-//				}
-//				// objectPanel.object.setName(importedModel.getName()+" "+objectPanel.object.getName());
-//				// later make a name field?
-//				currentModel.add(objectPanel.object);
-//				objectsAdded.add(objectPanel.object);
-//			} else if (objectPanel.camera != null) {
-//				// objectPanel.camera.setName(importedModel.getName()+" "+objectPanel.camera.getName());
-//				currentModel.add(objectPanel.camera);
-//				camerasAdded.add(objectPanel.camera);
-//			}
-//		} else {
-//			if (objectPanel.object != null) {
-//				objectPanel.object.setParent(null);
-//				// Fix cross-model referencing issue (force clean parent node's list of children)
-//			}
-//		}
-//	}
-//
-//	private void applyMatrices() {
-//		// DefaultListModel<BoneShell> bones = getFutureBoneList();
-//		Bone dummyBone = null;
-//		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
-//			if (geosetAnimTabs.isEnabledAt(i)) {
-//				final BoneAttachmentPanel bap = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
-//				dummyBone = bap.attachBones(dummyBone);
-////				dummyBone = attachBones(dummyBone, bap);
-//			}
-//		}
-//	}
-//
-//	private Bone attachBones(Bone dummyBone, BoneAttachmentPanel bap) {
-//		for (int l = 0; l < bap.oldBoneRefs.size(); l++) {
-//			final MatrixShell ms = bap.oldBoneRefs.get(l);
-//			ms.matrix.getBones().clear();
-//			for (final BoneShell bs : ms.newBones) {
-//				if (currentModel.contains(bs.bone)) {
-//					if (bs.bone.getClass() == Helper.class) {
-//						JOptionPane.showMessageDialog(null,
-//								"Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
-//					}
-//					ms.matrix.add(bs.bone);
-//				} else {
-//					System.out.println("Boneshaving " + bs.bone.getName() + " out of use");
-//				}
-//			}
-//			if (ms.matrix.size() == 0) {
-//				JOptionPane.showMessageDialog(null,
-//						"Error: A matrix was functionally destroyed while importing, and may take the program with it!");
-//			}
-//			if (ms.matrix.getBones().size() < 1) {
-//				if (dummyBone == null) {
-//					dummyBone = new Bone();
-//					dummyBone.setName("Bone_MatrixEaterDummy" + (int) (Math.random() * 2000000000));
-//					dummyBone.setPivotPoint(new Vec3(0, 0, 0));
-//					if (!currentModel.contains(dummyBone)) {
-//						currentModel.add(dummyBone);
-//					}
-//					JOptionPane.showMessageDialog(null,
-//							"Warning: You left some matrices empty. This was detected, and a dummy bone at { 0, 0, 0 } has been generated for them named "
-//									+ dummyBone.getName()
-//									+ "\nMultiple geosets may be attached to this bone, and the error will only be reported once for your convenience.");
-//				}
-//				if (!ms.matrix.getBones().contains(dummyBone)) {
-//					ms.matrix.getBones().add(dummyBone);
-//				}
-//			}
-//			// ms.matrix.bones = ms.newBones;
-//		}
-//		return dummyBone;
-//	}
-//
-//	private void getSelectedBones(List<IdObject> objectsAdded, int i) {
-//		final BonePanel bonePanel = bonePanels.get(i);
-//		final Bone b = bonePanel.bone;
-//		final int type = bonePanel.importTypeBox.getSelectedIndex();
-//		// b.setName(b.getName()+" "+importedModel.getName());
-//		// bonePanel.boneList.getSelectedValuesList();
-//
-//		// we will go through all bone shells for this
-//		// Fix cross-model referencing issue (force clean parent node's list of children)
-//		switch (type) {
-//			case 0 -> {
-//				currentModel.add(b);
-//				objectsAdded.add(b);
-//				final BoneShell mbs = bonePanel.futureBonesList.getSelectedValue();
-//				if (mbs != null) {
-//					b.setParent((mbs).bone);
-//				} else {
-//					b.setParent(null);
-//				}
-//			}
-//			case 1, 2 -> b.setParent(null);
-//		}
-//	}
-//
-//	private void doImportSelectedAnims(List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs, AnimPanel aniPanel) {
-//		final int type = aniPanel.importTypeBox.getSelectedIndex();
-//		final int animTrackEnd = currentModel.animTrackEnd();
-//		if (aniPanel.inReverse.isSelected()) {
-//			// reverse the animation
-//			aniPanel.anim.reverse(impFlags, impEventObjs);
-//		}
-//		switch (type) {
-//			case 0:
-//				aniPanel.anim.copyToInterval(animTrackEnd + 300, animTrackEnd + aniPanel.anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
-//				aniPanel.anim.setInterval(animTrackEnd + 300, animTrackEnd + aniPanel.anim.length() + 300);
-//				currentModel.add(aniPanel.anim);
-//				newAnims.add(aniPanel.anim);
-//				break;
-//			case 1:
-//				aniPanel.anim.copyToInterval(animTrackEnd + 300, animTrackEnd + aniPanel.anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
-//				aniPanel.anim.setInterval(animTrackEnd + 300, animTrackEnd + aniPanel.anim.length() + 300);
-//				aniPanel.anim.setName(aniPanel.newNameEntry.getText());
-//				currentModel.add(aniPanel.anim);
-//				newAnims.add(aniPanel.anim);
-//				break;
-//			case 2:
-//				// List<AnimShell> targets = aniPane.animList.getSelectedValuesList();
-//				// aniPanel.anim.setInterval(animTrackEnd+300,animTrackEnd + aniPanel.anim.length() + 300, impFlags,
-//				// impEventObjs, newImpFlags, newImpEventObjs);
-//				// handled by animShells
-//				break;
-//			case 3:
-//				importedModel.buildGlobSeqFrom(aniPanel.anim, impFlags);
-//				break;
-//		}
-//	}
-
-	private void doClearAnims(List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs, boolean clearBones) {
-		for (int i = 0; i < existingAnims.size(); i++) {
-			final AnimShell animShell = existingAnims.get(i);
 			if (animShell.importAnim != null) {
 				animShell.importAnim.copyToInterval(animShell.anim.getStart(), animShell.anim.getEnd(), impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+
 				final Animation tempAnim = new Animation("temp", animShell.anim.getStart(), animShell.anim.getEnd());
 				newAnims.add(tempAnim);
+
 				if (!clearBones) {
-					for (int p = 0; p < existingBones.size(); p++) {
-						final BoneShell bs = existingBones.get(p);
+
+					for (BoneShell bs : mht.existingBones) {
 						if (bs.importBone != null) {
-							if (boneToPanel.get(bs.importBone).importTypeBox.getSelectedIndex() == 1) {
+							if (mht.boneToPanel.get(bs.importBone).importTypeBox.getSelectedIndex() == 1) {
 								System.out.println(
 										"Attempting to clear animation for " + bs.bone.getName() + " values "
 												+ animShell.anim.getStart() + ", " + animShell.anim.getEnd());
@@ -1211,27 +615,10 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 	}
 
-	public boolean importSuccessful() {
-		return importSuccess;
-	}
-
-	public boolean importStarted() {
-		return importStarted;
-	}
-
-	public boolean importEnded() {
-		return importEnded;
-	}
-
-	public JFrame getParentFrame() {
-		return frame;
-	}
-
 	// *********************Simple Import Functions****************
-	public void animTransfer(final boolean singleAnimation, final Animation pickedAnim, final Animation visFromAnim,
-	                         final boolean show) {
+	public void animTransfer(final boolean singleAnimation, final Animation pickedAnim, final boolean show) {
 		importAllGeos(geosetTabs, false);
-		importAllBones(bonePanels, 1);
+		importAllBones(mht.boneShells, 1);
 		clearExistingAnims.doClick();
 		importAllObjs(objectPanels, false);
 		visibilityList();
@@ -1257,8 +644,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 		}
 		if (corpseShell != null) {
-			for (int i = 0; i < visComponents.getSize(); i++) {
-				VisibilityPanel vp = visComponents.get(i);
+			for (VisibilityPanel vp : visibilityPanels) {
 				VisibilityShell vs = vp.sourceShell;
 				if (vs.source instanceof Geoset) {
 					final Geoset g = (Geoset) vp.sourceShell.source;
@@ -1275,24 +661,13 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 	}
 
-	private void getSingelAnimation(Animation pickedAnim) {
-		uncheckAllAnims(animTabs, false);
-		for (int i = 0; i < animTabs.getTabCount(); i++) {
-			final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
-			if (aniPanel.anim.getName().equals(pickedAnim.getName())) {
-				aniPanel.doImport.setSelected(true);
-			}
-		}
-		clearExistingAnims.doClick();// turn it back off
-	}
-
 	// *********************Simple Import Functions****************
 	public void animTransferPartTwo(final boolean singleAnimation, final Animation pickedAnim,
 	                                final Animation visFromAnim, final boolean show) {
 		// This should be an import from self
 		importAllGeos(geosetTabs, false);
 		uncheckAllAnims(animTabs, false);
-		importAllBones(bonePanels, 2);
+		importAllBones(mht.boneShells, 2);
 		importAllObjs(objectPanels, false);
 		visibilityList();
 		selSimButton(allVisShellPanes);
@@ -1301,13 +676,13 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //			transfereSingleAnimation(pickedAnim, visFromAnim);
 			for (int i = 0; i < animTabs.getTabCount(); i++) {
 				final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
-				aniPanel.transfereSingleAnimation(pickedAnim, visFromAnim);
+				aniPanel.transferSingleAnimation(pickedAnim, visFromAnim);
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Bug in anim transfer: attempted unnecessary 2-part transfer");
 		}
-		for (int i = 0; i < visComponents.getSize(); i++) {
-			final VisibilityPanel vp = visComponents.get(i);
+		for (int i = 0; i < visibilityPanels.getSize(); i++) {
+			final VisibilityPanel vp = visibilityPanels.get(i);
 			vp.favorOld.doClick();
 		}
 
@@ -1316,24 +691,26 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 	}
 
-//	private void transfereSingleAnimation(Animation pickedAnim, Animation visFromAnim) {
-//		for (int i = 0; i < animTabs.getTabCount(); i++) {
-//			final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
-//			aniPanel.transfereSingleAnimation(pickedAnim, visFromAnim);
-////			if (aniPanel.anim.getName().equals(visFromAnim.getName())) {
-////				aniPanel.doImport.doClick();
-////				aniPanel.importTypeBox.setSelectedItem(AnimPanel.TIMESCALE);
-////
-////				for (int d = 0; d < existingAnims.getSize(); d++) {
-////					final AnimShell shell = existingAnims.get(d);
-////					if ((shell).anim.getName().equals(pickedAnim.getName())) {
-////						aniPanel.animList.setSelectedValue(shell, true);
-////						aniPanel.updateSelectionPicks();
-////						break;
-////					}
-////				}
-////			}
+	public boolean importSuccessful() {
+		return importSuccess;
+	}
+
+//	private static void importAllBones(IterableListModel<BonePanel> bonePanels, int selsctionIndex) {
+//		for (final BonePanel bonePanel : bonePanels) {
+//			bonePanel.setSelectedIndex(selsctionIndex);
 //		}
 //	}
+
+	public boolean importStarted() {
+		return importStarted;
+	}
+
+	public boolean importEnded() {
+		return importEnded;
+	}
+
+	public JFrame getParentFrame() {
+		return frame;
+	}
 }
 

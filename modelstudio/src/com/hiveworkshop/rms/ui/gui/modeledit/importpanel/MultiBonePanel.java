@@ -1,71 +1,88 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import com.hiveworkshop.rms.util.IterableListModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 class MultiBonePanel extends BonePanel {
 	JButton setAllParent;
 	boolean listenForChange = true;
+	private ModelHolderThing mht;
 
-	public MultiBonePanel(final DefaultListModel<BoneShell> existingBonesList, final BoneShellListCellRenderer renderer) {
+	public MultiBonePanel(final IterableListModel<BoneShell> existingBonesList, final BoneShellListCellRenderer renderer) {
 		setLayout(new MigLayout("gap 0"));
+		setBackground(Color.BLUE);
+		setOpaque(true);
 		bone = null;
 		existingBones = existingBonesList;
 
-		title = new JLabel("Multiple Selected");
+		JLabel title = new JLabel("Multiple Selected");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 		add(title, "align center, wrap");
 
+		JScrollPane boneListPane = new JScrollPane(animationFromBoneList);
+		boneListPane.setVisible(false);
+
 		importTypeBox.setEditable(false);
-		importTypeBox.addActionListener(e -> listSelectionChanged());
+		importTypeBox.addActionListener(e -> listSelectionChanged(boneListPane));
 		importTypeBox.setMaximumSize(new Dimension(200, 20));
 		add(importTypeBox, "wrap");
 
-		boneList = new JList<>(existingBones);
-		boneList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		boneList.setCellRenderer(renderer);
-		boneListPane = new JScrollPane(boneList);
+		animationFromBoneList = new JList<>(existingBones);
+		animationFromBoneList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		animationFromBoneList.setCellRenderer(renderer);
 
 //		add(boneListPane);
 		cardPanel = new JPanel(cards);
 		cardPanel.add(boneListPane, "boneList");
-		cardPanel.add(dummyPanel, "blank");
-		boneList.setEnabled(false);
+		cardPanel.add(new JPanel(), "blank");
+		animationFromBoneList.setEnabled(false);
 		cards.show(cardPanel, "blank");
 		add(cardPanel, "wrap");
 
 		setAllParent = new JButton("Set Parent for All");
-		setAllParent.addActionListener(e -> ImportPanel.setParentMultiBones(getImportPanel()));
+		setAllParent.addActionListener(e -> setParentMultiBones(importPanel));
 		add(setAllParent, "wrap");
-
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//						.addComponent(title)
-//						.addGroup(layout.createSequentialGroup()
-//								.addComponent(importTypeBox)
-//								.addComponent(cardPanel)
-//								.addComponent(setAllParent)))
-//				.addGap(8));
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(importTypeBox)
-//						.addComponent(cardPanel)
-//						.addComponent(setAllParent)));
-//		setLayout(layout);
 	}
 
-	@Override
-	public ImportPanel getImportPanel() {
-		Container temp = getParent();
-		while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
-			temp = temp.getParent();
-		}
-		return (ImportPanel) temp;
+	public MultiBonePanel(ModelHolderThing mht, final BoneShellListCellRenderer renderer) {
+		this.mht = mht;
+		setLayout(new MigLayout("gap 0"));
+		setBackground(Color.BLUE);
+		setOpaque(true);
+		bone = null;
+
+		JLabel title = new JLabel("Multiple Selected");
+		title.setFont(new Font("Arial", Font.BOLD, 26));
+		add(title, "align center, wrap");
+
+		JScrollPane boneListPane = new JScrollPane(animationFromBoneList);
+		boneListPane.setVisible(false);
+
+		importTypeBox.setEditable(false);
+		importTypeBox.addActionListener(e -> listSelectionChanged(boneListPane));
+		importTypeBox.setMaximumSize(new Dimension(200, 20));
+		add(importTypeBox, "wrap");
+
+		animationFromBoneList = new JList<>(mht.existingBones);
+		animationFromBoneList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		animationFromBoneList.setCellRenderer(renderer);
+
+//		add(boneListPane);
+		cardPanel = new JPanel(cards);
+		cardPanel.add(boneListPane, "boneList");
+		cardPanel.add(new JPanel(), "blank");
+		animationFromBoneList.setEnabled(false);
+		cards.show(cardPanel, "blank");
+		add(cardPanel, "wrap");
+
+		setAllParent = new JButton("Set Parent for All");
+		setAllParent.addActionListener(e -> setParentMultiBones(importPanel));
+		add(setAllParent, "wrap");
 	}
 
 	@Override
@@ -99,20 +116,55 @@ class MultiBonePanel extends BonePanel {
 //		listSelectionChanged();
 //	}
 
-	private void listSelectionChanged() {
+	public static void setSelectedItem(JList<BoneShell> boneTabs, final String what) {
+		List<BoneShell> boneShellList = boneTabs.getSelectedValuesList();
+		for (BoneShell boneShell : boneShellList) {
+			switch (what) {
+				case "Import this bone" -> boneShell.importStatus = 0;
+				case "Import motion to pre-existing:" -> boneShell.importStatus = 1;
+				case "Do not import" -> boneShell.importStatus = 2;
+			}
+		}
+	}
+
+	private void listSelectionChanged(JScrollPane boneListPane) {
+
 		final long nanoStart = System.nanoTime();
 		final boolean pastListSelectionState = listenSelection;
 		listenSelection = false;
-		if (importTypeBox.getSelectedItem() == MOTIONFROM) {
-			cards.show(cardPanel, "boneList");
-		} else {
-			cards.show(cardPanel, "blank");
-		}
+
+		boneListPane.setVisible(importTypeBox.getSelectedItem() != MOTIONFROM);
+
 		listenSelection = pastListSelectionState;
 		if (listenForChange) {
-			ImportPanel.setSelectedItem(getImportPanel().boneTabs, (String) importTypeBox.getSelectedItem());
+			setSelectedItem(mht.boneTabs, (String) importTypeBox.getSelectedItem());
 		}
 		final long nanoEnd = System.nanoTime();
 		System.out.println("MultiBonePanel.actionPerformed() took " + (nanoEnd - nanoStart) + " ns");
+	}
+
+//	public static void setSelectedItem(JList<BonePanel> boneTabs, final String what) {
+//		final Object[] selected = boneTabs.getSelectedValuesList().toArray();
+//		for (Object o : selected) {
+//			final BonePanel temp = (BonePanel) o;
+//			temp.setSelectedValue(what);
+//		}
+//	}
+
+	/**
+	 * The method run when the user pushes the "Set Parent for All" button in the
+	 * MultiBone panel.
+	 */
+	private void setParentMultiBones(ImportPanel importPanel) {
+		final JList<BoneShell> list = new JList<>(importPanel.mht.getFutureBoneListExtended(true));
+		list.setCellRenderer(importPanel.boneShellRenderer);
+		final int x = JOptionPane.showConfirmDialog(importPanel, new JScrollPane(list), "Set Parent for All Selected Bones", JOptionPane.OK_CANCEL_OPTION);
+		if (x == JOptionPane.OK_OPTION) {
+			List<BoneShell> boneShells = mht.boneTabs.getSelectedValuesList();
+			for (BoneShell boneShell : boneShells) {
+				boneShell.parentBs = list.getSelectedValue();
+				boneShell.newParent = list.getSelectedValue().bone;
+			}
+		}
 	}
 }

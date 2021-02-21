@@ -1,5 +1,7 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -13,20 +15,23 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 
 	public MultiVisibilityPanel(final DefaultComboBoxModel<Object> oldSources, final DefaultComboBoxModel<Object> newSources,
 	                            final VisShellBoxCellRenderer renderer) {
+		setLayout(new MigLayout("debug"));
+		setMaximumSize(new Dimension(700, 500));
+
 		title = new JLabel("Multiple Selected");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 
 		oldAnimsLabel = new JLabel("Existing animation visibility from: ");
 		oldSourcesBox = new JComboBox<>(oldSources);
 		oldSourcesBox.setEditable(false);
-		oldSourcesBox.setMaximumSize(new Dimension(1000, 25));
+		oldSourcesBox.setMaximumSize(new Dimension(500, 25));
 		oldSourcesBox.setRenderer(renderer);
 		oldSourcesBox.addItemListener(this);
 
 		newAnimsLabel = new JLabel("Imported animation visibility from: ");
 		newSourcesBox = new JComboBox<>(newSources);
 		newSourcesBox.setEditable(false);
-		newSourcesBox.setMaximumSize(new Dimension(1000, 25));
+		newSourcesBox.setMaximumSize(new Dimension(500, 25));
 		newSourcesBox.setRenderer(renderer);
 		newSourcesBox.addItemListener(this);
 
@@ -34,40 +39,45 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		favorOld.setSelected(true);
 		favorOld.addChangeListener(this);
 
-		final GroupLayout layout = new GroupLayout(this);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(title)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(oldAnimsLabel)
-						.addComponent(oldSourcesBox)
-						.addComponent(newAnimsLabel)
-						.addComponent(newSourcesBox)
-						.addComponent(favorOld)));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addComponent(title).addGap(16)
-				.addComponent(oldAnimsLabel)
-				.addComponent(oldSourcesBox)
-				.addComponent(newAnimsLabel)
-				.addComponent(newSourcesBox)
-				.addComponent(favorOld));
-		setLayout(layout);
+		add(title, "cell 0 0, spanx, align center, wrap");
+		add(oldAnimsLabel, "cell 0 1");
+		add(oldSourcesBox, "cell 1 1");
+		add(newAnimsLabel, "cell 0 2");
+		add(newSourcesBox, "cell 1 2");
+		add(favorOld, "cell 0 3");
+
+//		final GroupLayout layout = new GroupLayout(this);
+//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+//				.addComponent(title)
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//						.addComponent(oldAnimsLabel)
+//						.addComponent(oldSourcesBox)
+//						.addComponent(newAnimsLabel)
+//						.addComponent(newSourcesBox)
+//						.addComponent(favorOld)));
+//		layout.setVerticalGroup(layout.createSequentialGroup()
+//				.addComponent(title).addGap(16)
+//				.addComponent(oldAnimsLabel)
+//				.addComponent(oldSourcesBox)
+//				.addComponent(newAnimsLabel)
+//				.addComponent(newSourcesBox)
+//				.addComponent(favorOld));
+//		setLayout(layout);
 	}
 
-	@Override
-	public void stateChanged(final ChangeEvent e) {
-		if (favorOld.isSelected() != oldVal) {
-			ImportPanel.setVisGroupSelected(getImportPanel().visTabs, favorOld.isSelected());
-			oldVal = favorOld.isSelected();
+	public static void setVisGroupSelected(JList<VisibilityPanel> visTabs, final boolean flag) {
+		final Object[] selected = visTabs.getSelectedValuesList().toArray();
+		for (Object o : selected) {
+			final VisibilityPanel temp = (VisibilityPanel) o;
+			temp.favorOld.setSelected(flag);
 		}
 	}
 
-	@Override
-	public void itemStateChanged(final ItemEvent e) {
-		if (e.getSource() == oldSourcesBox) {
-			ImportPanel.setVisGroupItemOld(getImportPanel().visTabs, oldSourcesBox.getSelectedItem());
-		}
-		if (e.getSource() == newSourcesBox) {
-			ImportPanel.setVisGroupItemNew(getImportPanel().visTabs, newSourcesBox.getSelectedItem());
+	public static void setVisGroupItemOld(JList<VisibilityPanel> visTabs, final Object o) {
+		final Object[] selected = visTabs.getSelectedValuesList().toArray();
+		for (Object value : selected) {
+			final VisibilityPanel temp = (VisibilityPanel) value;
+			temp.oldSourcesBox.setSelectedItem(o);
 		}
 	}
 
@@ -92,5 +102,31 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 			impPanel = (ImportPanel) temp;
 		}
 		return impPanel;
+	}
+
+	public static void setVisGroupItemNew(JList<VisibilityPanel> visTabs, final Object o) {
+		final Object[] selected = visTabs.getSelectedValuesList().toArray();
+		for (Object value : selected) {
+			final VisibilityPanel temp = (VisibilityPanel) value;
+			temp.newSourcesBox.setSelectedItem(o);
+		}
+	}
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		if (favorOld.isSelected() != oldVal) {
+			setVisGroupSelected(getImportPanel().visTabs, favorOld.isSelected());
+			oldVal = favorOld.isSelected();
+		}
+	}
+
+	@Override
+	public void itemStateChanged(final ItemEvent e) {
+		if (e.getSource() == oldSourcesBox) {
+			setVisGroupItemOld(getImportPanel().visTabs, oldSourcesBox.getSelectedItem());
+		}
+		if (e.getSource() == newSourcesBox) {
+			setVisGroupItemNew(getImportPanel().visTabs, newSourcesBox.getSelectedItem());
+		}
 	}
 }

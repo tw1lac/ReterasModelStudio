@@ -31,9 +31,13 @@ class VisibilityPanel extends JPanel {
 	                       final DefaultComboBoxModel<Object> newSources, final VisShellBoxCellRenderer renderer) {
 		this.sourceShell = sourceShell;
 		setLayout(new MigLayout("gap 0"));
+		setMaximumSize(new Dimension(500, 500));
+		setPreferredSize(new Dimension(500, 500));
+		setMaximumSize(new Dimension(500, 500));
 
 		title = new JLabel(sourceShell.model.getName() + ": " + sourceShell.source.getName());
 		title.setFont(new Font("Arial", Font.BOLD, 26));
+		title.setMaximumSize(new Dimension(500, 500));
 		add(title, "align center, wrap");
 
 		oldAnimsLabel = new JLabel("Existing animation visibility from: ");
@@ -41,7 +45,7 @@ class VisibilityPanel extends JPanel {
 
 		oldSourcesBox = new JComboBox<>(oldSources);
 		oldSourcesBox.setEditable(false);
-		oldSourcesBox.setMaximumSize(new Dimension(900, 25));
+		oldSourcesBox.setMaximumSize(new Dimension(800, 25));
 		oldSourcesBox.setRenderer(renderer);
 		boolean didContain = false;
 		for (int i = 0; (i < oldSources.getSize()) && !didContain; i++) {
@@ -61,7 +65,7 @@ class VisibilityPanel extends JPanel {
 
 		newSourcesBox = new JComboBox<>(newSources);
 		newSourcesBox.setEditable(false);
-		newSourcesBox.setMaximumSize(new Dimension(900, 25));
+		newSourcesBox.setMaximumSize(new Dimension(800, 25));
 		newSourcesBox.setRenderer(renderer);
 		didContain = false;
 		for (int i = 0; (i < newSources.getSize()) && !didContain; i++) {
@@ -79,33 +83,13 @@ class VisibilityPanel extends JPanel {
 		favorOld = new JCheckBox("Favor component's original visibility when combining");
 		favorOld.setSelected(true);
 		add(favorOld, "left, wrap");
-
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//				.addComponent(title)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(oldAnimsLabel)
-//						.addComponent(oldSourcesBox)
-//						.addComponent(newAnimsLabel)
-//						.addComponent(newSourcesBox)
-//						.addComponent(favorOld)));
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(oldAnimsLabel)
-//				.addComponent(oldSourcesBox)
-//				.addComponent(newAnimsLabel)
-//				.addComponent(newSourcesBox)
-//				.addComponent(favorOld));
-//		setLayout(layout);
 	}
 
 	public void selectSimilarOptions() {
-		final VisibilityShell temp = null;
 		final ListModel oldSources = oldSourcesBox.getModel();
 		for (int i = 0; i < oldSources.getSize(); i++) {
 			if (!(oldSources.getElementAt(i) instanceof String)) {
-				if (sourceShell.source.getName()
-						.equals(((VisibilityShell) oldSources.getElementAt(i)).source.getName())) {
+				if (sourceShell.source.getName().equals(((VisibilityShell) oldSources.getElementAt(i)).source.getName())) {
 					System.out.println(sourceShell.source.getName());
 					oldSourcesBox.setSelectedItem(oldSources.getElementAt(i));
 				}
@@ -114,8 +98,7 @@ class VisibilityPanel extends JPanel {
 		final ListModel newSources = newSourcesBox.getModel();
 		for (int i = 0; i < newSources.getSize(); i++) {
 			if (!(newSources.getElementAt(i) instanceof String)) {
-				if (sourceShell.source.getName()
-						.equals(((VisibilityShell) newSources.getElementAt(i)).source.getName())) {
+				if (sourceShell.source.getName().equals(((VisibilityShell) newSources.getElementAt(i)).source.getName())) {
 					System.out.println(sourceShell.source.getName());
 					newSourcesBox.setSelectedItem(newSources.getElementAt(i));
 				}

@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.gui.modeledit;
 
 import com.hiveworkshop.rms.editor.model.Bone;
+import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.importpanel.BonePanel;
 
 import java.util.ArrayList;
@@ -13,8 +14,18 @@ public class BoneShell {
 	public BonePanel panel;
 	public boolean showClass = false;
 
+	public boolean shouldImportBone = true;
+	public int importStatus = 0;
+	public IdObject oldParent;
+	public IdObject newParent;
+	public BoneShell parentBs;
+
 	public BoneShell(final Bone b) {
 		bone = b;
+		if (b != null) {
+			oldParent = bone.getParent();
+			newParent = bone.getParent();
+		}
 	}
 
 	public void setImportBone(final Bone b) {
@@ -23,6 +34,9 @@ public class BoneShell {
 
 	@Override
 	public String toString() {
+		if (bone == null) {
+			return "None";
+		}
 		if (showClass) {
 			if (modelName == null) {
 				return bone.getClass().getSimpleName() + " \"" + bone.getName() + "\"";

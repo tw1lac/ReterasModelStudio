@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 import com.hiveworkshop.rms.editor.model.Bone;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
+import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.util.AbstractSnapshottingListCellRenderer2D;
 import com.hiveworkshop.rms.util.Vec3;
 
@@ -18,8 +19,20 @@ class BonePanelListCellRenderer extends AbstractSnapshottingListCellRenderer2D<B
 	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
 	                                              final boolean iss, final boolean chf) {
 		setBackground(new Color(200, 255, 255));
-		super.getListCellRendererComponent(list, ((BonePanel) value).bone, index, iss, chf);
-		setText(((BonePanel) value).bone.getClass().getSimpleName() + " \"" + ((BonePanel) value).bone.getName() + "\"");
+//		super.getListCellRendererComponent(list, ((BonePanel) value).bone, index, iss, chf);
+//		if(((BonePanel) value).bone == null){
+//
+//			setText("value.getCl().getSmpName()" + " \"" + "Null" + "\"");
+//		} else {
+//			setText(((BonePanel) value).bone.getClass().getSimpleName() + " \"" + ((BonePanel) value).bone.getName() + "\"");
+//		}
+		super.getListCellRendererComponent(list, ((BoneShell) value).bone, index, iss, chf);
+		if (((BoneShell) value).bone == null) {
+
+			setText("value.getCl().getSmpName()" + " \"" + "Null" + "\"");
+		} else {
+			setText(((BoneShell) value).bone.getClass().getSimpleName() + " \"" + ((BoneShell) value).bone.getName() + "\"");
+		}
 		// setIcon(ImportPanel.cyanIcon);
 		// setIcon(new ImageIcon(Material.mergeImageScaled(ImportPanel.cyanIcon.getImage(),
 		// ((ImageIcon) getIcon()).getImage(), 64, 64, 64, 64)));

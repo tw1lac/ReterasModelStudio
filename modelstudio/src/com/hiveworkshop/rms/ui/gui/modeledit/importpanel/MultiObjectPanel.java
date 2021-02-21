@@ -1,6 +1,7 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import com.hiveworkshop.rms.util.IterableListModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -11,7 +12,8 @@ class MultiObjectPanel extends ObjectPanel implements ChangeListener {
 	boolean oldVal = true;
 	ImportPanel impPanel;
 
-	public MultiObjectPanel(final DefaultListModel<BoneShell> possibleParents) {
+	public MultiObjectPanel(final IterableListModel<BoneShell> possibleParents, ImportPanel importPanel) {
+		impPanel = importPanel;
 		title = new JLabel("Multiple Selected");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 
@@ -47,22 +49,30 @@ class MultiObjectPanel extends ObjectPanel implements ChangeListener {
 		setLayout(layout);
 	}
 
-	@Override
-	public void stateChanged(final ChangeEvent e) {
-		if (doImport.isSelected() != oldVal) {
-			ImportPanel.setObjGroupSelected(getImportPanel().objectTabs, doImport.isSelected());
-			oldVal = doImport.isSelected();
+	public static void setObjGroupSelected(JList<ObjectPanel> objectTabs, final boolean flag) {
+		final Object[] selected = objectTabs.getSelectedValuesList().toArray();
+		for (Object o : selected) {
+			final ObjectPanel temp = (ObjectPanel) o;
+			temp.doImport.setSelected(flag);
 		}
 	}
 
-	public ImportPanel getImportPanel() {
-		if (impPanel == null) {
-			Container temp = getParent();
-			while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
-				temp = temp.getParent();
-			}
-			impPanel = (ImportPanel) temp;
+//	public ImportPanel getImportPanel() {
+//		if (impPanel == null) {
+//			Container temp = getParent();
+//			while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
+//				temp = temp.getParent();
+//			}
+//			impPanel = (ImportPanel) temp;
+//		}
+//		return impPanel;
+//	}
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		if (doImport.isSelected() != oldVal) {
+			setObjGroupSelected(impPanel.objectTabs, doImport.isSelected());
+			oldVal = doImport.isSelected();
 		}
-		return impPanel;
 	}
 }

@@ -4,6 +4,7 @@ import com.hiveworkshop.rms.editor.model.Camera;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import com.hiveworkshop.rms.util.IterableListModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -18,7 +19,7 @@ class ObjectPanel extends JPanel {
 	JCheckBox doImport;
 	JLabel parentLabel;
 	JLabel oldParentLabel;
-	DefaultListModel<BoneShell> parents;
+	IterableListModel<BoneShell> parents;
 	JList<BoneShell> parentsList;
 	JScrollPane parentsPane;
 
@@ -26,7 +27,7 @@ class ObjectPanel extends JPanel {
 
 	}
 
-	public ObjectPanel(final IdObject whichObject, final DefaultListModel<BoneShell> possibleParents) {
+	public ObjectPanel(final IdObject whichObject, final IterableListModel<BoneShell> possibleParents) {
 		object = whichObject;
 //		setLayout(new MigLayout("gap 0", "[grow]", "[][][][][grow]"));
 		setLayout(new MigLayout("gap 0", "[grow]", "[][][][][grow]"));
@@ -60,27 +61,6 @@ class ObjectPanel extends JPanel {
 
 		parentsPane = new JScrollPane(parentsList);
 		add(parentsPane, "growx, growy 200");
-//		add(parentsPane, "grow");
-
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//				.addComponent(title)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(doImport)
-//						.addComponent(oldParentLabel)
-//						.addGroup(layout.createSequentialGroup()
-//								.addComponent(parentLabel)
-//								.addComponent(parentsPane))));
-//
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(doImport)
-//				.addComponent(oldParentLabel)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(parentLabel)
-//						.addComponent(parentsPane)));
-//
-//		setLayout(layout);
 	}
 
 	public ObjectPanel(final Camera c) {
@@ -97,21 +77,6 @@ class ObjectPanel extends JPanel {
 		add(title, "align center, wrap");
 		add(doImport, "left, wrap");
 		add(oldParentLabel, "left, wrap");
-//		add(parentLabel, "left, wrap");
-//		add(parentsPane, "grow");
-
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//				.addComponent(title)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(doImport)
-//						.addComponent(oldParentLabel)));
-//
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(doImport)
-//				.addComponent(oldParentLabel));
-//		setLayout(layout);
 	}
 
 	public void addSelectedObjects(List<IdObject> objectsAdded, List<Camera> camerasAdded, EditableModel model) {
@@ -123,12 +88,10 @@ class ObjectPanel extends JPanel {
 				} else {
 					object.setParent(null);
 				}
-				// object.setName(importedModel.getName()+" "+object.getName());
 				// later make a name field?
 				model.add(object);
 				objectsAdded.add(object);
 			} else if (camera != null) {
-				// camera.setName(importedModel.getName()+" "+camera.getName());
 				model.add(camera);
 				camerasAdded.add(camera);
 			}

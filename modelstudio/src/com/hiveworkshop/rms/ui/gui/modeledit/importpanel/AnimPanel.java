@@ -4,6 +4,7 @@ import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.EventObject;
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
+import com.hiveworkshop.rms.util.IterableListModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -19,43 +20,35 @@ import java.util.List;
 class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSelectionListener {
 	// Animation panel for controlling which are imported
 
-	static final String IMPORTBASIC = "Import as-is";
-	static final String CHANGENAME = "Change name to:";
+	static final String IMPORT_BASIC = "Import as-is";
+	static final String CHANGE_NAME = "Change name to:";
 	static final String TIMESCALE = "Time-scale into pre-existing:";
-	static final String GLOBALSEQ = "Rebuild as global sequence";
+	static final String GLOBAL_SEQ = "Rebuild as global sequence";
 	// Import option
 	JCheckBox doImport;
 	// Import option
 	JCheckBox inReverse;
 	// The animation for this panel
 	Animation anim;
-	String[] animOptions = {IMPORTBASIC, CHANGENAME, TIMESCALE, GLOBALSEQ};
+	String[] animOptions = {IMPORT_BASIC, CHANGE_NAME, TIMESCALE, GLOBAL_SEQ};
 
 	JComboBox<String> importTypeBox = new JComboBox<>(animOptions);
 
 	JPanel cardPane = new JPanel();
 
-	JPanel blankCardImp = new JPanel();
-	JPanel blankCardGS = new JPanel();
-
-	JPanel nameCard = new JPanel();
 	JTextField newNameEntry = new JTextField("", 40);
 
-	JPanel animListCard = new JPanel();
-	DefaultListModel<AnimShell> existingAnims;
-	DefaultListModel<AnimShell> listModel;
+	IterableListModel<AnimShell> existingAnims;
+	IterableListModel<AnimShell> listModel;
 	JList<AnimShell> animList;
-	JScrollPane animListPane;
 	Object[] oldSelection = new Object[0];
 	boolean listenSelection = true;
 
-	public AnimPanel(final Animation anim, final DefaultListModel<AnimShell> existingAnims, final AnimListCellRenderer renderer) {
+	public AnimPanel(final Animation anim, final IterableListModel<AnimShell> existingAnims, final AnimListCellRenderer renderer) {
 		setLayout(new MigLayout("gap 0"));
 		this.existingAnims = existingAnims;
-		listModel = new DefaultListModel<>();
-		for (int i = 0; i < existingAnims.size(); i++) {
-			listModel.addElement(existingAnims.get(i));
-		}
+		listModel = new IterableListModel<>(existingAnims);
+
 		this.anim = anim;
 
 		JLabel title = new JLabel(anim.getName());
@@ -78,6 +71,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 
 		// Combo box items:
 		newNameEntry.setText(anim.getName());
+		JPanel nameCard = new JPanel();
 		nameCard.add(newNameEntry);
 
 		animList = new JList<>(listModel);
@@ -99,39 +93,22 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 			}
 		}
 
-		animListPane = new JScrollPane(animList);
+		JScrollPane animListPane = new JScrollPane(animList);
+		JPanel animListCard = new JPanel();
 		animListCard.add(animListPane);
 
 		final CardLayout cardLayout = new CardLayout();
 		cardPane.setLayout(cardLayout);
-		cardPane.add(blankCardImp, IMPORTBASIC);
-		cardPane.add(nameCard, CHANGENAME);
+		cardPane.add(new JPanel(), IMPORT_BASIC);
+		cardPane.add(nameCard, CHANGE_NAME);
 		cardPane.add(animListPane, TIMESCALE);
-		cardPane.add(blankCardGS, GLOBALSEQ);
+		cardPane.add(new JPanel(), GLOBAL_SEQ);
 		// cardLayout.show(cardPane,IMPORTBASIC);
 		add(title, "align center, wrap");
 		add(doImport, "left, wrap");
 		add(inReverse, "left, wrap");
 		add(importTypeBox);
 		add(cardPane, "growx, growy");
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createSequentialGroup().addGap(8)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//						.addComponent(title)
-//						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//								.addComponent(doImport)
-//								.addComponent(inReverse)
-//								.addGroup(layout.createSequentialGroup()
-//										.addComponent(importTypeBox)
-//										.addComponent(cardPane)))).addGap(8));
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(doImport)
-//				.addComponent(inReverse)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(importTypeBox)
-//						.addComponent(cardPane)));
-//		setLayout(layout);
 	}
 
 	public void setSelected(final boolean flag) {
@@ -162,28 +139,16 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 
 	public void updateSelectionPicks() {
 		listenSelection = false;
-		// DefaultListModel newModel = new DefaultListModel();
+		// IterableListModel newModel = new IterableListModel();
 		final Object[] selection = animList.getSelectedValuesList().toArray();
 		listModel.clear();
-		for (int i = 0; i < existingAnims.size(); i++) {
-			final Animation temp = ((AnimShell) existingAnims.get(i)).importAnim;
-			if ((temp == null) || (temp == anim)) {
-				listModel.addElement(existingAnims.get(i));
+
+		for (AnimShell animShell : existingAnims) {
+			if ((animShell.importAnim == null) || (animShell.importAnim == anim)) {
+				listModel.addElement(animShell);
 			}
 		}
-		// for( int i = 0; i < existingAnims.size(); i++ )
-		// {
-		// newModel.addElement(existingAnims.get(i));
-		// }
-		// existingAnims.clear();
-		// for( int i = 0; i < order.size(); i++ )
-		// {
-		// Object o = order.get(i);
-		// if( newModel.contains(o) )
-		// {
-		// existingAnims.addElement(o);
-		// }
-		// }
+
 		final int[] indices = new int[selection.length];
 		for (int i = 0; i < selection.length; i++) {
 			indices[i] = listModel.indexOf(selection[i]);
@@ -216,22 +181,13 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		}
 	}
 
-	public ImportPanel getImportPanel() {
-		Container temp = getParent();
-		while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
-			temp = temp.getParent();
-		}
-		return (ImportPanel) temp;
-	}
-
-	public void transfereSingleAnimation(Animation pickedAnim, Animation visFromAnim) {
+	public void transferSingleAnimation(Animation pickedAnim, Animation visFromAnim) {
 		if (anim.getName().equals(visFromAnim.getName())) {
 			doImport.doClick();
 			importTypeBox.setSelectedItem(AnimPanel.TIMESCALE);
-			for (int d = 0; d < existingAnims.getSize(); d++) {
-				final AnimShell shell = existingAnims.get(d);
-				if ((shell).anim.getName().equals(pickedAnim.getName())) {
-					animList.setSelectedValue(shell, true);
+			for (AnimShell animShell : existingAnims) {
+				if (animShell.anim.getName().equals(pickedAnim.getName())) {
+					animList.setSelectedValue(animShell, true);
 					updateSelectionPicks();
 					break;
 				}
@@ -273,9 +229,9 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		}
 	}
 
-//	public void reorderToModel(final DefaultListModel order) {
+//	public void reorderToModel(final IterableListModel order) {
 //		// listenSelection = false;
-//		// DefaultListModel newModel = new DefaultListModel();
+//		// IterableListModel newModel = new IterableListModel();
 //		// for( int i = 0; i < order.size(); i++ )
 //		// {
 //		// Object o = order.get(i);
@@ -295,7 +251,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 //		// listenSelection = true;
 //
 //		// listenSelection = false;
-//		// DefaultListModel newModel = new DefaultListModel();
+//		// IterableListModel newModel = new IterableListModel();
 //		// Object [] selection = animList.getSelectedValuesList().toArray();
 //		// for( int i = 0; i < existingAnims.size(); i++ )
 //		// {
