@@ -33,8 +33,8 @@ public class SkinPopup extends JPanel {
                 panel.add(new JScrollPane(bones), BorderLayout.CENTER);
                 JOptionPane.showMessageDialog(SkinPopup.this, panel);
                 BoneShell selectedValue = bones.getSelectedValue();
-                SkinPopup.this.bones[index] = selectedValue.bone;
-                boneButton.setText(selectedValue.bone.getName());
+                SkinPopup.this.bones[index] = selectedValue.getBone();
+                boneButton.setText(selectedValue.getBone().getName());
             });
             JSpinner boneWeightSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
             add(boneWeightSpinner, "wrap");

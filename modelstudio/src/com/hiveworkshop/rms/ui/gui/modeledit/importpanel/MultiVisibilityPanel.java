@@ -22,18 +22,10 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 
 		oldAnimsLabel = new JLabel("Existing animation visibility from: ");
-		oldSourcesBox = new JComboBox<>(oldSources);
-		oldSourcesBox.setEditable(false);
-		oldSourcesBox.setMaximumSize(new Dimension(500, 25));
-		oldSourcesBox.setRenderer(renderer);
-		oldSourcesBox.addItemListener(this);
+		oldSourcesBox = createObjectJComboBox(oldSources, renderer);
 
 		newAnimsLabel = new JLabel("Imported animation visibility from: ");
-		newSourcesBox = new JComboBox<>(newSources);
-		newSourcesBox.setEditable(false);
-		newSourcesBox.setMaximumSize(new Dimension(500, 25));
-		newSourcesBox.setRenderer(renderer);
-		newSourcesBox.addItemListener(this);
+		newSourcesBox = createObjectJComboBox(newSources, renderer);
 
 		favorOld = new JCheckBox("Favor component's original visibility when combining");
 		favorOld.setSelected(true);
@@ -45,24 +37,15 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		add(newAnimsLabel, "cell 0 2");
 		add(newSourcesBox, "cell 1 2");
 		add(favorOld, "cell 0 3");
+	}
 
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//				.addComponent(title)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(oldAnimsLabel)
-//						.addComponent(oldSourcesBox)
-//						.addComponent(newAnimsLabel)
-//						.addComponent(newSourcesBox)
-//						.addComponent(favorOld)));
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(oldAnimsLabel)
-//				.addComponent(oldSourcesBox)
-//				.addComponent(newAnimsLabel)
-//				.addComponent(newSourcesBox)
-//				.addComponent(favorOld));
-//		setLayout(layout);
+	private JComboBox<Object> createObjectJComboBox(DefaultComboBoxModel<Object> boxModel, VisShellBoxCellRenderer renderer) {
+		JComboBox<Object> jComboBox = new JComboBox<>(boxModel);
+		jComboBox.setEditable(false);
+		jComboBox.setMaximumSize(new Dimension(500, 25));
+		jComboBox.setRenderer(renderer);
+		jComboBox.addItemListener(this);
+		return jComboBox;
 	}
 
 	public static void setVisGroupSelected(JList<VisibilityPanel> visTabs, final boolean flag) {
@@ -115,7 +98,7 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 	@Override
 	public void stateChanged(final ChangeEvent e) {
 		if (favorOld.isSelected() != oldVal) {
-			setVisGroupSelected(getImportPanel().visTabs, favorOld.isSelected());
+			setVisGroupSelected(getImportPanel().mht.visTabs, favorOld.isSelected());
 			oldVal = favorOld.isSelected();
 		}
 	}
@@ -123,10 +106,10 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 	@Override
 	public void itemStateChanged(final ItemEvent e) {
 		if (e.getSource() == oldSourcesBox) {
-			setVisGroupItemOld(getImportPanel().visTabs, oldSourcesBox.getSelectedItem());
+			setVisGroupItemOld(getImportPanel().mht.visTabs, oldSourcesBox.getSelectedItem());
 		}
 		if (e.getSource() == newSourcesBox) {
-			setVisGroupItemNew(getImportPanel().visTabs, newSourcesBox.getSelectedItem());
+			setVisGroupItemNew(getImportPanel().mht.visTabs, newSourcesBox.getSelectedItem());
 		}
 	}
 }

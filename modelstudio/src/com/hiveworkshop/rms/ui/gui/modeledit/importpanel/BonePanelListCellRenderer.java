@@ -26,12 +26,12 @@ class BonePanelListCellRenderer extends AbstractSnapshottingListCellRenderer2D<B
 //		} else {
 //			setText(((BonePanel) value).bone.getClass().getSimpleName() + " \"" + ((BonePanel) value).bone.getName() + "\"");
 //		}
-		super.getListCellRendererComponent(list, ((BoneShell) value).bone, index, iss, chf);
-		if (((BoneShell) value).bone == null) {
+		super.getListCellRendererComponent(list, ((BoneShell) value).getBone(), index, iss, chf);
+		if (((BoneShell) value).getBone() == null) {
 
 			setText("value.getCl().getSmpName()" + " \"" + "Null" + "\"");
 		} else {
-			setText(((BoneShell) value).bone.getClass().getSimpleName() + " \"" + ((BoneShell) value).bone.getName() + "\"");
+			setText(((BoneShell) value).getBone().getClass().getSimpleName() + " \"" + ((BoneShell) value).getBone().getName() + "\"");
 		}
 		// setIcon(ImportPanel.cyanIcon);
 		// setIcon(new ImageIcon(Material.mergeImageScaled(ImportPanel.cyanIcon.getImage(),

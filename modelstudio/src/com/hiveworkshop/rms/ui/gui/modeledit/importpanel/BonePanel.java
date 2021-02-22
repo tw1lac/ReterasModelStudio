@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BonePanel extends JPanel implements ListSelectionListener {
@@ -40,7 +41,8 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	private IterableListModel<BoneShell> listModel;
 	private IterableListModel<BoneShell> hidenBonesListModel;
 	private IterableListModel<BoneShell> futureBones;
-	private Object[] oldSelection = new Object[0];
+	//	private Object[] oldSelection = new Object[0];
+	List<BoneShell> oldSelectionList = new ArrayList<>();
 	private ModelHolderThing mht;
 
 	protected BonePanel() {
@@ -104,7 +106,7 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 //		add(futureBonesListPane, "cell 2 2, growy");
 //	}
 
-	public BonePanel(ModelHolderThing mht, final BoneShellListCellRenderer renderer,
+	public BonePanel(String tit, ModelHolderThing mht, final BoneShellListCellRenderer renderer,
 	                 final ImportPanel importPanelin) {
 		this.mht = mht;
 		setLayout(new MigLayout("gap 0"));
@@ -127,10 +129,10 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 		animationBoneListPane.setVisible(false);
 
 		for (BoneShell bs : mht.existingBones) {
-			boneToBoneShellMap.put(bs.bone, bs);
+			boneToBoneShellMap.put(bs.getBone(), bs);
 		}
 
-		title = new JLabel("Bone Title");
+		title = new JLabel("Bone Title: " + tit);
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 		add(title, "cell 0 0, spanx, align center, wrap");
 
@@ -165,13 +167,13 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 
 	private void setImportBoneForBone() {
 		for (BoneShell bs : listModel) {
-			if (bs.bone.getName().equals(bone.getName()) && (bs.importBone == null) && (
+			if (bs.getBone().getName().equals(bone.getName()) && (bs.getImportBone() == null) && (
 					(
-							!bs.bone.getName().contains("Mesh")
-									&& !bs.bone.getName().contains("Object")
-									&& !bs.bone.getName().contains("Box")
+							!bs.getBone().getName().contains("Mesh")
+									&& !bs.getBone().getName().contains("Object")
+									&& !bs.getBone().getName().contains("Box")
 					)
-							|| bs.bone.getPivotPoint().equalLocs(bone.getPivotPoint()))
+							|| bs.getBone().getPivotPoint().equalLocs(bone.getPivotPoint()))
 			) {
 				animationFromBoneList.setSelectedValue(bs, true);
 				bs.setImportBone(bone);
@@ -191,10 +193,7 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	}
 
 	private void importTypeChanged() {
-		selectedBoneShell.importStatus = importTypeBox.getSelectedIndex();
-		if (importTypeBox.getSelectedIndex() == 0) {
-			selectedBoneShell.shouldImportBone = true;
-		}
+		selectedBoneShell.setImportStatus(importTypeBox.getSelectedIndex());
 		animationBoneListPane.setVisible(importTypeBox.getSelectedItem() == MOTIONFROM);
 //		updateSelectionPicks();
 //		final boolean pastListSelectionState = listenSelection;
@@ -216,7 +215,7 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	public void selectParent() {
 //		IterableListModel<BoneShell> futureBones = mht.getFutureBoneListExtended(false);
 		for (BoneShell bs : futureBones) {
-			if (bs.bone == selectedBone.getParent()) {
+			if (bs.getBone() == selectedBone.getParent()) {
 				futureBonesList.setSelectedValue(bs, true);
 				break;
 			}
@@ -231,8 +230,9 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 //	}
 
 	public BonePanel setParentTitle() {
-		System.out.println("setParentTitle for : " + selectedBone.getName());
-		if (selectedBone.getParent() != null) {
+		System.out.println("setParentTitle for : " + selectedBoneShell.toString());
+//		System.out.println("setParentTitle for : " + selectedBone.getName());
+		if (selectedBoneShell.getParent() != null) {
 			parentTitle.setText("Parent:      (Old Parent: " + selectedBone.getParent().getName() + ")");
 		} else {
 			parentTitle.setText("Parent:      (Old Parent: {no parent})");
@@ -242,20 +242,17 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	}
 
 	public BonePanel setBoneTitle() {
-		System.out.println("setBoneTitle for : " + selectedBone.getName());
-		title.setText(selectedBone.getClass().getSimpleName() + " \"" + selectedBone.getName() + "\"");
+		System.out.println("setBoneTitle for : " + selectedBoneShell.toString());
+//		System.out.println("setBoneTitle for : " + selectedBone.getName());
+//		title.setText(selectedBone.getClass().getSimpleName() + " \"" + selectedBone.getName() + "\"");
+		title.setText(selectedBoneShell.toString());
 		System.out.println("title: " + title.getText());
 		return this;
 	}
 
 	private void changedParent() {
 		System.out.println("changed Parent");
-		selectedBoneShell.parentBs = futureBonesList.getSelectedValue();
-		if (futureBonesList.getSelectedValue() == null) {
-			selectedBoneShell.newParent = null;
-		} else {
-			selectedBoneShell.newParent = futureBonesList.getSelectedValue().bone;
-		}
+		selectedBoneShell.setParent(futureBonesList.getSelectedValue());
 	}
 
 	public int getSelectedIndex() {
@@ -272,15 +269,14 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 
 	private void selectParentBs() {
 		System.out.println("selectParentBs");
-		futureBonesList.setSelectedValue(selectedBoneShell.parentBs, true);
-		if (selectedBoneShell.parentBs != null) {
+		futureBonesList.setSelectedValue(selectedBoneShell.getParent(), true);
+		if (selectedBoneShell.getParent() != null) {
 		}
 	}
 
 	public void setParent(final BoneShell pick) {
 		futureBonesList.setSelectedValue(pick, true);
-		selectedBoneShell.newParent = pick.bone;
-		selectedBoneShell.parentBs = pick;
+		selectedBoneShell.setParent(pick);
 	}
 
 	public void updateSelectionPicks() {
@@ -307,7 +303,7 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	}
 
 	private void updateVisibleBoneList() {
-		if (selectedBoneShell != null && selectedBoneShell.importBone != null) {
+		if (selectedBoneShell != null && selectedBoneShell.getImportBone() != null) {
 			nullImpBoneBoneList.remove(selectedBoneShell);
 		} else if (!nullImpBoneBoneList.contains(selectedBoneShell)) {
 			nullImpBoneBoneList.addElement(selectedBoneShell);
@@ -317,22 +313,34 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	}
 
 	private void updateBoneListSelection() {
-		final Object[] newSelection;
+//		final Object[] newSelection;
+		List<BoneShell> newSelectionList;
 		if (importTypeBox.getSelectedIndex() == 1) {
-			newSelection = animationFromBoneList.getSelectedValuesList().toArray();
+//			newSelection = animationFromBoneList.getSelectedValuesList().toArray();
+			newSelectionList = animationFromBoneList.getSelectedValuesList();
 		} else {
-			newSelection = new Object[0];
+//			newSelection = new Object[0];
+			newSelectionList = new ArrayList<>();
 		}
-		// ImportPanel panel = getImportPanel();
-		for (final Object a : oldSelection) {
-			((BoneShell) a).setImportBone(null);
-			boneToImportBoneMap.put(((BoneShell) a).bone, null);
+//		// ImportPanel panel = getImportPanel();
+//		for (final Object a : oldSelection) {
+//			((BoneShell) a).setImportBone(null);
+//			boneToImportBoneMap.put(((BoneShell) a).getBone(), null);
+//		}
+//		for (final Object a : newSelection) {
+//			((BoneShell) a).setImportBone(bone);
+//			boneToImportBoneMap.put(((BoneShell) a).getBone(), bone);
+//		}
+		for (final BoneShell a : oldSelectionList) {
+			a.setImportBone(null);
+			boneToImportBoneMap.put(a.getBone(), null);
 		}
-		for (final Object a : newSelection) {
-			((BoneShell) a).setImportBone(bone);
-			boneToImportBoneMap.put(((BoneShell) a).bone, bone);
+		for (final BoneShell a : newSelectionList) {
+			a.setImportBone(selectedBone);
+			boneToImportBoneMap.put(a.getBone(), selectedBone);
 		}
-		oldSelection = newSelection;
+//		oldSelection = newSelection;
+		oldSelectionList = newSelectionList;
 	}
 
 	@Override
@@ -363,19 +371,19 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 	private Bone getSelectedBone() {
 		final BoneShell mbs = futureBonesList.getSelectedValue();
 		if (mbs != null) {
-			return mbs.bone;
+			return mbs.getBone();
 		} else {
 			return null;
 		}
 	}
 
 	public BonePanel setSelectedBone(BoneShell boneShell) {
-		BonePanel.selectedBone = boneShell.bone;
+		BonePanel.selectedBone = boneShell.getBone();
 		BonePanel.selectedBoneShell = boneShell;
 		setParentTitle();
 		setBoneTitle();
 //		selectParent();
-		setSelectedIndex(boneShell.importStatus);
+		setSelectedIndex(boneShell.getImportStatus());
 		animationBoneListPane.setVisible(importTypeBox.getSelectedItem() == MOTIONFROM);
 		selectParentBs();
 		revalidate();

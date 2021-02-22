@@ -256,13 +256,13 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 		for (final Matrix m : geoset.getMatrix()) {
 			final MatrixShell ms = new MatrixShell(m);
 			// For look to find similarly named stuff and add it
-			for (final Object bs : bones.toArray()) {
+			for (final BoneShell bs : bones) {
 				// try {
 				for (final Bone b : m.getBones()) {
 					final String mName = b.getName();
-					if (((BoneShell) bs).bone == b)// .getName().equals(mName) )
+					if (bs.getBone() == b)// .getName().equals(mName) )
 					{
-						ms.newBones.add((BoneShell) bs);
+						ms.newBones.add(bs);
 					}
 				}
 				// }
@@ -283,11 +283,11 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 			ms.newBones.clear();
 			final Matrix m = ms.matrix;
 			// For look to find right stuff and add it
-			for (final Object bs : bones.toArray()) {
+			for (final BoneShell bs : bones) {
 				for (final Bone b : m.getBones()) {
-					if (((BoneShell) bs).bone == b)// .getName().equals(mName) )
+					if (bs.getBone() == b)// .getName().equals(mName) )
 					{
-						ms.newBones.add((BoneShell) bs);
+						ms.newBones.add(bs);
 					}
 				}
 			}
@@ -301,11 +301,11 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 			ms.newBones.clear();
 			final Matrix m = ms.matrix;
 			// For look to find similarly named stuff and add it
-			for (final Object bs : bones.toArray()) {
+			for (final BoneShell bs : bones) {
 				for (final Bone b : m.getBones()) {
 					final String mName = b.getName();
-					if (((BoneShell) bs).bone.getName().equals(mName)) {
-						ms.newBones.add((BoneShell) bs);
+					if (bs.getBone().getName().equals(mName)) {
+						ms.newBones.add(bs);
 					}
 				}
 			}
@@ -334,14 +334,14 @@ class BoneAttachmentPanel extends JPanel implements ListSelectionListener {
 			final MatrixShell ms = oldBoneRefs.get(l);
 			ms.matrix.getBones().clear();
 			for (final BoneShell bs : ms.newBones) {
-				if (model.contains(bs.bone)) {
-					if (bs.bone.getClass() == Helper.class) {
+				if (model.contains(bs.getBone())) {
+					if (bs.getBone().getClass() == Helper.class) {
 						JOptionPane.showMessageDialog(null,
 								"Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
 					}
-					ms.matrix.add(bs.bone);
+					ms.matrix.add(bs.getBone());
 				} else {
-					System.out.println("Boneshaving " + bs.bone.getName() + " out of use");
+					System.out.println("Boneshaving " + bs.getBone().getName() + " out of use");
 				}
 			}
 			if (ms.matrix.size() == 0) {

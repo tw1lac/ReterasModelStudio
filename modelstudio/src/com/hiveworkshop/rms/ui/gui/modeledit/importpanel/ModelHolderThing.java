@@ -1,9 +1,6 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
-import com.hiveworkshop.rms.editor.model.Bone;
-import com.hiveworkshop.rms.editor.model.EditableModel;
-import com.hiveworkshop.rms.editor.model.Helper;
-import com.hiveworkshop.rms.editor.model.IdObject;
+import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.util.IterableListModel;
 
@@ -25,16 +22,41 @@ public class ModelHolderThing {
 	public IterableListModel<BoneShell> futureBoneList = new IterableListModel<>();
 	public List<BoneShell> oldBoneShellList;
 	public List<BoneShell> newBonesShellList;
-	public JCheckBox clearExistingBones = new JCheckBox("Clear pre-existing bones and helpers");
 	public IterableListModel<BoneShell> futureBoneListEx = new IterableListModel<>();
 	public List<IterableListModel<BoneShell>> futureBoneListExFixableItems = new ArrayList<>();
+	public JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+	public JCheckBox clearExistingBones = new JCheckBox("Clear pre-existing bones and helpers");
 	public ArrayList<BoneShell> oldHelpersShellList;
 	public ArrayList<BoneShell> newHelpersShellList;
 	//	public IterableListModel<BonePanel> bonePanels = new IterableListModel<>();
 //  public JList<BonePanel> boneTabs = new JList<>(bonePanels);
 	public IterableListModel<BoneShell> boneShells = new IterableListModel<>();
 	public JList<BoneShell> boneTabs = new JList<>(boneShells);
+	public JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	//	public JPanel geosetAnimPanel = new JPanel();
+	public JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
+	public JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	//	public JButton allMatrOriginal = new JButton("Reset all Matrices");
+//	public JButton allMatrSameName = new JButton("Set all to available, original names");
+	public IterableListModel<AnimShell> existingAnims = new IterableListModel<>();
+	public IterableListModel<ObjectShell> objectShells = new IterableListModel<>();
+	public JList<ObjectShell> objectTabsShell = new JList<>(objectShells);
+
+	//	public IterableListModel<ObjectPanel> objectPanels = new IterableListModel<>();
+//	public JList<ObjectPanel> objectTabs = new JList<>(objectPanels);
 	IterableListModel<BoneShell> existingBones = new IterableListModel<>();
+	JTabbedPane ugg = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	// Visibility
+	JList<VisibilityPanel> visTabs = new JList<>();
+
+
+	IterableListModel<VisibilityPanel> visibilityPanels = new IterableListModel<>();
+	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
+
+	ArrayList<Object> visSourcesNew;
+
+
 	long totalAddTime1;
 	long addCount1;
 	long totalRemoveTime1;
@@ -47,7 +69,6 @@ public class ModelHolderThing {
 		oldParentMap = new HashMap<>();
 		importParentMap = new HashMap<>();
 		newParentMap = new HashMap<>();
-
 		fillParentMap(currentModel, oldParentMap);
 		fillParentMap(importModel, importParentMap);
 	}
@@ -65,14 +86,14 @@ public class ModelHolderThing {
 			for (final IdObject b : oldParentMap.keySet()) {
 				if (b instanceof Bone && !(b instanceof Helper)) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.modelName = currentModel.getName();
+					bs.setModelName(currentModel.getName());
 					oldBoneShellList.add(bs);
 				}
 			}
 			for (final IdObject b : importParentMap.keySet()) {
 				if (b instanceof Bone && !(b instanceof Helper)) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.modelName = importModel.getName();
+					bs.setModelName(importModel.getName());
 //					bs.panel = boneToPanel.get(b);
 					newBonesShellList.add(bs);
 				}
@@ -96,7 +117,7 @@ public class ModelHolderThing {
 			}
 		}
 		for (final BoneShell b : newBonesShellList) {
-			if (b.shouldImportBone) {
+			if (b.getShouldImportBone()) {
 				if (!futureBoneList.contains(b)) {
 					futureBoneList.addElement(b);
 				}
@@ -119,8 +140,8 @@ public class ModelHolderThing {
 			for (final IdObject b : oldParentMap.keySet()) {
 				if (b instanceof Bone) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.modelName = currentModel.getName();
-					bs.showClass = true;
+					bs.setModelName(currentModel.getName());
+					bs.setShowClass(true);
 					oldHelpersShellList.add(bs);
 				}
 			}
@@ -129,9 +150,9 @@ public class ModelHolderThing {
 			for (final IdObject b : importParentMap.keySet()) {
 				if (b instanceof Bone) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.modelName = importModel.getName();
-					bs.showClass = true;
-					bs.panel = boneToPanel.get(b);
+					bs.setModelName(importModel.getName());
+					bs.setShowClass(true);
+//					bs.panel = boneToPanel.get(b);
 					newHelpersShellList.add(bs);
 				}
 			}
@@ -157,18 +178,9 @@ public class ModelHolderThing {
 			}
 		}
 		System.out.println("futureBoneListEx size: " + futureBoneListEx.size());
-//		for (final BoneShell b : newHelpersShellList) {
-//			b.panel = boneToPanel.get(b.bone);
-//			if (boneToPanel.get(b.bone) != null) {
-//				if (b.shouldImportBone) {
-//					addBoneThing(b);
-//				} else {
-//					removeBoneThing(b);
-//				}
-//			}
-//		}
+
 		for (final BoneShell b : newHelpersShellList) {
-			if (b.shouldImportBone) {
+			if (b.getShouldImportBone()) {
 				addBoneThing(b);
 			} else {
 				removeBoneThing(b);
@@ -246,5 +258,27 @@ public class ModelHolderThing {
 
 	public boolean shouldImportBone(Bone bone) {
 		return boneToPanel.get(bone).importTypeBox.getSelectedIndex() == 1;
+	}
+
+	public void addSelectedObjects(ObjectShell os, List<IdObject> objectsAdded, List<Camera> camerasAdded, EditableModel model) {
+		if (os.getShouldImport()) {
+			if (os.getIdObject() != null) {
+				final BoneShell mbs = os.getParent();
+				if (mbs != null) {
+					os.getIdObject().setParent(mbs.getBone());
+				} else {
+					os.getIdObject().setParent(null);
+				} // later make a name field?
+				model.add(os.getIdObject());
+				objectsAdded.add(os.getIdObject());
+			} else if (os.getCamera() != null) {
+				model.add(os.getCamera());
+				camerasAdded.add(os.getCamera());
+			}
+		} else {
+			if (os.getIdObject() != null) {
+				os.getIdObject().setParent(null); // Fix cross-model referencing issue (force clean parent node's list of children)
+			}
+		}
 	}
 }

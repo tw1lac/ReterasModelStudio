@@ -2,23 +2,22 @@ package com.hiveworkshop.rms.ui.gui.modeledit;
 
 import com.hiveworkshop.rms.editor.model.Bone;
 import com.hiveworkshop.rms.editor.model.IdObject;
-import com.hiveworkshop.rms.ui.gui.modeledit.importpanel.BonePanel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BoneShell {
-	public final Bone bone;
-	public Bone importBone;
-	public String modelName;
-	public BonePanel panel;
-	public boolean showClass = false;
+	private final Bone bone;
+	private Bone importBone;
+	private String modelName;
+	//	public BonePanel panel;
+	private boolean showClass = false;
 
-	public boolean shouldImportBone = true;
-	public int importStatus = 0;
-	public IdObject oldParent;
-	public IdObject newParent;
-	public BoneShell parentBs;
+	private boolean shouldImportBone = true;
+	private int importStatus = 0;
+	private IdObject oldParent;
+	private IdObject newParent;
+	private BoneShell parentBs;
 
 	public BoneShell(final Bone b) {
 		bone = b;
@@ -30,6 +29,75 @@ public class BoneShell {
 
 	public void setImportBone(final Bone b) {
 		importBone = b;
+	}
+
+	public Bone getImportBone() {
+		return importBone;
+	}
+
+	public Bone getBone() {
+		return importBone;
+	}
+
+	public IdObject getOldParent() {
+		return oldParent;
+	}
+
+	public IdObject getNewParent() {
+		return newParent;
+	}
+
+	public void setParentBone(IdObject parent) {
+		newParent = parent;
+	}
+
+	public BoneShell getParent() {
+		return parentBs;
+	}
+
+	public void setParent(BoneShell parent) {
+		newParent = parent.bone;
+		parentBs = parent;
+	}
+
+	public int getImportStatus() {
+		return importStatus;
+	}
+
+	public void setImportStatus(int importStatus) {
+		this.importStatus = importStatus;
+		if (importStatus == 0) {
+			shouldImportBone = true;
+		} else if (importStatus == 2) {
+			shouldImportBone = false;
+		}
+	}
+
+	public boolean getShouldImportBone() {
+		return shouldImportBone;
+	}
+
+	public BoneShell setShouldImportBone(boolean shouldImportBone) {
+		this.shouldImportBone = shouldImportBone;
+		return this;
+	}
+
+	public String getModelName() {
+		return modelName;
+	}
+
+	public BoneShell setModelName(String modelName) {
+		this.modelName = modelName;
+		return this;
+	}
+
+	public boolean getShowClass() {
+		return showClass;
+	}
+
+	public BoneShell setShowClass(boolean showClass) {
+		this.showClass = showClass;
+		return this;
 	}
 
 	@Override

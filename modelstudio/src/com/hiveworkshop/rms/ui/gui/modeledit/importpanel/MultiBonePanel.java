@@ -45,7 +45,7 @@ class MultiBonePanel extends BonePanel {
 		add(cardPanel, "wrap");
 
 		setAllParent = new JButton("Set Parent for All");
-		setAllParent.addActionListener(e -> setParentMultiBones(importPanel));
+		setAllParent.addActionListener(e -> setParentMultiBones(renderer));
 		add(setAllParent, "wrap");
 	}
 
@@ -81,7 +81,7 @@ class MultiBonePanel extends BonePanel {
 		add(cardPanel, "wrap");
 
 		setAllParent = new JButton("Set Parent for All");
-		setAllParent.addActionListener(e -> setParentMultiBones(importPanel));
+		setAllParent.addActionListener(e -> setParentMultiBones(renderer));
 		add(setAllParent, "wrap");
 	}
 
@@ -120,9 +120,9 @@ class MultiBonePanel extends BonePanel {
 		List<BoneShell> boneShellList = boneTabs.getSelectedValuesList();
 		for (BoneShell boneShell : boneShellList) {
 			switch (what) {
-				case "Import this bone" -> boneShell.importStatus = 0;
-				case "Import motion to pre-existing:" -> boneShell.importStatus = 1;
-				case "Do not import" -> boneShell.importStatus = 2;
+				case "Import this bone" -> boneShell.setImportStatus(0);
+				case "Import motion to pre-existing:" -> boneShell.setImportStatus(1);
+				case "Do not import" -> boneShell.setImportStatus(2);
 			}
 		}
 	}
@@ -143,27 +143,18 @@ class MultiBonePanel extends BonePanel {
 		System.out.println("MultiBonePanel.actionPerformed() took " + (nanoEnd - nanoStart) + " ns");
 	}
 
-//	public static void setSelectedItem(JList<BonePanel> boneTabs, final String what) {
-//		final Object[] selected = boneTabs.getSelectedValuesList().toArray();
-//		for (Object o : selected) {
-//			final BonePanel temp = (BonePanel) o;
-//			temp.setSelectedValue(what);
-//		}
-//	}
-
 	/**
 	 * The method run when the user pushes the "Set Parent for All" button in the
 	 * MultiBone panel.
 	 */
-	private void setParentMultiBones(ImportPanel importPanel) {
-		final JList<BoneShell> list = new JList<>(importPanel.mht.getFutureBoneListExtended(true));
-		list.setCellRenderer(importPanel.boneShellRenderer);
-		final int x = JOptionPane.showConfirmDialog(importPanel, new JScrollPane(list), "Set Parent for All Selected Bones", JOptionPane.OK_CANCEL_OPTION);
+	private void setParentMultiBones(BoneShellListCellRenderer renderer) {
+		final JList<BoneShell> list = new JList<>(mht.getFutureBoneListExtended(true));
+		list.setCellRenderer(renderer);
+		final int x = JOptionPane.showConfirmDialog(this, new JScrollPane(list), "Set Parent for All Selected Bones", JOptionPane.OK_CANCEL_OPTION);
 		if (x == JOptionPane.OK_OPTION) {
 			List<BoneShell> boneShells = mht.boneTabs.getSelectedValuesList();
 			for (BoneShell boneShell : boneShells) {
-				boneShell.parentBs = list.getSelectedValue();
-				boneShell.newParent = list.getSelectedValue().bone;
+				boneShell.setParent(list.getSelectedValue());
 			}
 		}
 	}

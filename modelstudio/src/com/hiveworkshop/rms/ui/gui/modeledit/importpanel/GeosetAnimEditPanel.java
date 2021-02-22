@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
-import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelViewManager;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
 
@@ -9,36 +8,49 @@ import javax.swing.*;
 public class GeosetAnimEditPanel {
 	public static final ImageIcon greenIcon = RMSIcons.greenIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/Blank_small.png"));
 	public static final ImageIcon orangeIcon = RMSIcons.orangeIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/BlankOrange_small.png"));
-//	JPanel geosetAnimPanel = new JPanel();
-//	JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-//
-//	ImportPanel importPanel;
-//
-//	JCheckBox displayParents = new JCheckBox("Display parent names");
-//	JButton allMatrOriginal = new JButton("Reset all Matrices");
-//	JButton allMatrSameName = new JButton("Set all to available, original names");
 
-	JPanel geosetAnimPanel = new JPanel();
-	JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
 	ImportPanel importPanel;
 	JCheckBox displayParents = new JCheckBox("Display parent names");
-	JButton allMatrOriginal = new JButton("Reset all Matrices");
-	JButton allMatrSameName = new JButton("Set all to available, original names");
+	JButton allMatrOriginal;
+	JButton allMatrSameName;
+	private ModelHolderThing mht;
 
-	public GeosetAnimEditPanel(JPanel geosetAnimPanel, JTabbedPane geosetAnimTabs, ImportPanel importPanel,
+	public GeosetAnimEditPanel(ModelHolderThing mht, ImportPanel importPanel,
 	                           JButton allMatrOriginal, JButton allMatrSameName) {
-		this.geosetAnimPanel = geosetAnimPanel;
-		this.geosetAnimTabs = geosetAnimTabs;
+		this.mht = mht;
 		this.importPanel = importPanel;
 //		this.displayParents = displayParents;
 		this.allMatrOriginal = allMatrOriginal;
 		this.allMatrSameName = allMatrSameName;
 	}
 
-	private static void updateAnimTabs(ImportPanel importPanel) {
-		((AnimPanel) importPanel.animTabs.getSelectedComponent()).updateSelectionPicks();
-		importPanel.mht.getFutureBoneList();
-		importPanel.mht.getFutureBoneListExtended(false);
+	public JPanel makeGeosetAnimPanel() {
+		JPanel geosetAnimPanel = new JPanel();
+
+		final ModelViewManager currentModelManager = new ModelViewManager(mht.currentModel);
+		final ModelViewManager importedModelManager = new ModelViewManager(mht.importModel);
+		final ParentToggleRenderer ptr = makeMatricesPanle(currentModelManager, importedModelManager);
+		for (int i = 0; i < mht.currentModel.getGeosets().size(); i++) {
+			final BoneAttachmentPanel geoPanel = new BoneAttachmentPanel(mht.currentModel, mht.currentModel.getGeoset(i), ptr, importPanel);
+			String tip = "Click to modify animation data for Geoset " + i + " from " + mht.currentModel.getName() + ".";
+			mht.geosetAnimTabs.addTab(mht.currentModel.getName() + " " + (i + 1), greenIcon, geoPanel, tip);
+		}
+		for (int i = 0; i < mht.importModel.getGeosets().size(); i++) {
+			final BoneAttachmentPanel geoPanel = new BoneAttachmentPanel(mht.importModel, mht.importModel.getGeoset(i), ptr, importPanel);
+			String tip = "Click to modify animation data for Geoset " + i + " from " + mht.importModel.getName() + ".";
+			mht.geosetAnimTabs.addTab(mht.importModel.getName() + " " + (i + 1), orangeIcon, geoPanel, tip);
+		}
+		mht.geosetAnimTabs.addChangeListener(e -> updateAnimTabs(importPanel));
+
+		setLayout(geosetAnimPanel);
+		return geosetAnimPanel;
+	}
+
+	private void updateAnimTabs(ImportPanel importPanel) {
+		((AnimPanel) mht.animTabs.getSelectedComponent()).updateSelectionPicks();
+		mht.getFutureBoneList();
+		mht.getFutureBoneListExtended(false);
 		importPanel.visibilityList();
 		// ((BoneAttachmentPane)geosetAnimTabs.getSelectedComponent()).refreshLists();
 		importPanel.repaint();
@@ -62,26 +74,6 @@ public class GeosetAnimEditPanel {
 		}
 	}
 
-	public void makeGeosetAnimPanel(EditableModel currentModel, EditableModel importedModel) {
-
-		final ModelViewManager currentModelManager = new ModelViewManager(currentModel);
-		final ModelViewManager importedModelManager = new ModelViewManager(importedModel);
-		final ParentToggleRenderer ptr = makeMatricesPanle(currentModelManager, importedModelManager);
-		for (int i = 0; i < currentModel.getGeosets().size(); i++) {
-			final BoneAttachmentPanel geoPanel = new BoneAttachmentPanel(currentModel, currentModel.getGeoset(i), ptr, importPanel);
-			String tip = "Click to modify animation data for Geoset " + i + " from " + currentModel.getName() + ".";
-			geosetAnimTabs.addTab(currentModel.getName() + " " + (i + 1), greenIcon, geoPanel, tip);
-		}
-		for (int i = 0; i < importedModel.getGeosets().size(); i++) {
-			final BoneAttachmentPanel geoPanel = new BoneAttachmentPanel(importedModel, importedModel.getGeoset(i), ptr, importPanel);
-			String tip = "Click to modify animation data for Geoset " + i + " from " + importedModel.getName() + ".";
-			geosetAnimTabs.addTab(importedModel.getName() + " " + (i + 1), orangeIcon, geoPanel, tip);
-		}
-		geosetAnimTabs.addChangeListener(e -> updateAnimTabs(importPanel));
-
-		setLayout();
-	}
-
 	public ParentToggleRenderer makeMatricesPanle(ModelViewManager currentModelManager, ModelViewManager importedModelManager) {
 //		addTab("Matrices", greenIcon, geosetAnimPanel, "Controls which bones geosets are attached to.");
 //		addTab("Skin", orangeIcon, new JPanel(), "Edit SKIN chunk");
@@ -90,24 +82,24 @@ public class GeosetAnimEditPanel {
 
 		displayParents.addChangeListener(e -> updateAnimTabs(importPanel));
 
-		allMatrOriginal.addActionListener(e -> allMatrOriginal(geosetAnimTabs));
-		allMatrSameName.addActionListener(e -> allMatrSameName(geosetAnimTabs));
+		allMatrOriginal.addActionListener(e -> allMatrOriginal(mht.geosetAnimTabs));
+		allMatrSameName.addActionListener(e -> allMatrSameName(mht.geosetAnimTabs));
 		return ptr;
 	}
 
-	private void setLayout() {
-		geosetAnimPanel.add(geosetAnimTabs);
+	private void setLayout(JPanel geosetAnimPanel) {
+		geosetAnimPanel.add(mht.geosetAnimTabs);
 		final GroupLayout gaLayout = new GroupLayout(geosetAnimPanel);
 		gaLayout.setVerticalGroup(gaLayout.createSequentialGroup()
 				.addComponent(displayParents)
 				.addComponent(allMatrOriginal)
 				.addComponent(allMatrSameName)
-				.addComponent(geosetAnimTabs));
+				.addComponent(mht.geosetAnimTabs));
 		gaLayout.setHorizontalGroup(gaLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 				.addComponent(displayParents)
 				.addComponent(allMatrOriginal)
 				.addComponent(allMatrSameName)
-				.addComponent(geosetAnimTabs));
+				.addComponent(mht.geosetAnimTabs));
 		geosetAnimPanel.setLayout(gaLayout);
 	}
 }

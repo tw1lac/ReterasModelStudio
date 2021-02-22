@@ -1,24 +1,62 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Animation;
-import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
-import com.hiveworkshop.rms.util.IterableListModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class AnimEditPanel {
 	public static final ImageIcon orangeIcon = RMSIcons.orangeIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/BlankOrange_small.png"));
 
-	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-	IterableListModel<AnimShell> existingAnims;
-	JCheckBox clearExistingAnims;
+	private ModelHolderThing mht;
 
-	public AnimEditPanel(JTabbedPane animTabs, IterableListModel<AnimShell> existingAnims, JCheckBox clearExistingAnims) {
-		this.animTabs = animTabs;
-		this.existingAnims = existingAnims;
-		this.clearExistingAnims = clearExistingAnims;
+	public AnimEditPanel(ModelHolderThing mht) {
+		this.mht = mht;
+	}
+
+	public JPanel makeAnimationPanel() {
+		JPanel animPanel = new JPanel();
+//		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
+
+//		existingAnims = new IterableListModel<>();
+		for (Animation animation : mht.currentModel.getAnims()) {
+			mht.existingAnims.addElement(new AnimShell(animation));
+		}
+
+		final AnimListCellRenderer animsRenderer = new AnimListCellRenderer();
+
+		JButton importAllAnims = createButton("Import All", e -> uncheckAllAnims(mht.animTabs, true));
+		animPanel.add(importAllAnims);
+
+		JButton timescaleAllAnims = createButton("Time-scale All", e -> timescaleAllAnims(mht.animTabs));
+		animPanel.add(timescaleAllAnims);
+
+		JButton renameAllAnims = createButton("Import and Rename All", e -> renameAllAnims(animPanel.getParent(), mht.animTabs));
+		animPanel.add(renameAllAnims);
+
+		JButton uncheckAllAnims = createButton("Leave All", e -> uncheckAllAnims(mht.animTabs, false));
+		animPanel.add(uncheckAllAnims);
+
+		// Build the animTabs list of AnimPanels
+		for (Animation anim : mht.importModel.getAnims()) {
+			final AnimPanel iAnimPanel = new AnimPanel(anim, mht.existingAnims, animsRenderer);
+
+			mht.animTabs.addTab(anim.getName(), orangeIcon, iAnimPanel, "Click to modify data for this animation sequence.");
+		}
+
+		animPanel.add(mht.clearExistingAnims);
+		animPanel.add(mht.animTabs);
+
+		setLayout(animPanel, importAllAnims, timescaleAllAnims, renameAllAnims, uncheckAllAnims);
+		return animPanel;
+	}
+
+	public JButton createButton(String text, ActionListener actionListener) {
+		JButton uncheckAllAnims = new JButton(text);
+		uncheckAllAnims.addActionListener(actionListener);
+		return uncheckAllAnims;
 	}
 
 	private static void renameAllAnims(Component parent, JTabbedPane animTabs) {
@@ -72,47 +110,6 @@ public class AnimEditPanel {
 		}
 	}
 
-	public JPanel makeAnimationPanel(EditableModel currentModel, EditableModel importedModel) {
-		JPanel animPanel = new JPanel();
-//		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
-
-//		existingAnims = new IterableListModel<>();
-		for (Animation animation : currentModel.getAnims()) {
-			existingAnims.addElement(new AnimShell(animation));
-		}
-
-		final AnimListCellRenderer animsRenderer = new AnimListCellRenderer();
-
-		JButton importAllAnims = new JButton("Import All");
-		importAllAnims.addActionListener(e -> uncheckAllAnims(animTabs, true));
-		animPanel.add(importAllAnims);
-
-		JButton timescaleAllAnims = new JButton("Time-scale All");
-		timescaleAllAnims.addActionListener(e -> timescaleAllAnims(animTabs));
-		animPanel.add(timescaleAllAnims);
-
-		JButton renameAllAnims = new JButton("Import and Rename All");
-		renameAllAnims.addActionListener(e -> renameAllAnims(animPanel.getParent(), animTabs));
-		animPanel.add(renameAllAnims);
-
-		JButton uncheckAllAnims = new JButton("Leave All");
-		uncheckAllAnims.addActionListener(e -> uncheckAllAnims(animTabs, false));
-		animPanel.add(uncheckAllAnims);
-
-		// Build the animTabs list of AnimPanels
-		for (Animation anim : importedModel.getAnims()) {
-			final AnimPanel iAnimPanel = new AnimPanel(anim, existingAnims, animsRenderer);
-
-			animTabs.addTab(anim.getName(), orangeIcon, iAnimPanel, "Click to modify data for this animation sequence.");
-		}
-
-		animPanel.add(clearExistingAnims);
-		animPanel.add(animTabs);
-
-		setLayout(animPanel, importAllAnims, timescaleAllAnims, renameAllAnims, uncheckAllAnims);
-		return animPanel;
-	}
-
 	private void setLayout(JPanel animPanel, JButton importAllAnims, JButton timescaleAllAnims, JButton renameAllAnims, JButton uncheckAllAnims) {
 		final GroupLayout animLayout = new GroupLayout(animPanel);
 		animLayout.setHorizontalGroup(animLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -121,16 +118,16 @@ public class AnimEditPanel {
 						.addComponent(renameAllAnims).addGap(8)
 						.addComponent(timescaleAllAnims).addGap(8)
 						.addComponent(uncheckAllAnims))
-				.addComponent(clearExistingAnims)
-				.addComponent(animTabs));
+				.addComponent(mht.clearExistingAnims)
+				.addComponent(mht.animTabs));
 		animLayout.setVerticalGroup(animLayout.createSequentialGroup()
 				.addGroup(animLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(importAllAnims)
 						.addComponent(renameAllAnims)
 						.addComponent(timescaleAllAnims)
 						.addComponent(uncheckAllAnims))
-				.addComponent(clearExistingAnims).addGap(8)
-				.addComponent(animTabs));
+				.addComponent(mht.clearExistingAnims).addGap(8)
+				.addComponent(mht.animTabs));
 		animPanel.setLayout(animLayout);
 	}
 }

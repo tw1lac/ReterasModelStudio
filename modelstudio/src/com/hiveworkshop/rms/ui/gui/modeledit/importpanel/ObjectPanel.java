@@ -1,7 +1,6 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Camera;
-import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.util.IterableListModel;
@@ -9,7 +8,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 class ObjectPanel extends JPanel {
 	JLabel title;
@@ -23,27 +21,24 @@ class ObjectPanel extends JPanel {
 	JList<BoneShell> parentsList;
 	JScrollPane parentsPane;
 
+	static ObjectShell currentObject;
+
 	protected ObjectPanel() {
 
 	}
 
-	public ObjectPanel(final IdObject whichObject, final IterableListModel<BoneShell> possibleParents) {
-		object = whichObject;
+	public ObjectPanel(final IterableListModel<BoneShell> possibleParents) {
 //		setLayout(new MigLayout("gap 0", "[grow]", "[][][][][grow]"));
 		setLayout(new MigLayout("gap 0", "[grow]", "[][][][][grow]"));
-		title = new JLabel(object.getClass().getSimpleName() + " \"" + object.getName() + "\"");
+		title = new JLabel("Title title");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 		add(title, "align center, wrap");
 
 		doImport = new JCheckBox("Import this object");
-		doImport.setSelected(true);
+		doImport.addActionListener(e -> changeImportStatus());
 		add(doImport, "left, wrap");
 
-		if (object.getParent() != null) {
-			oldParentLabel = new JLabel("(Old Parent: " + object.getParent().getName() + ")");
-		} else {
-			oldParentLabel = new JLabel("(Old Parent: {no parent})");
-		}
+		oldParentLabel = new JLabel("(Old Parent: ? )");
 		add(oldParentLabel, "left, wrap");
 
 		parentLabel = new JLabel("Parent:");
@@ -52,54 +47,48 @@ class ObjectPanel extends JPanel {
 		parents = possibleParents;
 		parentsList = new JList<>(parents);
 		parentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		for (int i = 0; i < parents.size(); i++) {
-			final BoneShell bs = parents.get(i);
-			if (bs.bone == object.getParent()) {
-				parentsList.setSelectedValue(bs, true);
-			}
-		}
 
 		parentsPane = new JScrollPane(parentsList);
 		add(parentsPane, "growx, growy 200");
 	}
 
-	public ObjectPanel(final Camera c) {
-		camera = c;
-		setLayout(new MigLayout("gap 0"));
-
-		title = new JLabel(c.getClass().getSimpleName() + " \"" + c.getName() + "\"");
-		title.setFont(new Font("Arial", Font.BOLD, 26));
-
-		doImport = new JCheckBox("Import this object");
-		doImport.setSelected(true);
-		parentLabel = new JLabel("Parent:");
-		oldParentLabel = new JLabel("(Cameras don't have parents)");
-		add(title, "align center, wrap");
-		add(doImport, "left, wrap");
-		add(oldParentLabel, "left, wrap");
+	public void setCurrentObject(ObjectShell objectShell) {
+		currentObject = objectShell;
+		setTitle();
+//		setOldParentTitle();
+		doImport.setSelected(currentObject.getShouldImport());
+		selectParent2();
 	}
 
-	public void addSelectedObjects(List<IdObject> objectsAdded, List<Camera> camerasAdded, EditableModel model) {
-		if (doImport.isSelected()) {
-			if (object != null) {
-				final BoneShell mbs = parentsList.getSelectedValue();
-				if (mbs != null) {
-					object.setParent(mbs.bone);
-				} else {
-					object.setParent(null);
-				}
-				// later make a name field?
-				model.add(object);
-				objectsAdded.add(object);
-			} else if (camera != null) {
-				model.add(camera);
-				camerasAdded.add(camera);
-			}
+	public void changeImportStatus() {
+		currentObject.setShouldImport(doImport.isSelected());
+	}
+
+	private void selectParent2() {
+		if (currentObject.getCamera() != null) {
+			parentsList.setSelectedValue(null, true);
+			parentsPane.setVisible(false);
+			oldParentLabel.setText("(Cameras don't have parents)");
 		} else {
-			if (object != null) {
-				object.setParent(null);
-				// Fix cross-model referencing issue (force clean parent node's list of children)
+			parentsPane.setVisible(true);
+			parentsList.setSelectedValue(currentObject.getParent(), true);
+			if (currentObject.getParent() != null) {
+				oldParentLabel.setText("(Old Parent: " + currentObject.getParent().toString() + ")");
+			} else {
+				oldParentLabel.setText("(Old Parent: {no parent})");
 			}
 		}
 	}
+
+	public void setTitle() {
+		title.setText(currentObject.toString());
+	}
+
+//	public void setOldParentTitle(){
+//		if (currentObject.getParent() != null) {
+//			oldParentLabel.setText("(Old Parent: " + currentObject.getParent().toString() + ")");
+//		} else {
+//			oldParentLabel.setText("(Old Parent: {no parent})");
+//		}
+//	}
 }

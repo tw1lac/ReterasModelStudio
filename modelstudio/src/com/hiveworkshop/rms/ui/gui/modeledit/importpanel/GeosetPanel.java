@@ -102,7 +102,7 @@ class GeosetPanel extends JPanel implements ChangeListener {
 		materialList.setEnabled(doImport.isSelected());
 		materialListPane.setEnabled(doImport.isSelected());
 
-		informGeosetVisibility(impPanel.geosetAnimTabs, geoset, doImport.isSelected());
+		informGeosetVisibility(impPanel.mht.geosetAnimTabs, geoset, doImport.isSelected());
 	}
 
 	public Material getSelectedMaterial() {
