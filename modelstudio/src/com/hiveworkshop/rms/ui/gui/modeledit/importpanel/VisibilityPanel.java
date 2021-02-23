@@ -9,31 +9,33 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 class VisibilityPanel extends JPanel {
 	static final String NOTVISIBLE = "Not visible";
 	static final String VISIBLE = "Always visible";
 	JLabel oldAnimsLabel;
-	JComboBox<Object> oldSourcesBox;
+	static JComboBox<VisibilityShell> oldSourcesBox;
 	JLabel newAnimsLabel;
-	JComboBox<Object> newSourcesBox;
+	static JComboBox<VisibilityShell> newSourcesBox;
 	JCheckBox favorOld;
 	VisibilityShell sourceShell;
+	VisibilityShell currSourceShell;
 
 	JLabel title;
+	private ModelHolderThing mht;
 
 	protected VisibilityPanel() {
 		// for use in multi pane
 	}
 
-	public VisibilityPanel(final VisibilityShell sourceShell, final DefaultComboBoxModel<Object> oldSources,
-	                       final DefaultComboBoxModel<Object> newSources, final VisShellBoxCellRenderer renderer) {
-		this.sourceShell = sourceShell;
+	public VisibilityPanel(ModelHolderThing mht, final VisShellBoxCellRenderer renderer) {
+		this.mht = mht;
 		setLayout(new MigLayout("gap 0"));
 		setPreferredSize(new Dimension(500, 500));
 
-		title = new JLabel(sourceShell.model.getName() + ": " + sourceShell.source.getName());
+		title = new JLabel("Title title");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 		title.setMaximumSize(new Dimension(500, 500));
 		add(title, "align center, wrap");
@@ -41,50 +43,24 @@ class VisibilityPanel extends JPanel {
 		oldAnimsLabel = new JLabel("Existing animation visibility from: ");
 		add(oldAnimsLabel, "left, wrap");
 
-		oldSourcesBox = createObjectJComboBox(oldSources, renderer);
-
-		setSelected(oldSourcesBox, sourceShell, oldSources);
+		oldSourcesBox = createObjectJComboBox(mht.visSourcesOld, renderer, e -> setVisGroupItemOld());
 		add(oldSourcesBox, "grow, wrap");
 
 
 		newAnimsLabel = new JLabel("Imported animation visibility from: ");
 		add(newAnimsLabel, "left, wrap");
 
-		newSourcesBox = createObjectJComboBox(newSources, renderer);
-
-		setSelected(newSourcesBox, sourceShell, newSources);
+		newSourcesBox = createObjectJComboBox(mht.visSourcesNew, renderer, e -> setVisGroupItemNew());
 		add(newSourcesBox, "grow, wrap");
 
 		favorOld = new JCheckBox("Favor component's original visibility when combining");
 		favorOld.setSelected(true);
+		favorOld.addActionListener(e -> changeFavorOld());
 		add(favorOld, "left, wrap");
 	}
 
-	private void setSelected(JComboBox<Object> jComboBox, VisibilityShell sourceShell, DefaultComboBoxModel<Object> boxModel) {
-		boolean didContain = false;
-		for (int i = 0; i < boxModel.getSize(); i++) {
-			if (sourceShell == boxModel.getElementAt(i)) {
-				didContain = true;
-				break;
-			}
-		}
-		if (didContain) {
-			jComboBox.setSelectedItem(sourceShell);
-		} else {
-			jComboBox.setSelectedItem(VISIBLE);
-		}
-	}
-
-	private JComboBox<Object> createObjectJComboBox(DefaultComboBoxModel<Object> boxModel, VisShellBoxCellRenderer renderer) {
-		JComboBox<Object> jComboBox = new JComboBox<>(boxModel);
-		jComboBox.setEditable(false);
-		jComboBox.setMaximumSize(new Dimension(500, 25));
-		jComboBox.setRenderer(renderer);
-//		jComboBox.addItemListener(this);
-		return jComboBox;
-	}
-
-	public void selectSimilarOptions() {
+	public static void selectSimilarOptions(VisibilityShell sourceShell) {
+//		for (mht)
 		final ListModel oldSources = oldSourcesBox.getModel();
 		for (int i = 0; i < oldSources.getSize(); i++) {
 			if (!(oldSources.getElementAt(i) instanceof String)) {
@@ -104,6 +80,96 @@ class VisibilityPanel extends JPanel {
 			}
 		}
 	}
+
+	public void setCurrSourceShell(VisibilityShell visibilityShell) {
+		currSourceShell = visibilityShell;
+		setTitle();
+		setSelectedSources();
+		favorOld.setSelected(currSourceShell.getFavorOld());
+	}
+
+	public void setTitle() {
+		title.setText(currSourceShell.model.getName() + ": " + currSourceShell.source.getName());
+	}
+
+	public void setSelectedSources() {
+		setSelected(oldSourcesBox, currSourceShell.getOldVisSource());
+		setSelected(newSourcesBox, currSourceShell.getNewVisSource());
+	}
+
+	public void changeFavorOld() {
+		currSourceShell.setFavorOld(favorOld.isSelected());
+	}
+
+	private void setSelected(JComboBox<VisibilityShell> jComboBox, VisibilityShell sourceShell) {
+		jComboBox.setSelectedItem(VISIBLE);
+		System.out.println("Selected in box: " + jComboBox.getSelectedItem().toString());
+		System.out.println("set Selected in box: " + sourceShell.toString());
+		jComboBox.setSelectedItem(sourceShell);
+		System.out.println("Selected in box: " + jComboBox.getSelectedItem().toString());
+//		for (int i = 0; i < jComboBox.getItemCount(); i++) {
+//			if (sourceShell == jComboBox.getItemAt(i)) {
+//				jComboBox.setSelectedItem(sourceShell);
+//				break;
+//			}
+//		}
+	}
+
+	private void setSelected(JComboBox<VisibilityShell> jComboBox, VisibilityShell sourceShell, DefaultComboBoxModel<VisibilityShell> boxModel) {
+//		for (int i = 0; i < jComboBox.getItemCount(); i++) {
+//			if (sourceShell == jComboBox.getItemAt(i)) {
+//				didContain = true;
+//				break;
+//			}
+//		}
+		jComboBox.setSelectedItem(VISIBLE);
+		for (int i = 0; i < boxModel.getSize(); i++) {
+			if (sourceShell == boxModel.getElementAt(i)) {
+				jComboBox.setSelectedItem(sourceShell);
+				break;
+			}
+		}
+	}
+
+	public void setVisGroupItemOld() {
+		currSourceShell.setOldVisSource((VisibilityShell) oldSourcesBox.getSelectedItem());
+	}
+
+	public void setVisGroupItemNew() {
+		currSourceShell.setNewVisSource((VisibilityShell) newSourcesBox.getSelectedItem());
+	}
+
+	private JComboBox<VisibilityShell> createObjectJComboBox(List<VisibilityShell> visList, VisShellBoxCellRenderer renderer, ActionListener actionListener) {
+		DefaultComboBoxModel<VisibilityShell> boxModel = new DefaultComboBoxModel<>(visList.toArray(VisibilityShell[]::new));
+		JComboBox<VisibilityShell> jComboBox = new JComboBox<>(boxModel);
+		jComboBox.setEditable(false);
+		jComboBox.setMaximumSize(new Dimension(500, 25));
+		jComboBox.setRenderer(renderer);
+		jComboBox.addActionListener(actionListener);
+//		jComboBox.addItemListener(this);
+		return jComboBox;
+	}
+
+//	public static void selectSimilarOptions(VisibilityShell sourceShell) {
+//		final ListModel oldSources = oldSourcesBox.getModel();
+//		for (int i = 0; i < oldSources.getSize(); i++) {
+//			if (!(oldSources.getElementAt(i) instanceof String)) {
+//				if (sourceShell.source.getName().equals(((VisibilityShell) oldSources.getElementAt(i)).source.getName())) {
+//					System.out.println(sourceShell.source.getName());
+//					oldSourcesBox.setSelectedItem(oldSources.getElementAt(i));
+//				}
+//			}
+//		}
+//		final ListModel newSources = newSourcesBox.getModel();
+//		for (int i = 0; i < newSources.getSize(); i++) {
+//			if (!(newSources.getElementAt(i) instanceof String)) {
+//				if (sourceShell.source.getName().equals(((VisibilityShell) newSources.getElementAt(i)).source.getName())) {
+//					System.out.println(sourceShell.source.getName());
+//					newSourcesBox.setSelectedItem(newSources.getElementAt(i));
+//				}
+//			}
+//		}
+//	}
 
 	private static void deleteFlagAnimations(List<Animation> anims, FloatAnimFlag flag) {
 		for (final Animation a : anims) {

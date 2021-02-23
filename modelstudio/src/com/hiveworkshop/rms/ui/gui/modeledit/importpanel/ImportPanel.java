@@ -177,21 +177,11 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 	}
 
-	private static void selSimButton(ArrayList<VisibilityPanel> allVisShellPanes) {
-		for (final VisibilityPanel vPanel : allVisShellPanes) {
-			vPanel.selectSimilarOptions();
-		}
-	}
-
-	private static void cancelImport(ImportPanel importPanel) {
-		final Object[] options = {"Yes", "No"};
-		final int n = JOptionPane.showOptionDialog(importPanel.frame, "Really cancel this import?", "Confirmation",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-		if (n == 0) {
-			importPanel.frame.setVisible(false);
-			importPanel.frame = null;
-		}
-	}
+//	private static void selSimButton(ArrayList<VisibilityPanel> allVisShellPanes) {
+//		for (final VisibilityPanel vPanel : allVisShellPanes) {
+//			vPanel.selectSimilarOptions();
+//		}
+//	}
 
 	/**
 	 * public void addAnimPicks(Object [] whichAnims, AnimPanel source) { for( int i
@@ -231,13 +221,33 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	 * bonePanel.reorderToModel(existingBones); } } }
 	 **/
 
-	public static VisibilityPanel visPaneFromObject(ArrayList<VisibilityPanel> allVisShellPanes, final Named o) {
+	public static VisibilityPanel visPaneFromObject(ArrayList<VisibilityPanel> allVisShellPanes, final VisibilitySource o) {
 		for (final VisibilityPanel vp : allVisShellPanes) {
 			if (vp.sourceShell.source == o) {
 				return vp;
 			}
 		}
 		return null;
+	}
+
+	private static void cancelImport(ImportPanel importPanel) {
+		final Object[] options = {"Yes", "No"};
+		final int n = JOptionPane.showOptionDialog(importPanel.frame, "Really cancel this import?", "Confirmation",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		if (n == 0) {
+			importPanel.frame.setVisible(false);
+			importPanel.frame = null;
+		}
+	}
+
+	private static void deleteFlagAnimations(List<Animation> anims, FloatAnimFlag flag) {
+		for (final Animation a : anims) {
+			if (flag != null) {
+				if (!flag.hasGlobalSeq()) {
+					flag.deleteAnim(a);
+				}
+			}
+		}
 	}
 
 
@@ -313,100 +323,217 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		return footerPanel;
 	}
 
-	public IterableListModel<VisibilityPanel> visibilityList() {
-		final Object selection = mht.visTabs.getSelectedValue();
-		mht.visibilityPanels.clear();
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			for (final Layer l : gp.getSelectedMaterial().getLayers()) {
-				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, l);
-				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-					mht.visibilityPanels.addElement(vs);
+	private static FloatAnimFlag getVisAnimFlag(List<Animation> anims, boolean tans, Object source) {
+		FloatAnimFlag flag = null;
+		if (source != null) {
+			if (source.getClass() == String.class) {
+				if (source == VisibilityPanel.NOTVISIBLE) {
+					flag = new FloatAnimFlag("temp");
+					for (final Animation a : anims) {
+						if (tans) {
+							flag.addEntry(a.getStart(), (float) 0, (float) 0, (float) 0);
+						} else {
+							flag.addEntry(a.getStart(), (float) 0);
+						}
+					}
 				}
+			} else {
+				flag = (FloatAnimFlag) ((VisibilitySource) ((VisibilityShell) source).source).getVisibilityFlag();
 			}
 		}
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			if (gp.doImport.isSelected()) {
-				final Geoset ga = gp.geoset;
-				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, ga);
-				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-					mht.visibilityPanels.addElement(vs);
-				}
-			}
-		}
-		// The current's
+		return flag;
+	}
 
-		final EditableModel model = mht.currentModel;
-		for (IdObject idObject : model.getIdObjects()) {
-			if (!(idObject instanceof Bone) && !(idObject instanceof EventObject) && !(idObject instanceof CollisionShape)) {
-				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, idObject);
-				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-					mht.visibilityPanels.addElement(vs);
-				}
+	private void selSimButton(ArrayList<VisibilityShell> allVisShell) {
+		for (final VisibilityShell visibilityShell : allVisShell) {
+//			VisibilityPanel.selectSimilarOptions(visibilityShell);
+			if (VisibilityPanel.oldSourcesBox.getSelectedItem() instanceof VisibilityShell) {
+				visibilityShell.setOldVisSource((VisibilityShell) VisibilityPanel.oldSourcesBox.getSelectedItem());
+			}
+			if (VisibilityPanel.newSourcesBox.getSelectedItem() instanceof VisibilityShell) {
+				visibilityShell.setNewVisSource((VisibilityShell) VisibilityPanel.newSourcesBox.getSelectedItem());
 			}
 		}
-		for (final Named x : model.getLights()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
-		for (final Named x : model.getAttachments()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
-		for (final Named x : model.getParticleEmitters()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
-		for (final Named x : model.getParticleEmitter2s()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
-		for (final Named x : model.getPopcornEmitters()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
-		for (final Named x : model.getPopcornEmitters()) {
-			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
-			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-				mht.visibilityPanels.addElement(vs);
-			}
-		}
+	}
 
-//		for (final ObjectPanel op : mht.objectPanels) {
-//			if (op.doImport.isSelected() && (op.object != null))
+//	public IterableListModel<VisibilityShell> visibilityList() {
+//		final Object selection = mht.visTabs.getSelectedValue();
+//		mht.visibilityShells.clear();
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//				if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//					mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//				}
+//			}
+//		}
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			if (gp.doImport.isSelected()) {
+//				final Geoset x = gp.geoset;
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//				if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//					mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//				}
+//			}
+//		}
+//		// The current's
+//
+//		final EditableModel model = mht.currentModel;
+//		for (IdObject x : model.getIdObjects()) {
+//			if (!(x instanceof Bone) && !(x instanceof EventObject) && !(x instanceof CollisionShape)) {
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//				if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//					mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//				}
+//			}
+//		}
+//		for (final VisibilitySource x : model.getLights()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//		for (final VisibilitySource x : model.getAttachments()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//		for (final VisibilitySource x : model.getParticleEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//		for (final VisibilitySource x : model.getParticleEmitter2s()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//		for (final VisibilitySource x : model.getPopcornEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//		for (final VisibilitySource x : model.getPopcornEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//				mht.visibilityShells.addElement(mht.allVisShellsMap.get(x));
+//			}
+//		}
+//
+//		for (final ObjectShell op : mht.objectShells) {
+//			if (op.getShouldImport() && (op.getIdObject() != null))
 //			// we don't touch camera "object" panels (which aren't idobjects)
 //			{
-//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, op.object);
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, op.getIdObject());
+//				if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+//					mht.visibilityShells.addElement(mht.allVisShellsMap.get(op.getIdObject()));
+//				}
+//			}
+//		}
+//		mht.visTabs.setSelectedValue(selection, true);
+//		return mht.visibilityShells;
+//	}
+
+//	public IterableListModel<VisibilityPanel> visibilityList() {
+//		final Object selection = mht.visTabs.getSelectedValue();
+//		mht.visibilityPanels.clear();
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			for (final Layer l : gp.getSelectedMaterial().getLayers()) {
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, l);
 //				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
 //					mht.visibilityPanels.addElement(vs);
 //				}
 //			}
 //		}
-
-		for (final ObjectShell op : mht.objectShells) {
-			if (op.getShouldImport() && (op.getIdObject() != null))
-			// we don't touch camera "object" panels (which aren't idobjects)
-			{
-				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, op.getIdObject());
-				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
-					mht.visibilityPanels.addElement(vs);
-				}
-			}
-		}
-		mht.visTabs.setSelectedValue(selection, true);
-		return mht.visibilityPanels;
-	}
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			if (gp.doImport.isSelected()) {
+//				final Geoset ga = gp.geoset;
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, ga);
+//				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//					mht.visibilityPanels.addElement(vs);
+//				}
+//			}
+//		}
+//		// The current's
+//
+//		final EditableModel model = mht.currentModel;
+//		for (IdObject idObject : model.getIdObjects()) {
+//			if (!(idObject instanceof Bone) && !(idObject instanceof EventObject) && !(idObject instanceof CollisionShape)) {
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, idObject);
+//				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//					mht.visibilityPanels.addElement(vs);
+//				}
+//			}
+//		}
+//		for (final Named x : model.getLights()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//		for (final Named x : model.getAttachments()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//		for (final Named x : model.getParticleEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//		for (final Named x : model.getParticleEmitter2s()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//		for (final Named x : model.getPopcornEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//		for (final Named x : model.getPopcornEmitters()) {
+//			final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, x);
+//			if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//				mht.visibilityPanels.addElement(vs);
+//			}
+//		}
+//
+////		for (final ObjectPanel op : mht.objectPanels) {
+////			if (op.doImport.isSelected() && (op.object != null))
+////			// we don't touch camera "object" panels (which aren't idobjects)
+////			{
+////				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, op.object);
+////				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+////					mht.visibilityPanels.addElement(vs);
+////				}
+////			}
+////		}
+//
+//		for (final ObjectShell op : mht.objectShells) {
+//			if (op.getShouldImport() && (op.getIdObject() != null))
+//			// we don't touch camera "object" panels (which aren't idobjects)
+//			{
+//				final VisibilityPanel vs = visPaneFromObject(mht.allVisShellPanes, op.getIdObject());
+//				if (!mht.visibilityPanels.contains(vs) && (vs != null)) {
+//					mht.visibilityPanels.addElement(vs);
+//				}
+//			}
+//		}
+//		mht.visTabs.setSelectedValue(selection, true);
+//		return mht.visibilityPanels;
+//	}
 
 	private void getSingelAnimation(Animation pickedAnim) {
 		uncheckAllAnims(mht.animTabs, false);
@@ -417,6 +544,67 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 		}
 		mht.clearExistingAnims.doClick();// turn it back off
+	}
+
+	public IterableListModel<VisibilityShell> visibilityList() {
+		final Object selection = mht.visTabs.getSelectedValue();
+		mht.visibilityShells.clear();
+		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
+				getAndAddVisShell(x);
+			}
+		}
+		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+			if (gp.doImport.isSelected()) {
+				final Geoset x = gp.geoset;
+				getAndAddVisShell(x);
+			}
+		}
+		// The current's
+
+		final EditableModel model = mht.currentModel;
+		for (IdObject x : model.getIdObjects()) {
+			if (!(x instanceof Bone) && !(x instanceof EventObject) && !(x instanceof CollisionShape)) {
+				getAndAddVisShell(x);
+			}
+		}
+		for (final VisibilitySource x : model.getLights()) {
+			getAndAddVisShell(x);
+		}
+		for (final VisibilitySource x : model.getAttachments()) {
+			getAndAddVisShell(x);
+		}
+		for (final VisibilitySource x : model.getParticleEmitters()) {
+			getAndAddVisShell(x);
+		}
+		for (final VisibilitySource x : model.getParticleEmitter2s()) {
+			getAndAddVisShell(x);
+		}
+		for (final VisibilitySource x : model.getPopcornEmitters()) {
+			getAndAddVisShell(x);
+		}
+		for (final VisibilitySource x : model.getPopcornEmitters()) {
+			getAndAddVisShell(x);
+		}
+
+		for (final ObjectShell op : mht.objectShells) {
+			if (op.getShouldImport() && (op.getIdObject() != null))
+			// we don't touch camera "object" panels (which aren't idobjects)
+			{
+				getAndAddVisShell(op.getIdObject());
+			}
+		}
+		mht.visTabs.setSelectedValue(selection, true);
+		return mht.visibilityShells;
+	}
+
+	public void getAndAddVisShell(VisibilitySource x) {
+		VisibilityShell vs = mht.allVisShellsMap.get(x);
+		if (!mht.visibilityShells.contains(vs) && (vs != null)) {
+			mht.visibilityShells.addElement(vs);
+		}
 	}
 
 	public void doImport() {
@@ -550,17 +738,36 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				}
 			}
 
+//			final List<Animation> oldAnims = new ArrayList<>(mht.currentModel.getAnims());
+//			final List<FloatAnimFlag> finalVisFlags = new ArrayList<>();
+//			for (int i = 0; i < mht.visibilityPanels.size(); i++) {
+//				final VisibilityPanel vPanel = mht.visibilityPanels.get(i);
+//				vPanel.addSelectedVisFlags(oldAnims, newAnims, mht.clearExistingAnims.isSelected(), finalVisFlags, mht.currentModel, mht.importModel);
+////				addSelectedVisFlags(vPanel, oldAnims, newAnims, clearAnims, finalVisFlags);
+//			}
+//
+//			for (int i = 0; i < mht.visibilityPanels.size(); i++) {
+//				final VisibilityPanel vPanel = mht.visibilityPanels.get(i);
+//				final VisibilitySource temp = ((VisibilitySource) vPanel.sourceShell.source);
+//				final AnimFlag<?> visFlag = finalVisFlags.get(i);// might be null
+//				if (visFlag.size() > 0) {
+//					temp.setVisibilityFlag(visFlag);
+//				} else {
+//					temp.setVisibilityFlag(null);
+//				}
+//			}
+
 			final List<Animation> oldAnims = new ArrayList<>(mht.currentModel.getAnims());
 			final List<FloatAnimFlag> finalVisFlags = new ArrayList<>();
-			for (int i = 0; i < mht.visibilityPanels.size(); i++) {
-				final VisibilityPanel vPanel = mht.visibilityPanels.get(i);
-				vPanel.addSelectedVisFlags(oldAnims, newAnims, mht.clearExistingAnims.isSelected(), finalVisFlags, mht.currentModel, mht.importModel);
+			for (int i = 0; i < mht.visibilityShells.size(); i++) {
+				final VisibilityShell vPanel = mht.visibilityShells.get(i);
+				addSelectedVisFlags(vPanel, oldAnims, newAnims, mht.clearExistingAnims.isSelected(), finalVisFlags, mht.currentModel, mht.importModel);
 //				addSelectedVisFlags(vPanel, oldAnims, newAnims, clearAnims, finalVisFlags);
 			}
 
-			for (int i = 0; i < mht.visibilityPanels.size(); i++) {
-				final VisibilityPanel vPanel = mht.visibilityPanels.get(i);
-				final VisibilitySource temp = ((VisibilitySource) vPanel.sourceShell.source);
+			for (int i = 0; i < mht.visibilityShells.size(); i++) {
+				final VisibilityShell vPanel = mht.visibilityShells.get(i);
+				final VisibilitySource temp = ((VisibilitySource) vPanel.source);
 				final AnimFlag<?> visFlag = finalVisFlags.get(i);// might be null
 				if (visFlag.size() > 0) {
 					temp.setVisibilityFlag(visFlag);
@@ -611,6 +818,40 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 
 		importEnded = true;
+	}
+
+	public void addSelectedVisFlags(VisibilityShell vs, List<Animation> oldAnims, java.util.List<Animation> newAnims, boolean clearAnims, List<FloatAnimFlag> finalVisFlags, EditableModel currentModel, EditableModel importedModel) {
+		final VisibilitySource temp = vs.visibilitySource;
+		final AnimFlag<?> visFlag = temp.getVisibilityFlag();// might be null
+		final FloatAnimFlag newVisFlag;
+		boolean tans = false;
+		if (visFlag != null) {
+			newVisFlag = (FloatAnimFlag) AnimFlag.buildEmptyFrom(visFlag);
+			tans = visFlag.tans();
+		} else {
+			newVisFlag = new FloatAnimFlag(temp.visFlagName());
+		}
+		// newVisFlag = new AnimFlag(temp.visFlagName());
+		final Object oldSource = vs.getOldVisSource();
+		FloatAnimFlag flagOld = getVisAnimFlag(oldAnims, tans, oldSource);
+		final Object newSource = vs.getNewVisSource();
+		FloatAnimFlag flagNew = getVisAnimFlag(newAnims, tans, newSource);
+		if ((vs.getFavorOld() && vs.model == currentModel && !clearAnims) || (!vs.getFavorOld() && vs.model == importedModel)) {
+			// this is an element favoring existing animations over imported
+			deleteFlagAnimations(oldAnims, flagNew);
+			// All entries for visibility are deleted from imported sources during existing animation times
+		} else {
+			// this is an element not favoring existing over imported
+			deleteFlagAnimations(newAnims, flagOld);
+			// All entries for visibility are deleted from original-based sources during imported animation times
+		}
+		if (flagOld != null) {
+			newVisFlag.copyFrom(flagOld);
+		}
+		if (flagNew != null) {
+			newVisFlag.copyFrom(flagNew);
+		}
+		finalVisFlags.add(newVisFlag);
 	}
 
 	public void addSelectedObjects(ObjectShell os, List<IdObject> objectsAdded, List<Camera> camerasAdded, EditableModel model) {
@@ -680,7 +921,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //		importAllObjs(mht.objectPanels, false);
 		importAllObjs(mht.objectShells, false);
 		visibilityList();
-		selSimButton(mht.allVisShellPanes);
+		selSimButton(mht.allVisShells);
 
 		if (singleAnimation) {
 			getSingelAnimation(pickedAnim);
@@ -701,13 +942,23 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				}
 			}
 		}
+//		if (corpseShell != null) {
+//			for (VisibilityPanel vp : mht.visibilityPanels) {
+//				VisibilityShell vs = vp.sourceShell;
+//				if (vs.source instanceof Geoset) {
+//					final Geoset g = (Geoset) vp.sourceShell.source;
+//					if ((g.getGeosetAnim() != null) && g.getMaterial().firstLayer().firstTexture().getPath().equalsIgnoreCase("textures\\gutz.blp")) {
+//						vp.newSourcesBox.setSelectedItem(corpseShell);
+//					}
+//				}
+//			}
+//		}
 		if (corpseShell != null) {
-			for (VisibilityPanel vp : mht.visibilityPanels) {
-				VisibilityShell vs = vp.sourceShell;
+			for (VisibilityShell vs : mht.visibilityShells) {
 				if (vs.source instanceof Geoset) {
-					final Geoset g = (Geoset) vp.sourceShell.source;
+					final Geoset g = (Geoset) vs.source;
 					if ((g.getGeosetAnim() != null) && g.getMaterial().firstLayer().firstTexture().getPath().equalsIgnoreCase("textures\\gutz.blp")) {
-						vp.newSourcesBox.setSelectedItem(corpseShell);
+						vs.setNewVisSource(corpseShell);
 					}
 				}
 			}
@@ -729,7 +980,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //		importAllObjs(mht.objectPanels, false);
 		importAllObjs(mht.objectShells, false);
 		visibilityList();
-		selSimButton(mht.allVisShellPanes);
+		selSimButton(mht.allVisShells);
 
 		if (singleAnimation) {
 //			transfereSingleAnimation(pickedAnim, visFromAnim);
@@ -740,9 +991,12 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		} else {
 			JOptionPane.showMessageDialog(null, "Bug in anim transfer: attempted unnecessary 2-part transfer");
 		}
-		for (int i = 0; i < mht.visibilityPanels.getSize(); i++) {
-			final VisibilityPanel vp = mht.visibilityPanels.get(i);
-			vp.favorOld.doClick();
+//		for (int i = 0; i < mht.visibilityPanels.getSize(); i++) {
+//			final VisibilityPanel vp = mht.visibilityPanels.get(i);
+//			vp.favorOld.doClick();
+//		}
+		for (VisibilityShell vp : mht.visibilityShells) {
+			vp.setFavorOld(false);
 		}
 
 		if (!show) {

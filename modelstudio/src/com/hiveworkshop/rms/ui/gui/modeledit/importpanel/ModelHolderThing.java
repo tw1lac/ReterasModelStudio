@@ -48,13 +48,21 @@ public class ModelHolderThing {
 	IterableListModel<BoneShell> existingBones = new IterableListModel<>();
 	JTabbedPane ugg = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 	// Visibility
-	JList<VisibilityPanel> visTabs = new JList<>();
+//	JList<VisibilityPanel> visTabs = new JList<>();
+	JList<VisibilityShell> visTabs = new JList<>();
 
 
 	IterableListModel<VisibilityPanel> visibilityPanels = new IterableListModel<>();
 	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
 
-	ArrayList<Object> visSourcesNew;
+	IterableListModel<VisibilityShell> visibilityShells = new IterableListModel<>();
+	ArrayList<VisibilityShell> allVisShells = new ArrayList<>();
+	Map<VisibilitySource, VisibilityShell> allVisShellsMap = new HashMap<>();
+
+	//	ArrayList<Object> visSourcesNew;
+//	ArrayList<Object> visSourcesOld;
+	ArrayList<VisibilityShell> visSourcesNew;
+	ArrayList<VisibilityShell> visSourcesOld;
 
 
 	long totalAddTime1;
