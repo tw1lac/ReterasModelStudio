@@ -12,6 +12,9 @@ class VisibilityShell {
 	private VisibilityShell newVisSource;
 	private VisibilityShell oldVisSource;
 
+	private boolean alwaysVisible = false;
+	private boolean neverVisible = false;
+
 	public VisibilityShell(final Named n, final EditableModel whichModel) {
 		source = n;
 		model = whichModel;
@@ -23,8 +26,9 @@ class VisibilityShell {
 		model = whichModel;
 	}
 
-	public VisibilityShell(boolean b) {
-		favorOld = b;
+	public VisibilityShell(boolean alwaysVisible) {
+		this.alwaysVisible = alwaysVisible;
+		this.neverVisible = !alwaysVisible;
 	}
 
 	public Named getSource() {
@@ -65,14 +69,24 @@ class VisibilityShell {
 		return visibilitySource;
 	}
 
+	public boolean isNeverVisible() {
+		return (neverVisible && !alwaysVisible);
+	}
+
+	public boolean isAlwaysVisible() {
+		return (alwaysVisible && !neverVisible);
+	}
+
 	@Override
 	public String toString() {
 		if (source != null) {
 //			return source.getName();
 			return model.getName() + ": " + source.getName();
-		} else if (favorOld) {
-			return "VISIBLE";
+		} else if (alwaysVisible && !neverVisible) {
+			return "Always visible";
+		} else if (neverVisible && !alwaysVisible) {
+			return "Not visible";
 		}
-		return "NOT VISIBLE";
+		return "Null";
 	}
 }

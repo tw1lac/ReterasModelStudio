@@ -40,20 +40,13 @@ public class ModelHolderThing {
 	//	public JButton allMatrOriginal = new JButton("Reset all Matrices");
 //	public JButton allMatrSameName = new JButton("Set all to available, original names");
 	public IterableListModel<AnimShell> existingAnims = new IterableListModel<>();
+
 	public IterableListModel<ObjectShell> objectShells = new IterableListModel<>();
 	public JList<ObjectShell> objectTabsShell = new JList<>(objectShells);
-
-	//	public IterableListModel<ObjectPanel> objectPanels = new IterableListModel<>();
-//	public JList<ObjectPanel> objectTabs = new JList<>(objectPanels);
 	IterableListModel<BoneShell> existingBones = new IterableListModel<>();
-	JTabbedPane ugg = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
 	// Visibility
-//	JList<VisibilityPanel> visTabs = new JList<>();
 	JList<VisibilityShell> visTabs = new JList<>();
-
-
-	IterableListModel<VisibilityPanel> visibilityPanels = new IterableListModel<>();
-	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
 
 	IterableListModel<VisibilityShell> visibilityShells = new IterableListModel<>();
 	ArrayList<VisibilityShell> allVisShells = new ArrayList<>();

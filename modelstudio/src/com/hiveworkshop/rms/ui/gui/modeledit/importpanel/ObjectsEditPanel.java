@@ -24,15 +24,14 @@ public class ObjectsEditPanel {
 		this.importPanel = importPanel;
 	}
 
-	public JPanel makeObjecsPanel() {
+	public JPanel makeObjectsPanel() {
 		JPanel objectsPanel = new JPanel();
-//		addTab("Objects", objIcon, objectsPanel, "Controls which objects are imported.");
 		mht.getFutureBoneListExtended(false);
 
 		CardLayout objectCardLayout = new CardLayout();
 		JPanel objectPanelCards = new JPanel(objectCardLayout);
 
-		// Build the objectTabs list of ObjectPanels
+		// Build the objectTabs list of ObjectShells
 		final ObjPanelListCellRenderer objectPanelRenderer = new ObjPanelListCellRenderer();
 		for (IdObject obj : mht.importModel.getIdObjects()) {
 			if ((obj.getClass() != Bone.class) && (obj.getClass() != Helper.class)) {
@@ -40,28 +39,6 @@ public class ObjectsEditPanel {
 				mht.objectShells.addElement(objectShell);
 			}
 		}
-//		for (IdObject obj : mht.importModel.getIdObjects()) {
-//			if ((obj.getClass() != Bone.class) && (obj.getClass() != Helper.class)) {
-//				ObjectShell objectShell = new ObjectShell(obj);
-//				mht.objectShells.addElement(objectShell);
-//
-//				final ObjectPanel objPanel = new ObjectPanel(obj, mht.getFutureBoneListExtended(true));
-//
-//				objectPanelCards.add(objPanel, panelId + "");
-//				mht.objectPanels.addElement(objPanel);
-//				panelId++;
-//			}
-//		}
-//		for (Camera obj : mht.importModel.getCameras()) {
-//			ObjectShell objectShell = new ObjectShell(obj);
-//			mht.objectShells.addElement(objectShell);
-//
-//			final ObjectPanel objPanel = new ObjectPanel(obj);
-//
-//			objectPanelCards.add(objPanel, panelId + "");// (objPanel.title.getText()));
-//			mht.objectPanels.addElement(objPanel);
-//			panelId++;
-//		}
 
 		for (Camera obj : mht.importModel.getCameras()) {
 			ObjectShell objectShell = new ObjectShell(obj);
@@ -81,12 +58,6 @@ public class ObjectsEditPanel {
 		mht.objectTabsShell.setCellRenderer(objectPanelRenderer);
 		mht.objectTabsShell.addListSelectionListener(e -> objectTabsValueChanged(multiObjectPane, objectCardLayout, objectPanelCards, mht.objectTabsShell));
 		mht.objectTabsShell.setSelectedIndex(0);
-
-//		mht.objectTabs.setCellRenderer(objectPanelRenderer);
-//		mht.objectTabs.addListSelectionListener(e -> objectTabsValueChanged(multiObjectPane, objectCardLayout, objectPanelCards, mht.objectTabs));
-//		mht.objectTabs.setSelectedIndex(0);
-
-//		objectPanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
 
 		JButton importAllObjs = new JButton("Import All");
 		importAllObjs.addActionListener(e -> setImportStatusForAllObjects(true));
@@ -143,43 +114,5 @@ public class ObjectsEditPanel {
 			objectShell.setShouldImport(b);
 		}
 	}
-
-//	private void objectTabsValueChanged(MultiObjectPanel multiObjectPane, CardLayout objectCardLayout, JPanel objectPanelCards, JList<ObjectPanel> objectTabs) {
-//		List<ObjectPanel> selectedValuesList = objectTabs.getSelectedValuesList();
-//		if (selectedValuesList.size() < 1) {
-//			objectCardLayout.show(objectPanelCards, "blank");
-//
-//		} else if (selectedValuesList.size() == 1) {
-//			mht.getFutureBoneListExtended(false);
-//			objectCardLayout.show(objectPanelCards, (objectTabs.getSelectedIndex()) + "");// .title.getText()
-//
-//		} else {
-//			objectCardLayout.show(objectPanelCards, "multiple");
-//			boolean selected = selectedValuesList.get(0).doImport.isSelected();
-//
-//			if (selectedValuesList.stream().anyMatch(objectPanel -> objectPanel.doImport.isSelected() != selected)) {
-////				multiObjectPane.doImport.setSelected(selected);
-////				multiObjectPane.doImport.setEnabled(false);
-//				multiObjectPane.doImport.setBackground(Color.orange);
-//				multiObjectPane.doImport.setToolTipText("Selected objects got different import statuses.");
-//
-//			} else {
-//				multiObjectPane.doImport.setSelected(selected);
-//				multiObjectPane.doImport.setToolTipText(null);
-//				multiObjectPane.doImport.setBackground(new Color(255, 255, 255, 0));
-//			}
-//		}
-//	}
-
-
-//	private void setImportStatusForAllObjects(IterableListModel<ObjectPanel> objectPanels, boolean b) {
-//		for (final ObjectPanel objectPanel : objectPanels) {
-//			objectPanel.doImport.setSelected(b);
-//		}
-//
-//		for (ObjectShell objectShell : mht.objectShells){
-//			objectShell.shouldImport = b;
-//		}
-//	}
 
 }

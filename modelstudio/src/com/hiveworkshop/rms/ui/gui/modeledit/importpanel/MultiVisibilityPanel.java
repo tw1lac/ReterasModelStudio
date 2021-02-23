@@ -61,23 +61,6 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		return jComboBox;
 	}
 
-//	public static void setVisGroupSelected(JList<VisibilityPanel> visTabs, final boolean flag) {
-//		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-//		for (Object o : selected) {
-//			final VisibilityPanel temp = (VisibilityPanel) o;
-//			temp.favorOld.setSelected(flag);
-//		}
-//	}
-
-//	public static void setVisGroupItemOld(JList<VisibilityPanel> visTabs, final Object o) {
-//		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-//		for (Object value : selected) {
-////			final VisibilityPanel temp = (VisibilityPanel) value;
-////			temp.oldSourcesBox.setSelectedItem(o);
-//			oldSourcesBox.setSelectedItem(o);
-//		}
-//	}
-
 	public void setVisGroupItemOld() {
 		final List<VisibilityShell> selectedValuesList = mht.visTabs.getSelectedValuesList();
 		for (VisibilityShell value : selectedValuesList) {
@@ -109,14 +92,6 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		}
 		return impPanel;
 	}
-
-//	public static void setVisGroupItemNew(JList<VisibilityPanel> visTabs, final Object o) {
-//		final Object[] selected = visTabs.getSelectedValuesList().toArray();
-//		for (Object value : selected) {
-//			final VisibilityPanel temp = (VisibilityPanel) value;
-//			temp.newSourcesBox.setSelectedItem(o);
-//		}
-//	}
 
 	public void setVisGroupItemNew() {
 		final List<VisibilityShell> selected = mht.visTabs.getSelectedValuesList();

@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-//class MultiObjectPanel extends ObjectPanel implements ChangeListener {
 class MultiObjectPanel extends ObjectPanel {
 	boolean oldVal = true;
 	ImportPanel impPanel;
@@ -40,67 +39,19 @@ class MultiObjectPanel extends ObjectPanel {
 		parentsList.setEnabled(false);
 		add(parentsPane, "growx, growy 200");
 
-//		final GroupLayout layout = new GroupLayout(this);
-//		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-//				.addComponent(title)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(doImport)
-//						.addComponent(oldParentLabel)
-//						.addGroup(layout.createSequentialGroup()
-//								.addComponent(parentLabel)
-//								.addComponent(parentsPane))));
-//
-//		layout.setVerticalGroup(layout.createSequentialGroup()
-//				.addComponent(title).addGap(16)
-//				.addComponent(doImport)
-//				.addComponent(oldParentLabel)
-//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//						.addComponent(parentLabel)
-//						.addComponent(parentsPane)));
-//		setLayout(layout);
 	}
 
 	public void changeMultiImportStatus() {
+		System.out.println("importStatus Changed");
 		boolean importStatus = doImport.isSelected();
 
 		List<ObjectShell> selectedValuesList2 = impPanel.mht.objectTabsShell.getSelectedValuesList();
 		for (ObjectShell objectShell : selectedValuesList2) {
 			objectShell.setShouldImport(importStatus);
 		}
-
-//		List<ObjectPanel> selectedValuesList = impPanel.mht.objectTabs.getSelectedValuesList();
-//		for (ObjectPanel objectPanel : selectedValuesList) {
-//			objectPanel.doImport.setSelected(importStatus);
-//		}
 		doImport.setBackground(new Color(255, 255, 255, 0));
 		doImport.setEnabled(true);
 //		doImport.setToolTipText("");
 		doImport.setToolTipText(null);
 	}
-
-//	public static void setObjGroupSelected(JList<ObjectPanel> objectTabs, final boolean flag) {
-//		List<ObjectPanel> selectedValuesList = objectTabs.getSelectedValuesList();
-//		for (ObjectPanel objectPanel : selectedValuesList) {
-//			objectPanel.doImport.setSelected(flag);
-//		}
-//	}
-
-//	public ImportPanel getImportPanel() {
-//		if (impPanel == null) {
-//			Container temp = getParent();
-//			while ((temp != null) && (temp.getClass() != ImportPanel.class)) {
-//				temp = temp.getParent();
-//			}
-//			impPanel = (ImportPanel) temp;
-//		}
-//		return impPanel;
-//	}
-
-//	@Override
-//	public void stateChanged(final ChangeEvent e) {
-//		if (doImport.isSelected() != oldVal) {
-//			setObjGroupSelected(impPanel.mht.objectTabs, doImport.isSelected());
-//			oldVal = doImport.isSelected();
-//		}
-//	}
 }

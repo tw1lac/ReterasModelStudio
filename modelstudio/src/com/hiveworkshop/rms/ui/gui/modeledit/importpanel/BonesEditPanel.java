@@ -2,6 +2,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.model.Bone;
 import com.hiveworkshop.rms.editor.model.Helper;
+import com.hiveworkshop.rms.editor.model.IdObject;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.ui.gui.modeledit.MatrixShell;
 import net.miginfocom.swing.MigLayout;
@@ -11,7 +12,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BonesEditPanel {
 	BoneShellListCellRenderer boneShellRenderer;
@@ -56,34 +56,6 @@ public class BonesEditPanel {
 		bonePanelCards.add(multiBonePane, "multiple");
 	}
 
-	private static void checkSelectedOrSomething(Map<Bone, BonePanel> boneToPanel, List<BonePanel> usedBonePanels, BonePanel currentBonePanel) {
-		int k = 0;
-		BoneShell shell = currentBonePanel.getCurrentBoneShell();
-		while (true) {
-			if ((currentBonePanel == null) || (currentBonePanel.getSelectedIndex() == 1)) {
-				break;
-			}
-			shell = shell.getParent();
-			// If shell is null, then the bone has "No Parent" If currentBonePanel's selected index is not 2,
-			if (shell == null) {
-				break;
-			} else {
-				currentBonePanel = boneToPanel.get(shell.getBone());
-				if (usedBonePanels.contains(currentBonePanel)) {
-					break;
-				} else {
-					usedBonePanels.add(currentBonePanel);
-				}
-			}
-			k++;
-			if (k > 1000) {
-				JOptionPane.showMessageDialog(null,
-						"Unexpected error has occurred: Bone parent loop, circular logic");
-				break;
-			}
-		}
-	}
-
 	private void setImportStatusForAllBones(int selectionIndex) {
 		for (BoneShell boneShell : mht.boneShells) {
 			boneShell.setImportStatus(selectionIndex);
@@ -112,8 +84,9 @@ public class BonesEditPanel {
 			mht.boneToShell.put(importMDLHelper, bs);
 		}
 		for (BoneShell bs : mht.existingBones) {
-			if (bs.getOldParent() != null) {
-				bs.setParent(mht.boneToShell.get(bs.getOldParent()));
+			IdObject oldParent = bs.getOldParent();
+			if (oldParent != null) {
+				bs.setParent(mht.boneToShell.get(oldParent));
 			}
 		}
 
@@ -122,67 +95,14 @@ public class BonesEditPanel {
 		mht.boneShells.addAll(mht.existingBones);
 		System.out.println("boneShellSize: " + mht.boneShells.size());
 
-		// Initialized up here for use with BonePanels
-//		CardLayout boneCardLayout = new CardLayout();
-//		JPanel bonePanelCards = new JPanel(boneCardLayout);
-//
-//		bonePanelCards.setBackground(Color.yellow);
-//		bonePanelCards.setOpaque(true);
-//
-//		final BonePanel bonePanel1 = new BonePanel(mht, boneShellRenderer, importPanel);
-//		bonePanel1.setBackground(Color.YELLOW);
-//		bonePanel1.setOpaque(true);
-//		bonePanelCards.add(bonePanel1, "single bone");
-////		mht.bonePanels.addElement(bonePanel1);
-//
-//		final BonePanel bonePanel2 = new BonePanel(mht, boneShellRenderer, importPanel);
-////		bonePanelCards.add(bonePanel2, importedMDLBones.size() + (bonePanelCards.getComponentCount()-1) + "");
-//		bonePanelCards.add(bonePanel2, "single helper");
-//		bonePanel2.setBackground(Color.ORANGE.darker());
-//		bonePanel2.setOpaque(true);
 
-
-//		mht.bonePanels.addElement(bonePanel2);
-
-//		for (Bone b : importedMDLBones) {
-////			final BonePanel bonePanel = new BonePanel(b, existingBones, boneShellRenderer, importPanel);
-//			final BonePanel bonePanel = new BonePanel(existingBones, boneShellRenderer, importPanel);
-//			bonePanelCards.add(bonePanel, (bonePanelCards.getComponentCount()-1) + "");
-//			bonePanels.addElement(bonePanel);
-////			boneToPanel.put(b, bonePanel);
-//		}
-//		for (Bone b : importedMDLHelpers) {
-////			final BonePanel bonePanel = new BonePanel(b, existingBones, boneShellRenderer, importPanel);
-//			final BonePanel bonePanel = new BonePanel(existingBones, boneShellRenderer, importPanel);
-//			bonePanelCards.add(bonePanel, importedMDLBones.size() + (bonePanelCards.getComponentCount()-1) + "");
-//			bonePanels.addElement(bonePanel);
-////			boneToPanel.put(b, bonePanel);
-//		}
-
-//		for (BonePanel bonePanel : bonePanels) {
-//			bonePanel.initList();
-//		}
-
-
-//		MultiBonePanel multiBonePane = new MultiBonePanel(mht, boneShellRenderer);
-//		bonePanelCards.add(new JPanel(), "blank");
-//		bonePanelCards.add(multiBonePane, "multiple");
 		mht.boneTabs.setCellRenderer(bonePanelRenderer);// bonePanelRenderer);
 		mht.boneTabs.addListSelectionListener(e -> boneTabsValueChanged(boneCardLayout, bonePanelCards, mht.boneTabs, multiBonePane));
 		mht.boneTabs.setSelectedIndex(0);
 //		bonePanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
 
-		JButton importAllBones = createButton(e -> setImportStatusForAllBones(0), "Import All");
-		bonesPanel.add(importAllBones);
-
-		JButton uncheckAllBones = createButton(e -> setImportStatusForAllBones(2), "Leave All");
-		bonesPanel.add(uncheckAllBones);
-
-		JButton motionFromBones = createButton(e -> setImportStatusForAllBones(1), "Motion From All");
-		bonesPanel.add(motionFromBones);
-
-		JButton uncheckUnusedBones = createButton(e -> uncheckUnusedBones(), "Uncheck Unused");
-		bonesPanel.add(uncheckUnusedBones);
+		JPanel topPanel = getTopPanel();
+		bonesPanel.add(topPanel, "align center, wrap");
 
 		JScrollPane boneTabsPane = new JScrollPane(mht.boneTabs);
 		JPanel bigPanel = new JPanel(new MigLayout("gap 0, fill"));
@@ -191,21 +111,32 @@ public class BonesEditPanel {
 //		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, boneTabsPane, bonePanelCards);
 
 
-		JPanel topPanel = new JPanel(new MigLayout("gap 0, debug", "[][][][]", "[][align center]"));
-		topPanel.setBackground(Color.magenta);
-		topPanel.setOpaque(true);
-		topPanel.add(importAllBones);
-		topPanel.add(motionFromBones);
-		topPanel.add(uncheckUnusedBones);
-		topPanel.add(uncheckAllBones, "wrap");
-		topPanel.add(mht.clearExistingBones, "spanx 4, align center");
-
-		bonesPanel.add(topPanel, "align center, wrap");
 //		bonesPanel.add(splitPane, "growx, growy");
 		bonesPanel.add(bigPanel, "growx, growy");
 
 
 		return bonesPanel;
+	}
+
+	private JPanel getTopPanel() {
+		JPanel topPanel = new JPanel(new MigLayout("gap 0, debug", "[][][][]", "[][align center]"));
+		topPanel.setBackground(Color.magenta);
+		topPanel.setOpaque(true);
+
+		JButton importAllBones = createButton(e -> setImportStatusForAllBones(0), "Import All");
+		topPanel.add(importAllBones);
+
+		JButton motionFromBones = createButton(e -> setImportStatusForAllBones(1), "Motion From All");
+		topPanel.add(motionFromBones);
+
+		JButton uncheckUnusedBones = createButton(e -> uncheckUnusedBones(), "Uncheck Unused");
+		topPanel.add(uncheckUnusedBones);
+
+		JButton uncheckAllBones = createButton(e -> setImportStatusForAllBones(2), "Leave All");
+		topPanel.add(uncheckAllBones, "wrap");
+
+		topPanel.add(mht.clearExistingBones, "spanx 4, align center");
+		return topPanel;
 	}
 
 	private void checkSelectedOrSomething(List<BoneShell> usedBoneShells, BoneShell currBs) {
@@ -228,7 +159,6 @@ public class BonesEditPanel {
 		}
 	}
 
-	//	private static void boneTabsValueChanged(CardLayout boneCardLayout, JPanel bonePanelCards, JList<BonePanel> boneTabs, MultiBonePanel multiBonePane) {
 	private void boneTabsValueChanged(CardLayout boneCardLayout, JPanel bonePanelCards, JList<BoneShell> boneTabs, MultiBonePanel multiBonePane) {
 		System.out.println("boneTabsValueChanged");
 		List<BoneShell> selectedBones = boneTabs.getSelectedValuesList();
@@ -266,15 +196,6 @@ public class BonesEditPanel {
 		// - Another bone
 		// - An IdObject
 		final List<BoneShell> usedBoneShells = new ArrayList<>();
-
-//		for (ObjectPanel objectPanel : mht.objectPanels) {
-//			if (objectPanel.doImport.isSelected() && (objectPanel.parentsList != null)) {
-//				BoneShell bs = objectPanel.parentsList.getSelectedValue();
-//				if ((bs != null) && (bs.getBone() != null)) {
-//					checkSelectedOrSomething(usedBoneShells, bs);
-//				}
-//			}
-//		}
 
 		for (ObjectShell objectShell : mht.objectShells) {
 			if (objectShell.getShouldImport() && (objectShell.getParent() != null)) {
