@@ -1,6 +1,8 @@
 package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
+import com.hiveworkshop.rms.editor.model.EventObject;
 import com.hiveworkshop.rms.editor.model.*;
+import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
 import com.hiveworkshop.rms.util.IterableListModel;
 
@@ -24,16 +26,24 @@ public class ModelHolderThing {
 	public List<BoneShell> newBonesShellList;
 	public IterableListModel<BoneShell> futureBoneListEx = new IterableListModel<>();
 	public List<IterableListModel<BoneShell>> futureBoneListExFixableItems = new ArrayList<>();
-	public JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
 	public JCheckBox clearExistingBones = new JCheckBox("Clear pre-existing bones and helpers");
 	public ArrayList<BoneShell> oldHelpersShellList;
 	public ArrayList<BoneShell> newHelpersShellList;
-	//	public IterableListModel<BonePanel> bonePanels = new IterableListModel<>();
-//  public JList<BonePanel> boneTabs = new JList<>(bonePanels);
 	public IterableListModel<BoneShell> boneShells = new IterableListModel<>();
 	public JList<BoneShell> boneTabs = new JList<>(boneShells);
+
+
+	//	public JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	public IterableListModel<GeosetShell> geoShells = new IterableListModel<>();
+	public JList<GeosetShell> geoTabs = new JList<>(geoShells);
+
 	public JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+	public IterableListModel<AnimShell> aniShells = new IterableListModel<>();
+	public JList<AnimShell> animTabs2 = new JList<>(aniShells);
+
+
 	//	public JPanel geosetAnimPanel = new JPanel();
 	public JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
 	public JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -280,6 +290,47 @@ public class ModelHolderThing {
 			if (os.getIdObject() != null) {
 				os.getIdObject().setParent(null); // Fix cross-model referencing issue (force clean parent node's list of children)
 			}
+		}
+	}
+
+	public void doImportSelectedAnims(AnimShell animShell, EditableModel currentModel, EditableModel importedModel, List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs) {
+		final int type = animShell.getImportType();
+		final int animTrackEnd = currentModel.animTrackEnd();
+		Animation anim = animShell.getAnim();
+		if (animShell.isReverse()) {
+			// reverse the animation
+			anim.reverse(impFlags, impEventObjs);
+		}
+		switch (type) {
+			case 0:
+				anim.copyToInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+				anim.setInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300);
+				currentModel.add(anim);
+				newAnims.add(anim);
+				break;
+			case 1:
+				anim.copyToInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+				anim.setInterval(animTrackEnd + 300, animTrackEnd + anim.length() + 300);
+				anim.setName(animShell.getName());
+				currentModel.add(anim);
+				newAnims.add(anim);
+				break;
+			case 2:
+				// List<AnimShell> targets = aniPane.animList.getSelectedValuesList();
+				// anim.setInterval(animTrackEnd+300,animTrackEnd + anim.length() + 300, impFlags,
+				// impEventObjs, newImpFlags, newImpEventObjs);
+				// handled by animShells
+				break;
+			case 3:
+				importedModel.buildGlobSeqFrom(anim, impFlags);
+				break;
+		}
+	}
+
+	public void transferSingleAnimation(AnimShell animShell, Animation pickedAnim, Animation visFromAnim) {
+		if (animShell.getAnim().getName().equals(visFromAnim.getName())) {
+			animShell.setDoImport(true);
+			animShell.setImportType(2);
 		}
 	}
 }

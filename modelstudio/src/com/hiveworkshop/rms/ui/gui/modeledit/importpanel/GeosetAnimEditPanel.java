@@ -2,6 +2,7 @@ package com.hiveworkshop.rms.ui.gui.modeledit.importpanel;
 
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelViewManager;
 import com.hiveworkshop.rms.ui.icons.RMSIcons;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
@@ -26,7 +27,7 @@ public class GeosetAnimEditPanel {
 	}
 
 	public JPanel makeGeosetAnimPanel() {
-		JPanel geosetAnimPanel = new JPanel();
+		JPanel geosetAnimPanel = new JPanel(new MigLayout("gap 0, fill", "[grow]", "[][grow]"));
 
 		final ModelViewManager currentModelManager = new ModelViewManager(mht.currentModel);
 		final ModelViewManager importedModelManager = new ModelViewManager(mht.importModel);
@@ -43,12 +44,20 @@ public class GeosetAnimEditPanel {
 		}
 		mht.geosetAnimTabs.addChangeListener(e -> updateAnimTabs(importPanel));
 
-		setLayout(geosetAnimPanel);
+		JPanel topPanel = new JPanel(new MigLayout("gap 0", "[align center]"));
+		topPanel.add(displayParents, "wrap");
+		topPanel.add(allMatrOriginal, "wrap");
+		topPanel.add(allMatrSameName, "wrap");
+		geosetAnimPanel.add(topPanel, "align center, wrap");
+		geosetAnimPanel.add(mht.geosetAnimTabs, "growx, growy");
+
 		return geosetAnimPanel;
 	}
 
 	private void updateAnimTabs(ImportPanel importPanel) {
-		((AnimPanel) mht.animTabs.getSelectedComponent()).updateSelectionPicks();
+		//should this edit animShells or GeosetAnimShells..?
+//		((AnimPanel) mht.animTabs.getSelectedComponent()).updateSelectionPicks();
+		((AnimPanel) mht.geosetAnimTabs.getSelectedComponent()).updateSelectionPicks();
 		mht.getFutureBoneList();
 		mht.getFutureBoneListExtended(false);
 		importPanel.visibilityList();

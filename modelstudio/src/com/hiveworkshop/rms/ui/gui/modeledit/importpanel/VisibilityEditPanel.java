@@ -33,11 +33,11 @@ public class VisibilityEditPanel {
 	}
 
 	public JPanel makeVisPanel() {
-		JPanel visPanel = new JPanel(new MigLayout("gap 0", ""));
-		visPanel.setMaximumSize(new Dimension(500, 500));
-		visPanel.setPreferredSize(new Dimension(500, 500));
-		visPanel.setMaximumSize(new Dimension(500, 500));
+		JPanel visPanel = new JPanel(new MigLayout("gap 0, fill", "", "[][grow]"));
+//		visPanel.setPreferredSize(new Dimension(500, 500));
 //		addTab("Visibility", orangeIcon, visPanel, "Controls the visibility of portions of the model.");
+
+		JPanel topPanel = getTopPanel();
 
 		initVisibilityList();
 		visibilityList();
@@ -69,24 +69,27 @@ public class VisibilityEditPanel {
 		mht.visTabs.setSelectedIndex(0);
 //		visPanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
 
-		JButton allInvisButton = createButton("All Invisible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.NOTVISIBLE), "Forces everything to be always invisibile in animations other than their own original animations.");
-		visPanel.add(allInvisButton);
-
-		JButton allVisButton = createButton("All Visible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.VISIBLE), "Forces everything to be always visibile in animations other than their own original animations.");
-		visPanel.add(allVisButton);
-
-		JButton selSimButton = createButton("Select Similar Options", e -> selSimButton(mht.allVisShells), "Similar components will be selected as visibility sources in exotic animations.");
-		visPanel.add(selSimButton);
-
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(mht.visTabs), visPanelCards);
 
-		visPanel.add(allInvisButton, "wrap");
-		visPanel.add(allVisButton, "wrap");
-		visPanel.add(selSimButton, "wrap");
+		visPanel.add(topPanel, "spanx, align center, wrap");
 		visPanel.add(splitPane, "wrap");
 
 		System.out.println("done visPanel");
 		return visPanel;
+	}
+
+	private JPanel getTopPanel() {
+		JPanel topPanel = new JPanel(new MigLayout("gap 0", "", "[]8[]8[]"));
+
+		JButton allInvisButton = createButton("All Invisible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.NOTVISIBLE), "Forces everything to be always invisibile in animations other than their own original animations.");
+		topPanel.add(allInvisButton, "align center, wrap");
+
+		JButton allVisButton = createButton("All Visible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.VISIBLE), "Forces everything to be always visibile in animations other than their own original animations.");
+		topPanel.add(allVisButton, "align center, wrap");
+
+		JButton selSimButton = createButton("Select Similar Options", e -> selSimButton(mht.allVisShells), "Similar components will be selected as visibility sources in exotic animations.");
+		topPanel.add(selSimButton, "align center, wrap");
+		return topPanel;
 	}
 
 	public JButton createButton(String text, ActionListener actionListener, String toolTipText) {
@@ -315,20 +318,20 @@ public class VisibilityEditPanel {
 		System.out.println("visibilityList");
 		final Object selection = mht.visTabs.getSelectedValue();
 		mht.visibilityShells.clear();
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
-				getAndAddVisShell(x);
-
-			}
-		}
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			if (gp.doImport.isSelected()) {
-				final Geoset ga = gp.geoset;
-				getAndAddVisShell(ga);
-			}
-		}
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
+//				getAndAddVisShell(x);
+//
+//			}
+//		}
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			if (gp.doImport.isSelected()) {
+//				final Geoset ga = gp.geoset;
+//				getAndAddVisShell(ga);
+//			}
+//		}
 
 		System.out.println("CurrModel");
 		// The current's

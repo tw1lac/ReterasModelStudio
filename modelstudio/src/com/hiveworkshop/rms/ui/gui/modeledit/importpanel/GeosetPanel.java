@@ -26,6 +26,8 @@ class GeosetPanel extends JPanel implements ChangeListener {
 	MaterialListCellRenderer renderer;
 	ImportPanel impPanel;
 
+	GeosetShell currentGeosetShell;
+
 	public GeosetPanel(final boolean imported, // Is this Geoset an imported one, or an original?
 	                   final EditableModel model, final int geoIndex, // which geoset is this for? (starts with 0)
 	                   final IterableListModel<Material> materials, final MaterialListCellRenderer renderer, ImportPanel importPanel) {
@@ -65,9 +67,73 @@ class GeosetPanel extends JPanel implements ChangeListener {
 		add(materialListPane, "grow");
 	}
 
+	public GeosetPanel(final boolean imported, // Is this Geoset an imported one, or an original?
+	                   final EditableModel model, // which geoset is this for? (starts with 0)
+	                   final IterableListModel<Material> materials, final MaterialListCellRenderer renderer, ImportPanel importPanel) {
+		impPanel = importPanel;
+		this.renderer = renderer;
+		setLayout(new MigLayout("gap 0"));
+		if (model.getGeosets() != null && model.getGeosets().size() > 0) {
+			geoset = model.getGeoset(0);
+		}
+
+		geoTitle = new JLabel("Geoset Title");
+		geoTitle.setFont(new Font("Arial", Font.BOLD, 26));
+		add(geoTitle, "align center, wrap");
+
+		doImport = new JCheckBox("Import this Geoset");
+		doImport.setSelected(true);
+		doImport.addActionListener(e -> setDoImport());
+		add(doImport, "left, wrap");
+//		if (imported) {
+//			doImport.addChangeListener(this);
+//		} else {
+//			doImport.setEnabled(false);
+//		}
+
+		// Header for materials list
+		materialText = new JLabel("Material:");
+		add(materialText, "left, wrap");
+
+		materialList = new JList<>(materials);
+		materialList.setCellRenderer(renderer);
+		materialList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		materialList.setSelectedValue(geoset.getMaterial(), true);
+		materialList.setSelectedIndex(0);
+		materialList.addListSelectionListener(e -> setGeoShellMaterial());
+
+		materialListPane = new JScrollPane(materialList);
+		add(materialListPane, "grow");
+	}
+
+	public GeosetPanel setCurrentGeosetShell(GeosetShell geosetShell) {
+		this.currentGeosetShell = geosetShell;
+		setGeoTitle();
+		materialList.setSelectedValue(currentGeosetShell.getMaterial(), true);
+		doImport.setEnabled(currentGeosetShell.isImported);
+		return this;
+	}
+
+	private void setGeoTitle() {
+		if (currentGeosetShell != null) {
+			geoTitle.setText(currentGeosetShell.toString());
+		}
+	}
+
+	public void setDoImport() {
+		currentGeosetShell.setDoImport(doImport.isSelected());
+	}
+
+	public void setGeoShellMaterial() {
+		if (currentGeosetShell != null) {
+			currentGeosetShell.setMaterial(materialList.getSelectedValue());
+		}
+	}
+
 	@Override
 	public void paintComponent(final Graphics g) {
-		renderer.setMaterial(geoset.getMaterial());
+//		renderer.setMaterial(geoset.getMaterial());
+		renderer.setMaterial(materialList.getSelectedValue());
 		super.paintComponent(g);
 	}
 

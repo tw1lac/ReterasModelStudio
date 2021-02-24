@@ -147,7 +147,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		addTab("Visibility", orangeIcon, visibilityEditPanel.makeVisPanel(), "Controls the visibility of portions of the model.");
 
 		// Listen all
-		addChangeListener(e -> updateAnimTabs(this));
+//		addChangeListener(e -> updateAnimTabs(this));
 
 		JPanel footerPanel = getFooterPanel();
 
@@ -172,11 +172,14 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	}
 
 
-	private static void uncheckAllAnims(JTabbedPane animTabs, boolean b) {
-		for (int i = 0; i < animTabs.getTabCount(); i++) {
-			final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
-			aniPanel.setSelected(b);
+	private static void uncheckAllAnims(IterableListModel<AnimShell> aniShells, boolean b) {
+		for (AnimShell animShell : aniShells) {
+			animShell.setDoImport(false);
 		}
+//		for (int i = 0; i < animTabs.getTabCount(); i++) {
+//			final AnimPanel aniPanel = (AnimPanel) animTabs.getComponentAt(i);
+//			aniPanel.setSelected(b);
+//		}
 	}
 
 //	private static void selSimButton(ArrayList<VisibilityPanel> allVisShellPanes) {
@@ -262,14 +265,14 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	}
 
 
-	private static void updateAnimTabs(ImportPanel importPanel) {
-		((AnimPanel) importPanel.mht.animTabs.getSelectedComponent()).updateSelectionPicks();
-		importPanel.mht.getFutureBoneList();
-		importPanel.mht.getFutureBoneListExtended(false);
-		importPanel.visibilityList();
-		// ((BoneAttachmentPane)geosetAnimTabs.getSelectedComponent()).refreshLists();
-		importPanel.repaint();
-	}
+//	private static void updateAnimTabs(ImportPanel importPanel) {
+//		((AnimPanel) importPanel.mht.animTabs.getSelectedComponent()).updateSelectionPicks();
+//		importPanel.mht.getFutureBoneList();
+//		importPanel.mht.getFutureBoneListExtended(false);
+//		importPanel.visibilityList();
+//		// ((BoneAttachmentPane)geosetAnimTabs.getSelectedComponent()).refreshLists();
+//		importPanel.repaint();
+//	}
 
 	private static void clearSelectedBones(IterableListModel<BoneShell> existingBones, ModelHolderThing modelHolderThing) {
 		for (int i = 0; i < existingBones.size(); i++) {
@@ -287,9 +290,15 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 	}
 
+	private static void importAllGeos(IterableListModel<GeosetShell> geoShells, boolean b) {
+		for (GeosetShell geosetShell : geoShells) {
+			geosetShell.setDoImport(b);
+		}
+	}
+
 	@Override
 	public void stateChanged(final ChangeEvent e) {
-		updateAnimTabs(this);
+//		updateAnimTabs(this);
 	}
 
 	private static void importAllBones(IterableListModel<BoneShell> boneShells, int selectionIndex) {
@@ -367,29 +376,47 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	}
 
 	private void getSingelAnimation(Animation pickedAnim) {
-		uncheckAllAnims(mht.animTabs, false);
-		for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
-			final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
-			if (aniPanel.anim.getName().equals(pickedAnim.getName())) {
-				aniPanel.doImport.setSelected(true);
+		uncheckAllAnims(mht.aniShells, false);
+//		for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
+//			final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
+//			if (aniPanel.anim.getName().equals(pickedAnim.getName())) {
+//				aniPanel.doImport.setSelected(true);
+//			}
+//		}
+		for (AnimShell animShell : mht.aniShells) {
+			if (animShell.getAnim().getName().equals(pickedAnim.getName())) {
+				animShell.setDoImport(true);
 			}
 		}
-		mht.clearExistingAnims.doClick();// turn it back off
+//		mht.clearExistingAnims.doClick();// turn it back off
 	}
 
 	public IterableListModel<VisibilityShell> visibilityList() {
+//		final VisibilityShell selection = mht.visTabs.getSelectedValue();
+//		mht.visibilityShells.clear();
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
+//				getAndAddVisShell(x);
+//			}
+//		}
+//		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//			if (gp.doImport.isSelected()) {
+//				final Geoset x = gp.geoset;
+//				getAndAddVisShell(x);
+//			}
+//		}
 		final VisibilityShell selection = mht.visTabs.getSelectedValue();
 		mht.visibilityShells.clear();
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			for (final Layer x : gp.getSelectedMaterial().getLayers()) {
+		for (GeosetShell geosetShell : mht.geoShells) {
+			for (final Layer x : geosetShell.getMaterial().getLayers()) {
 				getAndAddVisShell(x);
 			}
 		}
-		for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-			final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-			if (gp.doImport.isSelected()) {
-				final Geoset x = gp.geoset;
+		for (GeosetShell geosetShell : mht.geoShells) {
+			if (geosetShell.isDoImport()) {
+				final Geoset x = geosetShell.getGeoset();
 				getAndAddVisShell(x);
 			}
 		}
@@ -448,9 +475,20 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				JOptionPane.showMessageDialog(null, "The program has confused itself.");
 			}
 
-			for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-				final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-				gp.setMaterials(mht.currentModel, mht.importModel);
+//			for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//				final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//				gp.setMaterials(mht.currentModel, mht.importModel);
+//			}
+
+			for (GeosetShell geosetShell : mht.geoShells) {
+				geosetShell.getGeoset().setMaterial(geosetShell.getMaterial());
+				if (geosetShell.isDoImport() && (geosetShell.isImported)) {
+					mht.currentModel.add(geosetShell.getGeoset());
+					if (geosetShell.getGeoset().getGeosetAnim() != null) {
+						mht.currentModel.add(geosetShell.getGeoset().getGeosetAnim());
+					}
+				}
+
 			}
 			// note to self: remember to scale event objects with time
 
@@ -476,10 +514,15 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 
 			final List<Animation> newAnims = new ArrayList<>();
-			for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
-				final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
-				if (aniPanel.doImport.isSelected()) {
-					aniPanel.doImportSelectedAnims(mht.currentModel, mht.importModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+//			for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
+//				final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
+//				if (aniPanel.doImport.isSelected()) {
+//					aniPanel.doImportSelectedAnims(mht.currentModel, mht.importModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+//				}
+//			}
+			for (AnimShell animShell : mht.aniShells) {
+				if (animShell.isDoImport()) {
+					mht.doImportSelectedAnims(animShell, mht.currentModel, mht.importModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
 				}
 			}
 
@@ -629,10 +672,15 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			// display.reloadTextures();//.mpanel.perspArea.reloadTextures();//addGeosets(newGeosets);
 			// }
 			final List<Geoset> geosetsAdded = new ArrayList<>();
-			for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
-				final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
-				if (gp.doImport.isSelected() && (gp.model == mht.importModel)) {
-					geosetsAdded.add(gp.geoset);
+//			for (int i = 0; i < mht.geosetTabs.getTabCount(); i++) {
+//				final GeosetPanel gp = (GeosetPanel) mht.geosetTabs.getComponentAt(i);
+//				if (gp.doImport.isSelected() && (gp.model == mht.importModel)) {
+//					geosetsAdded.add(gp.geoset);
+//				}
+//			}
+			for (GeosetShell geosetShell : mht.geoShells) {
+				if (geosetShell.isDoImport() && geosetShell.isImported) {
+					geosetsAdded.add(geosetShell.getGeoset());
 				}
 			}
 			if (callback != null) {
@@ -746,7 +794,8 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 	// *********************Simple Import Functions****************
 	public void animTransfer(final boolean singleAnimation, final Animation pickedAnim, final boolean show) {
-		importAllGeos(mht.geosetTabs, false);
+//		importAllGeos(mht.geosetTabs, false);
+		importAllGeos(mht.geoShells, false);
 		importAllBones(mht.boneShells, 1);
 		mht.clearExistingAnims.doClick();
 //		importAllObjs(mht.objectPanels, false);
@@ -805,8 +854,9 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	public void animTransferPartTwo(final boolean singleAnimation, final Animation pickedAnim,
 	                                final Animation visFromAnim, final boolean show) {
 		// This should be an import from self
-		importAllGeos(mht.geosetTabs, false);
-		uncheckAllAnims(mht.animTabs, false);
+//		importAllGeos(mht.geosetTabs, false);
+		importAllGeos(mht.geoShells, false);
+		uncheckAllAnims(mht.aniShells, false);
 		importAllBones(mht.boneShells, 2);
 //		importAllObjs(mht.objectPanels, false);
 		importAllObjs(mht.objectShells, false);
@@ -815,10 +865,13 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 		if (singleAnimation) {
 //			transfereSingleAnimation(pickedAnim, visFromAnim);
-			for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
-				final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
-				aniPanel.transferSingleAnimation(pickedAnim, visFromAnim);
+			for (AnimShell animShell : mht.aniShells) {
+				mht.transferSingleAnimation(animShell, pickedAnim, visFromAnim);
 			}
+//			for (int i = 0; i < mht.animTabs.getTabCount(); i++) {
+//				final AnimPanel aniPanel = (AnimPanel) mht.animTabs.getComponentAt(i);
+//				aniPanel.transferSingleAnimation(pickedAnim, visFromAnim);
+//			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Bug in anim transfer: attempted unnecessary 2-part transfer");
 		}

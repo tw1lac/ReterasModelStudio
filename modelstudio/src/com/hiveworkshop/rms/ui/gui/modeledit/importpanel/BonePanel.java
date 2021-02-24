@@ -49,65 +49,7 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 		// This constructor is negative mojo
 	}
 
-//	public BonePanel(final Bone whichBone, final IterableListModel<BoneShell> existingBonesList, final BoneShellListCellRenderer renderer,
-//	                 final ImportPanel importPanelin) {
-//		setLayout(new MigLayout("gap 0"));
-//		setBackground(Color.cyan);
-//		setOpaque(true);
-//		bone = whichBone;
-//		existingBones = existingBonesList;
-//		this.importPanel = importPanelin;
-//		listModel = new IterableListModel<>();
-//		listModel.addAll(existingBonesList);
-//		hidenBonesListModel = new IterableListModel<>();
-//		nullImpBoneBoneList = new IterableListModel<>();
-//		boneToBoneShellMap = new BiMap<>();
-//		boneToImportBoneMap = new BiMap<>();
-//
-//		for(BoneShell bs : existingBonesList){
-//			boneToBoneShellMap.put(bs.bone, bs);
-//		}
-//		selectedBone = bone;
-//
-//		title = new JLabel();
-//		title.setFont(new Font("Arial", Font.BOLD, 26));
-//		add(title, "cell 0 0, spanx, align center, wrap");
-//
-//
-//		boneList = new JList<>(listModel);
-//		boneList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//		boneList.setCellRenderer(renderer);
-//
-//		JScrollPane boneListPane = new JScrollPane(boneList);
-//		boneListPane.setVisible(false);
-//		boneList.addListSelectionListener(e -> listItemSelected(boneListPane));
-//
-//		importTypeBox.setEditable(false);
-//		importTypeBox.addActionListener(e -> listItemSelected(boneListPane));
-//		importTypeBox.setMaximumSize(new Dimension(200, 20));
-//		add(importTypeBox, "cell 0 1");
-//
-//		parentTitle = new JLabel();
-//		add(parentTitle, "cell 2 1");
-//
-//		setImportBoneForBone();
-//
-////		cardPanel = new JPanel(cards);
-////		cardPanel.add(boneListPane, "boneList");
-////		cardPanel.add(new JPanel(), "blank");
-////		cards.show(cardPanel, "blank");
-//		add(boneListPane, "cell 1 2, growy");
-//
-//		IterableListModel<BoneShell> futureBones = importPanel.mht.getFutureBoneListExtended(true);
-//		futureBonesList = new JList<>(futureBones);
-//		futureBonesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		futureBonesList.setCellRenderer(renderer);
-//		JScrollPane futureBonesListPane = new JScrollPane(futureBonesList);
-//		add(futureBonesListPane, "cell 2 2, growy");
-//	}
-
-	public BonePanel(String tit, ModelHolderThing mht, final BoneShellListCellRenderer renderer,
-	                 final ImportPanel importPanelin) {
+	public BonePanel(String tit, ModelHolderThing mht, final BoneShellListCellRenderer renderer, final ImportPanel importPanelin) {
 		this.mht = mht;
 		setLayout(new MigLayout("gap 0"));
 		setBackground(Color.cyan);
