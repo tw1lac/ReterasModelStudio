@@ -17,7 +17,7 @@ public class GeosetEditPanels {
 	public static final ImageIcon geoIcon = RMSIcons.geoIcon;// new ImageIcon(ImportPanel.class.getClassLoader().getResource("ImageBin/geo_small.png"));
 	//	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 	ImportPanel importPanel;
-	GeosetPanel currGeoPanel;
+	GeosetPanel singleGeoPanel;
 	CardLayout geoCardLayout;
 	JPanel geoPanelCards;
 	private ModelHolderThing mht;
@@ -32,25 +32,25 @@ public class GeosetEditPanels {
 		JPanel geosetsPanel = new JPanel(new MigLayout("gap 0, fill", "[grow]", "[]8[grow]"));
 
 		final IterableListModel<Material> materials = new IterableListModel<>();
-		materials.addAll(mht.currentModel.getMaterials());
-		materials.addAll(mht.importModel.getMaterials());
+		materials.addAll(mht.receivingModel.getMaterials());
+		materials.addAll(mht.donatingModel.getMaterials());
 
 		// A list of all materials available for use during this import, in the form of a IterableListModel
 
-		final MaterialListCellRenderer materialsRenderer = new MaterialListCellRenderer(mht.currentModel);
+		final MaterialListCellRenderer materialsRenderer = new MaterialListCellRenderer(mht.receivingModel);
 		// All material lists will know which materials come from the out-of-model source (imported model)
 
 		// Build the geosetTabs list of GeosetPanels
-		List<GeosetShell> currGeosets = new ArrayList<>();
-		for (Geoset geoset : mht.currentModel.getGeosets()) {
-			currGeosets.add(new GeosetShell(geoset, mht.currentModel, false));
+		List<GeosetShell> recModelGeosets = new ArrayList<>();
+		for (Geoset geoset : mht.receivingModel.getGeosets()) {
+			recModelGeosets.add(new GeosetShell(geoset, mht.receivingModel, false));
 		}
-		List<GeosetShell> impGeosets = new ArrayList<>();
-		for (Geoset geoset : mht.importModel.getGeosets()) {
-			impGeosets.add(new GeosetShell(geoset, mht.importModel, false));
+		List<GeosetShell> donModelGeosets = new ArrayList<>();
+		for (Geoset geoset : mht.donatingModel.getGeosets()) {
+			donModelGeosets.add(new GeosetShell(geoset, mht.donatingModel, false));
 		}
-		mht.geoShells.addAll(currGeosets);
-		mht.geoShells.addAll(impGeosets);
+		mht.allGeoShells.addAll(recModelGeosets);
+		mht.allGeoShells.addAll(donModelGeosets);
 
 		JPanel bigPanel = new JPanel(new MigLayout("gap 0, fill", "[5%:30%:30%][100%:70%:70%]"));
 		JScrollPane geoScrollPane = new JScrollPane(mht.geoTabs);
@@ -59,8 +59,8 @@ public class GeosetEditPanels {
 
 //		final GeosetPanel geoPanel = new GeosetPanel(false, mht.currentModel, materials, materialsRenderer, importPanel);
 //		bigPanel.add(geoPanel);
-		currGeoPanel = new GeosetPanel(false, mht.currentModel, materials, materialsRenderer, importPanel);
-		bigPanel.add(currGeoPanel, "growy");
+		singleGeoPanel = new GeosetPanel(false, mht.receivingModel, materials, materialsRenderer, importPanel);
+		bigPanel.add(singleGeoPanel, "growy");
 
 		mht.geoTabs.addListSelectionListener(e -> setGeoset());
 
@@ -103,7 +103,7 @@ public class GeosetEditPanels {
 	}
 
 	public void setGeoset() {
-		currGeoPanel.setCurrentGeosetShell(mht.geoTabs.getSelectedValue());
+		singleGeoPanel.setCurrentGeosetShell(mht.geoTabs.getSelectedValue());
 	}
 
 //	private static void importAllGeos(JTabbedPane geosetTabs, boolean b) {
@@ -114,7 +114,7 @@ public class GeosetEditPanels {
 //	}
 
 	private void importAllGeos(boolean b) {
-		for (GeosetShell geosetShell : mht.geoShells) {
+		for (GeosetShell geosetShell : mht.allGeoShells) {
 			geosetShell.setDoImport(b);
 		}
 	}

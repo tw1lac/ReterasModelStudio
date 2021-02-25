@@ -15,6 +15,7 @@ class GeosetAnimationPanel extends JTabbedPane {
 	BoneAttachmentPanel bap;
 	VisibilityPanel vp;
 	ImportPanel impPanel;
+	ModelHolderThing mht;
 
 	public GeosetAnimationPanel(final boolean imported, // Is this Geoset an imported one, or an original?
 	                            final EditableModel model, final int geoIndex, final ImportPanel thePanel)
@@ -26,17 +27,14 @@ class GeosetAnimationPanel extends JTabbedPane {
 		geoset = model.getGeoset(geoIndex);
 		isImported = imported;
 
-		bap = new BoneAttachmentPanel(model, geoset, null, getImportPanel());
+//		bap = new BoneAttachmentPanel(mht, model, geoset, null);
+		bap = new BoneAttachmentPanel(mht, model, null);
 		addTab("Bones", ImportPanel.boneIcon, bap, "Allows you to edit bone references.");
 
 		// vp = new
 		// VisibilityPane(thePanel.currentModel.m_geosets.size(),thePanel.currentModel.getName(),thePanel.importedModel.m_geosets.size(),thePanel.importedModel.getName(),geoIndex);
 		// addTab("Visibility",ImportPanel.animIcon,vp,"Allows you to edit
 		// visibility.");
-	}
-
-	public void refreshLists() {
-		bap.refreshLists();
 	}
 
 	public ImportPanel getImportPanel() {

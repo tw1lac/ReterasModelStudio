@@ -60,6 +60,18 @@ public class IterableListModel<T> extends DefaultListModel<T> implements Iterabl
 		}
 	}
 
+	public void removeAll(IterableListModel<? extends T> c) {
+		for (T t : c) {
+			remove(t);
+		}
+	}
+
+	public void removeAll(Collection<? extends T> c) {
+		for (T t : c) {
+			remove(t);
+		}
+	}
+
 
 	public void addAll(IterableListModel<? extends T> c) {
 		if (c.size() > 0) {

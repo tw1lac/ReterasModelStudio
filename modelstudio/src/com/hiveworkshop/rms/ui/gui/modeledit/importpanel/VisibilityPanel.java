@@ -45,7 +45,7 @@ class VisibilityPanel extends JPanel {
 		add(oldAnimsLabel, "left, wrap");
 
 //		oldSourcesBox = createObjectJComboBox(mht.visSourcesOld, renderer, e -> setVisGroupItemOld(e));
-		oldSourcesBox = createObjectJComboBox(mht.visSourcesOld, renderer, e -> setVisGroupItemOld());
+		oldSourcesBox = createObjectJComboBox(mht.recModelVisSources, renderer, e -> setVisGroupItemOld());
 		add(oldSourcesBox, "grow, wrap");
 
 
@@ -53,7 +53,7 @@ class VisibilityPanel extends JPanel {
 		add(newAnimsLabel, "left, wrap");
 
 //		newSourcesBox = createObjectJComboBox(mht.visSourcesNew, renderer, e -> setVisGroupItemNew(e));
-		newSourcesBox = createObjectJComboBox(mht.visSourcesNew, renderer, e -> setVisGroupItemNew());
+		newSourcesBox = createObjectJComboBox(mht.donModelVisSources, renderer, e -> setVisGroupItemNew());
 		add(newSourcesBox, "grow, wrap");
 
 		favorOld = new JCheckBox("Favor component's original visibility when combining");

@@ -33,14 +33,14 @@ public class ObjectsEditPanel {
 
 		// Build the objectTabs list of ObjectShells
 		final ObjPanelListCellRenderer objectPanelRenderer = new ObjPanelListCellRenderer();
-		for (IdObject obj : mht.importModel.getIdObjects()) {
+		for (IdObject obj : mht.donatingModel.getIdObjects()) {
 			if ((obj.getClass() != Bone.class) && (obj.getClass() != Helper.class)) {
 				ObjectShell objectShell = new ObjectShell(obj);
 				mht.objectShells.addElement(objectShell);
 			}
 		}
 
-		for (Camera obj : mht.importModel.getCameras()) {
+		for (Camera obj : mht.donatingModel.getCameras()) {
 			ObjectShell objectShell = new ObjectShell(obj);
 			mht.objectShells.addElement(objectShell);
 		}

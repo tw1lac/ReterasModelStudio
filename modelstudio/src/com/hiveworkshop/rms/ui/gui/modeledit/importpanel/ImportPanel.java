@@ -44,38 +44,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 	JFrame frame;
 
-	// Geosets
-//	JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-
-
 	public final BoneShellListCellRenderer boneShellRenderer;
-//	JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
-	// Animation
-//	JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-
-	// Bones
-//	IterableListModel<BonePanel> bonePanels = new IterableListModel<>();
-//	JList<BonePanel> boneTabs = new JList<>(bonePanels);
-
-	// Matrices
-//	JPanel geosetAnimPanel = new JPanel();
-//	JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-
-	JButton allMatrOriginal = new JButton("Reset all Matrices");
-	JButton allMatrSameName = new JButton("Set all to available, original names");
-//	IterableListModel<AnimShell> existingAnims = new IterableListModel<>();
-	// Objects
-//	IterableListModel<ObjectPanel> objectPanels = new IterableListModel<>();
-//	JList<ObjectPanel> objectTabs = new JList<>(objectPanels);
-
-	// Visibility
-//	JList<VisibilityPanel> visTabs = new JList<>();
-
-
-//	IterableListModel<VisibilityPanel> visibilityPanels = new IterableListModel<>();
-//	ArrayList<VisibilityPanel> allVisShellPanes = new ArrayList<>();
-
-//	ArrayList<Object> visSourcesNew;
 
 	ModelHolderThing mht;
 
@@ -92,13 +61,13 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	public ImportPanel(final EditableModel currentModel1, final EditableModel importedModel1, final boolean visibleOnStart) {
 		super();
 		mht = new ModelHolderThing(currentModel1, importedModel1);
-		if (mht.currentModel.getName().equals(mht.importModel.getName())) {
-			mht.importModel.setFileRef(new File(mht.importModel.getFile().getParent() + "/" + mht.importModel.getName() + " (Imported)" + ".mdl"));
-			frame = new JFrame("Importing " + mht.currentModel.getName() + " into itself");
+		if (mht.receivingModel.getName().equals(mht.donatingModel.getName())) {
+			mht.donatingModel.setFileRef(new File(mht.donatingModel.getFile().getParent() + "/" + mht.donatingModel.getName() + " (Imported)" + ".mdl"));
+			frame = new JFrame("Importing " + mht.receivingModel.getName() + " into itself");
 		} else {
-			frame = new JFrame("Importing " + mht.importModel.getName() + " into " + mht.currentModel.getName());
+			frame = new JFrame("Importing " + mht.donatingModel.getName() + " into " + mht.receivingModel.getName());
 		}
-		mht.currentModel.doSavePreps();
+		mht.receivingModel.doSavePreps();
 		try {
 			frame.setIconImage(RMSIcons.MDLIcon.getImage());
 		} catch (final Exception e) {
@@ -106,8 +75,8 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 //		this.currentModel = currentModel;
 //		this.importedModel = importedModel;
-		final ModelViewManager currentModelManager = new ModelViewManager(mht.currentModel);
-		final ModelViewManager importedModelManager = new ModelViewManager(mht.importModel);
+		final ModelViewManager currentModelManager = new ModelViewManager(mht.receivingModel);
+		final ModelViewManager importedModelManager = new ModelViewManager(mht.donatingModel);
 
 		// Geoset Panel
 		GeosetEditPanels geosetEditPanels = new GeosetEditPanels(mht, this);
@@ -130,9 +99,9 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		System.out.println("Bones");
 
 		// Matrices Panel + Build the geosetAnimTabs list of GeosetPanels
-		GeosetAnimEditPanel geosetAnimEditPanel = new GeosetAnimEditPanel(mht, this, allMatrOriginal, allMatrSameName);
+		GeosetAnimEditPanel geosetAnimEditPanel = new GeosetAnimEditPanel(mht, this);
 
-		addTab("Matrices", greenIcon, geosetAnimEditPanel.makeGeosetAnimPanel(), "Controls which bones geosets are attached to.");
+		addTab("Matrices", greenIcon, geosetAnimEditPanel.makeGeosetAnimPanel1(), "Controls which bones geosets are attached to.");
 
 		// Objects Panel
 		ObjectsEditPanel objectsEditPanel = new ObjectsEditPanel(mht, this);
@@ -143,7 +112,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //		makeObjecsPanel(importedModel);
 
 		// Visibility Panel
-		VisibilityEditPanel visibilityEditPanel = new VisibilityEditPanel(mht, allMatrOriginal, allMatrSameName);
+		VisibilityEditPanel visibilityEditPanel = new VisibilityEditPanel(mht);
 		addTab("Visibility", orangeIcon, visibilityEditPanel.makeVisPanel(), "Controls the visibility of portions of the model.");
 
 		// Listen all
@@ -358,10 +327,10 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	private void selSimButton(ArrayList<VisibilityShell> allVisShell) {
 		Map<String, VisibilityShell> oldSourceMap = new HashMap<>();
 		Map<String, VisibilityShell> newSourceMap = new HashMap<>();
-		for (final VisibilityShell visibilityShell : mht.visSourcesNew) {
+		for (final VisibilityShell visibilityShell : mht.donModelVisSources) {
 			newSourceMap.put(visibilityShell.getSource().getName(), visibilityShell);
 		}
-		for (final VisibilityShell visibilityShell : mht.visSourcesOld) {
+		for (final VisibilityShell visibilityShell : mht.recModelVisSources) {
 			oldSourceMap.put(visibilityShell.getSource().getName(), visibilityShell);
 		}
 		for (final VisibilityShell visibilityShell : allVisShell) {
@@ -409,12 +378,12 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //		}
 		final VisibilityShell selection = mht.visTabs.getSelectedValue();
 		mht.visibilityShells.clear();
-		for (GeosetShell geosetShell : mht.geoShells) {
+		for (GeosetShell geosetShell : mht.allGeoShells) {
 			for (final Layer x : geosetShell.getMaterial().getLayers()) {
 				getAndAddVisShell(x);
 			}
 		}
-		for (GeosetShell geosetShell : mht.geoShells) {
+		for (GeosetShell geosetShell : mht.allGeoShells) {
 			if (geosetShell.isDoImport()) {
 				final Geoset x = geosetShell.getGeoset();
 				getAndAddVisShell(x);
@@ -422,7 +391,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 		// The current's
 
-		final EditableModel model = mht.currentModel;
+		final EditableModel model = mht.receivingModel;
 		for (IdObject x : model.getIdObjects()) {
 			if (!(x instanceof Bone) && !(x instanceof EventObject) && !(x instanceof CollisionShape)) {
 				getAndAddVisShell(x);
@@ -471,7 +440,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			// AFTER WRITING THREE THOUSAND LINES OF INTERFACE, FINALLLLLLLLLLLLYYYYYYYYY
 			// The engine for actually performing the model to model import.
 
-			if (mht.currentModel == mht.importModel) {
+			if (mht.receivingModel == mht.donatingModel) {
 				JOptionPane.showMessageDialog(null, "The program has confused itself.");
 			}
 
@@ -480,12 +449,12 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //				gp.setMaterials(mht.currentModel, mht.importModel);
 //			}
 
-			for (GeosetShell geosetShell : mht.geoShells) {
+			for (GeosetShell geosetShell : mht.allGeoShells) {
 				geosetShell.getGeoset().setMaterial(geosetShell.getMaterial());
 				if (geosetShell.isDoImport() && (geosetShell.isImported)) {
-					mht.currentModel.add(geosetShell.getGeoset());
+					mht.receivingModel.add(geosetShell.getGeoset());
 					if (geosetShell.getGeoset().getGeosetAnim() != null) {
-						mht.currentModel.add(geosetShell.getGeoset().getGeosetAnim());
+						mht.receivingModel.add(geosetShell.getGeoset().getGeosetAnim());
 					}
 				}
 
@@ -493,7 +462,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			// note to self: remember to scale event objects with time
 
 			final List<AnimFlag<?>> newImpFlags = new ArrayList<>();
-			final java.util.List<AnimFlag<?>> impFlags = mht.importModel.getAllAnimFlags();
+			final java.util.List<AnimFlag<?>> impFlags = mht.donatingModel.getAllAnimFlags();
 			for (final AnimFlag<?> af : impFlags) {
 				if (!af.hasGlobalSeq()) {
 					newImpFlags.add(AnimFlag.buildEmptyFrom(af));
@@ -503,7 +472,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 
 			final List<EventObject> newImpEventObjs = new ArrayList<>();
-			final List<EventObject> impEventObjs = mht.importModel.getEvents();
+			final List<EventObject> impEventObjs = mht.donatingModel.getEvents();
 			for (final Object e : impEventObjs) {
 				newImpEventObjs.add(EventObject.buildEmptyFrom((EventObject) e));
 			}
@@ -522,7 +491,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //			}
 			for (AnimShell animShell : mht.aniShells) {
 				if (animShell.isDoImport()) {
-					mht.doImportSelectedAnims(animShell, mht.currentModel, mht.importModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
+					mht.doImportSelectedAnims(animShell, mht.receivingModel, mht.donatingModel, newAnims, impFlags, impEventObjs, newImpFlags, newImpEventObjs);
 				}
 			}
 
@@ -538,11 +507,11 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 
 			if (mht.clearExistingBones.isSelected()) {
-				for (final IdObject o : mht.currentModel.sortedIdObjects(Bone.class)) {
-					mht.currentModel.remove(o);
+				for (final IdObject o : mht.receivingModel.sortedIdObjects(Bone.class)) {
+					mht.receivingModel.remove(o);
 				}
-				for (final IdObject o : mht.currentModel.sortedIdObjects(Helper.class)) {
-					mht.currentModel.remove(o);
+				for (final IdObject o : mht.receivingModel.sortedIdObjects(Helper.class)) {
+					mht.receivingModel.remove(o);
 				}
 			}
 
@@ -550,7 +519,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 			for (BoneShell boneShell : mht.boneShells) {
 				if (boneShell.getImportStatus() == 0) {
-					mht.currentModel.add(boneShell.getBone());
+					mht.receivingModel.add(boneShell.getBone());
 					objectsAdded.add(boneShell.getBone());
 					boneShell.getBone().setParent(boneShell.getNewParent());
 				} else {
@@ -576,9 +545,9 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 			}
 
 
-			mht.currentModel.updateObjectIds();
-			for (final Geoset g : mht.currentModel.getGeosets()) {
-				g.applyMatricesToVertices(mht.currentModel);
+			mht.receivingModel.updateObjectIds();
+			for (final Geoset g : mht.receivingModel.getGeosets()) {
+				g.applyMatricesToVertices(mht.receivingModel);
 			}
 
 			// Objects!
@@ -599,10 +568,10 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 						} else {
 							os.getIdObject().setParent(null);
 						} // later make a name field?
-						mht.currentModel.add(os.getIdObject());
+						mht.receivingModel.add(os.getIdObject());
 						objectsAdded.add(os.getIdObject());
 					} else if (os.getCamera() != null) {
-						mht.currentModel.add(os.getCamera());
+						mht.receivingModel.add(os.getCamera());
 						camerasAdded.add(os.getCamera());
 					}
 				} else {
@@ -631,11 +600,11 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //				}
 //			}
 
-			final List<Animation> oldAnims = new ArrayList<>(mht.currentModel.getAnims());
+			final List<Animation> oldAnims = new ArrayList<>(mht.receivingModel.getAnims());
 			final List<FloatAnimFlag> finalVisFlags = new ArrayList<>();
 			for (int i = 0; i < mht.visibilityShells.size(); i++) {
 				final VisibilityShell vPanel = mht.visibilityShells.get(i);
-				addSelectedVisFlags(vPanel, oldAnims, newAnims, mht.clearExistingAnims.isSelected(), finalVisFlags, mht.currentModel, mht.importModel);
+				addSelectedVisFlags(vPanel, oldAnims, newAnims, mht.clearExistingAnims.isSelected(), finalVisFlags, mht.receivingModel, mht.donatingModel);
 //				addSelectedVisFlags(vPanel, oldAnims, newAnims, clearAnims, finalVisFlags);
 			}
 
@@ -678,7 +647,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 //					geosetsAdded.add(gp.geoset);
 //				}
 //			}
-			for (GeosetShell geosetShell : mht.geoShells) {
+			for (GeosetShell geosetShell : mht.allGeoShells) {
 				if (geosetShell.isDoImport() && geosetShell.isImported) {
 					geosetsAdded.add(geosetShell.getGeoset());
 				}
@@ -688,7 +657,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				callback.nodesAdded(objectsAdded);
 				callback.camerasAdded(camerasAdded);
 			}
-			for (final AnimFlag<?> flag : mht.currentModel.getAllAnimFlags()) {
+			for (final AnimFlag<?> flag : mht.receivingModel.getAllAnimFlags()) {
 				flag.sort();
 			}
 		} catch (final Exception e) {
@@ -758,12 +727,12 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	}
 
 	private void clearCurrModelAnims() {
-		final List<AnimFlag<?>> curFlags = mht.currentModel.getAllAnimFlags();
-		final List<EventObject> curEventObjs = mht.currentModel.getEvents();
-		for (final Animation anim : mht.currentModel.getAnims()) {
+		final List<AnimFlag<?>> curFlags = mht.receivingModel.getAllAnimFlags();
+		final List<EventObject> curEventObjs = mht.receivingModel.getEvents();
+		for (final Animation anim : mht.receivingModel.getAnims()) {
 			anim.clearData(curFlags, curEventObjs);
 		}
-		mht.currentModel.clearAnimations();
+		mht.receivingModel.clearAnimations();
 	}
 
 	private void clearSelectedCurrModelAnims(List<Animation> newAnims, List<AnimFlag<?>> impFlags, List<EventObject> impEventObjs, List<AnimFlag<?>> newImpFlags, List<EventObject> newImpEventObjs, boolean clearBones) {
@@ -795,7 +764,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	// *********************Simple Import Functions****************
 	public void animTransfer(final boolean singleAnimation, final Animation pickedAnim, final boolean show) {
 //		importAllGeos(mht.geosetTabs, false);
-		importAllGeos(mht.geoShells, false);
+		importAllGeos(mht.allGeoShells, false);
 		importAllBones(mht.boneShells, 1);
 		mht.clearExistingAnims.doClick();
 //		importAllObjs(mht.objectPanels, false);
@@ -811,9 +780,9 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		// Try assuming it's a unit with a corpse; they'll tend to be that way
 
 		// Iterate through new visibility sources, find a geoset with gutz material
-		for (int i = 0; (i < mht.visSourcesNew.size()) && (corpseShell == null); i++) {
-			if (mht.visSourcesNew.get(i) instanceof VisibilityShell) {
-				VisibilityShell vs = (VisibilityShell) mht.visSourcesNew.get(i);
+		for (int i = 0; (i < mht.donModelVisSources.size()) && (corpseShell == null); i++) {
+			if (mht.donModelVisSources.get(i) instanceof VisibilityShell) {
+				VisibilityShell vs = (VisibilityShell) mht.donModelVisSources.get(i);
 				if (vs.source instanceof Geoset) {
 					final Geoset g = (Geoset) vs.source;
 					if ((g.getGeosetAnim() != null) && g.getMaterial().firstLayer().firstTexture().getPath().equalsIgnoreCase("textures\\gutz.blp")) {
@@ -855,7 +824,7 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 	                                final Animation visFromAnim, final boolean show) {
 		// This should be an import from self
 //		importAllGeos(mht.geosetTabs, false);
-		importAllGeos(mht.geoShells, false);
+		importAllGeos(mht.allGeoShells, false);
 		uncheckAllAnims(mht.aniShells, false);
 		importAllBones(mht.boneShells, 2);
 //		importAllObjs(mht.objectPanels, false);

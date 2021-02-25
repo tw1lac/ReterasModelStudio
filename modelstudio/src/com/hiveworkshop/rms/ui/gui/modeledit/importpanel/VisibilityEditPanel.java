@@ -12,8 +12,6 @@ import java.util.List;
 
 public class VisibilityEditPanel {
 
-	JButton allMatrOriginal;
-	JButton allMatrSameName;
 	ArrayList<VisibilityShell> allVisShells;
 	BiMap<VisibilitySource, VisibilityShell> vsiSourceToVisShell = new BiMap<>();
 	BiMap<VisibilitySource, VisibilityPanel> vsiSourceToVisPanel = new BiMap<>();
@@ -23,13 +21,8 @@ public class VisibilityEditPanel {
 	//	ArrayList<Object> visSourcesOld;
 	private ModelHolderThing mht;
 
-	public VisibilityEditPanel(ModelHolderThing mht,
-	                           JButton allMatrOriginal,
-	                           JButton allMatrSameName
-	) {
+	public VisibilityEditPanel(ModelHolderThing mht) {
 		this.mht = mht;
-		this.allMatrOriginal = allMatrOriginal;
-		this.allMatrSameName = allMatrSameName;
 	}
 
 	public JPanel makeVisPanel() {
@@ -64,7 +57,7 @@ public class VisibilityEditPanel {
 		visPanelCards.add(new JPanel(), "blank");
 		visPanelCards.add(multiVisPanel, "multiple");
 		mht.visTabs.setModel(mht.visibilityShells);
-		mht.visTabs.setCellRenderer(new VisPaneListCellRenderer(mht.currentModel));
+		mht.visTabs.setCellRenderer(new VisPaneListCellRenderer(mht.receivingModel));
 		mht.visTabs.addListSelectionListener(e -> visTabsValueChanged(multiVisPanel, visCardLayout, visPanelCards, mht.visTabs));
 		mht.visTabs.setSelectedIndex(0);
 //		visPanelCards.setBorder(BorderFactory.createLineBorder(Color.blue.darker()));
@@ -81,10 +74,10 @@ public class VisibilityEditPanel {
 	private JPanel getTopPanel() {
 		JPanel topPanel = new JPanel(new MigLayout("gap 0", "", "[]8[]8[]"));
 
-		JButton allInvisButton = createButton("All Invisible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.NOTVISIBLE), "Forces everything to be always invisibile in animations other than their own original animations.");
+		JButton allInvisButton = createButton("All Invisible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.receivingModel, VisibilityPanel.NOTVISIBLE), "Forces everything to be always invisibile in animations other than their own original animations.");
 		topPanel.add(allInvisButton, "align center, wrap");
 
-		JButton allVisButton = createButton("All Visible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.currentModel, VisibilityPanel.VISIBLE), "Forces everything to be always visibile in animations other than their own original animations.");
+		JButton allVisButton = createButton("All Visible in Exotic Anims", e -> allVisButton(mht.allVisShells, mht.receivingModel, VisibilityPanel.VISIBLE), "Forces everything to be always visibile in animations other than their own original animations.");
 		topPanel.add(allVisButton, "align center, wrap");
 
 		JButton selSimButton = createButton("Select Similar Options", e -> selSimButton(mht.allVisShells), "Similar components will be selected as visibility sources in exotic animations.");
@@ -143,9 +136,10 @@ public class VisibilityEditPanel {
 			}
 		}
 	}
-	private void allVisButton(ArrayList<VisibilityShell> allVisShellPanes, EditableModel currentModel, String visible) {
+
+	private void allVisButton(ArrayList<VisibilityShell> allVisShellPanes, EditableModel model, String visible) {
 		for (final VisibilityShell visibilityShell : allVisShellPanes) {
-			if (visibilityShell.model == currentModel) {
+			if (visibilityShell.model == model) {
 //				VisibilityPanel.newSourcesBox.setSelectedItem(visible);
 				multiVisPanel.newSourcesBox.setSelectedItem(visible);
 			} else {
@@ -180,74 +174,75 @@ public class VisibilityEditPanel {
 	}
 
 	public void initVisibilityList() {
-		mht.visSourcesOld = new ArrayList<>();
-		mht.visSourcesNew = new ArrayList<>();
+		mht.recModelVisSources = new ArrayList<>();
+		mht.donModelVisSources = new ArrayList<>();
 		allVisShells = new ArrayList<>();
 //		BiMap<VisibilitySource, VisibilityShell> vsiSourceToVisShell = new BiMap<>();
-		List<VisibilityShell> impAllVisShells = new ArrayList<>();
-		List<VisibilityShell> currAllVisShells = new ArrayList<>();
-		EditableModel model = mht.currentModel;
+		List<VisibilityShell> donModelAllVisShells = new ArrayList<>();
+		List<VisibilityShell> recModelAllVisShells = new ArrayList<>();
+
+		EditableModel recModel = mht.receivingModel;
 		final List<VisibilitySource> tempList = new ArrayList<>();
-		for (final Material mat : model.getMaterials()) {
+		for (final Material mat : recModel.getMaterials()) {
 			for (final Layer x : mat.getLayers()) {
-				createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+				createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 			}
 		}
-		for (final Geoset x : model.getGeosets()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final Geoset x : recModel.getGeosets()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final Light x : model.getLights()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final Light x : recModel.getLights()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final Attachment x : model.getAttachments()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final Attachment x : recModel.getAttachments()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitter x : model.getParticleEmitters()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitter x : recModel.getParticleEmitters()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitter2 x : model.getParticleEmitter2s()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitter2 x : recModel.getParticleEmitter2s()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final RibbonEmitter x : model.getRibbonEmitters()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final RibbonEmitter x : recModel.getRibbonEmitters()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitterPopcorn x : model.getPopcornEmitters()) {
-			createAndAddVisShell(model, tempList, x, currAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitterPopcorn x : recModel.getPopcornEmitters()) {
+			createAndAddVisShell(recModel, tempList, x, recModelAllVisShells, vsiSourceToVisShell);
 		}
 
-		EditableModel impModel = mht.importModel;
-		for (final Material mat : impModel.getMaterials()) {
+		EditableModel donModel = mht.donatingModel;
+		for (final Material mat : donModel.getMaterials()) {
 			for (final Layer x : mat.getLayers()) {
-				createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+				createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 			}
 		}
-		for (final Geoset x : impModel.getGeosets()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final Geoset x : donModel.getGeosets()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final Light x : impModel.getLights()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final Light x : donModel.getLights()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final Attachment x : impModel.getAttachments()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final Attachment x : donModel.getAttachments()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitter x : impModel.getParticleEmitters()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitter x : donModel.getParticleEmitters()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitter2 x : impModel.getParticleEmitter2s()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitter2 x : donModel.getParticleEmitter2s()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final RibbonEmitter x : impModel.getRibbonEmitters()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final RibbonEmitter x : donModel.getRibbonEmitters()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
-		for (final ParticleEmitterPopcorn x : impModel.getPopcornEmitters()) {
-			createAndAddVisShell(impModel, tempList, x, impAllVisShells, vsiSourceToVisShell);
+		for (final ParticleEmitterPopcorn x : donModel.getPopcornEmitters()) {
+			createAndAddVisShell(donModel, tempList, x, donModelAllVisShells, vsiSourceToVisShell);
 		}
 
 
 		System.out.println("new/old:");
-		for (final VisibilitySource o : mht.currentModel.getAllVisibilitySources()) {
+		for (final VisibilitySource o : mht.receivingModel.getAllVisibilitySources()) {
 			if (o.getClass() != GeosetAnim.class) {
-				mht.visSourcesOld.add(vsiSourceToVisShell.get(o));
+				mht.recModelVisSources.add(vsiSourceToVisShell.get(o));
 				if (vsiSourceToVisShell.get(o) != null) {
 					System.out.println(vsiSourceToVisShell.get(o).source.getName());
 				}
@@ -255,7 +250,7 @@ public class VisibilityEditPanel {
 //				visSourcesOld.add(shellFromObject(allVisShells, o));
 //				System.out.println(shellFromObject(allVisShells, o).source.getName());
 			} else {
-				mht.visSourcesOld.add(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()));
+				mht.recModelVisSources.add(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()));
 
 				if (vsiSourceToVisShell.get(o) != null) {
 					System.out.println(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()).source.getName());
@@ -270,18 +265,18 @@ public class VisibilityEditPanel {
 //		mht.visSourcesOld.add(VisibilityPanel.VISIBLE);
 //		mht.visSourcesOld.add(new VisibilityShell(true));
 //		mht.visSourcesOld.add(new VisibilityShell(false));
-		mht.visSourcesOld.add(0, new VisibilityShell(true));
-		mht.visSourcesOld.add(1, new VisibilityShell(false));
+		mht.recModelVisSources.add(0, new VisibilityShell(true));
+		mht.recModelVisSources.add(1, new VisibilityShell(false));
 
 
-		for (final VisibilitySource o : mht.importModel.getAllVisibilitySources()) {
+		for (final VisibilitySource o : mht.donatingModel.getAllVisibilitySources()) {
 			if (o.getClass() != GeosetAnim.class) {
-				mht.visSourcesNew.add(vsiSourceToVisShell.get(o));
+				mht.donModelVisSources.add(vsiSourceToVisShell.get(o));
 				if (vsiSourceToVisShell.get(o) != null) {
 					System.out.println(vsiSourceToVisShell.get(o).source.getName());
 				}
 			} else {
-				mht.visSourcesNew.add(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()));
+				mht.donModelVisSources.add(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()));
 
 				if (vsiSourceToVisShell.get(o) != null) {
 					System.out.println(vsiSourceToVisShell.get(((GeosetAnim) o).getGeoset()).source.getName());
@@ -290,8 +285,8 @@ public class VisibilityEditPanel {
 		}
 //		mht.visSourcesNew.add(VisibilityPanel.NOTVISIBLE);
 //		mht.visSourcesNew.add(VisibilityPanel.VISIBLE);
-		mht.visSourcesNew.add(0, new VisibilityShell(true));
-		mht.visSourcesNew.add(1, new VisibilityShell(false));
+		mht.donModelVisSources.add(0, new VisibilityShell(true));
+		mht.donModelVisSources.add(1, new VisibilityShell(false));
 //		visComponents = new DefaultListModel<>();
 	}
 
@@ -335,7 +330,7 @@ public class VisibilityEditPanel {
 
 		System.out.println("CurrModel");
 		// The current's
-		final EditableModel model = mht.currentModel;
+		final EditableModel model = mht.receivingModel;
 		for (final Light x : model.getLights()) {
 			getAndAddVisShell(x);
 		}

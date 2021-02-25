@@ -64,12 +64,12 @@ public class BonesEditPanel {
 
 	public JPanel makeBonePanel(BonePanelListCellRenderer bonePanelRenderer) {
 		JPanel bonesPanel = new JPanel(new MigLayout("gap 0, fill", "[grow]", "[][grow]"));
-		final List<Bone> currentMDLBones = mht.currentModel.getBones();
-		final List<Helper> currentMDLHelpers = mht.currentModel.getHelpers();
+		final List<Bone> currentMDLBones = mht.receivingModel.getBones();
+		final List<Helper> currentMDLHelpers = mht.receivingModel.getHelpers();
 		System.out.println("currentMDLBones Size: " + currentMDLBones.size());
 		System.out.println("currentMDLHelpers Size: " + currentMDLHelpers.size());
-		final List<Bone> importMDLBones = mht.importModel.getBones();
-		final List<Helper> importMDLHelpers = mht.importModel.getHelpers();
+		final List<Bone> importMDLBones = mht.donatingModel.getBones();
+		final List<Helper> importMDLHelpers = mht.donatingModel.getHelpers();
 		System.out.println("importMDLBones Size: " + importMDLBones.size());
 		System.out.println("importMDLHelpers Size: " + importMDLHelpers.size());
 
@@ -210,7 +210,7 @@ public class BonesEditPanel {
 				System.out.println("Performing check on geoset: " + i);
 				final BoneAttachmentPanel bap = (BoneAttachmentPanel) mht.geosetAnimTabs.getComponentAt(i);
 				for (MatrixShell ms : bap.oldBoneRefs) {
-					for (final BoneShell bs : ms.newBones) {
+					for (final BoneShell bs : ms.getNewBones()) {
 						checkSelectedOrSomething(usedBoneShells, bs);
 					}
 				}

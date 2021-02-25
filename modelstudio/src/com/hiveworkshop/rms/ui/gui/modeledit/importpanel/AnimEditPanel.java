@@ -23,7 +23,7 @@ public class AnimEditPanel {
 //		addTab("Animation", animIcon, animPanel, "Controls which animations will be imported.");
 
 //		existingAnims = new IterableListModel<>();
-		for (Animation animation : mht.currentModel.getAnims()) {
+		for (Animation animation : mht.receivingModel.getAnims()) {
 			mht.existingAnims.addElement(new AnimShell(animation));
 		}
 
@@ -33,7 +33,7 @@ public class AnimEditPanel {
 
 		currAnimPanel = new AnimPanel(mht.existingAnims, animsRenderer);
 		// Build the animTabs list of AnimPanels
-		for (Animation anim : mht.importModel.getAnims()) {
+		for (Animation anim : mht.donatingModel.getAnims()) {
 			mht.aniShells.addElement(new AnimShell(anim));
 
 //			mht.animTabs.addTab(anim.getName(), orangeIcon, currAnimPanel, "Click to modify data for this animation sequence.");

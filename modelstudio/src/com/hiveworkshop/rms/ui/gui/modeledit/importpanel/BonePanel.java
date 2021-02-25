@@ -164,13 +164,6 @@ public class BonePanel extends JPanel implements ListSelectionListener {
 		}
 	}
 
-//	public BonePanel setSelectedBone(Bone bone){
-//		BonePanel.selectedBone = bone;
-//		setParentTitle();
-//		setBoneTitle();
-//		return this;
-//	}
-
 	public BonePanel setParentTitle() {
 		System.out.println("setParentTitle for : " + selectedBoneShell.toString());
 //		System.out.println("setParentTitle for : " + selectedBone.getName());

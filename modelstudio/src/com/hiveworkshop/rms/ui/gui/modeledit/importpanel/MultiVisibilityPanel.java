@@ -25,10 +25,10 @@ class MultiVisibilityPanel extends VisibilityPanel implements ChangeListener, It
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 
 		oldAnimsLabel = new JLabel("Existing animation visibility from: ");
-		oldSourcesBox = createObjectJComboBox(mht.visSourcesOld, renderer, e -> setVisGroupItemOld());
+		oldSourcesBox = createObjectJComboBox(mht.recModelVisSources, renderer, e -> setVisGroupItemOld());
 
 		newAnimsLabel = new JLabel("Imported animation visibility from: ");
-		newSourcesBox = createObjectJComboBox(mht.visSourcesNew, renderer, e -> setVisGroupItemNew());
+		newSourcesBox = createObjectJComboBox(mht.donModelVisSources, renderer, e -> setVisGroupItemNew());
 
 		favorOld = new JCheckBox("Favor component's original visibility when combining");
 		favorOld.setSelected(true);

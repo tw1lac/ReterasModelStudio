@@ -13,32 +13,27 @@ public class ModelHolderThing {
 	public final Map<Bone, BonePanel> boneToPanel = new HashMap<>();
 	public final Map<Bone, BoneShell> boneToShell = new HashMap<>();
 	public final Set<BoneShell> futureBoneListExQuickLookupSet = new HashSet<>();
-	public EditableModel currentModel;
-	public EditableModel importModel;
-	public Map<IdObject, IdObject> oldParentMap;
-	public Map<IdObject, IdObject> importParentMap;
+	public EditableModel receivingModel; // "currModel"
+	public EditableModel donatingModel; // "importModel"
+	public Map<IdObject, IdObject> recModelOrgParentMap;
+	public Map<IdObject, IdObject> donModelOrgParentMap;
 
 
 	//// ugly shit below... should be migrated to the new shit abow
-	public Map<IdObject, IdObject> newParentMap;
 	public IterableListModel<BoneShell> futureBoneList = new IterableListModel<>();
-	public List<BoneShell> oldBoneShellList;
-	public List<BoneShell> newBonesShellList;
+	public List<BoneShell> recModelOrgBoneShellList;
+	public List<BoneShell> donModelOrgBonesShellList;
 	public IterableListModel<BoneShell> futureBoneListEx = new IterableListModel<>();
 	public List<IterableListModel<BoneShell>> futureBoneListExFixableItems = new ArrayList<>();
 
 	public JCheckBox clearExistingBones = new JCheckBox("Clear pre-existing bones and helpers");
-	public ArrayList<BoneShell> oldHelpersShellList;
-	public ArrayList<BoneShell> newHelpersShellList;
+	public ArrayList<BoneShell> recModelHelpersShellList;
+	public ArrayList<BoneShell> donModelHelpersShellList;
 	public IterableListModel<BoneShell> boneShells = new IterableListModel<>();
 	public JList<BoneShell> boneTabs = new JList<>(boneShells);
 
-
-	//	public JTabbedPane geosetTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-	public IterableListModel<GeosetShell> geoShells = new IterableListModel<>();
-	public JList<GeosetShell> geoTabs = new JList<>(geoShells);
-
-	public JTabbedPane animTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+	public IterableListModel<GeosetShell> allGeoShells = new IterableListModel<>();
+	public JList<GeosetShell> geoTabs = new JList<>(allGeoShells);
 
 	public IterableListModel<AnimShell> aniShells = new IterableListModel<>();
 	public JList<AnimShell> animTabs2 = new JList<>(aniShells);
@@ -47,6 +42,11 @@ public class ModelHolderThing {
 	//	public JPanel geosetAnimPanel = new JPanel();
 	public JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
 	public JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+	public IterableListModel<BoneAttachmentShell> geoBAPShells = new IterableListModel<>();
+	public JList<BoneAttachmentShell> bAPTabs = new JList<>(geoBAPShells);
+
+
 	//	public JButton allMatrOriginal = new JButton("Reset all Matrices");
 //	public JButton allMatrSameName = new JButton("Set all to available, original names");
 	public IterableListModel<AnimShell> existingAnims = new IterableListModel<>();
@@ -64,8 +64,11 @@ public class ModelHolderThing {
 
 	//	ArrayList<Object> visSourcesNew;
 //	ArrayList<Object> visSourcesOld;
-	ArrayList<VisibilityShell> visSourcesNew;
-	ArrayList<VisibilityShell> visSourcesOld;
+	ArrayList<VisibilityShell> donModelVisSources;
+	ArrayList<VisibilityShell> recModelVisSources;
+
+//	JButton allMatrOriginal = new JButton("Reset all Matrices");
+//	JButton allMatrSameName = new JButton("Set all to available, original names");
 
 
 	long totalAddTime1;
@@ -74,14 +77,13 @@ public class ModelHolderThing {
 	long removeCount1;
 
 
-	public ModelHolderThing(EditableModel currentModel, EditableModel importModel) {
-		this.currentModel = currentModel;
-		this.importModel = importModel;
-		oldParentMap = new HashMap<>();
-		importParentMap = new HashMap<>();
-		newParentMap = new HashMap<>();
-		fillParentMap(currentModel, oldParentMap);
-		fillParentMap(importModel, importParentMap);
+	public ModelHolderThing(EditableModel receivingModel, EditableModel donatingModel) {
+		this.receivingModel = receivingModel;
+		this.donatingModel = donatingModel;
+		recModelOrgParentMap = new HashMap<>();
+		donModelOrgParentMap = new HashMap<>();
+		fillParentMap(receivingModel, recModelOrgParentMap);
+		fillParentMap(donatingModel, donModelOrgParentMap);
 	}
 
 	private void fillParentMap(EditableModel model, Map<IdObject, IdObject> parentMap) {
@@ -91,22 +93,22 @@ public class ModelHolderThing {
 	}
 
 	public IterableListModel<BoneShell> getFutureBoneList() {
-		if (oldBoneShellList == null) {
-			oldBoneShellList = new ArrayList<>();
-			newBonesShellList = new ArrayList<>();
-			for (final IdObject b : oldParentMap.keySet()) {
+		if (recModelOrgBoneShellList == null) {
+			recModelOrgBoneShellList = new ArrayList<>();
+			donModelOrgBonesShellList = new ArrayList<>();
+			for (final IdObject b : recModelOrgParentMap.keySet()) {
 				if (b instanceof Bone && !(b instanceof Helper)) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.setModelName(currentModel.getName());
-					oldBoneShellList.add(bs);
+					bs.setModelName(receivingModel.getName());
+					recModelOrgBoneShellList.add(bs);
 				}
 			}
-			for (final IdObject b : importParentMap.keySet()) {
+			for (final IdObject b : donModelOrgParentMap.keySet()) {
 				if (b instanceof Bone && !(b instanceof Helper)) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.setModelName(importModel.getName());
+					bs.setModelName(donatingModel.getName());
 //					bs.panel = boneToPanel.get(b);
-					newBonesShellList.add(bs);
+					donModelOrgBonesShellList.add(bs);
 				}
 			}
 		}
@@ -115,19 +117,20 @@ public class ModelHolderThing {
 
 	private IterableListModel<BoneShell> updateFutureBoneList() {
 		if (!clearExistingBones.isSelected()) {
-			for (final BoneShell b : oldBoneShellList) {
+			for (final BoneShell b : recModelOrgBoneShellList) {
 				if (!futureBoneList.contains(b)) {
 					futureBoneList.addElement(b);
 				}
 			}
 		} else {
-			for (final BoneShell b : oldBoneShellList) {
+			for (final BoneShell b : recModelOrgBoneShellList) {
 				if (futureBoneList.contains(b)) {
 					futureBoneList.removeElement(b);
 				}
 			}
 		}
-		for (final BoneShell b : newBonesShellList) {
+
+		for (final BoneShell b : donModelOrgBonesShellList) {
 			if (b.getShouldImportBone()) {
 				if (!futureBoneList.contains(b)) {
 					futureBoneList.addElement(b);
@@ -142,32 +145,32 @@ public class ModelHolderThing {
 	}
 
 	public IterableListModel<BoneShell> getFutureBoneListExtended(final boolean newSnapshot) {
-		if (oldHelpersShellList == null) {
+		if (recModelHelpersShellList == null) {
 			System.out.println("creating future bone list!");
-			oldHelpersShellList = new ArrayList<>();
-			newHelpersShellList = new ArrayList<>();
+			recModelHelpersShellList = new ArrayList<>();
+			donModelHelpersShellList = new ArrayList<>();
 
 
-			for (final IdObject b : oldParentMap.keySet()) {
+			for (final IdObject b : recModelOrgParentMap.keySet()) {
 				if (b instanceof Bone) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.setModelName(currentModel.getName());
+					bs.setModelName(receivingModel.getName());
 					bs.setShowClass(true);
-					oldHelpersShellList.add(bs);
+					recModelHelpersShellList.add(bs);
 				}
 			}
-			System.out.println("oldHelpersShellList size: " + oldHelpersShellList.size());
+			System.out.println("oldHelpersShellList size: " + recModelHelpersShellList.size());
 
-			for (final IdObject b : importParentMap.keySet()) {
+			for (final IdObject b : donModelOrgParentMap.keySet()) {
 				if (b instanceof Bone) {
 					final BoneShell bs = new BoneShell((Bone) b);
-					bs.setModelName(importModel.getName());
+					bs.setModelName(donatingModel.getName());
 					bs.setShowClass(true);
 //					bs.panel = boneToPanel.get(b);
-					newHelpersShellList.add(bs);
+					donModelHelpersShellList.add(bs);
 				}
 			}
-			System.out.println("newHelpersShellList size: " + newHelpersShellList.size());
+			System.out.println("newHelpersShellList size: " + donModelHelpersShellList.size());
 
 		}
 
@@ -180,17 +183,17 @@ public class ModelHolderThing {
 		totalRemoveTime1 = 0;
 		removeCount1 = 0;
 		if (!clearExistingBones.isSelected()) {
-			for (final BoneShell b : oldHelpersShellList) {
+			for (final BoneShell b : recModelHelpersShellList) {
 				addBoneThing(b);
 			}
 		} else {
-			for (final BoneShell b : oldHelpersShellList) {
+			for (final BoneShell b : recModelHelpersShellList) {
 				removeBoneThing(b);
 			}
 		}
 		System.out.println("futureBoneListEx size: " + futureBoneListEx.size());
 
-		for (final BoneShell b : newHelpersShellList) {
+		for (final BoneShell b : donModelHelpersShellList) {
 			if (b.getShouldImportBone()) {
 				addBoneThing(b);
 			} else {
