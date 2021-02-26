@@ -84,7 +84,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 			final AnimFlag<?> thisFlag = getVisibilityFlag();
 			final AnimFlag thatFlag = partner.getVisibilityFlag();
 			if (thatFlag != null) {
-				final AnimFlag result = thisFlag.getMostVisible(thatFlag);
+				final AnimFlag<?> result = thisFlag.getMostVisible(thatFlag);
 				if (result == thisFlag) {
 					return this;
 				} else if (result == thatFlag) {
@@ -137,15 +137,8 @@ public class GeosetAnim extends TimelineContainer implements Named {
 		return getRenderVisibility(animatedRenderEnvironment, (float) staticAlpha);
 	}
 
-	private static final Vec3 renderColorVector = new Vec3();
-	//todo does this need to be a class variable?
-
 	public Vec3 getRenderColor(final AnimatedRenderEnvironment animatedRenderEnvironment) {
-		final Vec3 c = getInterpolatedVector(animatedRenderEnvironment, "Color", staticColor);
-
-		renderColorVector.set(c);
-
-		return renderColorVector;
+		return getInterpolatedVector(animatedRenderEnvironment, "Color", staticColor);
 	}
 
 	public void copyVisibilityFrom(final VisibilitySource other, final EditableModel mdlr) {
@@ -164,8 +157,7 @@ public class GeosetAnim extends TimelineContainer implements Named {
 			if (newVisFlag != null) {
 				if (!newVisFlag.hasGlobalSeq()) {
 					newVisFlag.deleteAnim(a);
-					// All entries for visibility are deleted from original-based
-					// sources during imported animation times
+					// All entries for visibility are deleted from original-based sources during imported animation times
 				}
 			}
 		}

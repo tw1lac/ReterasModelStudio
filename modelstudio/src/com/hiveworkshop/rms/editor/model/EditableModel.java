@@ -151,7 +151,7 @@ public class EditableModel implements Named {
 
 		// Bones
 		for (final MdlxBone bone : model.bones) {
-			System.out.println("MdlxBone, id: " + bone.objectId + " name: " + bone.name);
+//			System.out.println("MdlxBone, id: " + bone.objectId + " name: " + bone.name);
 			Bone x = new Bone(bone);
 			objIdMap.put(x, bone.objectId);
 			idMap.put(bone.objectId, x);
@@ -170,7 +170,7 @@ public class EditableModel implements Named {
 
 		// Helpers
 		for (final MdlxHelper helper : model.helpers) {
-			System.out.println("MdlxHelper");
+//			System.out.println("MdlxHelper");
 			Helper x = new Helper(helper);
 			objIdMap.put(x, helper.objectId);
 			idMap.put(helper.objectId, x);
@@ -266,7 +266,7 @@ public class EditableModel implements Named {
 //				}
 			}
 			if (pivots.size() > objIdMap.get(idObject)) {
-				System.out.println("set pivot to: " + pivots.get(objIdMap.get(idObject)));
+//				System.out.println("set pivot to: " + pivots.get(objIdMap.get(idObject)));
 				idObject.setPivotPoint(pivots.get(objIdMap.get(idObject)));
 			} else {
 				System.out.println("set {0, 0, 0} pivot");

@@ -718,10 +718,20 @@ public abstract class AnimFlag<T> {
 	}
 
 	public void unLinearize() {
-		if (interpolationType.tangential()) {
-			interpolationType = InterpolationType.LINEAR;
+		if (!interpolationType.tangential()) {
+			interpolationType = InterpolationType.BEZIER;
 			inTans.addAll(values);
 			outTans.addAll(values);
+		}
+	}
+
+	public void setInterpolationType(InterpolationType interpolationType) {
+		this.interpolationType = interpolationType;
+		if (interpolationType.tangential()) {
+			inTans.addAll(values);
+			outTans.addAll(values);
+		} else {
+			linearize();
 		}
 	}
 

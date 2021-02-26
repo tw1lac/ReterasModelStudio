@@ -321,12 +321,33 @@ public class Geoset implements Named, VisibilitySource {
 			for (Bone bone : mBones) {
 				Bone lp = lastParentIn(bone, mBones);
 
-				if (lp.geoset == this && !nonSharedParentBones.contains(lp)) {
+				if ((lp.geoset == this || lp instanceof Helper) && !nonSharedParentBones.contains(lp)) {
 					nonSharedParentBones.add(lp);
 				}
 			}
-			List<String> nameParts = new ArrayList<>();
+			List<Bone> curatedBones = new ArrayList<>();
 			for (Bone bone : nonSharedParentBones) {
+				if (!bone.getName().toLowerCase().startsWith("mesh")) {
+					curatedBones.add(bone);
+				}
+			}
+			if (curatedBones.size() < 3) {
+				for (int i = 0; i < nonSharedParentBones.size() && curatedBones.size() < 3; i++) {
+					if (!curatedBones.contains(nonSharedParentBones.get(i))) {
+						curatedBones.add(nonSharedParentBones.get(i));
+					}
+				}
+			}
+//			for (Bone bone : nonSharedParentBones) {
+//				if(!nonSharedParentBones.contains(bone.getParent())){
+//					curatedBones.add(bone);
+//				}
+//			}
+			List<String> nameParts = new ArrayList<>();
+//			for (Bone bone : nonSharedParentBones) {
+//				nameParts.add(bone.getName().replaceAll("(?i)bone_*", ""));
+//			}
+			for (Bone bone : curatedBones) {
 				nameParts.add(bone.getName().replaceAll("(?i)bone_*", ""));
 			}
 			return String.join(", ", nameParts);
@@ -341,7 +362,7 @@ public class Geoset implements Named, VisibilitySource {
 		while (list.contains(parentBone) && parentBone != null && infStopper < 1000) {
 			if (bone.getParent() instanceof Bone) {
 				parentBone = (Bone) bone.getParent();
-				if (parentBone.multiGeoId || parentBone.geoset != this) {
+				if (parentBone.multiGeoId || (parentBone.geoset != this && parentBone.geoset != null)) {
 					return bone;
 				} else if (list.contains(parentBone)) {
 					bone = parentBone;
