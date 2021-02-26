@@ -129,7 +129,7 @@ public class GeosetAnimEditPanel {
 	private void updateAnimTabs(ImportPanel importPanel) {
 		//should this edit animShells or GeosetAnimShells..?
 //		((AnimPanel) mht.animTabs.getSelectedComponent()).updateSelectionPicks();
-		((AnimPanel) mht.geosetAnimTabs.getSelectedComponent()).updateSelectionPicks();
+//		((AnimPanel) mht.geosetAnimTabs.getSelectedComponent()).updateSelectionPicks();
 		mht.getFutureBoneList();
 		mht.getFutureBoneListExtended(false);
 		importPanel.visibilityList();
@@ -149,23 +149,53 @@ public class GeosetAnimEditPanel {
 		importPanel.repaint();
 	}
 
-	private static void allMatrOriginal(JTabbedPane geosetAnimTabs) {
-		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
-			if (geosetAnimTabs.isEnabledAt(i)) {
-				final BoneAttachmentPanel bap = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
-				bap.resetMatrices();
+	private void allMatrOriginal() {
+		for (BoneAttachmentShell bas : mht.geoBAPShells) {
+			if (bas.isDoImport()) {
+				for (MatrixShell ms : bas.getOldBoneRefs()) {
+					ms.resetMatrix();
+				}
 			}
 		}
 	}
 
-	private static void allMatrSameName(JTabbedPane geosetAnimTabs) {
-		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
-			if (geosetAnimTabs.isEnabledAt(i)) {
-				final BoneAttachmentPanel bap = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
-				bap.setMatricesToSimilarNames();
+	private void allMatrSameName() {
+		for (BoneAttachmentShell bas : mht.geoBAPShells) {
+			if (bas.isDoImport()) {
+				for (MatrixShell ms : bas.getOldBoneRefs()) {
+					ms.clearNewBones();
+					final Matrix m = ms.getMatrix();
+					// For look to find similarly named stuff and add it
+					for (final BoneShell bs : mht.futureBoneList) {
+						for (final Bone b : m.getBones()) {
+							final String mName = b.getName();
+							if (bs.getBone().getName().equals(mName)) {
+								ms.addNewBone(bs);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
+//
+//	private static void allMatrOriginal(JTabbedPane geosetAnimTabs) {
+//		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
+//			if (geosetAnimTabs.isEnabledAt(i)) {
+//				final BoneAttachmentPanel bap = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
+//				bap.resetMatrices();
+//			}
+//		}
+//	}
+//
+//	private static void allMatrSameName(JTabbedPane geosetAnimTabs) {
+//		for (int i = 0; i < geosetAnimTabs.getTabCount(); i++) {
+//			if (geosetAnimTabs.isEnabledAt(i)) {
+//				final BoneAttachmentPanel bap = (BoneAttachmentPanel) geosetAnimTabs.getComponentAt(i);
+//				bap.setMatricesToSimilarNames();
+//			}
+//		}
+//	}
 
 	public ParentToggleRenderer makeMatricesPanel(ModelViewManager currentModelManager, ModelViewManager importedModelManager) {
 //		addTab("Matrices", greenIcon, geosetAnimPanel, "Controls which bones geosets are attached to.");
@@ -175,8 +205,8 @@ public class GeosetAnimEditPanel {
 
 		displayParents.addChangeListener(e -> updateAnimTabs(importPanel));
 
-		allMatrOriginal.addActionListener(e -> allMatrOriginal(mht.geosetAnimTabs));
-		allMatrSameName.addActionListener(e -> allMatrSameName(mht.geosetAnimTabs));
+		allMatrOriginal.addActionListener(e -> allMatrOriginal());
+		allMatrSameName.addActionListener(e -> allMatrSameName());
 		return ptr;
 	}
 }

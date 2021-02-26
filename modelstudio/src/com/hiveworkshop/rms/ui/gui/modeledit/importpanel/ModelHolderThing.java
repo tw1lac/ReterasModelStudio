@@ -4,7 +4,9 @@ import com.hiveworkshop.rms.editor.model.EventObject;
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.ui.gui.modeledit.BoneShell;
+import com.hiveworkshop.rms.ui.gui.modeledit.MatrixShell;
 import com.hiveworkshop.rms.util.IterableListModel;
+import com.hiveworkshop.rms.util.Vec3;
 
 import javax.swing.*;
 import java.util.*;
@@ -41,7 +43,7 @@ public class ModelHolderThing {
 
 	//	public JPanel geosetAnimPanel = new JPanel();
 	public JCheckBox clearExistingAnims = new JCheckBox("Clear pre-existing animations");
-	public JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+//	public JTabbedPane geosetAnimTabs = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 
 	public IterableListModel<BoneAttachmentShell> geoBAPShells = new IterableListModel<>();
 	public JList<BoneAttachmentShell> bAPTabs = new JList<>(geoBAPShells);
@@ -335,5 +337,48 @@ public class ModelHolderThing {
 			animShell.setDoImport(true);
 			animShell.setImportType(2);
 		}
+	}
+
+	public Bone attachBones() {
+		Bone dummyBone = null;
+		for (BoneAttachmentShell bas : geoBAPShells) {
+			for (MatrixShell ms : bas.getOldBoneRefs()) {
+				ms.getMatrix().getBones().clear();
+				for (final BoneShell bs : ms.getNewBones()) {
+					if (bs != null && bas.getModel().contains(bs.getBone())) {
+						if (bs.getBone().getClass() == Helper.class) {
+							JOptionPane.showMessageDialog(null,
+									"Error: Holy fo shizzle my grizzle! A geoset is trying to attach to a helper, not a bone!");
+						}
+						ms.getMatrix().add(bs.getBone());
+					} else {
+						System.out.println("Boneshaving " + bs.getBone().getName() + " out of use");
+					}
+				}
+				if (ms.getMatrix().size() == 0) {
+					JOptionPane.showMessageDialog(null,
+							"Error: A matrix was functionally destroyed while importing, and may take the program with it!");
+				}
+				if (ms.getMatrix().getBones().size() < 1) {
+					if (dummyBone == null) {
+						dummyBone = new Bone();
+						dummyBone.setName("Bone_MatrixEaterDummy" + (int) (Math.random() * 2000000000));
+						dummyBone.setPivotPoint(new Vec3(0, 0, 0));
+						if (!bas.getModel().contains(dummyBone)) {
+							bas.getModel().add(dummyBone);
+						}
+						JOptionPane.showMessageDialog(null,
+								"Warning: You left some matrices empty. This was detected, and a dummy bone at { 0, 0, 0 } has been generated for them named "
+										+ dummyBone.getName()
+										+ "\nMultiple geosets may be attached to this bone, and the error will only be reported once for your convenience.");
+					}
+					if (!ms.getMatrix().getBones().contains(dummyBone)) {
+						ms.getMatrix().getBones().add(dummyBone);
+					}
+				}
+			}
+			// ms.matrix.bones = ms.newBones;
+		}
+		return dummyBone;
 	}
 }

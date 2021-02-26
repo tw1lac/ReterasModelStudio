@@ -92,7 +92,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		// with the same name (although this should stop after the first one is picked)
 //		animList.addListSelectionListener(this);
 		animList.addListSelectionListener(e -> setAnimations());
-		selectAnimInList(existingAnims);
+//		selectAnimInList(existingAnims);
 
 		JScrollPane animListPane = new JScrollPane(animList);
 		JPanel animListCard = new JPanel();
@@ -153,6 +153,7 @@ class AnimPanel extends JPanel implements ChangeListener, ItemListener, ListSele
 		inReverse.setSelected(currAnimShell.isReverse());
 		importTypeBox.setSelectedIndex(currAnimShell.getImportType());
 		cardLayout.show(cardPane, animOptions[currAnimShell.getImportType()]);
+		selectAnimInList(existingAnims);
 	}
 
 	private void setTitle() {

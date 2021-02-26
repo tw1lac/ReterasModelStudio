@@ -11,6 +11,7 @@ public class GeosetShell {
 	private Geoset importGeoset;
 	private boolean doImport = true;
 	private Material material;
+	boolean isEnabled = true;
 
 	public GeosetShell(Geoset geoset, EditableModel model, boolean isImported) {
 		this.geoset = geoset;
@@ -53,5 +54,14 @@ public class GeosetShell {
 	@Override
 	public String toString() {
 		return model.getName() + ": " + geoset.getName();
+	}
+
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+
+	public GeosetShell setEnabled(boolean enabled) {
+		isEnabled = enabled;
+		return this;
 	}
 }

@@ -75,8 +75,8 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		}
 //		this.currentModel = currentModel;
 //		this.importedModel = importedModel;
-		final ModelViewManager currentModelManager = new ModelViewManager(mht.receivingModel);
-		final ModelViewManager importedModelManager = new ModelViewManager(mht.donatingModel);
+		final ModelViewManager recModelManager = new ModelViewManager(mht.receivingModel);
+		final ModelViewManager donModelManager = new ModelViewManager(mht.donatingModel);
 
 		// Geoset Panel
 		GeosetEditPanels geosetEditPanels = new GeosetEditPanels(mht, this);
@@ -89,8 +89,8 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 		System.out.println("Animation");
 
 		// Bone Panel
-		boneShellRenderer = new BoneShellListCellRenderer(currentModelManager, importedModelManager);
-		final BonePanelListCellRenderer bonePanelRenderer = new BonePanelListCellRenderer(currentModelManager, importedModelManager);
+		boneShellRenderer = new BoneShellListCellRenderer(recModelManager, donModelManager);
+		final BonePanelListCellRenderer bonePanelRenderer = new BonePanelListCellRenderer(recModelManager, donModelManager);
 
 		BonesEditPanel bonesEditPanel = new BonesEditPanel(mht, boneShellRenderer, this);
 
@@ -527,22 +527,28 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				}
 			}
 
-//			for (BonePanel bonePanel : mht.bonePanels) {
-//				bonePanel.getSelectedBones(objectsAdded, mht.currentModel);
-//			}
 			if (!mht.clearExistingBones.isSelected()) {
 				clearSelectedBones(mht.existingBones, mht);
 			}
 
 //			applyMatrices();
-			Bone dummyBone = null;
-			for (int i = 0; i < mht.geosetAnimTabs.getTabCount(); i++) {
-				if (mht.geosetAnimTabs.isEnabledAt(i)) {
-					final BoneAttachmentPanel bap = (BoneAttachmentPanel) mht.geosetAnimTabs.getComponentAt(i);
-					dummyBone = bap.attachBones(dummyBone);
-//				dummyBone = attachBones(dummyBone, bap);
-				}
-			}
+//			Bone dummyBone = null;
+			mht.attachBones();
+
+//			for (BoneAttachmentShell bas : mht.geoBAPShells) {
+//				if(bas.isDoImport()){
+//					dummyBone = bap.attachBones(dummyBone);
+//				}
+//
+//			}
+//			Bone dummyBone = null;
+//			for (int i = 0; i < mht.geosetAnimTabs.getTabCount(); i++) {
+//				if (mht.geosetAnimTabs.isEnabledAt(i)) {
+//					final BoneAttachmentPanel bap = (BoneAttachmentPanel) mht.geosetAnimTabs.getComponentAt(i);
+//					dummyBone = bap.attachBones(dummyBone);
+////				dummyBone = attachBones(dummyBone, bap);
+//				}
+//			}
 
 
 			mht.receivingModel.updateObjectIds();
@@ -781,8 +787,8 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 
 		// Iterate through new visibility sources, find a geoset with gutz material
 		for (int i = 0; (i < mht.donModelVisSources.size()) && (corpseShell == null); i++) {
-			if (mht.donModelVisSources.get(i) instanceof VisibilityShell) {
-				VisibilityShell vs = (VisibilityShell) mht.donModelVisSources.get(i);
+			if (mht.donModelVisSources.get(i) != null) {
+				VisibilityShell vs = mht.donModelVisSources.get(i);
 				if (vs.source instanceof Geoset) {
 					final Geoset g = (Geoset) vs.source;
 					if ((g.getGeosetAnim() != null) && g.getMaterial().firstLayer().firstTexture().getPath().equalsIgnoreCase("textures\\gutz.blp")) {
@@ -791,17 +797,6 @@ public class ImportPanel extends JTabbedPane implements ChangeListener {
 				}
 			}
 		}
-//		if (corpseShell != null) {
-//			for (VisibilityPanel vp : mht.visibilityPanels) {
-//				VisibilityShell vs = vp.sourceShell;
-//				if (vs.source instanceof Geoset) {
-//					final Geoset g = (Geoset) vp.sourceShell.source;
-//					if ((g.getGeosetAnim() != null) && g.getMaterial().firstLayer().firstTexture().getPath().equalsIgnoreCase("textures\\gutz.blp")) {
-//						vp.newSourcesBox.setSelectedItem(corpseShell);
-//					}
-//				}
-//			}
-//		}
 		if (corpseShell != null) {
 			for (VisibilityShell vs : mht.visibilityShells) {
 				if (vs.source instanceof Geoset) {

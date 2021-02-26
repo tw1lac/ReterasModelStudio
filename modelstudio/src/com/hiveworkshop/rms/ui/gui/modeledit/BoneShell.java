@@ -36,7 +36,8 @@ public class BoneShell {
 	}
 
 	public Bone getBone() {
-		return importBone;
+		return bone;
+//		return importBone;
 	}
 
 	public IdObject getOldParent() {

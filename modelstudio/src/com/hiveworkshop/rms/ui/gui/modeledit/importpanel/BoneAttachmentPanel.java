@@ -37,146 +37,6 @@ class BoneAttachmentPanel extends JPanel {
 
 	BoneAttachmentShell currentBAP;
 
-//	public BoneAttachmentPanel(final EditableModel model, final Geoset whichGeoset, final BoneShellListCellRenderer renderer,
-//	                           final ImportPanel thePanel) {
-//		setLayout(new MigLayout("gap 0", "[grow][grow][][grow]", "[][grow][grow][]"));
-//		this.model = model;
-//		geoset = whichGeoset;
-//		impPanel = thePanel;
-//
-//		updateBonesList();
-//		// Built before oldBoneRefs, so that the MatrixShells can default to
-//		// using New Refs with the same name as their first bone
-//		bonesList = new JList<>(bones);
-//		bonesList.setCellRenderer(renderer);
-//		bonesPane = new JScrollPane(bonesList);
-//
-//
-//
-//		JPanel oldBonesPanel = new JPanel(new MigLayout("gap 0"));
-//		oldBoneRefsLabel = new JLabel("Old Bone References");
-//		buildOldRefsList();
-//		oldBoneRefsList = new JList<>(oldBoneRefs);
-//		oldBoneRefsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-////		oldBoneRefsList.setCellRenderer(new MatrixShell2DListCellRenderer(new ModelViewManager(impPanel.currentModel),
-////				new ModelViewManager(impPanel.importedModel)));
-//		oldBoneRefsList.addListSelectionListener(this);
-//		oldBoneRefsPane = new JScrollPane(oldBoneRefsList);
-//		add(oldBoneRefsLabel, "cell 0 0");
-//		add(oldBoneRefsPane, "cell 0 1, spany 2, growy, growx");
-//
-//
-//		JPanel newBonesPanel = new JPanel(new MigLayout("gap 0"));
-//		newRefsLabel = new JLabel("New Refs");
-//		newRefs = new IterableListModel<>();
-//		newRefsList = new JList<>(newRefs);
-//		newRefsList.setCellRenderer(renderer);
-//		newRefsPane = new JScrollPane(newRefsList);
-//		add(newRefsLabel, "cell 1 0");
-//		add(newRefsPane, "cell 1 1, spany 2, growy, growx");
-//
-//		removeNewRef = new JButton("Remove", ImportPanel.redXIcon);
-//		removeNewRef.addActionListener(e -> removeRef());
-//		add(removeNewRef, "cell 1 3, alignx center");
-//
-//
-//		JPanel upDownPanel = new JPanel(new MigLayout("gap 0"));
-//		moveUp = new JButton(ImportPanel.moveUpIcon);
-//		moveUp.addActionListener(e -> moveUp());
-//		moveDown = new JButton(ImportPanel.moveDownIcon);
-//		moveDown.addActionListener(e -> moveDown());
-//		upDownPanel.add(moveUp, "wrap");
-//		upDownPanel.add(moveDown, "wrap");
-////		add(moveUp, "cell 2 1, bottom");
-////		add(moveDown, "cell 2 2, top");
-//
-////		buildLayout();
-//
-//
-//
-//
-//
-//		JPanel bonesPanel = new JPanel(new MigLayout("gap 0"));
-//		useBone = new JButton("Use Bone(s)", ImportPanel.greenArrowIcon);
-//		useBone.addActionListener(e -> useBone());
-//		bonesLabel = new JLabel("Bones");
-//		add(bonesLabel, "cell 3 0");
-//		add(bonesPane, "cell 3 1, spany 2, growy, growx");
-//		add(useBone, "cell 3 3, alignx center");
-//
-//		refreshNewRefsList();
-//	}
-
-//	public BoneAttachmentPanel(ModelHolderThing mht, final EditableModel model, final Geoset whichGeoset, final BoneShellListCellRenderer renderer) {
-////		setLayout(new MigLayout("gap 0, fill", "[grow][grow]0[][grow]", "[][grow][]"));
-//		this.mht = mht;
-//		setLayout(new MigLayout("gap 0, fill", "[grow][grow]0[][grow]", "[grow]"));
-//		this.model = model;
-//		geoset = whichGeoset;
-//
-//
-//		updateBonesList();
-//		// Built before oldBoneRefs, so that the MatrixShells can default to
-//		// using New Refs with the same name as their first bone
-//
-//		JPanel oldBonesPanel = new JPanel(new MigLayout("gap 0, fill", "", "[][grow]"));
-//		oldBonesPanel.add(new JLabel("Old Bone References"), "wrap");
-//		buildOldRefsList();
-//		oldBoneRefsList = new JList<>(oldBoneRefs);
-//		oldBoneRefsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-////		oldBoneRefsList.setCellRenderer(new MatrixShell2DListCellRenderer(new ModelViewManager(impPanel.currentModel), new ModelViewManager(impPanel.importedModel)));
-//		oldBoneRefsList.addListSelectionListener(this);
-//		oldBoneRefsPane = new JScrollPane(oldBoneRefsList);
-//		oldBonesPanel.add(oldBoneRefsPane, "growy, growx");
-//
-//		add(oldBonesPanel, "growy");
-//
-//
-//		JPanel newBonesPanel = new JPanel(new MigLayout("gap 0, fill", "", "[][grow][]"));
-//		newBonesPanel.add(new JLabel("New Refs"), "wrap");
-//
-//		newRefsList = new JList<>(newRefs);
-//		newRefsList.setCellRenderer(renderer);
-//		newRefsPane = new JScrollPane(newRefsList);
-//		newBonesPanel.add(newRefsPane, "growy, wrap");
-//
-//		JButton removeNewRef = new JButton("Remove", ImportPanel.redXIcon);
-//		removeNewRef.addActionListener(e -> removeRef());
-//		newBonesPanel.add(removeNewRef, "alignx center");
-//
-//		add(newBonesPanel, "growy");
-//
-//
-//		JPanel upDownPanel = new JPanel(new MigLayout("gap 0"));
-//
-//		JButton moveUp = new JButton(ImportPanel.moveUpIcon);
-//		moveUp.addActionListener(e -> moveUp());
-//		upDownPanel.add(moveUp, "wrap");
-//
-//		JButton moveDown = new JButton(ImportPanel.moveDownIcon);
-//		moveDown.addActionListener(e -> moveDown());
-//		upDownPanel.add(moveDown, "wrap");
-//
-//		add(upDownPanel, "aligny center");
-//
-//
-//		JPanel bonesPanel = new JPanel(new MigLayout("gap 0, fill", "", "[][grow][]"));
-//		bonesPanel.add(new JLabel("Bones"), "wrap");
-//
-//
-//		bonesList = new JList<>(bones);
-//		bonesList.setCellRenderer(renderer);
-//		bonesPane = new JScrollPane(bonesList);
-//
-//		bonesPanel.add(bonesPane, "growy, growx, wrap");
-//		JButton useBone = new JButton("Use Bone(s)", ImportPanel.greenArrowIcon);
-//		useBone.addActionListener(e -> useBone());
-//		bonesPanel.add(useBone, "alignx center");
-//		add(bonesPanel, "growy");
-//
-//		refreshNewRefsList();
-//	}
-
 	public BoneAttachmentPanel(ModelHolderThing mht, final EditableModel model, final BoneShellListCellRenderer renderer) {
 //		setLayout(new MigLayout("gap 0, fill", "[grow][grow]0[][grow]", "[][grow][]"));
 		this.mht = mht;
@@ -313,16 +173,6 @@ class BoneAttachmentPanel extends JPanel {
 		}
 	}
 
-	private void moveUp2(int dir) {
-		int[] selected = newRefsList.getSelectedIndices();
-		List<BoneShell> selectedValuesList = newRefsList.getSelectedValuesList();
-		int size = selectedValuesList.size();
-		for (int i = 0; i < size; i++) {
-			selected[i] = oldBoneRefsList.getSelectedValue().moveBone(selectedValuesList.get(i), dir);
-		}
-		newRefsList.setSelectedIndices(selected);
-	}
-
 	private void removeRef() {
 		int i = newRefsList.getSelectedIndex();
 		for (final BoneShell o : newRefsList.getSelectedValuesList()) {
@@ -341,51 +191,6 @@ class BoneAttachmentPanel extends JPanel {
 		}
 	}
 
-//	public void refreshNewRefsList() {
-//		// Does save the currently constructed matrix
-//		final java.util.List<BoneShell> selection = newRefsList.getSelectedValuesList();
-//		if (currentMatrix != null) {
-//			currentMatrix.getNewBones().clear();
-//			for (final BoneShell bs : newRefs) {
-//				currentMatrix.addNewBone(bs);
-//			}
-//		}
-//		newRefs.clear();
-//		if (oldBoneRefsList.getSelectedValue() != null) {
-//			for (final BoneShell bs : oldBoneRefsList.getSelectedValue().getNewBones()) {
-//				if (bones.contains(bs)) {
-//					newRefs.addElement(bs);
-//				}
-//			}
-//		}
-//
-//		final int[] indices = new int[selection.size()];
-//		for (int i = 0; i < selection.size(); i++) {
-//			indices[i] = newRefs.indexOf(selection.get(i));
-//		}
-//		newRefsList.setSelectedIndices(indices);
-//		currentMatrix = oldBoneRefsList.getSelectedValue();
-//	}
-
-//	public void reloadNewRefsList() {
-//		// Does not save the currently constructed matrix
-//		final java.util.List<BoneShell> selection = newRefsList.getSelectedValuesList();
-//		newRefs.clear();
-//		if (oldBoneRefsList.getSelectedValue() != null) {
-//			for (final BoneShell bs : oldBoneRefsList.getSelectedValue().getNewBones()) {
-//				if (bones.contains(bs)) {
-//					newRefs.addElement(bs);
-//				}
-//			}
-//		}
-//
-//		final int[] indices = new int[selection.size()];
-//		for (int i = 0; i < selection.size(); i++) {
-//			indices[i] = newRefs.indexOf(selection.get(i));
-//		}
-//		newRefsList.setSelectedIndices(indices);
-//		currentMatrix = oldBoneRefsList.getSelectedValue();
-//	}
 
 	public void buildOldRefsList() {
 		if (oldBoneRefs == null) {
@@ -432,47 +237,6 @@ class BoneAttachmentPanel extends JPanel {
 		}
 //		reloadNewRefsList();
 	}
-
-//	public void resetMatrices() {
-//		for (int i = 0; i < oldBoneRefs.size(); i++) {
-//			final MatrixShell ms = oldBoneRefs.get(i);
-//			ms.clearNewBones();
-//			final Matrix m = ms.getMatrix();
-//			// For look to find right stuff and add it
-//			for (final BoneShell bs : bones) {
-//				for (final Bone b : m.getBones()) {
-//					if (bs.getBone() == b)// .getName().equals(mName) )
-//					{
-//						ms.addNewBone(bs);
-//					}
-//				}
-//			}
-//		}
-////		reloadNewRefsList();
-//	}
-//
-//	public void setMatricesToSimilarNames() {
-//		for (int i = 0; i < oldBoneRefs.size(); i++) {
-//			final MatrixShell ms = oldBoneRefs.get(i);
-//			ms.clearNewBones();
-//			final Matrix m = ms.getMatrix();
-//			// For look to find similarly named stuff and add it
-//			for (final BoneShell bs : bones) {
-//				for (final Bone b : m.getBones()) {
-//					final String mName = b.getName();
-//					if (bs.getBone().getName().equals(mName)) {
-//						ms.addNewBone(bs);
-//					}
-//				}
-//			}
-//		}
-////		reloadNewRefsList();
-//	}
-
-	public void updateBonesList() {
-		bones = mht.getFutureBoneList();
-	}
-
 
 	public Bone attachBones(Bone dummyBone) {
 		for (int l = 0; l < oldBoneRefs.size(); l++) {

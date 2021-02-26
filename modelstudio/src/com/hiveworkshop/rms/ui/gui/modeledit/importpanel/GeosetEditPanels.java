@@ -59,7 +59,7 @@ public class GeosetEditPanels {
 
 //		final GeosetPanel geoPanel = new GeosetPanel(false, mht.currentModel, materials, materialsRenderer, importPanel);
 //		bigPanel.add(geoPanel);
-		singleGeoPanel = new GeosetPanel(false, mht.receivingModel, materials, materialsRenderer, importPanel);
+		singleGeoPanel = new GeosetPanel(mht, mht.receivingModel, materials, materialsRenderer, importPanel);
 		bigPanel.add(singleGeoPanel, "growy");
 
 		mht.geoTabs.addListSelectionListener(e -> setGeoset());

@@ -139,26 +139,6 @@ public class BonesEditPanel {
 		return topPanel;
 	}
 
-	private void checkSelectedOrSomething(List<BoneShell> usedBoneShells, BoneShell currBs) {
-		int k = 0;
-		BoneShell shell = currBs;
-		while (true) {
-			// If shell is null, then the bone has "No Parent" If currentBonePanel's selected index is not 2,
-			if (shell == null || usedBoneShells.contains(shell) || (shell.getImportStatus() == 1)) {
-				break;
-			} else {
-				usedBoneShells.add(shell);
-			}
-			shell = shell.getParent();
-			k++;
-			if (k > 1000) {
-				JOptionPane.showMessageDialog(null,
-						"Unexpected error has occurred: Bone parent loop, circular logic");
-				break;
-			}
-		}
-	}
-
 	private void boneTabsValueChanged(CardLayout boneCardLayout, JPanel bonePanelCards, JList<BoneShell> boneTabs, MultiBonePanel multiBonePane) {
 		System.out.println("boneTabsValueChanged");
 		List<BoneShell> selectedBones = boneTabs.getSelectedValuesList();
@@ -201,24 +181,32 @@ public class BonesEditPanel {
 			if (objectShell.getShouldImport() && (objectShell.getParent() != null)) {
 				BoneShell bs = objectShell.getParent();
 				if ((bs != null) && (bs.getBone() != null)) {
-					checkSelectedOrSomething(usedBoneShells, bs);
+					filterUniqueBones(usedBoneShells, bs);
 				}
 			}
 		}
-		for (int i = 0; i < mht.geosetAnimTabs.getTabCount(); i++) {
-			if (mht.geosetAnimTabs.isEnabledAt(i)) {
-				System.out.println("Performing check on geoset: " + i);
-				final BoneAttachmentPanel bap = (BoneAttachmentPanel) mht.geosetAnimTabs.getComponentAt(i);
-				for (MatrixShell ms : bap.oldBoneRefs) {
-					for (final BoneShell bs : ms.getNewBones()) {
-						checkSelectedOrSomething(usedBoneShells, bs);
-					}
+//		for (int i = 0; i < mht.geosetAnimTabs.getTabCount(); i++) {
+//			if (mht.geosetAnimTabs.isEnabledAt(i)) {
+//				System.out.println("Performing check on geoset: " + i);
+//				final BoneAttachmentPanel bap = (BoneAttachmentPanel) mht.geosetAnimTabs.getComponentAt(i);
+//				for (MatrixShell ms : bap.oldBoneRefs) {
+//					for (final BoneShell bs : ms.getNewBones()) {
+//						checkSelectedOrSomething(usedBoneShells, bs);
+//					}
+//				}
+//			}
+//		}
+		for (BoneAttachmentShell bas : mht.geoBAPShells) {
+			System.out.println("Performing check on geoset: " + bas.getGeoset().getName());
+			for (MatrixShell ms : bas.getOldBoneRefs()) {
+				for (final BoneShell bs : ms.getNewBones()) {
+					filterUniqueBones(usedBoneShells, bs);
 				}
 			}
 		}
 		for (BoneShell boneShell : mht.boneShells) {
 			if (boneShell.getImportStatus() != 1 && usedBoneShells.contains(boneShell)) {
-				checkSelectedOrSomething(usedBoneShells, boneShell);
+				filterUniqueBones(usedBoneShells, boneShell);
 			}
 		}
 		for (BoneShell boneShell : mht.boneShells) {
@@ -228,6 +216,26 @@ public class BonesEditPanel {
 				} else {
 					boneShell.setImportStatus(2);
 				}
+			}
+		}
+	}
+
+	private void filterUniqueBones(List<BoneShell> usedBoneShells, BoneShell currBs) {
+		int infStopper = 0;
+		BoneShell shell = currBs;
+		while (true) {
+			// If shell is null, then the bone has "No Parent" If currentBonePanel's selected index is not 2,
+			if (shell == null || usedBoneShells.contains(shell) || (shell.getImportStatus() == 2)) {
+				break;
+			} else {
+				usedBoneShells.add(shell);
+			}
+			shell = shell.getParent();
+			infStopper++;
+			if (infStopper > 1000) {
+				JOptionPane.showMessageDialog(null,
+						"Unexpected error has occurred: Bone parent loop, circular logic");
+				break;
 			}
 		}
 	}
