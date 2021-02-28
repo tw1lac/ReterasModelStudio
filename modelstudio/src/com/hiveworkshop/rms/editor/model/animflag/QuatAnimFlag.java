@@ -87,6 +87,22 @@ public class QuatAnimFlag extends AnimFlag<Quat> {
 		super(af);
 	}
 
+	public static QuatAnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
+		final QuatAnimFlag flag = new QuatAnimFlag(title);
+//		flag.name = title;
+		flag.interpolationType = interpolationType;
+		flag.generateTypeId();
+		flag.setGlobSeq(globalSeq);
+		return flag;
+	}
+
+	public static Quat cloneValue(final Quat value) {
+		if (value == null) {
+			return null;
+		}
+		return new Quat(value);
+	}
+
 	@Override
 	public void setValuesTo2(final AnimFlag<Quat> af) {
 		this.setValuesTo(af);
@@ -103,22 +119,6 @@ public class QuatAnimFlag extends AnimFlag<Quat> {
 		values = deepCopy(af.values);
 		inTans = deepCopy(af.inTans);
 		outTans = deepCopy(af.outTans);
-	}
-
-	public static QuatAnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
-		final QuatAnimFlag flag = new QuatAnimFlag(title);
-//		flag.name = title;
-		flag.interpolationType = interpolationType;
-		flag.generateTypeId();
-		flag.setGlobSeq(globalSeq);
-		return flag;
-	}
-
-	public static Quat cloneValue(final Quat value) {
-		if (value == null) {
-			return null;
-		}
-		return new Quat(value);
 	}
 
 	@Override

@@ -444,10 +444,10 @@ public class BLPHandler {
 		return null;
 	}
 
-	public BufferedImage loadTextureDirectly2(Bitmap bitmap){
+	public BufferedImage loadTextureDirectly2(Bitmap bitmap) {
 		String filepath = bitmap.getPath();
 		BufferedImage resultImage = null;
-		try (final InputStream imageDataStream = Files.newInputStream(Path.of(filepath), StandardOpenOption.READ)){
+		try (final InputStream imageDataStream = Files.newInputStream(Path.of(filepath), StandardOpenOption.READ)) {
 			if (isExtension(filepath, ".tga")) {
 				resultImage = TgaFile.readTGA(filepath, imageDataStream);
 			} else {

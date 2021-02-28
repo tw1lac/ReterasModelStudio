@@ -9,7 +9,7 @@ public class Vec4 {
 	public Vec4() {
 
 	}
-	
+
 	public Vec4(final float x, final float y, final float z, final float w) {
 		set(x, y, z, w);
 	}
@@ -88,7 +88,7 @@ public class Vec4 {
 		}
 	}
 
-	public static Vec4 getTransformed(final Vec4 a, Mat4 mat4){
+	public static Vec4 getTransformed(final Vec4 a, Mat4 mat4) {
 		return new Vec4(a).transform(mat4);
 	}
 
@@ -101,9 +101,10 @@ public class Vec4 {
 		return set(newX, newY, newZ, newW);
 	}
 
-	public static Vec4 getTransformed(final Vec4 a, Quat quat){
+	public static Vec4 getTransformed(final Vec4 a, Quat quat) {
 		return new Vec4(a).transform(quat);
 	}
+
 	public Vec4 transform(Quat quat) {
 		final float uvx = quat.y * z - quat.z * y;
 		final float uvy = quat.z * x - quat.x * z;
@@ -134,20 +135,20 @@ public class Vec4 {
 		return "{" + x + ", " + y + ", " + z + ", " + w + "}";
 	}
 
-	public double[] toArray() {
-		return new double[] { x, y, z, w };
+	public static Vec4 getSum(final Vec4 a, final Vec4 b) {
+		return new Vec4(a).add(b);
 	}
 
-	public float[] toFloatArray() {
-		return new float[] { x,  y, z, w };
+	public static Vec4 getScaled(final Vec4 a, final float factor) {
+		return new Vec4(a).scale(factor);
 	}
 
-	public short[] toShortArray() {
-		return new short[] { (short)x, (short)y, (short)z, (short)w };
+	public static Vec4 getLerped(final Vec4 from, final Vec4 toward, final float t) {
+		return new Vec4(from).lerp(toward, t);
 	}
 
-	public long[] toLongArray() {
-		return new long[] { (long)x, (long)y, (long)z, (long)w };
+	public static Vec4 getHermite(final Vec4 from, final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t) {
+		return new Vec4(from).hermite(outTan, inTan, toward, t);
 	}
 
 	public float lengthSquared() {
@@ -189,8 +190,8 @@ public class Vec4 {
 		return this;
 	}
 
-	public static Vec4 getSum(final Vec4 a, final Vec4 b){
-		return new Vec4(a).add(b);
+	public static Vec4 getBezier(final Vec4 from, final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t) {
+		return new Vec4(from).hermite(outTan, inTan, toward, t);
 	}
 
 	public Vec4 add(final Vec4 a) {
@@ -201,20 +202,16 @@ public class Vec4 {
 		return this;
 	}
 
-	public Vec4 divide(final Vec4 a){
-		x = x / a.x;
-		y = y / a.y;
-		z = z / a.z;
-		z = z / a.w;
-		return this;
+	public double[] toArray() {
+		return new double[] {x, y, z, w};
 	}
 
 	public float dot(final Vec4 a) {
 		return (x * a.x) + (y * a.y) + (z * a.z) + (w * a.w);
 	}
 
-	public static Vec4 getScaled(final Vec4 a, final float factor){
-		return new Vec4(a).scale(factor);
+	public float[] toFloatArray() {
+		return new float[] {x, y, z, w};
 	}
 
 	public Vec4 scale(final float factor) {
@@ -238,8 +235,8 @@ public class Vec4 {
 		return scale(len);
 	}
 
-	public static Vec4 getLerped(final Vec4 from, final Vec4 toward, final float t){
-		return new Vec4(from).lerp(toward, t);
+	public short[] toShortArray() {
+		return new short[] {(short) x, (short) y, (short) z, (short) w};
 	}
 
 	public Vec4 lerp(final Vec4 toward, final float t) {
@@ -250,8 +247,8 @@ public class Vec4 {
 		return this;
 	}
 
-	public static Vec4 getHermite(final Vec4 from, final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t){
-		return new Vec4(from).hermite(outTan, inTan, toward, t);
+	public long[] toLongArray() {
+		return new long[] {(long) x, (long) y, (long) z, (long) w};
 	}
 
 	public Vec4 hermite(final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t) {
@@ -267,8 +264,12 @@ public class Vec4 {
 		return this;
 	}
 
-	public static Vec4 getBezier(final Vec4 from, final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t){
-		return new Vec4(from).hermite(outTan, inTan, toward, t);
+	public Vec4 divide(final Vec4 a) {
+		x = x / a.x;
+		y = y / a.y;
+		z = z / a.z;
+		z = z / a.w;
+		return this;
 	}
 
 	public Vec4 bezier(final Vec4 outTan, final Vec4 inTan, final Vec4 toward, final float t) {
@@ -298,7 +299,7 @@ public class Vec4 {
 				|| Float.isInfinite(this.w));
 	}
 
-	public Vec3 getVec3(){
+	public Vec3 getVec3() {
 		return new Vec3(x, y, z);
 	}
 

@@ -92,8 +92,7 @@ public class AddParticlePanel {
     private static void makeAddParticlePanel(MainPanel mainPanel, ParticleInformation particleInformation) {
         final ParticleEmitter2 particle;
         try {
-//            particle = MdxUtils.loadEditable(particleInformation.getFile()).sortedIdObjects(ParticleEmitter2.class).get(0);
-	        particle = MdxUtils.loadEditable(particleInformation.getFile()).getParticleEmitter2s().get(0);
+            particle = MdxUtils.loadEditable(particleInformation.getFile()).getParticleEmitter2s().get(0);
         } catch (final IOException e1) {
             e1.printStackTrace();
             return;
@@ -232,15 +231,15 @@ public class AddParticlePanel {
         } else {
             particle.setParent(parentChoice);
         }
-        AnimFlag<?> oldFlag = particle.getVisibilityFlag();
+        FloatAnimFlag oldFlag = (FloatAnimFlag) particle.getVisibilityFlag();
         if (oldFlag == null) {
             oldFlag = new FloatAnimFlag("Visibility");
         }
-        final AnimFlag visFlag = AnimFlag.buildEmptyFrom(oldFlag);
+        final FloatAnimFlag visFlag = (FloatAnimFlag) AnimFlag.buildEmptyFrom(oldFlag);
         animIndex = 0;
         for (final Animation anim : anims) {
             if (!checkBoxes[animIndex].isSelected()) {
-                visFlag.addEntry(anim.getStart(), 0);
+                visFlag.addEntry(anim.getStart(), 0f);
             }
             animIndex++;
         }

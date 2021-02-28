@@ -11,7 +11,7 @@ public class AddTimelineAction implements UndoAction {
 	private final ModelStructureChangeListener structureChangeListener;
 
 	public AddTimelineAction(final TimelineContainer container, final AnimFlag<?> timeline,
-			final ModelStructureChangeListener structureChangeListener) {
+	                         final ModelStructureChangeListener structureChangeListener) {
 		this.container = container;
 		this.timeline = timeline;
 		this.structureChangeListener = structureChangeListener;

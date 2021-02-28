@@ -332,6 +332,25 @@ public class EditableModel implements Named {
 		doPostRead();
 	}
 
+	public static EditableModel clone(final EditableModel what, final String newName) {
+		final EditableModel newModel = new EditableModel(what);
+
+		newModel.setName(newName);
+
+		return newModel;
+	}
+
+	public static EditableModel deepClone(final EditableModel what, final String newName) {
+		// Need to do a real save, because of strings being passed by reference.
+		// Maybe other objects I didn't think about (or the code does by mistake).
+		final EditableModel newModel = new EditableModel(new MdlxModel(what.toMdlx().saveMdx()));
+
+		newModel.setName(newName);
+		newModel.setFileRef(what.getFile());
+
+		return newModel;
+	}
+
 	public File getFile() {
 		return fileRef;
 	}
@@ -361,6 +380,10 @@ public class EditableModel implements Named {
 		return fileRef.getName().split("\\.")[0];
 	}
 
+	public void setName(final String text) {
+		name = text;
+	}
+
 	@Override
 	public String toString() {
 		return getName() + " (\"" + getHeaderName() + "\")";
@@ -374,16 +397,6 @@ public class EditableModel implements Named {
 		return name;
 	}
 
-	public void setFileRef(final File file) {
-		fileRef = file;
-		if (fileRef != null) {
-			wrappedDataSource = new CompoundDataSource(
-					Arrays.asList(GameDataFileSystem.getDefault(), new FolderDataSource(file.getParentFile().toPath())));
-		} else {
-			wrappedDataSource = GameDataFileSystem.getDefault();
-		}
-	}
-
 	public void copyHeaders(final EditableModel other) {
 		setFileRef(other.fileRef);
 		blendTime = other.blendTime;
@@ -393,25 +406,6 @@ public class EditableModel implements Named {
 		formatVersion = other.formatVersion;
 		header = new ArrayList<>(other.header);
 		name = other.name;
-	}
-
-	public static EditableModel clone(final EditableModel what, final String newName) {
-		final EditableModel newModel = new EditableModel(what);
-
-		newModel.setName(newName);
-		
-		return newModel;
-	}
-
-	public static EditableModel deepClone(final EditableModel what, final String newName) {
-		// Need to do a real save, because of strings being passed by reference.
-		// Maybe other objects I didn't think about (or the code does by mistake).
-		final EditableModel newModel = new EditableModel(new MdlxModel(what.toMdlx().saveMdx()));
-
-		newModel.setName(newName);
-		newModel.setFileRef(what.getFile());
-
-		return newModel;
 	}
 
 	public MdlxModel toMdlx() {
@@ -1884,6 +1878,16 @@ public class EditableModel implements Named {
 		return fileRef;
 	}
 
+	public void setFileRef(final File file) {
+		fileRef = file;
+		if (fileRef != null) {
+			wrappedDataSource = new CompoundDataSource(
+					Arrays.asList(GameDataFileSystem.getDefault(), new FolderDataSource(file.getParentFile().toPath())));
+		} else {
+			wrappedDataSource = GameDataFileSystem.getDefault();
+		}
+	}
+
 	public int getBlendTime() {
 		return blendTime;
 	}
@@ -2026,10 +2030,6 @@ public class EditableModel implements Named {
 
 	public int getObjectId(final IdObject idObject) {
 		return modelIdObjects.getObjectId(idObject);
-	}
-
-	public void setName(final String text) {
-		name = text;
 	}
 
 	public void addToHeader(final String comment) {

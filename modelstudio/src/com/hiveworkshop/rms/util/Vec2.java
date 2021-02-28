@@ -57,10 +57,39 @@ public class Vec2 {
 		}
 	}
 
+	public static Vec2 getScaled(Vec2 a, float factor) {
+		return new Vec2(a).scale(factor);
+	}
+
+	public static Vec2 getSum(Vec2 a, Vec2 b) {
+		return new Vec2(a).add(b);
+	}
+
+	public static Vec2 getDif(Vec2 a, Vec2 b) {
+		return new Vec2(a).sub(b);
+	}
+
+//	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
+//	                   final byte secondXYZ) {
+//		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
+//	}
+
 	public Vec2 translate(final double x, final double y) {
 		this.x += x;
 		this.y += y;
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "{ " + x + ", " + y + " }";
+	}
+
+	public float distance(final Vec2 a) {
+		final float dx = a.x - x;
+		final float dy = a.y - y;
+
+		return (float) Math.sqrt((dx * dx) + (dy * dy));
 	}
 
 	public void scale(final double centerX, final double centerY, final double scaleX, final double scaleY) {
@@ -76,11 +105,6 @@ public class Vec2 {
 		this.x = center.x + (dx * a.x);
 		this.y = center.y + (dy * a.y);
 	}
-
-//	public void rotate(final double centerX, final double centerY, final double radians, final byte firstXYZ,
-//	                   final byte secondXYZ) {
-//		rotateVertex(centerX, centerY, radians, firstXYZ, secondXYZ, this);
-//	}
 
 	public Vec2 rotate(final double centerX, final double centerY, final double radians,
 	                   final byte firstXYZ, final byte secondXYZ) {
@@ -118,16 +142,12 @@ public class Vec2 {
 		return this;
 	}
 
-	@Override
-	public String toString() {
-		return "{ " + x + ", " + y + " }";
+	public float lengthSquared() {
+		return (x * x) + (y * y);
 	}
 
-	public float distance(final Vec2 a) {
-		final float dx = a.x - x;
-		final float dy = a.y - y;
-
-		return (float) Math.sqrt((dx * dx) + (dy * dy));
+	public float length() {
+		return (float) Math.sqrt(lengthSquared());
 	}
 
 	public Float[] toFloatArray() {
@@ -150,18 +170,6 @@ public class Vec2 {
 		return this;
 	}
 
-	public float lengthSquared() {
-		return (x * x) + (y * y);
-	}
-
-	public float length() {
-		return (float) Math.sqrt(lengthSquared());
-	}
-
-	public static Vec2 getScaled(Vec2 a, float factor) {
-		return new Vec2(a).scale(factor);
-	}
-
 	public Vec2 scale(final float factor) {
 		x = x * factor;
 		y = y * factor;
@@ -180,19 +188,11 @@ public class Vec2 {
 		return this;
 	}
 
-	public static Vec2 getSum(Vec2 a, Vec2 b) {
-		return new Vec2(a).add(b);
-	}
-
 	public Vec2 add(final Vec2 a) {
 		x = x + a.x;
 		y = y + a.y;
 
 		return this;
-	}
-
-	public static Vec2 getDif(Vec2 a, Vec2 b) {
-		return new Vec2(a).sub(b);
 	}
 
 	public Vec2 sub(final Vec2 a) {

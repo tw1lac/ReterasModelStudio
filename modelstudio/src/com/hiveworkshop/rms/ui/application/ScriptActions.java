@@ -173,36 +173,36 @@ public class ScriptActions {
 
                 if (bones.size() > 0) {
 
-                    vertexSumHeap.set(0, 0, 0, 0);
-                    for (final Bone bone : bones) {
-                        Vec4 appliedVertexHeap = Vec4.getTransformed(vertexHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
-                        vertexSumHeap.add(appliedVertexHeap);
-                    }
+	                vertexSumHeap.set(0, 0, 0, 0);
+	                for (final Bone bone : bones) {
+		                Vec4 appliedVertexHeap = Vec4.getTransformed(vertexHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
+		                vertexSumHeap.add(appliedVertexHeap);
+	                }
 
-                    vertexSumHeap.scale(1f / bones.size());
+	                vertexSumHeap.scale(1f / bones.size());
                 } else {
-                    vertexSumHeap.set(vertexHeap);
+	                vertexSumHeap.set(vertexHeap);
                 }
-                snapshotVertex.set(vertexSumHeap);
+	            snapshotVertex.set(vertexSumHeap);
 
-                normalHeap.set(vertex.getNormal(), 0);
-                if (bones.size() > 0) {
+	            normalHeap.set(vertex.getNormal(), 0);
+	            if (bones.size() > 0) {
 
-                    normalSumHeap.set(0, 0, 0, 0);
-                    for (final Bone bone : bones) {
-                        Vec4 appliedNormalHeap = Vec4.getTransformed(normalHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
-                        normalSumHeap.add(appliedNormalHeap);
-                    }
+		            normalSumHeap.set(0, 0, 0, 0);
+		            for (final Bone bone : bones) {
+			            Vec4 appliedNormalHeap = Vec4.getTransformed(normalHeap, editorRenderModel.getRenderNode(bone).getWorldMatrix());
+			            normalSumHeap.add(appliedNormalHeap);
+		            }
 
-                    if (normalSumHeap.length() > 0) {
-                        normalSumHeap.normalize();
-                    } else {
-                        normalSumHeap.set(0, 1, 0, 0);
-                    }
-                } else {
-                    normalSumHeap.set(normalHeap);
-                }
-                snapshotVertex.getNormal().set(normalSumHeap);
+		            if (normalSumHeap.length() > 0) {
+			            normalSumHeap.normalize();
+		            } else {
+			            normalSumHeap.set(0, 1, 0, 0);
+		            }
+	            } else {
+		            normalSumHeap.set(normalHeap);
+	            }
+	            snapshotVertex.getNormal().set(normalSumHeap);
             }
         }
         snapshotModel.getIdObjects().clear();
@@ -227,12 +227,12 @@ public class ScriptActions {
                 final Object visibilityValue = geosetAnim.getVisibilityFlag().interpolateAt(editorRenderModel.getAnimatedRenderEnvironment());
 
                 if (visibilityValue instanceof Float) {
-                    final double visValue = (Float) visibilityValue;
+	                final double visValue = (Float) visibilityValue;
 
-                    if (visValue < 0.01) {
-                        geosetIterator.remove();
-                        snapshotModel.remove(geosetAnim);
-                    }
+	                if (visValue < 0.01) {
+		                geosetIterator.remove();
+		                snapshotModel.remove(geosetAnim);
+	                }
                 }
 
             }
@@ -289,25 +289,23 @@ public class ScriptActions {
         final String nameChoice = JOptionPane.showInputDialog(mainPanel,
                 "What should the combined animation be called?");
         if (nameChoice != null) {
-            final int anim1Length = animation.getEnd() - animation.getStart();
-            final int anim2Length = animation2.getEnd() - animation2.getStart();
-            final int totalLength = anim1Length + anim2Length;
+	        final int anim1Length = animation.getEnd() - animation.getStart();
+	        final int anim2Length = animation2.getEnd() - animation2.getStart();
+	        final int totalLength = anim1Length + anim2Length;
 
-            final EditableModel model = mainPanel.currentMDL();
-            final int animTrackEnd = model.animTrackEnd();
-            final int start = animTrackEnd + 1000;
-            animation.copyToInterval(start, start + anim1Length, model.getAllAnimFlags(), model.getEvents());
-//                    model.sortedIdObjects(EventObject.class));
-            animation2.copyToInterval(start + anim1Length, start + totalLength, model.getAllAnimFlags(), model.getEvents());
-//                    model.sortedIdObjects(EventObject.class));
+	        final EditableModel model = mainPanel.currentMDL();
+	        final int animTrackEnd = model.animTrackEnd();
+	        final int start = animTrackEnd + 1000;
+	        animation.copyToInterval(start, start + anim1Length, model.getAllAnimFlags(), model.getEvents());
+	        animation2.copyToInterval(start + anim1Length, start + totalLength, model.getAllAnimFlags(), model.getEvents());
 
-            final Animation newAnimation = new Animation(nameChoice, start, start + totalLength);
-            model.add(newAnimation);
-            newAnimation.setNonLooping(true);
-            newAnimation.setExtents(new ExtLog(animation.getExtents()));
-            JOptionPane.showMessageDialog(mainPanel,
-                    "DONE! Made a combined animation called " + newAnimation.getName(), "Success",
-                    JOptionPane.PLAIN_MESSAGE);
+	        final Animation newAnimation = new Animation(nameChoice, start, start + totalLength);
+	        model.add(newAnimation);
+	        newAnimation.setNonLooping(true);
+	        newAnimation.setExtents(new ExtLog(animation.getExtents()));
+	        JOptionPane.showMessageDialog(mainPanel,
+			        "DONE! Made a combined animation called " + newAnimation.getName(), "Success",
+			        JOptionPane.PLAIN_MESSAGE);
         }
     }
 
@@ -614,14 +612,14 @@ public class ScriptActions {
 				tex.setPath(path.replace('/', '\\'));
 			}
 		}
-//		for (final ParticleEmitter emitter : (List<ParticleEmitter>)model.sortedIdObjects(ParticleEmitter.class)) {
+//		for (final ParticleEmitter emitter : (List<ParticleEmitter>) model.sortedIdObjects(ParticleEmitter.class)) {
 		for (final ParticleEmitter emitter : model.getParticleEmitters()) {
 			final String path = emitter.getPath();
 			if (path != null) {
 				emitter.setPath(path.replace('/', '\\'));
 			}
 		}
-//		for (final Attachment emitter : (List<Attachment>)model.sortedIdObjects(Attachment.class)) {
+//		for (final Attachment emitter : (List<Attachment>) model.sortedIdObjects(Attachment.class)) {
 		for (final Attachment emitter : model.getAttachments()) {
 			final String path = emitter.getPath();
 			if (path != null) {

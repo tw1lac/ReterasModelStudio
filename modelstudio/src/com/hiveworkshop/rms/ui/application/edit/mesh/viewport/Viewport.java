@@ -69,7 +69,10 @@ public class Viewport extends JPanel
 	private final ViewportListener viewportListener;
 	private View view;
 
-	public Viewport(final byte d1, final byte d2, final ModelView modelView,final ProgramPreferences programPreferences, final ViewportActivity activityListener, final ModelStructureChangeListener modelStructureChangeListener, final UndoActionListener undoListener, final CoordDisplayListener coordDisplayListener, final UndoHandler undoHandler, final ModelEditor modelEditor, final ViewportTransferHandler viewportTransferHandler, final RenderModel renderModel, final ViewportListener viewportListener) {
+	long totTempRenderTime;
+	long renderCount;
+
+	public Viewport(final byte d1, final byte d2, final ModelView modelView, final ProgramPreferences programPreferences, final ViewportActivity activityListener, final ModelStructureChangeListener modelStructureChangeListener, final UndoActionListener undoListener, final CoordDisplayListener coordDisplayListener, final UndoHandler undoHandler, final ModelEditor modelEditor, final ViewportTransferHandler viewportTransferHandler, final RenderModel renderModel, final ViewportListener viewportListener) {
 		// Dimension 1 and Dimension 2, these specify which dimensions to display.
 		// the d bytes can thus be from 0 to 2, specifying either the X, Y, or Z dimensions
 		m_d1 = d1;
@@ -115,63 +118,6 @@ public class Viewport extends JPanel
 			}
 		});
 		paintTimer.start();
-	}
-
-	private void createViewPortMenu(UndoActionListener undoListener) {
-		contextMenu = new JPopupMenu();
-
-		JMenu viewMenu = new JMenu("View");
-		contextMenu.add(viewMenu);
-
-		addMenuItem("Front", new ChangeViewportAxisAction("Front", (byte) 1, (byte) 2), viewMenu);
-		addMenuItem("Back", new ChangeViewportAxisAction("Back", (byte) -2, (byte) 2), viewMenu);
-		addMenuItem("Top", new ChangeViewportAxisAction("Top", (byte) 1, (byte) -1), viewMenu);
-		addMenuItem("Bottom", new ChangeViewportAxisAction("Bottom", (byte) 1, (byte) 0), viewMenu);
-		addMenuItem("Left", new ChangeViewportAxisAction("Left", (byte) -1, (byte) 2), viewMenu);
-		addMenuItem("Right", new ChangeViewportAxisAction("Right", (byte) 0, (byte) 2), viewMenu);
-
-		JMenu meshMenu = new JMenu("Mesh");
-		contextMenu.add(meshMenu);
-
-		JMenuItem createFace = new JMenuItem("Create Face");
-		createFace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
-		createFace.addActionListener(e -> createFace());
-		meshMenu.add(createFace);
-
-		addMenuItem("Split Geoset and Add Team Color", e -> undoListener.pushAction(modelEditor.addTeamColor()), meshMenu);
-		addMenuItem("Split Geoset", e -> undoListener.pushAction(modelEditor.splitGeoset()), meshMenu);
-
-		JMenu editMenu = new JMenu("Edit");
-		contextMenu.add(editMenu);
-
-		addMenuItem("Translation Type-in", e -> manualMove(), editMenu);
-		addMenuItem("Rotate Type-in", e -> manualRotate(), editMenu);
-		addMenuItem("Position Type-in", e -> manualSet(), editMenu);
-		addMenuItem("Scale Type-in", e -> manualScale(), editMenu);
-
-		JMenu matrixMenu = new JMenu("Rig");
-		contextMenu.add(matrixMenu);
-
-		addMenuItem("Selected Mesh to Selected Nodes", e -> undoListener.pushAction(modelEditor.rig()), matrixMenu);
-		addMenuItem("Re-assign Matrix", e -> reAssignMatrix(), matrixMenu);
-		addMenuItem("View Matrix", e -> InfoPopup.show(this, modelEditor.getSelectedMatricesDescription()), matrixMenu);
-		addMenuItem("Re-assign HD Skin", e -> reAssignSkinning(), matrixMenu);
-		addMenuItem("View HD Skin", e -> InfoPopup.show(this, modelEditor.getSelectedHDSkinningDescription()), matrixMenu);
-
-		JMenu nodeMenu = new JMenu("Node");
-		contextMenu.add(nodeMenu);
-
-		addMenuItem("Set Parent", e -> setParent(), nodeMenu);
-		addMenuItem("Auto-Center Bone(s)", e -> undoListener.pushAction(modelEditor.autoCenterSelectedBones()), nodeMenu);
-		addMenuItem("Rename Bone", e -> renameBone(), nodeMenu);
-		addMenuItem("Append Bone Suffix", e -> appendBoneBone(), nodeMenu);
-
-	}
-
-	private static void addMenuItem(String itemText, ActionListener actionListener, JMenu menu) {
-		JMenuItem menuItem = new JMenuItem(itemText);
-		menuItem.addActionListener(actionListener);
-		menu.add(menuItem);
 	}
 
 	public void setView(View view) {
@@ -237,8 +183,62 @@ public class Viewport extends JPanel
 		paintComponent(g, 1);
 	}
 
-	long totTempRenderTime;
-	long renderCount;
+	private static void addMenuItem(String itemText, ActionListener actionListener, JMenu menu) {
+		JMenuItem menuItem = new JMenuItem(itemText);
+		menuItem.addActionListener(actionListener);
+		menu.add(menuItem);
+	}
+
+	private void createViewPortMenu(UndoActionListener undoListener) {
+		contextMenu = new JPopupMenu();
+
+		JMenu viewMenu = new JMenu("View");
+		contextMenu.add(viewMenu);
+
+		addMenuItem("Front", new ChangeViewportAxisAction("Front", (byte) 1, (byte) 2), viewMenu);
+		addMenuItem("Back", new ChangeViewportAxisAction("Back", (byte) -2, (byte) 2), viewMenu);
+		addMenuItem("Top", new ChangeViewportAxisAction("Top", (byte) 1, (byte) -1), viewMenu);
+		addMenuItem("Bottom", new ChangeViewportAxisAction("Bottom", (byte) 1, (byte) 0), viewMenu);
+		addMenuItem("Left", new ChangeViewportAxisAction("Left", (byte) -1, (byte) 2), viewMenu);
+		addMenuItem("Right", new ChangeViewportAxisAction("Right", (byte) 0, (byte) 2), viewMenu);
+
+		JMenu meshMenu = new JMenu("Mesh");
+		contextMenu.add(meshMenu);
+
+		JMenuItem createFace = new JMenuItem("Create Face");
+		createFace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
+		createFace.addActionListener(e -> createFace());
+		meshMenu.add(createFace);
+
+		addMenuItem("Split Geoset and Add Team Color", e -> undoListener.pushAction(modelEditor.addTeamColor()), meshMenu);
+		addMenuItem("Split Geoset", e -> undoListener.pushAction(modelEditor.splitGeoset()), meshMenu);
+
+		JMenu editMenu = new JMenu("Edit");
+		contextMenu.add(editMenu);
+
+		addMenuItem("Translation Type-in", e -> manualMove(), editMenu);
+		addMenuItem("Rotate Type-in", e -> manualRotate(), editMenu);
+		addMenuItem("Position Type-in", e -> manualSet(), editMenu);
+		addMenuItem("Scale Type-in", e -> manualScale(), editMenu);
+
+		JMenu matrixMenu = new JMenu("Rig");
+		contextMenu.add(matrixMenu);
+
+		addMenuItem("Selected Mesh to Selected Nodes", e -> undoListener.pushAction(modelEditor.rig()), matrixMenu);
+		addMenuItem("Re-assign Matrix", e -> reAssignMatrix(), matrixMenu);
+		addMenuItem("View Matrix", e -> InfoPopup.show(this, modelEditor.getSelectedMatricesDescription()), matrixMenu);
+		addMenuItem("Re-assign HD Skin", e -> reAssignSkinning(), matrixMenu);
+		addMenuItem("View HD Skin", e -> InfoPopup.show(this, modelEditor.getSelectedHDSkinningDescription()), matrixMenu);
+
+		JMenu nodeMenu = new JMenu("Node");
+		contextMenu.add(nodeMenu);
+
+		addMenuItem("Set Parent", e -> setParent(), nodeMenu);
+		addMenuItem("Auto-Center Bone(s)", e -> undoListener.pushAction(modelEditor.autoCenterSelectedBones()), nodeMenu);
+		addMenuItem("Rename Bone", e -> renameBone(), nodeMenu);
+		addMenuItem("Append Bone Suffix", e -> appendBoneBone(), nodeMenu);
+
+	}
 
 	public void paintComponent(final Graphics g, final int vertexSize) {
 		super.paintComponent(g);

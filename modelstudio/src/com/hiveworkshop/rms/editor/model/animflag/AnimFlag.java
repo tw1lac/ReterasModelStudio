@@ -52,10 +52,10 @@ public abstract class AnimFlag<T> {
 	public Integer globalSeq;
 	int globalSeqId = -1;
 	public boolean hasGlobalSeq = false;
-	public List<Integer> times = new ArrayList<>();
-	public List<T> values = new ArrayList<>();
-	public List<T> inTans = new ArrayList<>();
-	public List<T> outTans = new ArrayList<>();
+	protected List<Integer> times = new ArrayList<>();
+	protected List<T> values = new ArrayList<>();
+	protected List<T> inTans = new ArrayList<>();
+	protected List<T> outTans = new ArrayList<>();
 	int typeid = 0;
 	int vectorSize = 1;
 	boolean isFloat = true;
@@ -73,37 +73,27 @@ public abstract class AnimFlag<T> {
 		}
 	}
 
-	public static AnimFlag<?> createFromTimeline(final MdlxTimeline<?> timeline){
-		Object firstValue = timeline.values[0];
-		if (firstValue instanceof float[]) {
-			if (((float[]) firstValue).length == 1) {
-				return new FloatAnimFlag((MdlxFloatTimeline) timeline);
-			} else if (((float[]) firstValue).length == 3) {
-				return new Vec3AnimFlag((MdlxFloatArrayTimeline) timeline);
-			} else if (((float[]) firstValue).length == 4) {
-				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
-			}
-		} else if (firstValue instanceof long[]) {
-			if(timeline.name.toString().equalsIgnoreCase("rotation")){
-				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
-			}
-			return new IntAnimFlag((MdlxUInt32Timeline) timeline);
-//			return new IntAnimFlag((MdlxTimeline<long[]>) timeline);
-		}
-		return null;
+	// end special constructors
+	public AnimFlag(final String title, final List<Integer> times, final List<T> values) {
+		name = title;
+		this.times = times;
+		this.values = values;
+		generateTypeId();
 	}
 
-	public static AnimFlag<?> createFromAnimFlag(final AnimFlag<?> af) {
-		if(af instanceof IntAnimFlag){
-			return new IntAnimFlag((IntAnimFlag) af);
-		}else if(af instanceof FloatAnimFlag){
-			return new FloatAnimFlag((FloatAnimFlag) af);
-		}else if(af instanceof Vec3AnimFlag){
-			return new Vec3AnimFlag((Vec3AnimFlag) af);
-		}else if(af instanceof QuatAnimFlag){
-			return new QuatAnimFlag((QuatAnimFlag) af);
-		}
-		else return null;
+	public AnimFlag(final AnimFlag<T> af) {
+		name = af.name;
+		globalSeq = af.globalSeq;
+		globalSeqId = af.globalSeqId;
+		hasGlobalSeq = af.hasGlobalSeq;
+		interpolationType = af.interpolationType;
+		typeid = af.typeid;
+		times = new ArrayList<>(af.times);
+		values = deepCopy(af.values);
+		inTans = deepCopy(af.inTans);
+		outTans = deepCopy(af.outTans);
+		vectorSize = af.vectorSize;
+		isFloat = af.isFloat;
 	}
 
 //	public static AnimFlag<?> createFromName(final AnimFlag<?> af) {
@@ -129,34 +119,42 @@ public abstract class AnimFlag<T> {
 //		return flag;
 //	}
 
-	// end special constructors
-	public AnimFlag(final String title, final List<Integer> times, final List<T> values) {
-		name = title;
-		this.times = times;
-		this.values = values;
-		generateTypeId();
-	}
-
 	public AnimFlag(final String title) {
 		name = title;
 		generateTypeId();
 	}
 
-	public AnimFlag(final AnimFlag<T> af) {
-		name = af.name;
-		globalSeq = af.globalSeq;
-		globalSeqId = af.globalSeqId;
-		hasGlobalSeq = af.hasGlobalSeq;
-		interpolationType = af.interpolationType;
-		typeid = af.typeid;
-		times = new ArrayList<>(af.times);
-		values = deepCopy(af.values);
-		inTans = deepCopy(af.inTans);
-		outTans = deepCopy(af.outTans);
-		vectorSize = af.vectorSize;
-		isFloat = af.isFloat;
+	public static AnimFlag<?> createFromTimeline(final MdlxTimeline<?> timeline) {
+		Object firstValue = timeline.values[0];
+		if (firstValue instanceof float[]) {
+			if (((float[]) firstValue).length == 1) {
+				return new FloatAnimFlag((MdlxFloatTimeline) timeline);
+			} else if (((float[]) firstValue).length == 3) {
+				return new Vec3AnimFlag((MdlxFloatArrayTimeline) timeline);
+			} else if (((float[]) firstValue).length == 4) {
+				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
+			}
+		} else if (firstValue instanceof long[]) {
+			if (timeline.name.toString().equalsIgnoreCase("rotation")) {
+				return new QuatAnimFlag((MdlxFloatArrayTimeline) timeline);
+			}
+			return new IntAnimFlag((MdlxUInt32Timeline) timeline);
+//			return new IntAnimFlag((MdlxTimeline<long[]>) timeline);
+		}
+		return null;
 	}
 
+	public static AnimFlag<?> createFromAnimFlag(final AnimFlag<?> af) {
+		if (af instanceof IntAnimFlag) {
+			return new IntAnimFlag((IntAnimFlag) af);
+		} else if (af instanceof FloatAnimFlag) {
+			return new FloatAnimFlag((FloatAnimFlag) af);
+		} else if (af instanceof Vec3AnimFlag) {
+			return new Vec3AnimFlag((Vec3AnimFlag) af);
+		} else if (af instanceof QuatAnimFlag) {
+			return new QuatAnimFlag((QuatAnimFlag) af);
+		} else return null;
+	}
 
 	public static Object cloneValue(final Object value) {
 		if (value == null) {
@@ -192,6 +190,18 @@ public abstract class AnimFlag<T> {
 		}
 	}
 
+	public static AnimFlag<?> buildEmptyFrom(final AnimFlag<?> af) {
+		if (af instanceof IntAnimFlag) {
+			return new IntAnimFlag((IntAnimFlag) af);
+		} else if (af instanceof FloatAnimFlag) {
+			return new FloatAnimFlag((FloatAnimFlag) af);
+		} else if (af instanceof Vec3AnimFlag) {
+			return new Vec3AnimFlag((Vec3AnimFlag) af);
+		} else if (af instanceof QuatAnimFlag) {
+			return new QuatAnimFlag((QuatAnimFlag) af);
+		} else return null;
+	}
+
 	public boolean equals(final AnimFlag<T> animFlag) {
 		boolean does = animFlag != null;
 		if (!does) {
@@ -219,18 +229,6 @@ public abstract class AnimFlag<T> {
 	public void setGlobSeq(final Integer integer) {
 		globalSeq = integer;
 		hasGlobalSeq = integer != null;
-	}
-
-	public static AnimFlag<?> buildEmptyFrom(final AnimFlag<?> af) {
-		if (af instanceof IntAnimFlag) {
-			return new IntAnimFlag((IntAnimFlag) af);
-		} else if (af instanceof FloatAnimFlag) {
-			return new FloatAnimFlag((FloatAnimFlag) af);
-		} else if (af instanceof Vec3AnimFlag) {
-			return new Vec3AnimFlag((Vec3AnimFlag) af);
-		} else if (af instanceof QuatAnimFlag) {
-			return new QuatAnimFlag((QuatAnimFlag) af);
-		} else return null;
 	}
 
 	public War3ID getWar3ID(final TimelineContainer container) {
@@ -1148,7 +1146,7 @@ public abstract class AnimFlag<T> {
 				return switch (interpolationType) {
 					case BEZIER -> Vec3.getBezier(previous, (Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor);
 					case DONT_INTERP -> floorValue;
-					case HERMITE -> Vec3.getHermite(previous, (Vec3)floorOutTan, (Vec3)inTans.get(ceilIndex), next, timeFactor);
+					case HERMITE -> Vec3.getHermite(previous, (Vec3) floorOutTan, (Vec3) inTans.get(ceilIndex), next, timeFactor);
 					case LINEAR -> Vec3.getLerped(previous, next, timeFactor);
 				};
 			}
@@ -1256,6 +1254,26 @@ public abstract class AnimFlag<T> {
 				sort();
 			}
 		}
+	}
+
+	public AnimFlag<T> setTimes(List<Integer> times) {
+		this.times = times;
+		return this;
+	}
+
+	public AnimFlag<T> setValues(List<T> values) {
+		this.values = values;
+		return this;
+	}
+
+	public AnimFlag<T> setInTans(List<T> inTans) {
+		this.inTans = inTans;
+		return this;
+	}
+
+	public AnimFlag<T> setOutTans(List<T> outTans) {
+		this.outTans = outTans;
+		return this;
 	}
 
 	/**

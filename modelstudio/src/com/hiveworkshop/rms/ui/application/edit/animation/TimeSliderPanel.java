@@ -98,7 +98,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 	private EditableModel model;
 	MainPanel mainPanel;
 
-	TimeLine timeLine;
+//	TimeLine timeLine;
 
 	//	public TimeSliderPanel(
 //			final TimeBoundProvider timeBoundProvider,
@@ -962,7 +962,7 @@ public class TimeSliderPanel extends JPanel implements TimeBoundChangeListener, 
 						final int endFlagIndex = flag.floorIndex(end);
 						if (flag.size() > 0) {
 							for (int flagIndex = flagStartIndex; flagIndex <= endFlagIndex; flagIndex++) {
-								final Integer time = (Integer) flag.getTimes().get(flagIndex);
+								final Integer time = flag.getTimes().get(flagIndex);
 								KeyFrame keyFrame = timeToKey.get(time);
 								if (keyFrame == null) {
 									keyFrame = new KeyFrame(time);

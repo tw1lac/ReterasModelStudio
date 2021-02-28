@@ -12,7 +12,7 @@ public final class ScaleManipulator extends AbstractScaleManipulator {
 
 	@Override
 	protected final void scaleWithFactor(final ModelEditor modelEditor, final Vec3 center, final double scaleFactor, final byte dim1, final byte dim2) {
-		Vec3 resettableScaleFactors = new Vec3 (1, 1, 1);
+		Vec3 resettableScaleFactors = new Vec3(1, 1, 1);
 		if (dir == MoveDimension.XYZ) {
 			resettableScaleFactors.set(scaleFactor, scaleFactor, scaleFactor);
 		} else {
@@ -28,7 +28,7 @@ public final class ScaleManipulator extends AbstractScaleManipulator {
 
 	@Override
 	protected Vec3 buildScaleVector(final double scaleFactor, final byte dim1, final byte dim2) {
-		Vec3 resettableScaleFactors = new Vec3 (1, 1, 1);
+		Vec3 resettableScaleFactors = new Vec3(1, 1, 1);
 		if (dir == MoveDimension.XYZ) {
 			resettableScaleFactors.set(scaleFactor, scaleFactor, scaleFactor);
 		} else {

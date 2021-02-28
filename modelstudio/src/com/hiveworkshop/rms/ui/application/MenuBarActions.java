@@ -35,20 +35,20 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MenuBarActions {
-    static final ImageIcon POWERED_BY_HIVE = RMSIcons.loadHiveBrowserImageIcon("powered_by_hive.png");
+	static final ImageIcon POWERED_BY_HIVE = RMSIcons.loadHiveBrowserImageIcon("powered_by_hive.png");
 
-    static void updateUIFromProgramPreferences(List<ModelPanel> modelPanels, ProgramPreferences prefs) {
-        for (final ModelPanel mpanel : modelPanels) {
+	static void updateUIFromProgramPreferences(List<ModelPanel> modelPanels, ProgramPreferences prefs) {
+		for (final ModelPanel mpanel : modelPanels) {
 //            mpanel.getEditorRenderModel().setSpawnParticles(prefs.getRenderParticles());
 //            mpanel.getEditorRenderModel().setAllowInanimateParticles(prefs.getRenderStaticPoseParticles());
 //            mpanel.getAnimationViewer().setSpawnParticles(prefs.getRenderParticles());
-        }
-    }
+		}
+	}
 
-    private static void dataSourcesChanged(WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier directoryChangeNotifier, List<ModelPanel> modelPanels) {
-        for (final ModelPanel modelPanel : modelPanels) {
-            final PerspDisplayPanel pdp = modelPanel.getPerspArea();
-            pdp.reloadAllTextures();
+	private static void dataSourcesChanged(WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier directoryChangeNotifier, List<ModelPanel> modelPanels) {
+		for (final ModelPanel modelPanel : modelPanels) {
+			final PerspDisplayPanel pdp = modelPanel.getPerspArea();
+			pdp.reloadAllTextures();
             modelPanel.getAnimationViewer().reloadAllTextures();
         }
         directoryChangeNotifier.dataSourcesChanged();
@@ -124,17 +124,17 @@ public class MenuBarActions {
         final int ret = JOptionPane.showConfirmDialog(mainPanel, programPreferencesPanel, "Preferences",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (ret == JOptionPane.OK_OPTION) {
-            mainPanel.prefs.loadFrom(programPreferences);
-            final List<DataSourceDescriptor> dataSources = programPreferencesPanel.getDataSources();
-            final boolean changedDataSources = (dataSources != null) && !dataSources.equals(priorDataSources);
-            if (changedDataSources) {
-                SaveProfile.get().setDataSources(dataSources);
-            }
-            SaveProfile.save();
-            if (changedDataSources) {
-                dataSourcesChanged(mainPanel.directoryChangeNotifier, mainPanel.modelPanels);
-            }
-            updateUIFromProgramPreferences(mainPanel.modelPanels, mainPanel.prefs);
+	        mainPanel.prefs.loadFrom(programPreferences);
+	        final List<DataSourceDescriptor> dataSources = programPreferencesPanel.getDataSources();
+	        final boolean changedDataSources = (dataSources != null) && !dataSources.equals(priorDataSources);
+	        if (changedDataSources) {
+		        SaveProfile.get().setDataSources(dataSources);
+	        }
+	        SaveProfile.save();
+	        if (changedDataSources) {
+		        dataSourcesChanged(mainPanel.directoryChangeNotifier, mainPanel.modelPanels);
+	        }
+	        updateUIFromProgramPreferences(mainPanel.modelPanels, mainPanel.prefs);
         }
     }
 

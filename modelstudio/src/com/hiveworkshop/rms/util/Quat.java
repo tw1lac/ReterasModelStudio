@@ -24,6 +24,30 @@ public class Quat extends Vec4 {
 		set(eulerRotation);
 	}
 
+	public Quat(final float[] data) {
+		set(data);
+	}
+
+	public Quat(final Vec3 axis, final float angle) {
+		setFromAxisAngle(axis, angle);
+	}
+
+	public static Quat getSlerped(final Quat from, final Quat toward, final float t) {
+		return new Quat(from).slerp(toward, t);
+	}
+
+	public static Quat getSquad(final Quat from, final Quat toward, final Quat outTan, final Quat inTan, final float t) {
+		return new Quat(from).squad(toward, outTan, inTan, t);
+	}
+
+	public static Quat getProd(final Quat a, final Quat b) {
+		return new Quat(a).mul(b);
+	}
+
+	public static Quat getInverseRotation(Quat q) {
+		return new Quat(q).invertRotation();
+	}
+
 	public Quat set(final Vec3 eulerRotation) {
 		// eulerRotation.x = Math.toRadians(eulerRotation.x);
 		// eulerRotation.y = Math.toRadians(eulerRotation.y);
@@ -90,40 +114,6 @@ public class Quat extends Vec4 {
 		return this;
 	}
 
-	public Quat(final float[] data) {
-		set(data);
-	}
-
-	public Quat(final Vec3 axis, final float angle) {
-		setFromAxisAngle(axis, angle);
-	}
-
-	public Quat setFromAxisAngle(final Vec3 axis, final float angle) {
-		return setFromAxisAngle(axis.x, axis.y, axis.z, angle);
-	}
-
-	public Quat setFromAxisAngle(final Vec4 axis) {
-		return setFromAxisAngle(axis.x, axis.y, axis.z, axis.w);
-	}
-
-	public Quat setFromAxisAngle(final float ax, final float ay, final float az, final float angle) {
-		final float halfAngle = angle / 2;
-		final float sinOfHalfAngle = (float) Math.sin(halfAngle);
-		x = ax * sinOfHalfAngle;
-		y = ay * sinOfHalfAngle;
-		z = az * sinOfHalfAngle;
-		w = (float) Math.cos(halfAngle);
-		return this;
-	}
-
-	public Quat setIdentity() {
-		x = 0;
-		y = 0;
-		z = 0;
-		w = 1;
-		return this;
-	}
-
 	public Vec3 toEuler() {
 		// Wikipedia formula
 		double roll = (Math.atan2(2.0 * ((x * y) + (z * w)), 1 - (2.0 * ((y * y) + (z * z)))));
@@ -182,9 +172,46 @@ public class Quat extends Vec4 {
 		// Now Quaternions can go burn and die.
 	}
 
-	public static Quat getSlerped(final Quat from, final Quat toward, final float t){
-		return new Quat(from).slerp(toward, t);
+	public Quat setFromAxisAngle(final Vec3 axis, final float angle) {
+		return setFromAxisAngle(axis.x, axis.y, axis.z, angle);
 	}
+
+	public Quat setFromAxisAngle(final Vec4 axis) {
+		return setFromAxisAngle(axis.x, axis.y, axis.z, axis.w);
+	}
+
+	public Quat setFromAxisAngle(final float ax, final float ay, final float az, final float angle) {
+		final float halfAngle = angle / 2;
+		final float sinOfHalfAngle = (float) Math.sin(halfAngle);
+		x = ax * sinOfHalfAngle;
+		y = ay * sinOfHalfAngle;
+		z = az * sinOfHalfAngle;
+		w = (float) Math.cos(halfAngle);
+		return this;
+	}
+
+	public Quat setIdentity() {
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 1;
+		return this;
+	}
+
+//	public Quat squad(final Quat outTan, final Quat inTan, final Quat a, final float t, final Quat out) {
+//        outTan.slerp(inTan, t, out);
+//
+//		final float x = out.x;
+//		final float y = out.y;
+//		final float z = out.z;
+//        final float w = out.w;
+//
+//		slerp(a, t, out);
+//
+//		out.slerp(x, y, z, w, 2 * t * (1 - t), out);
+//
+//		return out;
+//	}
 
 	private Quat getSlerped(final Quat from, float ax, float ay, float az, float aw, final float t) {
 		Quat temp = new Quat(ax, ay, az, aw);
@@ -224,7 +251,7 @@ public class Quat extends Vec4 {
 			scale0 = 1.0f - t;
 			scale1 = t;
 		}
-		this.scale(scale0).add(Quat.getScaled(toward, scale1*dir));
+		this.scale(scale0).add(Quat.getScaled(toward, scale1 * dir));
 //		x = (scale0 * x) + (scale1 * dir * toward.x);
 //		y = (scale0 * y) + (scale1 * dir * toward.y);
 //		z = (scale0 * z) + (scale1 * dir * toward.z);
@@ -234,25 +261,6 @@ public class Quat extends Vec4 {
 		// quat.normalize(out, out);
 		return this;
 //		return slerp(a, t, this);
-	}
-
-//	public Quat squad(final Quat outTan, final Quat inTan, final Quat a, final float t, final Quat out) {
-//        outTan.slerp(inTan, t, out);
-//
-//		final float x = out.x;
-//		final float y = out.y;
-//		final float z = out.z;
-//        final float w = out.w;
-//
-//		slerp(a, t, out);
-//
-//		out.slerp(x, y, z, w, 2 * t * (1 - t), out);
-//
-//		return out;
-//	}
-
-	public static Quat getSquad(final Quat from, final Quat toward, final Quat outTan, final Quat inTan, final float t){
-		return new Quat(from).squad(toward, outTan, inTan, t);
 	}
 
 	public Quat squad(final Quat toward, final Quat outTan, final Quat inTan, final float t) {
@@ -269,10 +277,6 @@ public class Quat extends Vec4 {
 		return slerp(temp, 2 * t * (1 - t));
 	}
 
-	public static Quat getProd(final Quat a, final Quat b){
-		return new Quat(a).mul(b);
-	}
-
 	public Quat mul(final Quat a) {
 		float newX = (x * a.w) + (w * a.x) + (y * a.z) - (z * a.y);
 		float newY = (y * a.w) + (w * a.y) + (z * a.x) - (x * a.z);
@@ -280,7 +284,6 @@ public class Quat extends Vec4 {
 		float newW = (w * a.w) - (x * a.x) - (y * a.y) - (z * a.z);
 		return (Quat) set(newX, newY, newZ, newW);
 	}
-
 
 	public Quat mulInverse(final Quat a) {
 		float len = a.lengthSquared();
@@ -297,11 +300,7 @@ public class Quat extends Vec4 {
 		return (Quat) set(newX, newY, newZ, newW);
 	}
 
-	public static Quat getInverseRotation(Quat q){
-		return new Quat(q).invertRotation();
-	}
-
-	public Quat invertRotation(){
+	public Quat invertRotation() {
 		x = -x;
 		y = -y;
 		z = -z;

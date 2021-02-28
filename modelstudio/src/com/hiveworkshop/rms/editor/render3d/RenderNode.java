@@ -122,14 +122,14 @@ public final class RenderNode {
 				worldScale.set(localScale);
 			}
 			if (worldMatrix != finalMatrix) {
-				finalMatrix.set(Mat4.getProd(worldMatrix,bindPose));
+				finalMatrix.set(Mat4.getProd(worldMatrix, bindPose));
 			}
 
 			// Inverse world rotation
 			inverseWorldRotation.set(Quat.getInverseRotation(worldRotation));
 
 			// Inverse world scale
-			inverseWorldScale = Vec3.getQuotient(new Vec3(1,1,1), worldScale);
+			inverseWorldScale = Vec3.getQuotient(new Vec3(1, 1, 1), worldScale);
 
 			// World location
 			worldLocation.set(worldMatrix.m30, worldMatrix.m31, worldMatrix.m32);

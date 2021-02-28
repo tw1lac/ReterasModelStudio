@@ -28,7 +28,6 @@ import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.ui.preferences.SaveProfile;
 import com.hiveworkshop.rms.ui.preferences.listeners.WarcraftDataSourceChangeListener.WarcraftDataSourceChangeNotifier;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
-import com.hiveworkshop.rms.ui.util.ModeButton;
 import com.hiveworkshop.rms.ui.util.ZoomableImagePreviewPanel;
 import com.hiveworkshop.rms.util.Vec3;
 import net.infonode.docking.*;

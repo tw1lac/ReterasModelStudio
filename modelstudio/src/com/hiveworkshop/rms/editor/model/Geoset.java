@@ -235,7 +235,7 @@ public class Geoset implements Named, VisibilitySource {
 		int groupIndex = 0;
 		for (final Matrix matrix : getMatrix()) {
 			for (int index = 0; index < matrix.size(); index++) {
-				geoset.matrixIndices[matrixIndex++] = matrix.getBoneId(index); //todo should probably fetch the real Id of the bone
+				geoset.matrixIndices[matrixIndex++] = matrix.getBoneId(index);
 			}
 			if (matrix.size() <= 0) {
 				geoset.matrixIndices[matrixIndex++] = -1;
@@ -582,11 +582,10 @@ public class Geoset implements Named, VisibilitySource {
 
 	public void updateToObjects(final EditableModel mdlr) {
 		// upload the temporary UVLayer and Matrix objects into the vertices themselves
-		final int sz = numVerteces();
 		for (final Matrix m : matrix) {
 			m.updateBones(mdlr);
 		}
-		for (int i = 0; i < sz; i++) {
+		for (int i = 0; i < vertices.size(); i++) {
 			final GeosetVertex gv = vertices.get(i);
 			setSkinBones(mdlr, i, gv);
 			final Matrix mx;
@@ -619,29 +618,6 @@ public class Geoset implements Named, VisibilitySource {
 	}
 
 	private void setSkinBones(EditableModel mdlr, int i, GeosetVertex gv) {
-		if ((ModelUtils.isTangentAndSkinSupported(mdlr.getFormatVersion())) && (tangents != null)) {
-			gv.initV900();
-			for (int j = 0; j < 4; j++) {
-				short boneLookupId = skin.get(i)[j];
-				if (boneLookupId < 0) {
-					boneLookupId += 256;
-				}
-				short boneWeight = skin.get(i)[j + 4];
-				if (boneWeight < 0) {
-					boneWeight += 256;
-				}
-				final IdObject idObject = mdlr.getIdObject(boneLookupId);
-				if (idObject instanceof Bone) {
-					gv.setSkinBone((Bone) idObject, boneWeight, j);
-				} else {
-					gv.setSkinBone(null, boneWeight, j);
-				}
-			}
-			gv.setTangent(tangents.get(i));
-		}
-	}
-
-	private void setSkinBones2(EditableModel mdlr, int i, GeosetVertex gv) {
 		if ((ModelUtils.isTangentAndSkinSupported(mdlr.getFormatVersion())) && (tangents != null)) {
 			gv.initV900();
 			for (int j = 0; j < 4; j++) {
@@ -708,8 +684,8 @@ public class Geoset implements Named, VisibilitySource {
 				final Triangle trix = triangles.get(ix);
 				if (trix != tri) {
 					if (trix.equalRefsNoIds(tri))
-						// Changed this from "sameVerts" -- this means that triangles with the same
-						// vertices but in a different order will no longer be purged automatically.
+					// Changed this from "sameVerts" -- this means that triangles with the same
+					// vertices but in a different order will no longer be purged automatically.
 					{
 						triangles.remove(tri);
 						break;

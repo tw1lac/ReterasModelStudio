@@ -375,7 +375,6 @@ public class UVPanel extends JPanel implements ActionListener, CoordDisplayListe
 		});
 
 
-
 		toolbar.setMaximumSize(new Dimension(80000, 48));
 
 		return toolbar;
@@ -641,11 +640,11 @@ public class UVPanel extends JPanel implements ActionListener, CoordDisplayListe
 //		root.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("released CONTROL"), "unShiftSelect");
 	}
 
-	private JComboBox<String> getTextureCombobox(){
+	private JComboBox<String> getTextureCombobox() {
 		System.out.println("getComboBox!");
 		DefaultListModel<Bitmap> bitmapListModel;
 
-		List<Bitmap> bitmaps = dispMDL.getModel().getTextures();
+		List<Bitmap> bitmaps = new ArrayList<>(dispMDL.getModel().getTextures());
 		List<String> bitmapNames = new ArrayList<>();
 
 		for (final Bitmap bitmap : bitmaps) {
@@ -668,9 +667,9 @@ public class UVPanel extends JPanel implements ActionListener, CoordDisplayListe
 
 		jComboBox.addActionListener(e -> {
 			BufferedImage image = null;
-			if (jComboBox.getSelectedItem() != null){
+			if (jComboBox.getSelectedItem() != null) {
 				Bitmap bitmap = bitmaps.get(jComboBox.getSelectedIndex());
-				if(bitmap != null){
+				if (bitmap != null) {
 					image = BLPHandler.getImage(bitmap, null);
 				}
 			}
@@ -832,7 +831,7 @@ public class UVPanel extends JPanel implements ActionListener, CoordDisplayListe
 		}
 	}
 
-	private void loadImage3(){
+	private void loadImage3() {
 		FileDialog fileDialog = new FileDialog(this);
 		Bitmap bitmap = fileDialog.importImage();
 		if (bitmap != null) {

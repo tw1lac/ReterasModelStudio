@@ -220,7 +220,7 @@ public final class RenderModel {
 
 					// Rotation
 					if (forced || true /* variants */) {
-						try{
+						try {
 							final Quat renderRotation = idObject.getRenderRotation(animatedRenderEnvironment);
 							if (renderRotation != null) {
 								localRotation.set(renderRotation);
@@ -229,8 +229,9 @@ public final class RenderModel {
 							}
 						} catch (Exception e) {
 							long currentTime = System.currentTimeMillis();
-							if(lastConsoleLogTime < currentTime){
-								System.out.println("RenderModel#updateNodes: failed to update rotation for " + idObject.getName());;
+							if (lastConsoleLogTime < currentTime) {
+								System.out.println("RenderModel#updateNodes: failed to update rotation for " + idObject.getName());
+								;
 								lastConsoleLogTime = currentTime + 500;
 							}
 						}

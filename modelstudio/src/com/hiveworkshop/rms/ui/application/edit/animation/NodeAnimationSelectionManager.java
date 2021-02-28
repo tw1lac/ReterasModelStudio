@@ -39,7 +39,7 @@ public final class NodeAnimationSelectionManager extends AbstractSelectionManage
 			centerOfGroupSumHeap.add(pivotHeap.getVec3());
 		}
 		if (selection.size() > 0) {
-			centerOfGroupSumHeap.scale(1f/selection.size());
+			centerOfGroupSumHeap.scale(1f / selection.size());
 		}
 		return centerOfGroupSumHeap;
 	}

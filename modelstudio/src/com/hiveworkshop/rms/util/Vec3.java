@@ -112,7 +112,6 @@ public class Vec3 {
         Vec3 delta = getDiff(vertex, center);
 
 
-
         double radiansToApply;
         final double twoPi = Math.PI * 2;
         if (radians > Math.PI) {
@@ -130,6 +129,112 @@ public class Vec3 {
         }
 //        final double resultDeltaX = vertexX * cosRadians;
         throw new UnsupportedOperationException("NYI");
+    }
+
+    public static Vec3 centerOfGroup(final Collection<? extends Vec3> group) {
+        final Vec3 center = new Vec3();
+
+        for (final Vec3 v : group) {
+            center.add(v);
+        }
+
+        center.scale(1.0f / group.size());
+
+        return center;
+    }
+
+    public static Vec3 valueOf(String s) throws NumberFormatException {
+        return parseVec3(s);
+    }
+
+    public static Vec3 parseVec3(String s) throws NumberFormatException {
+        String unbracketed = s.replaceAll("[\\[\\](){}]", "");
+        String[] numbers = unbracketed.split(",");
+        float num0 = Float.parseFloat(numbers[0].strip());
+        float num1 = Float.parseFloat(numbers[1].strip());
+        float num2 = Float.parseFloat(numbers[2].strip());
+        return new Vec3(num0, num1, num2);
+    }
+
+    public static Vec3 getSum(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).add(b);
+    }
+
+    public static Vec3 getDiff(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).sub(b);
+    }
+
+    public static Vec3 getProd(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).multiply(b);
+    }
+
+    public static Vec3 getQuotient(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).divide(b);
+    }
+
+    public static Vec3 getTransformed(final Vec3 a, Mat4 mat4) {
+        return new Vec3(a).transform(mat4);
+    }
+
+    public static Vec3 getScaled(Vec3 a, float factor) {
+        return new Vec3(a).scale(factor);
+    }
+
+    public static Vec3 getNormalized(final Vec3 a) {
+        return new Vec3(a).normalize();
+    }
+
+    public static Vec3 getCross(final Vec3 a, final Vec3 b) {
+        return new Vec3(a).cross(b);
+    }
+
+    public static Vec3 getLerped(final Vec3 from, final Vec3 toward, final float t) {
+        return new Vec3(from).lerp(toward, t);
+    }
+
+    public static Vec3 getHermite(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
+        return new Vec3(from).hermite(outTan, inTan, toward, t);
+    }
+
+    public static Vec3 getBezier(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
+        return new Vec3(from).hermite(outTan, inTan, toward, t);
+    }
+
+    public float getCoord(final byte dim) {
+        return switch (dim) {
+            case 0 -> x;
+            case 1 -> y;
+            case 2 -> z;
+            case -1 -> -x;
+            case -2 -> -y;
+            case -3 -> -z;
+            default -> 0;
+        };
+    }
+
+    public boolean equalLocs(final Vec3 v) {
+        return (x == v.x) && (y == v.y) && (z == v.z);
+    }
+
+    @Override
+    public String toString() {
+        return "{ " + x + ", " + y + ", " + z + " }";
+    }
+
+    public String toStringLessSpace() {
+        return "{" + x + ", " + y + ", " + z + "}";
+    }
+
+    public float distance(final float ax, final float ay, final float az) {
+        final float dx = ax - x;
+        final float dy = ay - y;
+        final float dz = az - z;
+
+        return (float) Math.sqrt((dx * dx) + (dy * dy) + (dz * dz));
+    }
+
+    public float distance(final Vec4 other) {
+        return distance(other.x, other.y, other.z);
     }
 
     public Vec3 rotate(final double centerX, final double centerY, final double centerZ, final double radians,
@@ -182,56 +287,6 @@ public class Vec3 {
         return this;
     }
 
-    public static Vec3 centerOfGroup(final Collection<? extends Vec3> group) {
-        final Vec3 center = new Vec3();
-
-        for (final Vec3 v : group) {
-            center.add(v);
-        }
-
-        center.scale(1.0f / group.size());
-
-        return center;
-    }
-
-    public static Vec3 valueOf(String s) throws NumberFormatException {
-        return parseVec3(s);
-    }
-
-    public static Vec3 parseVec3(String s) throws NumberFormatException {
-        String unbracketed = s.replaceAll("[\\[\\](){}]", "");
-        String[] numbers = unbracketed.split(",");
-        float num0 = Float.parseFloat(numbers[0].strip());
-        float num1 = Float.parseFloat(numbers[1].strip());
-        float num2 = Float.parseFloat(numbers[2].strip());
-        return new Vec3(num0, num1, num2);
-    }
-
-    public float getCoord(final byte dim) {
-        return switch (dim) {
-            case 0 -> x;
-            case 1 -> y;
-            case 2 -> z;
-            case -1 -> -x;
-            case -2 -> -y;
-            case -3 -> -z;
-            default -> 0;
-        };
-    }
-
-    public boolean equalLocs(final Vec3 v) {
-        return (x == v.x) && (y == v.y) && (z == v.z);
-    }
-
-    @Override
-    public String toString() {
-        return "{ " + x + ", " + y + ", " + z + " }";
-    }
-
-    public String toStringLessSpace() {
-        return "{" + x + ", " + y + ", " + z + "}";
-    }
-
     public float[] toArray() {
         return new float[] {x, y, z};
     }
@@ -252,40 +307,18 @@ public class Vec3 {
         return new short[] {(short) x, (short) y, (short) z};
     }
 
+    public void translate(final double x, final double y, final double z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+    }
+
     public long[] toLongArray() {
         return new long[] {(long) x, (long) y, (long) z};
     }
 
-    public float distance(final float ax, final float ay, final float az) {
-        final float dx = ax - x;
-        final float dy = ay - y;
-        final float dz = az - z;
-
-        return (float) Math.sqrt((dx * dx) + (dy * dy) + (dz * dz));
-    }
-
     public float distance(final Vec3 a) {
         return getDiff(this, a).length();
-    }
-
-    public float distance(final Vec4 other) {
-        return distance(other.x, other.y, other.z);
-    }
-
-    public static Vec3 getSum(final Vec3 a, final Vec3 b) {
-        return new Vec3(a).add(b);
-    }
-
-    public static Vec3 getDiff(final Vec3 a, final Vec3 b) {
-        return new Vec3(a).sub(b);
-    }
-
-    public static Vec3 getProd(final Vec3 a, final Vec3 b) {
-        return new Vec3(a).multiply(b);
-    }
-
-    public static Vec3 getQuotient(final Vec3 a, final Vec3 b) {
-        return new Vec3(a).divide(b);
     }
 
     public Vec3 add(final Vec3 a) {
@@ -295,14 +328,18 @@ public class Vec3 {
         return this;
     }
 
-    public Vec3 multiply(final Vec3 a){
+    public float dot(final Vec3 a) {
+        return (x * a.x) + (y * a.y) + (z * a.z);
+    }
+
+    public Vec3 multiply(final Vec3 a) {
         x = x * a.x;
         y = y * a.y;
         z = z * a.z;
         return this;
     }
 
-    public Vec3 divide(final Vec3 a){
+    public Vec3 divide(final Vec3 a) {
         x = x / a.x;
         y = y / a.y;
         z = z / a.z;
@@ -320,12 +357,6 @@ public class Vec3 {
         return scale(-1f);
     }
 
-    public void translate(final double x, final double y, final double z) {
-        this.x += x;
-        this.y += y;
-        this.z += z;
-    }
-
     public Vec3 transform(final Vec3 a, final Mat4 mat4) {
         float newX = (mat4.m00 * a.x) + (mat4.m10 * a.y) + (mat4.m20 * a.z) + mat4.m30;
         float newY = (mat4.m01 * a.x) + (mat4.m11 * a.y) + (mat4.m21 * a.z) + mat4.m31;
@@ -333,19 +364,11 @@ public class Vec3 {
         return new Vec3(newX, newY, newZ);
     }
 
-    public static Vec3 getTransformed(final Vec3 a, Mat4 mat4){
-        return new Vec3(a).transform(mat4);
-    }
-
     public Vec3 transform(final Mat4 mat4) {
         float newX = (mat4.m00 * x) + (mat4.m10 * y) + (mat4.m20 * z) + mat4.m30;
         float newY = (mat4.m01 * x) + (mat4.m11 * y) + (mat4.m21 * z) + mat4.m31;
         float newZ = (mat4.m02 * x) + (mat4.m12 * y) + (mat4.m22 * z) + mat4.m32;
         return set(newX, newY, newZ);
-    }
-
-    public float dot(final Vec3 a) {
-        return (x * a.x) + (y * a.y) + (z * a.z);
     }
 
     public double degAngleTo(Vec3 a) {
@@ -382,10 +405,6 @@ public class Vec3 {
         return sub(center).multiply(scale).add(center);
     }
 
-    public static Vec3 getScaled(Vec3 a, float factor) {
-        return new Vec3(a).scale(factor);
-    }
-
     public Vec3 scale(final float factor) {
         x = x * factor;
         y = y * factor;
@@ -408,53 +427,20 @@ public class Vec3 {
     }
 
     public void translateCoord(final byte dim, final double value) {
-	    switch (dim) {
-		    case 0 -> x += value;
-		    case 1 -> y += value;
-		    case 2 -> z += value;
-		    case -1 -> x -= value;
-		    case -2 -> y -= value;
-		    case 3 -> z -= value;
-	    }
-    }
-
-	public Vec3 minimize(Vec3 a) {
-		x = Math.min(x, a.x);
-		y = Math.min(y, a.y);
-		z = Math.min(z, a.z);
-		return this;
-	}
-
-	public Vec3 maximize(Vec3 a) {
-		x = Math.max(x, a.x);
-		y = Math.max(y, a.y);
-		z = Math.max(z, a.z);
-		return this;
-	}
-
-	public static Vec3 getNormalized(final Vec3 a) {
-		return new Vec3(a).normalize();
-	}
-
-	public Vec3 normalize() {
-		float len = length();
-
-		if (len != 0) {
-			len = 1 / len;
+        switch (dim) {
+            case 0 -> x += value;
+            case 1 -> y += value;
+            case 2 -> z += value;
+            case -1 -> x -= value;
+            case -2 -> y -= value;
+            case 3 -> z -= value;
         }
-        return scale(len);
     }
 
-    public static Vec3 getCross(final Vec3 a, final Vec3 b) {
-        return new Vec3(a).cross(b);
-    }
-
-    public Vec3 cross(final Vec3 a) {
-        float newX = (y * a.z) - (a.y * z);
-        float newY = (a.x * z) - (x * a.z);
-        float newZ = (x * a.y) - (a.x * y);
-
-        set(newX, newY, newZ);
+    public Vec3 minimize(Vec3 a) {
+        x = Math.min(x, a.x);
+        y = Math.min(y, a.y);
+        z = Math.min(z, a.z);
         return this;
     }
 
@@ -466,8 +452,29 @@ public class Vec3 {
         return (float) Math.sqrt(lengthSquared());
     }
 
-    public static Vec3 getLerped(final Vec3 from, final Vec3 toward, final float t){
-        return new Vec3(from).lerp(toward, t);
+    public Vec3 maximize(Vec3 a) {
+        x = Math.max(x, a.x);
+        y = Math.max(y, a.y);
+        z = Math.max(z, a.z);
+        return this;
+    }
+
+    public Vec3 normalize() {
+        float len = length();
+
+        if (len != 0) {
+            len = 1 / len;
+        }
+        return scale(len);
+    }
+
+    public Vec3 cross(final Vec3 a) {
+        float newX = (y * a.z) - (a.y * z);
+        float newY = (a.x * z) - (x * a.z);
+        float newZ = (x * a.y) - (a.x * y);
+
+        set(newX, newY, newZ);
+        return this;
     }
 
     public Vec3 lerp(final Vec3 a, final float t) {
@@ -476,10 +483,6 @@ public class Vec3 {
         z = MathUtils.lerp(z, a.z, t);
 
         return this;
-    }
-
-    public static Vec3 getHermite(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t){
-        return new Vec3(from).hermite(outTan, inTan, toward, t);
     }
 
     public Vec3 hermite(final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
@@ -493,10 +496,6 @@ public class Vec3 {
         y = (y * factor1) + (outTan.y * factor2) + (inTan.y * factor3) + (toward.y * factor4);
         z = (z * factor1) + (outTan.z * factor2) + (inTan.z * factor3) + (toward.z * factor4);
         return this;
-    }
-
-    public static Vec3 getBezier(final Vec3 from, final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t){
-        return new Vec3(from).hermite(outTan, inTan, toward, t);
     }
 
     public Vec3 bezier(final Vec3 outTan, final Vec3 inTan, final Vec3 toward, final float t) {
@@ -514,11 +513,11 @@ public class Vec3 {
         return this;
     }
 
-    public Vec4 getVec4(){
+    public Vec4 getVec4() {
         return new Vec4(x, y, z, 0);
     }
 
-    public Vec4 getVec4(final float w){
+    public Vec4 getVec4(final float w) {
         return new Vec4(x, y, z, w);
     }
 

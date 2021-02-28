@@ -88,6 +88,22 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 		super(af);
 	}
 
+	public static Vec3AnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
+		final Vec3AnimFlag flag = new Vec3AnimFlag(title);
+//		flag.name = title;
+		flag.interpolationType = interpolationType;
+		flag.generateTypeId();
+		flag.setGlobSeq(globalSeq);
+		return flag;
+	}
+
+	public static Vec3 cloneValue(final Vec3 value) {
+		if (value == null) {
+			return null;
+		}
+		return new Vec3(value);
+	}
+
 	@Override
 	public void setValuesTo2(final AnimFlag<Vec3> af) {
 		this.setValuesTo(af);
@@ -104,22 +120,6 @@ public class Vec3AnimFlag extends AnimFlag<Vec3> {
 		values = deepCopy(af.values);
 		inTans = deepCopy(af.inTans);
 		outTans = deepCopy(af.outTans);
-	}
-
-	public static Vec3AnimFlag createEmpty2018(final String title, final InterpolationType interpolationType, final Integer globalSeq) {
-		final Vec3AnimFlag flag = new Vec3AnimFlag(title);
-//		flag.name = title;
-		flag.interpolationType = interpolationType;
-		flag.generateTypeId();
-		flag.setGlobSeq(globalSeq);
-		return flag;
-	}
-
-	public static Vec3 cloneValue(final Vec3 value) {
-		if (value == null) {
-			return null;
-		}
-		return new Vec3(value);
 	}
 
 	@Override

@@ -200,7 +200,7 @@ public class MdlUtils {
 
 	public static final String TOKEN_EMISSIVE_GAIN = "EmissiveGain";
 	public static final String TOKEN_EMISSIVE = "Emissive"; //think this is needed to read some models saved with an older version
-	public static final String TOKEN_FRESNEL_COLOR  = "FresnelColor";
+	public static final String TOKEN_FRESNEL_COLOR = "FresnelColor";
 	public static final String TOKEN_FRESNEL_OPACITY = "FresnelOpacity";
 	public static final String TOKEN_FRESNEL_TEAM_COLOR = "FresnelTeamColor";
 }

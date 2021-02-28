@@ -72,8 +72,8 @@ public abstract class TimelineContainer implements VisibilitySource {
 	public AnimFlag<?> find(final String name, final Integer globalSeq) {
 		final AnimFlag<?> timeline = animFlags.get(name);
 
-		if (timeline != null && (((globalSeq == null) && (timeline.globalSeq == null))
-				|| ((globalSeq != null) && globalSeq.equals(timeline.globalSeq)))) {
+		if (timeline != null && (((globalSeq == null) && (timeline.getGlobalSeq() == null))
+				|| ((globalSeq != null) && globalSeq.equals(timeline.getGlobalSeq())))) {
 			return timeline;
 		}
 
@@ -89,12 +89,12 @@ public abstract class TimelineContainer implements VisibilitySource {
 	}
 
 	public int getInterpolatedInteger(final AnimatedRenderEnvironment animatedRenderEnvironment, final String tag, final int defaultValue) {
-		final IntAnimFlag timeline = (IntAnimFlag)find(tag);
+		final IntAnimFlag timeline = (IntAnimFlag) find(tag);
 
 		if (timeline != null) {
 			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
-		
+
 		return defaultValue;
 	}
 
@@ -104,7 +104,7 @@ public abstract class TimelineContainer implements VisibilitySource {
 		if (timeline != null) {
 			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
-		
+
 		return defaultValue;
 	}
 
@@ -114,7 +114,7 @@ public abstract class TimelineContainer implements VisibilitySource {
 		if (timeline != null) {
 			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
-		
+
 		return defaultValue;
 	}
 
@@ -124,7 +124,7 @@ public abstract class TimelineContainer implements VisibilitySource {
 		if (timeline != null) {
 			return timeline.interpolateAt(animatedRenderEnvironment);
 		}
-		
+
 		return defaultValue;
 	}
 
@@ -132,6 +132,17 @@ public abstract class TimelineContainer implements VisibilitySource {
 		for (final AnimFlag<?> timeline : animFlags.values()) {
 			timeline.flipOver(axis);
 		}
+	}
+
+	@Override
+	public AnimFlag<?> getVisibilityFlag() {
+		AnimFlag<?> timeline = find(MdlUtils.TOKEN_VISIBILITY);
+
+		if (timeline == null) {
+			timeline = find(MdlUtils.TOKEN_ALPHA);
+		}
+
+		return timeline;
 	}
 
 	// VisibilitySource methods
@@ -143,17 +154,6 @@ public abstract class TimelineContainer implements VisibilitySource {
 		if (flag != null) {
 			add(flag);
 		}
-	}
-
-	@Override
-	public AnimFlag<?> getVisibilityFlag() {
-		AnimFlag<?> timeline = find(MdlUtils.TOKEN_VISIBILITY);
-		
-		if (timeline == null) {
-			timeline = find(MdlUtils.TOKEN_ALPHA);
-		}
-
-		return timeline;
 	}
 
 	public float getRenderVisibility(final AnimatedRenderEnvironment animatedRenderEnvironment) {

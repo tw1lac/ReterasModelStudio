@@ -29,6 +29,34 @@ public class Mat4 {
                 m30, m31, m32, m33);
     }
 
+    public static Mat4 getProd(final Mat4 a, final Mat4 b) {
+        return new Mat4(a).mul(b);
+    }
+
+    public static Mat4 getInverted(final Mat4 mat) {
+        return new Mat4(mat).invert();
+    }
+
+    public static Mat4 uniformScale(float v, Mat4 matrixToScale) {
+        matrixToScale.m00 *= v;
+        matrixToScale.m01 *= v;
+        matrixToScale.m02 *= v;
+        matrixToScale.m03 *= v;
+        matrixToScale.m10 *= v;
+        matrixToScale.m11 *= v;
+        matrixToScale.m12 *= v;
+        matrixToScale.m13 *= v;
+        matrixToScale.m20 *= v;
+        matrixToScale.m21 *= v;
+        matrixToScale.m22 *= v;
+        matrixToScale.m23 *= v;
+        matrixToScale.m30 *= v;
+        matrixToScale.m31 *= v;
+        matrixToScale.m32 *= v;
+        matrixToScale.m33 *= v;
+        return matrixToScale;
+    }
+
     public Mat4 set(final Mat4 a) {
         set(
                 a.m00, a.m01, a.m02, a.m03,
@@ -40,9 +68,9 @@ public class Mat4 {
 
     public Mat4 set(final float[] a) {
         set(
-                a[0],  a[1],  a[2],  a[3],
-                a[4],  a[5],  a[6],  a[7],
-                a[8],  a[9],  a[10], a[11],
+                a[0], a[1], a[2], a[3],
+                a[4], a[5], a[6], a[7],
+                a[8], a[9], a[10], a[11],
                 a[12], a[13], a[14], a[15]);
         return this;
     }
@@ -51,31 +79,63 @@ public class Mat4 {
                     final float m10, final float m11, final float m12, final float m13,
                     final float m20, final float m21, final float m22, final float m23,
                     final float m30, final float m31, final float m32, final float m33) {
-        this.m00 = m00; this.m01 = m01; this.m02 = m02; this.m03 = m03;
-        this.m10 = m10; this.m11 = m11; this.m12 = m12; this.m13 = m13;
-        this.m20 = m20; this.m21 = m21; this.m22 = m22; this.m23 = m23;
-        this.m30 = m30; this.m31 = m31; this.m32 = m32; this.m33 = m33;
+        this.m00 = m00;
+        this.m01 = m01;
+        this.m02 = m02;
+        this.m03 = m03;
+        this.m10 = m10;
+        this.m11 = m11;
+        this.m12 = m12;
+        this.m13 = m13;
+        this.m20 = m20;
+        this.m21 = m21;
+        this.m22 = m22;
+        this.m23 = m23;
+        this.m30 = m30;
+        this.m31 = m31;
+        this.m32 = m32;
+        this.m33 = m33;
         return this;
     }
 
     public Mat4 setIdentity() {
-        m00 = 1.0f; m01 = 0.0f; m02 = 0.0f; m03 = 0.0f;
-        m10 = 0.0f; m11 = 1.0f; m12 = 0.0f; m13 = 0.0f;
-        m20 = 0.0f; m21 = 0.0f; m22 = 1.0f; m23 = 0.0f;
-        m30 = 0.0f; m31 = 0.0f; m32 = 0.0f; m33 = 1.0f;
+        m00 = 1.0f;
+        m01 = 0.0f;
+        m02 = 0.0f;
+        m03 = 0.0f;
+        m10 = 0.0f;
+        m11 = 1.0f;
+        m12 = 0.0f;
+        m13 = 0.0f;
+        m20 = 0.0f;
+        m21 = 0.0f;
+        m22 = 1.0f;
+        m23 = 0.0f;
+        m30 = 0.0f;
+        m31 = 0.0f;
+        m32 = 0.0f;
+        m33 = 1.0f;
         return this;
     }
 
     public Mat4 setZero() {
-        m00 = 0.0f; m01 = 0.0f; m02 = 0.0f; m03 = 0.0f;
-        m10 = 0.0f; m11 = 0.0f; m12 = 0.0f; m13 = 0.0f;
-        m20 = 0.0f; m21 = 0.0f; m22 = 0.0f; m23 = 0.0f;
-        m30 = 0.0f; m31 = 0.0f; m32 = 0.0f; m33 = 0.0f;
+        m00 = 0.0f;
+        m01 = 0.0f;
+        m02 = 0.0f;
+        m03 = 0.0f;
+        m10 = 0.0f;
+        m11 = 0.0f;
+        m12 = 0.0f;
+        m13 = 0.0f;
+        m20 = 0.0f;
+        m21 = 0.0f;
+        m22 = 0.0f;
+        m23 = 0.0f;
+        m30 = 0.0f;
+        m31 = 0.0f;
+        m32 = 0.0f;
+        m33 = 0.0f;
         return this;
-    }
-
-    public static Mat4 getProd(final Mat4 a, final Mat4 b){
-        return new Mat4(a).mul(b);
     }
 
     public Mat4 mul(final Mat4 a) {
@@ -99,13 +159,25 @@ public class Mat4 {
         return set(temp);
     }
 
-
     public Mat4 translate(Vec3 a) {
         m30 += m00 * a.x + m10 * a.y + m20 * a.z;
         m31 += m01 * a.x + m11 * a.y + m21 * a.z;
         m32 += m02 * a.x + m12 * a.y + m22 * a.z;
         m33 += m03 * a.x + m13 * a.y + m23 * a.z;
         return this;
+    }
+
+    public Mat4 uniformScale(float v) {
+        return uniformScale(v, this);
+    }
+
+    /**
+     * @param v value to scale by
+     * @return a uniformly scaled copy of the matrix
+     */
+    public Mat4 getUniformlyScaled(float v) {
+        Mat4 mat4 = new Mat4(this);
+        return uniformScale(v, mat4);
     }
 
     public Mat4 scale(Vec3 a) {
@@ -122,39 +194,6 @@ public class Mat4 {
         m22 = m22 * a.z;
         m23 = m23 * a.z;
         return this;
-    }
-
-    public static Mat4 uniformScale(float v, Mat4 matrixToScale) {
-        matrixToScale.m00 *= v;
-        matrixToScale.m01 *= v;
-        matrixToScale.m02 *= v;
-        matrixToScale.m03 *= v;
-        matrixToScale.m10 *= v;
-        matrixToScale.m11 *= v;
-        matrixToScale.m12 *= v;
-        matrixToScale.m13 *= v;
-        matrixToScale.m20 *= v;
-        matrixToScale.m21 *= v;
-        matrixToScale.m22 *= v;
-        matrixToScale.m23 *= v;
-        matrixToScale.m30 *= v;
-        matrixToScale.m31 *= v;
-        matrixToScale.m32 *= v;
-        matrixToScale.m33 *= v;
-        return matrixToScale;
-    }
-
-    public Mat4 uniformScale(float v) {
-        return uniformScale(v, this);
-    }
-
-    /**
-     * @param v value to scale by
-     * @return a uniformly scaled copy of the matrix
-     */
-    public Mat4 getUniformlyScaled(float v) {
-        Mat4 mat4 = new Mat4(this);
-        return uniformScale(v, mat4);
     }
 
     public Mat4 add(Mat4 matToAdd) {
@@ -175,10 +214,6 @@ public class Mat4 {
         m32 += matToAdd.m32;
         m33 += matToAdd.m33;
         return this;
-    }
-
-    public static Mat4 getInverted(final Mat4 mat) {
-        return new Mat4(mat).invert();
     }
 
     public Mat4 invert() {
@@ -403,9 +438,9 @@ public class Mat4 {
 
     public float[] toFloatArray() {
         return new float[] {
-            m00, m01, m02, m03,
-            m10, m11, m12, m13,
-            m20, m21, m22, m23,
-            m30, m31, m32, m33};
+                m00, m01, m02, m03,
+                m10, m11, m12, m13,
+                m20, m21, m22, m23,
+                m30, m31, m32, m33};
     }
 }

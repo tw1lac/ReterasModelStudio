@@ -26,8 +26,8 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 		generateTypeId();
 
 		final long[] frames = timeline.frames;
-		final Object[] values =  timeline.values;
-		final Object[] inTans =  timeline.inTans;
+		final Object[] values = timeline.values;
+		final Object[] inTans = timeline.inTans;
 		final Object[] outTans = timeline.outTans;
 
 		if (frames.length > 0) {
@@ -125,16 +125,15 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 
 			if (ceilIndexTime < 0) {
 				return (int) identity(localTypeId);
-			}else if (floorIndexTime > getGlobalSeq() && values.size() > 0) {
+			} else if (floorIndexTime > getGlobalSeq() && values.size() > 0) {
 				// out of range global sequences end up just using the higher value keyframe
 				return values.get(floorIndex);
-			}else if (floorIndexTime > getGlobalSeq() || (floorIndexTime < 0) && (ceilIndexTime > getGlobalSeq()) || floorIndexTime < 0 ) {
+			} else if (floorIndexTime > getGlobalSeq() || (floorIndexTime < 0) && (ceilIndexTime > getGlobalSeq()) || floorIndexTime < 0) {
 				return (int) identity(localTypeId);
-			}  else if (ceilIndexTime > getGlobalSeq() && floorIndex == floorAnimStartIndex) {
+			} else if (ceilIndexTime > getGlobalSeq() && floorIndex == floorAnimStartIndex) {
 				return values.get(floorIndex);
 			}
-		}
-		else {
+		} else {
 //			System.out.println(name + ", ~~ no global seq");
 			final TimeBoundProvider animation = animatedRenderEnvironment.getCurrentAnimation();
 			int animationStart = animation.getStart();

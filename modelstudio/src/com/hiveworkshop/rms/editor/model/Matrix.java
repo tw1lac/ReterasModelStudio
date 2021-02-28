@@ -100,14 +100,14 @@ public class Matrix {
 			bones.clear();
 		}
         for (Integer m_boneId : m_boneIds) {
-            final Bone b = mdlr.getBone(m_boneId);
+	        final Bone b = mdlr.getBone(m_boneId);
 	        // if( b.getClass() == Helper.class ) { JOptionPane.showMessageDialog(null,"Error: Holy fo shizzle my grizzle! There's geometry attached to Helper "+b.getName()+" and that is very bad!"); }
-            if (b != null) {
-                bones.add(b);
-            } else {
+	        if (b != null) {
+		        bones.add(b);
+	        } else {
 //				JOptionPane.showMessageDialog(null, "Error: A matrix's bone id was not referencing a real bone!");
-                System.err.println("Error: A matrix's bone id was not referencing a real bone! " + m_boneId);
-            }
+		        System.err.println("Error: A matrix's bone id was not referencing a real bone! " + m_boneId);
+	        }
         }
 	}
 

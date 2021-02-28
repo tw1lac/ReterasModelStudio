@@ -54,9 +54,9 @@ public class RenderParticle2 extends EmittedObject<RenderParticleEmitter2View> {
 
 		// Local location
 
-		double width = emitterView.getLength()/2;
+		double width = emitterView.getLength() / 2;
 		float randomWidth = MathUtils.randomInRange(-width, width);
-		double length = emitterView.getWidth()/2;
+		double length = emitterView.getWidth() / 2;
 		float randomLength = MathUtils.randomInRange(-length, length);
 
 		location.set(particleEmitter2.getPivotPoint()).add(new Vec3(randomWidth, randomLength, 0));
@@ -216,7 +216,7 @@ public class RenderParticle2 extends EmittedObject<RenderParticleEmitter2View> {
 
 		} else {
 			final double tailLength = modelObject.getTailLength();
-			Vec3 offsetV = Vec3.getScaled(velocity, (float)tailLength);
+			Vec3 offsetV = Vec3.getScaled(velocity, (float) tailLength);
 
 			// The start and end of the tail
 			Vec4 startHeap = new Vec4(worldLocation4f.getVec3().sub(offsetV), 1);

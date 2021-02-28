@@ -72,6 +72,15 @@ public class FloatAnimFlag extends AnimFlag<Float> {
 		super(af);
 	}
 
+	private static FloatAnimFlag getMostVis(FloatAnimFlag flag1, FloatAnimFlag flag2, FloatAnimFlag mostVisible) {
+		if (mostVisible == null) {
+			mostVisible = flag1;
+		} else if (mostVisible == flag2) {
+			return null;
+		}
+		return mostVisible;
+	}
+
 	@Override
 	public void setValuesTo2(final AnimFlag<Float> af) {
 		this.setValuesTo(af);
@@ -317,15 +326,6 @@ public class FloatAnimFlag extends AnimFlag<Float> {
 				mostVisible = getMostVis(flag1, flag2, mostVisible);
 				if (mostVisible == null) return null;
 			}
-		}
-		return mostVisible;
-	}
-
-	private static FloatAnimFlag getMostVis(FloatAnimFlag flag1, FloatAnimFlag flag2, FloatAnimFlag mostVisible) {
-		if (mostVisible == null) {
-			mostVisible = flag1;
-		} else if (mostVisible == flag2) {
-			return null;
 		}
 		return mostVisible;
 	}

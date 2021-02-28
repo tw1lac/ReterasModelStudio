@@ -11,25 +11,25 @@ import java.util.List;
 
 /**
  * <pre>
-Sounds {
-    SoundFile {
-        Path <Sound file path - string>,
-        ? { float,float },
-        SoundChannel <long>, ?
-    }
-}
-
-SoundEmitter {
-    ObjectId <long>,
-    Parent <long>,
-    SoundTrack <long_count> {
-        <time - long>: <sound id - long>,
-        ...
-    }
-    (Translation { <float_x>, <float_y>, <float_z> })
-    (Rotation { <float_a>, <float_b>, <float_c>, <float_d> })
-    (Scaling { <float_x>, <float_y>, <float_z> })
-}
+ * Sounds {
+ * SoundFile {
+ * Path <Sound file path - string>,
+ * ? { float,float },
+ * SoundChannel <long>, ?
+ * }
+ * }
+ *
+ * SoundEmitter {
+ * ObjectId <long>,
+ * Parent <long>,
+ * SoundTrack <long_count> {
+ * <time - long>: <sound id - long>,
+ * ...
+ * }
+ * (Translation { <float_x>, <float_y>, <float_z> })
+ * (Rotation { <float_a>, <float_b>, <float_c>, <float_d> })
+ * (Scaling { <float_x>, <float_y>, <float_z> })
+ * }
  * </pre>
  *
  * The MDX Tags are: SNDS, SNME, KESK(Sound track animations)
@@ -116,6 +116,22 @@ public class SoundEmitter extends IdObject {
 	// 	writer.println("}");
 	// }
 
+	public AnimFlag<?> getSoundTrackFlag() {
+		int count = 0;
+		AnimFlag<?> output = null;
+		for (final AnimFlag<?> af : animFlags) {
+			if (af.getName().equals("SoundTrack")) {
+				count++;
+				output = af;
+			}
+		}
+		if (count > 1) {
+			JOptionPane.showMessageDialog(null,
+					"Some SoundTrack animation data was lost unexpectedly during retrieval in " + getName() + ".");
+		}
+		return output;
+	}
+
 	public void setSoundTrackFlag(final AnimFlag<?> flag) {
 		int count = 0;
 		int index = 0;
@@ -134,22 +150,6 @@ public class SoundEmitter extends IdObject {
 			JOptionPane.showMessageDialog(null,
 					"Some SoundTrack animation data was lost unexpectedly during overwrite in " + getName() + ".");
 		}
-	}
-
-	public AnimFlag<?> getSoundTrackFlag() {
-		int count = 0;
-		AnimFlag<?> output = null;
-		for (final AnimFlag<?> af : animFlags) {
-			if (af.getName().equals("SoundTrack")) {
-				count++;
-				output = af;
-			}
-		}
-		if (count > 1) {
-			JOptionPane.showMessageDialog(null,
-					"Some SoundTrack animation data was lost unexpectedly during retrieval in " + getName() + ".");
-		}
-		return output;
 	}
 
 	public String getVisTagname() {

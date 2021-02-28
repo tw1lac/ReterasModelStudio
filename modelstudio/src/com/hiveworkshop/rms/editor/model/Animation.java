@@ -151,9 +151,9 @@ public class Animation implements TimeBoundProvider {
 	}
 
 	public void copyToInterval(final int start, final int end, final List<AnimFlag<?>> flags,
-			final List<EventObject> eventObjs, final List<AnimFlag<?>> newFlags, final List<EventObject> newEventObjs) {
+	                           final List<EventObject> eventObjs, final List<AnimFlag<?>> newFlags, final List<EventObject> newEventObjs) {
 		for (final AnimFlag<?> af : newFlags) {
-			if (!af.hasGlobalSeq) {
+			if (!af.hasGlobalSeq()) {
 				af.copyFrom(flags.get(newFlags.indexOf(af)), intervalStart, intervalEnd, start, end);
 			}
 		}
@@ -166,7 +166,7 @@ public class Animation implements TimeBoundProvider {
 
 	public void copyToInterval(final int start, final int end, final List<AnimFlag<?>> flags, final List<EventObject> eventObjs) {
 		for (final AnimFlag<?> af : flags) {
-			if (!af.hasGlobalSeq) {
+			if (!af.hasGlobalSeq()) {
 				af.copyFrom(af, intervalStart, intervalEnd, start, end);
 			}
 		}
@@ -192,9 +192,9 @@ public class Animation implements TimeBoundProvider {
 //	}
 
 	public void setInterval(final int start, final int end, final List<AnimFlag<?>> flags,
-			final List<EventObject> eventObjs) {
+	                        final List<EventObject> eventObjs) {
 		for (final AnimFlag<?> af : flags) {
-			if (!af.hasGlobalSeq) {
+			if (!af.hasGlobalSeq()) {
 				af.timeScale(intervalStart, intervalEnd, start, end);
 			}
 		}
@@ -209,7 +209,7 @@ public class Animation implements TimeBoundProvider {
 
 	public void reverse(final List<AnimFlag<?>> flags, final List<EventObject> eventObjs) {
 		for (final AnimFlag<?> af : flags) {
-			if (!af.hasGlobalSeq && ((af.getTypeId() == 1) || (af.getTypeId() == 2) || (af.getTypeId() == 3))) {
+			if (!af.hasGlobalSeq() && ((af.getTypeId() == 1) || (af.getTypeId() == 2) || (af.getTypeId() == 3))) {
 				af.timeScale(intervalStart, intervalEnd, intervalEnd, intervalStart);
 			}
 		}
@@ -244,7 +244,6 @@ public class Animation implements TimeBoundProvider {
 
 	public void setInterval(final int start, final int end, final EditableModel mdlr) {
 		final List<AnimFlag<?>> aniFlags = mdlr.getAllAnimFlags();
-//		final List<EventObject> eventObjs = mdlr.sortedIdObjects(EventObject.class);
 		final List<EventObject> eventObjs = mdlr.getEvents();
 		setInterval(start, end, aniFlags, eventObjs);
 	}

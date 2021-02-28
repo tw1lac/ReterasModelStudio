@@ -414,7 +414,7 @@ public class Material {
 			layers.removeAll(tempList);
 //			List<Layer> temp2 = tempList.stream().filter(l -> !l.getTextureBitmap().getName().equals("Team Color")).collect(Collectors.toList());
 			List<Layer> temp2 = tempList.stream().filter(l -> !l.getTextureBitmap().getPath().equals("")).collect(Collectors.toList());
-			if(temp2.isEmpty()){
+			if (temp2.isEmpty()) {
 				layers.add(tempList.get(0));
 			} else {
 				layers.add(temp2.get(0));

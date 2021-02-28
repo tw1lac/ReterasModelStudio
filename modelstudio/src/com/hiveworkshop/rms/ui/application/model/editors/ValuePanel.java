@@ -154,13 +154,13 @@ public abstract class ValuePanel<T> extends JPanel {
 	}
 
 	private AnimFlag<T> getNewAnimFlag() {
-		if(staticValue instanceof Integer){
+		if (staticValue instanceof Integer) {
 			return (AnimFlag<T>) new IntAnimFlag(flagName);
-		}else if(staticValue instanceof Float){
+		} else if (staticValue instanceof Float) {
 			return (AnimFlag<T>) new FloatAnimFlag(flagName);
-		}else if(staticValue instanceof Vec3){
+		} else if (staticValue instanceof Vec3) {
 			return (AnimFlag<T>) new Vec3AnimFlag(flagName);
-		}else if(staticValue instanceof Quat){
+		} else if (staticValue instanceof Quat) {
 			return (AnimFlag<T>) new QuatAnimFlag(flagName);
 		} else {
 			return null;

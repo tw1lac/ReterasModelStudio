@@ -146,9 +146,9 @@ public final class MoverWidget {
 		}
 	}
 
-	private void setHighLightableColor(final Graphics2D graphics, final byte dimension, MoveDimension moveDimension){
+	private void setHighLightableColor(final Graphics2D graphics, final byte dimension, MoveDimension moveDimension) {
 //		System.out.println(moveDimension + " has " + MoveDimension.getByByte(dimension) + "?");
-		if (moveDimension.containDirection(dimension)){
+		if (moveDimension.containDirection(dimension)) {
 			graphics.setColor(new Color(255, 255, 0));
 		} else {
 			setColorByDimension(graphics, dimension);
