@@ -4,7 +4,6 @@ import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import org.lwjgl.LWJGLException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +24,7 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			renderEnv.setAnimationTime(0);
 			renderEnv.setLive(true);
-		} catch (final LWJGLException e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 		setLayout(new BorderLayout());

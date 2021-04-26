@@ -17,8 +17,6 @@ import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,9 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 public abstract class ComPerspViewport extends BetterAWTGLCanvas implements RenderResourceAllocator {
 	public static final boolean LOG_EXCEPTIONS = true;
@@ -82,8 +77,9 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	ExtLog modelExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
 	int ugg = 0;
 
-	public ComPerspViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, ComPerspRenderEnv renderEnvironment, boolean loadDefaultCamera) throws LWJGLException {
+	public ComPerspViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, ComPerspRenderEnv renderEnvironment, boolean loadDefaultCamera) {
 		super();
+		System.out.println("GW, start here :) " + whiteDiffuse[22]);
 		this.programPreferences = programPreferences;
 
 		renderEnv = renderEnvironment;
@@ -93,7 +89,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 
 		MouseAdapter mouseAdapter = getMouseAdapter();
 		addMouseListener(mouseAdapter);
-		addMouseWheelListener(mouseAdapter);
+//		addMouseWheelListener(mouseAdapter);
 
 		setBackground(programPreferences == null ? new Color(80, 80, 80) : programPreferences.getPerspectiveBackgroundColor());
 		setMinimumSize(new Dimension(200, 200));
@@ -341,32 +337,32 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			int height = getHeight();
 			int width = getWidth();
 			final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-			// paintComponent(image.getGraphics(),5);
-			final Pbuffer buffer = new Pbuffer(width, height, new PixelFormat(), null, null);
-			buffer.makeCurrent();
-			final ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * 4);
-
-			initGL();
-			paintGL(false);
-
-			GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-			final int[] array = new int[pixels.capacity() / 4];
-			final int[] flippedArray = new int[pixels.capacity() / 4];
-
-			pixels.asIntBuffer().get(array);
-			for (int i = 0; i < array.length; i++) {
-				final int rgba = array[i];
-				final int a = rgba & 0xFF;
-				array[i] = (rgba >>> 8) | (a << 24);
-			}
-
-			for (int i = 0; i < height; i++) {
-				System.arraycopy(array, i * width, flippedArray, (height - 1 - i) * width, width);
-			}
-			image.getRaster().setDataElements(0, 0, width, height, flippedArray);
-
-			buffer.releaseContext();
+//			// paintComponent(image.getGraphics(),5);
+//			final Pbuffer buffer = new Pbuffer(width, height, new PixelFormat(), null, null);
+//			buffer.makeCurrent();
+//			final ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * 4);
+//
+//			initGL();
+//			paintGL(false);
+//
+//			GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+//
+//			final int[] array = new int[pixels.capacity() / 4];
+//			final int[] flippedArray = new int[pixels.capacity() / 4];
+//
+//			pixels.asIntBuffer().get(array);
+//			for (int i = 0; i < array.length; i++) {
+//				final int rgba = array[i];
+//				final int a = rgba & 0xFF;
+//				array[i] = (rgba >>> 8) | (a << 24);
+//			}
+//
+//			for (int i = 0; i < height; i++) {
+//				System.arraycopy(array, i * width, flippedArray, (height - 1 - i) * width, width);
+//			}
+//			image.getRaster().setDataElements(0, 0, width, height, flippedArray);
+//
+//			buffer.releaseContext();
 			return image;
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
@@ -417,13 +413,13 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	}
 
 
-	@Override
-	protected void exceptionOccurred(final LWJGLException exception) {
-		super.exceptionOccurred(exception);
-		exception.printStackTrace();
-	}
+//	@Override
+//	protected void exceptionOccurred(final LWJGLException exception) {
+//		super.exceptionOccurred(exception);
+//		exception.printStackTrace();
+//	}
 
-	@Override
+	//	@Override
 	public void initGL() {
 		try {
 			if ((programPreferences == null) || programPreferences.textureModels()) {
@@ -436,14 +432,16 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		}
 		// JAVA 9+ or maybe WIN 10 allow ridiculous virtual pixes, this combination of
 		// old library code and java std library code give me a metric for the ridiculous ratio:
-		xRatio = (float) (Display.getDisplayMode().getWidth() / Toolkit.getDefaultToolkit().getScreenSize().getWidth());
-		yRatio = (float) (Display.getDisplayMode().getHeight() / Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+//		xRatio = (float) (Display.getDisplayMode().getWidth() / Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+//		yRatio = (float) (Display.getDisplayMode().getHeight() / Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		xRatio = (float) 1.0;
+		yRatio = (float) 1.0;
 		// These ratios will be wrong and users will see corrupted visuals (bad scale, only fits part of window,
 		// etc) if they are using Windows 10 differing UI scale per monitor. I don't think I have an API
 		// to query that information yet, though.
 	}
 
-	@Override
+	//	@Override
 	public void paintGL() {
 		paintGL(true);
 	}
@@ -467,32 +465,33 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			}
 
 			if ((programPreferences != null) && (programPreferences.viewMode() == 0)) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			} else if ((programPreferences == null) || (programPreferences.viewMode() == 1)) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 			}
-			glViewport(0, 0, (int) (getWidth() * xRatio), (int) (getHeight() * yRatio));
-			enableGlThings(GL_DEPTH_TEST, GL_COLOR_MATERIAL, GL_LIGHTING, GL_LIGHT0, GL_LIGHT1, GL_NORMALIZE);
+			GL11.glViewport(0, 0, (int) (getWidth() * xRatio), (int) (getHeight() * yRatio));
+			enableGlThings(GL11.GL_DEPTH_TEST, GL11.GL_COLOR_MATERIAL, GL11.GL_LIGHTING, GL11.GL_LIGHT0, GL11.GL_LIGHT1, GL11.GL_NORMALIZE);
 
 			GL11.glDepthFunc(GL11.GL_LEQUAL);
 			GL11.glDepthMask(true);
-			glClearColor(backgroundRed, backgroundGreen, backgroundBlue, autoRepainting ? 1.0f : 0.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			GL11.glClearColor(backgroundRed, backgroundGreen, backgroundBlue, autoRepainting ? 1.0f : 0.0f);
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 //			glMatrixMode(GL_MODELVIEW);
 
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
 
 			setUpCamera();
 
 			final FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
 			ambientColor.put(0.6f).put(0.6f).put(0.6f).put(1f).flip();
-			glLightModel(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+			GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, ambientColor);
+//			GL11.glLightModelf(GL11.GL_LIGHT_MODEL_AMBIENT, 1f);
 
-			addLamp(0.8f, 40.0f, 100.0f, 80.0f, GL_LIGHT0);
+			addLamp(0.8f, 40.0f, 100.0f, 80.0f, GL11.GL_LIGHT0);
 
-			addLamp(0.2f, -100.0f, 100.5f, 0.5f, GL_LIGHT1);
+			addLamp(0.2f, -100.0f, 100.5f, 0.5f, GL11.GL_LIGHT1);
 
 			if (programPreferences != null && programPreferences.showPerspectiveGrid()) {
 				paintGridFloor();
@@ -563,11 +562,11 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	}
 
 	private void paintAndUpdate() {
-		try {
-			swapBuffers();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			swapBuffers();
+//		} catch (LWJGLException e) {
+//			e.printStackTrace();
+//		}
 		final boolean showing = isShowing();
 		final boolean running = paintTimer.isRunning();
 		if (showing && !running) {
@@ -582,17 +581,17 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		lightColor.put(lightValue).put(lightValue).put(lightValue).put(1f).flip();
 		final FloatBuffer lightPos = BufferUtils.createFloatBuffer(4);
 		lightPos.put(x).put(y).put(z).put(1f).flip();
-		glLight(glLight, GL_DIFFUSE, lightColor);
-		glLight(glLight, GL_POSITION, lightPos);
+		GL11.glLightfv(glLight, GL11.GL_DIFFUSE, lightColor);
+		GL11.glLightfv(glLight, GL11.GL_POSITION, lightPos);
 	}
 
 	private void renderParticles() {
 		if (renderTextures()) {
 			GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
-			glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
 		GL11.glDepthMask(false);
-		enableGlThings(GL_BLEND, GL_DEPTH_TEST);
+		enableGlThings(GL11.GL_BLEND, GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
 		renderModel.getParticleShader().use();
@@ -605,14 +604,14 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	private void paintGridFloor() {
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
-		disableGlThings(GL_ALPHA_TEST, GL_TEXTURE_2D, GL_CULL_FACE);
+		disableGlThings(GL11.GL_ALPHA_TEST, GL11.GL_TEXTURE_2D, GL11.GL_CULL_FACE);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		float lineLength = 200;
 		float lineSpacing = 50;
 		float numberOfLines = 5;
-		glColor3f(255f, 1f, 255f);
-		glColor4f(.7f, .7f, .7f, .4f);
-		glBegin(GL11.GL_LINES);
+		GL11.glColor3f(255f, 1f, 255f);
+		GL11.glColor4f(.7f, .7f, .7f, .4f);
+		GL11.glBegin(GL11.GL_LINES);
 		GL11.glNormal3f(0, 0, 0);
 		float lineSpread = (numberOfLines + 1) * lineSpacing / 2;
 		for (float x = -lineSpread + lineSpacing; x < lineSpread; x += lineSpacing) {
@@ -623,26 +622,26 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			GL11.glVertex3f(y, 0, -lineLength);
 			GL11.glVertex3f(y, 0, lineLength);
 		}
-		glEnd();
+		GL11.glEnd();
 	}
 
 	private void setUpCamera() {
-		if (ortho) {
+		if (ortho || true) {
 			float ortoFac = 4.0f;
 			float w = getWidth() / 2.0f / ortoFac;
 			float h = getHeight() / 2.0f / ortoFac;
-			glOrtho(-w, w, -h, h, 20.0f, 6000.0f);
+			GL11.glOrtho(-w, w, -h, h, 20.0f, 6000.0f);
 		} else {
-			gluPerspective(45f, (float) getWidth() / (float) getHeight(), 20.0f, 6000.0f);
+//			gluPerspective(45f, (float) getWidth() / (float) getHeight(), 20.0f, 6000.0f);
 		}
 
 		Vec3 statCamPos = new Vec3(0f, -70f, -200f);
 		Vec3 dynCamPos = Vec3.getScaled(cameraPos, (float) m_zoom).sub(statCamPos);
 
-		glTranslatef(dynCamPos.x, -dynCamPos.y, -dynCamPos.z);
-		glRotatef(yangle, 1f, 0f, 0f);
-		glRotatef(xangle, 0f, 1f, 0f);
-		glScalef((float) m_zoom, (float) m_zoom, (float) m_zoom);
+		GL11.glTranslatef(dynCamPos.x, -dynCamPos.y, -dynCamPos.z);
+		GL11.glRotatef(yangle, 1f, 0f, 0f);
+		GL11.glRotatef(xangle, 0f, 1f, 0f);
+		GL11.glScalef((float) m_zoom, (float) m_zoom, (float) m_zoom);
 	}
 
 	private void setStandardColors(GeosetAnim geosetAnim, float geosetAnimVisibility, ComPerspRenderEnv timeEnvironment, Layer layer) {
@@ -708,9 +707,9 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			GL11.glDepthMask(depthMask);
 		}
 		if (layer.getUnshaded()) {
-			GL11.glDisable(GL_LIGHTING);
+			GL11.glDisable(GL11.GL_LIGHTING);
 		} else {
-			glEnable(GL_LIGHTING);
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 
@@ -727,9 +726,9 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			case MODULATE2X -> setBlendWOAlpha(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
 		}
 		if (particle2.getUnshaded()) {
-			GL11.glDisable(GL_LIGHTING);
+			GL11.glDisable(GL11.GL_LIGHTING);
 		} else {
-			glEnable(GL_LIGHTING);
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 
@@ -744,9 +743,9 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		if ((programPreferences != null) && (programPreferences.getHighlighTriangleColor() != null)) {
 			final Color highlightTriangleColor = programPreferences.getHighlighTriangleColor();
-			glColor3f(highlightTriangleColor.getRed() / 255f, highlightTriangleColor.getGreen() / 255f, highlightTriangleColor.getBlue() / 255f);
+			GL11.glColor3f(highlightTriangleColor.getRed() / 255f, highlightTriangleColor.getGreen() / 255f, highlightTriangleColor.getBlue() / 255f);
 		} else {
-			glColor3f(1f, 3f, 1f);
+			GL11.glColor3f(1f, 3f, 1f);
 		}
 		renderGeosets(modelView.getHighlightedGeoset(), true, formatVersion, true);
 		renderGeosets(modelView.getHighlightedGeoset(), false, formatVersion, true);
@@ -757,7 +756,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		GL11.glDepthMask(true);
 		if (renderTextures()) {
 			GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
-			glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
 		for (final Geoset geo : geosets) {
 			if (modelView.getEditableGeosets().contains(geo) || (modelView.getHighlightedGeoset() != geo && overriddenColors)) {
@@ -810,10 +809,10 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 				if (overriddenColors) {
 					GL11.glDisable(GL11.GL_ALPHA_TEST);
 				}
-				glBegin(GL11.GL_TRIANGLES);
+				GL11.glBegin(GL11.GL_TRIANGLES);
 
 				renderMesh(geo, layer, false);
-				glEnd();
+				GL11.glEnd();
 			}
 		}
 	}
@@ -825,14 +824,14 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-		glBegin(GL11.GL_LINES);
-		glColor3f(1f, 1f, 3f);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glColor3f(1f, 1f, 3f);
 
 		for (final Geoset geo : modelView.getModel().getGeosets()) {
 			if (!correctLoD(geo, formatVersion)) continue;
 			renderMesh(geo, null, true);
 		}
-		glEnd();
+		GL11.glEnd();
 	}
 
 	private boolean correctLoD(Geoset geo, int formatVersion) {
@@ -1038,13 +1037,13 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 
 	private void enableGlThings(int... thing) {
 		for (int t : thing) {
-			glEnable(t);
+			GL11.glEnable(t);
 		}
 	}
 
 	private void disableGlThings(int... thing) {
 		for (int t : thing) {
-			glDisable(t);
+			GL11.glDisable(t);
 		}
 	}
 

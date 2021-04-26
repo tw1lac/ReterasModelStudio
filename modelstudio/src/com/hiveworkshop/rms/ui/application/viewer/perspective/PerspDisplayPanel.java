@@ -6,7 +6,6 @@ import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.viewer.ComPerspRenderEnv;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import net.infonode.docking.View;
-import org.lwjgl.LWJGLException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -113,7 +112,7 @@ public class PerspDisplayPanel extends JPanel {
 			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
 
 			setLayout(new BorderLayout());
-		} catch (final LWJGLException e) {
+		} catch (final Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
