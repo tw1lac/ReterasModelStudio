@@ -31,6 +31,8 @@
  */
 package com.hiveworkshop.rms.ui.util;
 
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.LWJGLCanvas;
+
 /**
  * <p/>
  * An AWT rendering context.
@@ -39,7 +41,7 @@ package com.hiveworkshop.rms.ui.util;
  * @author $Author$ $Id$
  * @version $Revision$
  */
-public class BetterAWTGLCanvas extends LWJGLCanvas1 {
+public class BetterAWTGLCanvas extends LWJGLCanvas {
 
 	public BetterAWTGLCanvas() {
 		super();

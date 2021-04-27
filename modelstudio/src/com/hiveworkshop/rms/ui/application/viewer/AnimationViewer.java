@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AnimationViewer extends JPanel {
 	private ModelView modelView;
-	private final AnimatedPerspectiveViewport perspectiveViewport;
+//	private final AnimatedPerspectiveViewport perspectiveViewport;
 	private final DefaultComboBoxModel<Animation> animations;
 	private final JComboBox<Animation> animationBox;
 	private final boolean allowUnanimated;
@@ -25,15 +25,15 @@ public class AnimationViewer extends JPanel {
 			renderEnv = new ComPerspRenderEnv();
 			modelView.setVetoOverrideParticles(true);
 			RenderModel renderModel = new RenderModel(modelView.getModel(), modelView);
-			perspectiveViewport = new AnimatedPerspectiveViewport(modelView, renderModel, programPreferences, renderEnv, true);
-			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
+//			perspectiveViewport = new AnimatedPerspectiveViewport(modelView, renderModel, programPreferences, renderEnv, true);
+//			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			renderEnv.setAnimationTime(0);
 			renderEnv.setLive(true);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 		setLayout(new BorderLayout());
-		add(perspectiveViewport, BorderLayout.CENTER);
+//		add(perspectiveViewport, BorderLayout.CENTER);
 		animations = new DefaultComboBoxModel<>();
 		if (allowUnanimated || (modelView.getModel().getAnims().size() == 0)) {
 			animations.addElement(null);
@@ -57,7 +57,7 @@ public class AnimationViewer extends JPanel {
 
 	public void setModel(final ModelView modelView) {
 		this.modelView = modelView;
-		perspectiveViewport.setModel(modelView);
+//		perspectiveViewport.setModel(modelView);
 		reload();
 	}
 
@@ -69,12 +69,12 @@ public class AnimationViewer extends JPanel {
 	public void paintComponent(final Graphics g) {
 		super.paintComponent(g);
 		// perspectiveViewport.repaint();
-		perspectiveViewport.paint(perspectiveViewport.getGraphics());
+//		perspectiveViewport.paint(perspectiveViewport.getGraphics());
 	}
 
-	public void reloadAllTextures() {
-		perspectiveViewport.reloadAllTextures();
-	}
+//	public void reloadAllTextures() {
+//		perspectiveViewport.reloadAllTextures();
+//	}
 
 	public void reload() {
 		final Animation selectedItem = (Animation) animationBox.getSelectedItem();
@@ -93,7 +93,7 @@ public class AnimationViewer extends JPanel {
 //		System.out.println("allow unanimated: " + allowUnanimated);
 		animations.addAll(anims);
 		boolean sawLast = (selectedItem == null || anims.contains(selectedItem));
-		perspectiveViewport.reloadTextures();
+//		perspectiveViewport.reloadTextures();
 		if (sawLast && ((selectedItem != null) || allowUnanimated)) {
 			animationBox.setSelectedItem(selectedItem);
 		} else if (!allowUnanimated && (anims.size() > 0)) {

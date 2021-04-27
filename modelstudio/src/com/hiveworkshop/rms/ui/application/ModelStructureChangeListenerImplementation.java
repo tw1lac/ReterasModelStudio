@@ -58,7 +58,8 @@ class ModelStructureChangeListenerImplementation implements ModelStructureChange
         mainPanel.creatorPanel.reloadAnimationList();
 
         display.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment, IDENTITY, IDENTITY, IDENTITY,
-                display.getPerspArea().getViewport());
+                null);
+//                display.getPerspArea().getViewport());
     }
 
     static ModelStructureChangeListener getModelStructureChangeListener(MainPanel mainPanel) {
@@ -93,7 +94,8 @@ class ModelStructureChangeListenerImplementation implements ModelStructureChange
             }
             reloadGeosetManagers(mainPanel, display);
             display.getEditorRenderModel().refreshFromEditor(mainPanel.animatedRenderEnvironment, IDENTITY,
-                    IDENTITY, IDENTITY, display.getPerspArea().getViewport());
+                    IDENTITY, IDENTITY, null);
+//                    IDENTITY, IDENTITY, display.getPerspArea().getViewport());
             display.getAnimationViewer().reload();
         }
     }

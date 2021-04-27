@@ -128,7 +128,8 @@ public class MPQBrowserView {
                         ModelStructureChangeListenerImplementation.IDENTITY,
                         ModelStructureChangeListenerImplementation.IDENTITY,
                         ModelStructureChangeListenerImplementation.IDENTITY,
-                        mainPanel.currentModelPanel().getPerspArea().getViewport());
+                        null);
+//                        mainPanel.currentModelPanel().getPerspArea().getViewport());
         mainPanel
                 .currentModelPanel()
                 .getEditorRenderModel()

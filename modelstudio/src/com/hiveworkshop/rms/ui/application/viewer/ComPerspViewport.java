@@ -4,11 +4,9 @@ import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.*;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
-import com.hiveworkshop.rms.filesystem.sources.DataSource;
-import com.hiveworkshop.rms.parsers.blp.BLPHandler;
-import com.hiveworkshop.rms.parsers.blp.GPUReadyTexture;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer.FilterMode;
 import com.hiveworkshop.rms.ui.application.edit.animation.TimeBoundProvider;
+import com.hiveworkshop.rms.ui.application.viewer.viewportcanvas.TextureThing;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import com.hiveworkshop.rms.ui.util.BetterAWTGLCanvas;
 import com.hiveworkshop.rms.ui.util.ExceptionPopup;
@@ -17,6 +15,8 @@ import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +24,6 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,7 +78,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 
 	public ComPerspViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, ComPerspRenderEnv renderEnvironment, boolean loadDefaultCamera) {
 		super();
-		System.out.println("GW, start here :) " + whiteDiffuse[22]);
+//		System.out.println("GW, start here :) " + whiteDiffuse[1337]);
 		this.programPreferences = programPreferences;
 
 		renderEnv = renderEnvironment;
@@ -117,30 +116,10 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		});
 		paintTimer.start();
 		shortcutKeyListener();
+
+		this.renderModel.refreshFromEditor(this.renderEnv, inverseCameraRotation, inverseCameraRotationYSpin, inverseCameraRotationZSpin, this);
 	}
 
-	public static int loadTexture(final GPUReadyTexture texture, final Bitmap bitmap) {
-		if (texture == null) {
-			return -1;
-		}
-		final ByteBuffer buffer = texture.getBuffer();
-		// You now have a ByteBuffer filled with the color data of each pixel.
-		// Now just create a texture ID and bind it. Then you can load it using
-		// whatever OpenGL method you want, for example:
-
-		final int textureID = GL11.glGenTextures(); // Generate texture ID
-		bindTexture(bitmap, textureID);
-
-		// Setup texture scaling filtering
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-
-		// Send texel data to OpenGL
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, texture.getWidth(), texture.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-
-		// Return the texture ID so we can bind it later again
-		return textureID;
-	}
 
 	private static void bindTexture(Bitmap tex, Integer texture) {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
@@ -278,28 +257,6 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		}
 	}
 
-
-	protected void loadToTexMap(final Bitmap tex) {
-		if (textureMap.get(tex) == null) {
-			String path = tex.getPath();
-			if (!path.isEmpty() && !programPreferences.getAllowLoadingNonBlpTextures()) {
-				path = path.replaceAll("\\.\\w+", "") + ".blp";
-			}
-			Integer texture = null;
-			try {
-				final DataSource workingDirectory = modelView.getModel().getWrappedDataSource();
-				texture = loadTexture(BLPHandler.get().loadTexture2(workingDirectory, path, tex), tex);
-			} catch (final Exception exc) {
-				if (LOG_EXCEPTIONS) {
-					exc.printStackTrace();
-				}
-			}
-			if (texture != null) {
-				textureMap.put(tex, texture);
-			}
-		}
-	}
-
 	private void setViewportCamera(int x, int y, int z, int rX, int rY) {
 		cameraPanStartPoint = null;
 		cameraSpinStartPoint = null;
@@ -314,7 +271,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		cameraPos.set(vertexHeap);
 	}
 
-	protected void deleteAllTextures() {
+	protected static void deleteAllTextures(HashMap<Bitmap, Integer> textureMap) {
 		for (final Integer textureId : textureMap.values()) {
 			GL11.glDeleteTextures(textureId);
 		}
@@ -372,7 +329,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	protected void forceReloadTextures() {
 		texLoaded = true;
 
-		deleteAllTextures();
+		deleteAllTextures(textureMap);
 		addGeosets(modelView.getModel().getGeosets());
 		renderModel.refreshFromEditor(renderEnv, Quat.getInverseRotation(inverseCameraRotation), inverseCameraRotationYSpin, inverseCameraRotationZSpin, this);
 	}
@@ -401,11 +358,11 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 				}
 				final Layer layer = geo.getMaterial().getLayers().get(i);
 				if (layer.getTextureBitmap() != null) {
-					loadToTexMap(layer.getTextureBitmap());
+					TextureThing.loadToTexMap(modelView.getModel(), programPreferences, textureMap, layer.getTextureBitmap());
 				}
 				if (layer.getTextures() != null) {
 					for (final Bitmap tex : layer.getTextures()) {
-						loadToTexMap(tex);
+						TextureThing.loadToTexMap(modelView.getModel(), programPreferences, textureMap, tex);
 					}
 				}
 			}
@@ -447,93 +404,93 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 	}
 
 	private void paintGL(final boolean autoRepainting) {
-		setSize(getParent().getSize());
-		if ((System.currentTimeMillis() - lastExceptionTimeMillis) < 5000) {
-			if ((System.currentTimeMillis() - lastExceptionTimeMillis) < 100) {
-				System.err.println("AnimatedPerspectiveViewport omitting frames due to avoid Exception log spam");
-			}
-			return;
-		}
-		reloadIfNeeded();
-		try {
-			normalListMap.clear();
-			vertListMap.clear();
-
-			final int formatVersion = modelView.getModel().getFormatVersion();
-			if (renderEnv.isLive()) {
-				updateAnimatedNodes();
-			}
-
-			if ((programPreferences != null) && (programPreferences.viewMode() == 0)) {
-				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-			} else if ((programPreferences == null) || (programPreferences.viewMode() == 1)) {
-				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-			}
-			GL11.glViewport(0, 0, (int) (getWidth() * xRatio), (int) (getHeight() * yRatio));
-			enableGlThings(GL11.GL_DEPTH_TEST, GL11.GL_COLOR_MATERIAL, GL11.GL_LIGHTING, GL11.GL_LIGHT0, GL11.GL_LIGHT1, GL11.GL_NORMALIZE);
-
-			GL11.glDepthFunc(GL11.GL_LEQUAL);
-			GL11.glDepthMask(true);
-			GL11.glClearColor(backgroundRed, backgroundGreen, backgroundBlue, autoRepainting ? 1.0f : 0.0f);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-//			glMatrixMode(GL_MODELVIEW);
-
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-
-			setUpCamera();
-
-			final FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
-			ambientColor.put(0.6f).put(0.6f).put(0.6f).put(1f).flip();
-			GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, ambientColor);
-//			GL11.glLightModelf(GL11.GL_LIGHT_MODEL_AMBIENT, 1f);
-
-			addLamp(0.8f, 40.0f, 100.0f, 80.0f, GL11.GL_LIGHT0);
-
-			addLamp(0.2f, -100.0f, 100.5f, 0.5f, GL11.GL_LIGHT1);
-
-			if (programPreferences != null && programPreferences.showPerspectiveGrid()) {
-				paintGridFloor();
-			}
-
-
-			for (final Geoset geo : modelView.getModel().getGeosets()) {
-				processMesh(geo, isHD(geo, formatVersion));
-			}
-			renderGeosets(modelView.getEditableGeosets(), formatVersion, false);
-
-			if (modelView.getHighlightedGeoset() != null) {
-				drawHighlightedGeosets(formatVersion);
-			}
-
-			if ((programPreferences != null)) {
-				if (programPreferences.showNormals()) {
-					renderNormals(formatVersion);
-				}
-				if (programPreferences.getRenderParticles()) {
-					renderParticles();
-				}
-//				if (programPreferences.showPerspectiveGrid()) {
-//					paintGridFloor();
+//		setSize(getParent().getSize());
+//		if ((System.currentTimeMillis() - lastExceptionTimeMillis) < 5000) {
+//			if ((System.currentTimeMillis() - lastExceptionTimeMillis) < 100) {
+//				System.err.println("AnimatedPerspectiveViewport omitting frames due to avoid Exception log spam");
+//			}
+//			return;
+//		}
+//		reloadIfNeeded();
+//		try {
+//			normalListMap.clear();
+//			vertListMap.clear();
+//
+//			final int formatVersion = modelView.getModel().getFormatVersion();
+//			if (renderEnv.isLive()) {
+//				updateAnimatedNodes();
+//			}
+//
+//			if ((programPreferences != null) && (programPreferences.viewMode() == 0)) {
+//				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+//			} else if ((programPreferences == null) || (programPreferences.viewMode() == 1)) {
+//				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+//			}
+//			GL11.glViewport(0, 0, (int) (getWidth() * xRatio), (int) (getHeight() * yRatio));
+//			enableGlThings(GL11.GL_DEPTH_TEST, GL11.GL_COLOR_MATERIAL, GL11.GL_LIGHTING, GL11.GL_LIGHT0, GL11.GL_LIGHT1, GL11.GL_NORMALIZE);
+//
+//			GL11.glDepthFunc(GL11.GL_LEQUAL);
+//			GL11.glDepthMask(true);
+//			GL11.glClearColor(backgroundRed, backgroundGreen, backgroundBlue, autoRepainting ? 1.0f : 0.0f);
+//			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+//
+////			glMatrixMode(GL_MODELVIEW);
+//
+//			GL11.glMatrixMode(GL11.GL_PROJECTION);
+//			GL11.glLoadIdentity();
+//
+//			setUpCamera();
+//
+//			final FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
+//			ambientColor.put(0.6f).put(0.6f).put(0.6f).put(1f).flip();
+//			GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, ambientColor);
+////			GL11.glLightModelf(GL11.GL_LIGHT_MODEL_AMBIENT, 1f);
+//
+//			addLamp(0.8f, 40.0f, 100.0f, 80.0f, GL11.GL_LIGHT0);
+//
+//			addLamp(0.2f, -100.0f, 100.5f, 0.5f, GL11.GL_LIGHT1);
+//
+//			if (programPreferences != null && programPreferences.showPerspectiveGrid()) {
+//				paintGridFloor();
+//			}
+//
+//
+//			for (final Geoset geo : modelView.getModel().getGeosets()) {
+//				processMesh(geo, isHD(geo, formatVersion));
+//			}
+//			renderGeosets(modelView.getEditableGeosets(), formatVersion, false);
+//
+//			if (modelView.getHighlightedGeoset() != null) {
+//				drawHighlightedGeosets(formatVersion);
+//			}
+//
+//			if ((programPreferences != null)) {
+//				if (programPreferences.showNormals()) {
+//					renderNormals(formatVersion);
 //				}
-			}
-
-			if (autoRepainting) {
-				paintAndUpdate();
-			}
-		} catch (final Throwable e) {
-			paintTimer.stop();
-			lastExceptionTimeMillis = System.currentTimeMillis();
-			if ((lastThrownErrorClass == null) || (lastThrownErrorClass != e.getClass())) {
-				lastThrownErrorClass = e.getClass();
-				popupCount++;
-				if (popupCount < 10) {
-					ExceptionPopup.display(e);
-				}
-			}
-			throw new RuntimeException(e);
-		}
+//				if (programPreferences.getRenderParticles()) {
+//					renderParticles();
+//				}
+////				if (programPreferences.showPerspectiveGrid()) {
+////					paintGridFloor();
+////				}
+//			}
+//
+//			if (autoRepainting) {
+//				paintAndUpdate();
+//			}
+//		} catch (final Throwable e) {
+//			paintTimer.stop();
+//			lastExceptionTimeMillis = System.currentTimeMillis();
+//			if ((lastThrownErrorClass == null) || (lastThrownErrorClass != e.getClass())) {
+//				lastThrownErrorClass = e.getClass();
+//				popupCount++;
+//				if (popupCount < 10) {
+//					ExceptionPopup.display(e);
+//				}
+//			}
+//			throw new RuntimeException(e);
+//		}
 	}
 
 
@@ -667,76 +624,6 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		}
 	}
 
-	private void bindLayerTexture(final Layer layer, final Bitmap tex, final Integer texture, final int formatVersion, final Material parent) {
-		if (texture != null) {
-			bindTexture(tex, texture);
-		} else if (textureMap.size() > 0) {
-			bindTexture(tex, 0);
-		}
-		boolean depthMask = false;
-		switch (layer.getFilterMode()) {
-			case BLEND -> setBlendWOAlpha(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			case ADDITIVE, ADDALPHA -> setBlendWOAlpha(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			case MODULATE -> setBlendWOAlpha(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			case MODULATE2X -> setBlendWOAlpha(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			case NONE -> {
-				GL11.glDisable(GL11.GL_ALPHA_TEST);
-				GL11.glDisable(GL11.GL_BLEND);
-				depthMask = true;
-			}
-			case TRANSPARENT -> {
-				GL11.glEnable(GL11.GL_ALPHA_TEST);
-				GL11.glAlphaFunc(GL11.GL_GREATER, 0.75f);
-				GL11.glDisable(GL11.GL_BLEND);
-				depthMask = true;
-			}
-		}
-		if (layer.getTwoSided() || ((ModelUtils.isShaderStringSupported(formatVersion)) && parent.getTwoSided())) {
-			GL11.glDisable(GL11.GL_CULL_FACE);
-		} else {
-			GL11.glEnable(GL11.GL_CULL_FACE);
-		}
-		if (layer.getNoDepthTest()) {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-		} else {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-		}
-		if (layer.getNoDepthSet()) {
-			GL11.glDepthMask(false);
-		} else {
-			GL11.glDepthMask(depthMask);
-		}
-		if (layer.getUnshaded()) {
-			GL11.glDisable(GL11.GL_LIGHTING);
-		} else {
-			GL11.glEnable(GL11.GL_LIGHTING);
-		}
-	}
-
-	protected void bindParticleTexture(final ParticleEmitter2 particle2, final Bitmap tex, final Integer texture) {
-		if (texture != null) {
-			bindTexture(tex, texture);
-		} else if (textureMap.size() > 0) {
-			bindTexture(tex, 0);
-		}
-		switch (particle2.getFilterMode()) {
-			case BLEND -> setBlendWOAlpha(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			case ADDITIVE, ALPHAKEY -> setBlendWOAlpha(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			case MODULATE -> setBlendWOAlpha(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
-			case MODULATE2X -> setBlendWOAlpha(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-		}
-		if (particle2.getUnshaded()) {
-			GL11.glDisable(GL11.GL_LIGHTING);
-		} else {
-			GL11.glEnable(GL11.GL_LIGHTING);
-		}
-	}
-
-	private void setBlendWOAlpha(int sFactor, int dFactor) {
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(sFactor, dFactor);
-	}
 
 	private void drawHighlightedGeosets(int formatVersion) {
 		GL11.glDepthMask(true);
@@ -804,7 +691,7 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 			if ((renderOpaque && opaqueLayer) || (!renderOpaque && !opaqueLayer)) {
 				final Bitmap tex = layer.getRenderTexture(renderEnv, modelView.getModel());
 				final Integer texture = textureMap.get(tex);
-				bindLayerTexture(layer, tex, texture, formatVersion, material);
+				TextureThing.bindLayerTexture(textureMap.size(), layer, tex, texture, formatVersion, material.getTwoSided());
 
 				if (overriddenColors) {
 					GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -1193,11 +1080,11 @@ public abstract class ComPerspViewport extends BetterAWTGLCanvas implements Rend
 		@Override
 		public void bind() {
 			if (!loaded) {
-				loadToTexMap(bitmap);
+				TextureThing.loadToTexMap(modelView.getModel(), programPreferences, textureMap, bitmap);
 				loaded = true;
 			}
 			final Integer texture = textureMap.get(bitmap);
-			bindParticleTexture(particle, bitmap, texture);
+			TextureThing.bindParticleTexture(textureMap.size(), particle, bitmap, texture);
 		}
 
 		@Override

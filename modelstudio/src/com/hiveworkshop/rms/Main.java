@@ -47,7 +47,7 @@ public class Main {
 
 	private static void startRealRMS(List<String> startupModelPaths, boolean dataPromptForced) throws IOException {
 		try {
-			LwjglNativesLoader.load();
+//			LwjglNativesLoader.load();
 
 			// Load the jassimp natives.
 			tryLoadJAssImp();

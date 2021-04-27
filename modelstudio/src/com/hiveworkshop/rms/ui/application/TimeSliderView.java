@@ -50,7 +50,8 @@ public class TimeSliderView {
 						ModelStructureChangeListenerImplementation.IDENTITY,
 						ModelStructureChangeListenerImplementation.IDENTITY,
 						ModelStructureChangeListenerImplementation.IDENTITY,
-						panel.getPerspArea().getViewport());
+						null);
+//						panel.getPerspArea().getViewport());
 				panel.getEditorRenderModel().updateNodes(false);
 			}
 		}
