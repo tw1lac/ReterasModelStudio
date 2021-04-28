@@ -55,9 +55,9 @@ public final class JAWTDemo {
 			throw new IllegalStateException("Unable to initialize glfw");
 		}
 
-		GearRenderer gearRenderer = new GearRenderer();
 
 		LWJGLCanvas canvas = new LWJGLCanvas();
+		GearRenderer gearRenderer = new GearRenderer();
 		canvas.setRenderThing(gearRenderer);
 		canvas.setSize(640, 480);
 

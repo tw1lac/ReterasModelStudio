@@ -5,10 +5,9 @@ import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.application.viewer.ComPerspRenderEnv;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.ui.util.lwjglcanvas.GearRenderer;
 import com.hiveworkshop.rms.ui.util.lwjglcanvas.LWJGLCanvas;
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.ModelRenderer;
 import net.infonode.docking.View;
-import net.miginfocom.swing.MigLayout;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import javax.swing.*;
@@ -31,11 +30,14 @@ public class PerspDisplayPanel extends JPanel {
 	private String title;
 	private final ProgramPreferences programPreferences;
 	private final View view;
+	static LWJGLCanvas canvas;
+	ModelView modelView;
 
 	// private JCheckBox wireframe;
 	public PerspDisplayPanel(final String title, final ModelView modelView, final ProgramPreferences programPreferences) {
 		super();
 		this.programPreferences = programPreferences;
+		this.modelView = modelView;
 		setOpaque(true);
 
 		setViewport(modelView);
@@ -55,35 +57,33 @@ public class PerspDisplayPanel extends JPanel {
 		JButton right = getButton(e -> translateViewLeftRight(-20), 16, 32);
 		// add(right);
 
+
+		if (canvas != null) {
+			canvas.destroy();
+		}
+
+		canvas = getLwjglCanvas();
+
 		setLayout(new BorderLayout());
 //		add(vp);
-		add(getMainPanel());
+//		add(getMainPanel());
+		add(canvas);
 
 		view = new View(title, null, this);
 	}
 
-	private static JPanel getMainPanel() {
+	private LWJGLCanvas getLwjglCanvas() {
 		GLFWErrorCallback.createPrint().set();
 		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize glfw");
 		}
 
-		GearRenderer gearRenderer = new GearRenderer();
+		ModelRenderer gearRenderer = new ModelRenderer(modelView.getModel(), modelView.getEditorRenderModel(), (ComPerspRenderEnv) modelView.getEditorRenderModel().getAnimatedRenderEnvironment());
 
 		LWJGLCanvas canvas = new LWJGLCanvas();
 		canvas.setRenderThing(gearRenderer);
 		canvas.setSize(640, 480);
-
-		JPanel jPanel = new JPanel(new MigLayout("fill"));
-		jPanel.add(new JButton("Ugg"));
-		jPanel.add(canvas);
-//		frame.addWindowListener(new WindowAdapter() {
-//			@Override
-//			public void windowClosed(WindowEvent e) {
-//				canvas.destroy();
-//			}
-//		});
-		return jPanel;
+		return canvas;
 	}
 
 	private static JButton getButton(ActionListener actionListener, int width, int height) {

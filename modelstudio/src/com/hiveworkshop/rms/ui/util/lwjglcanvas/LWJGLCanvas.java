@@ -37,8 +37,6 @@ public class LWJGLCanvas extends Canvas {
 
 	private RenderThing renderThing;
 
-	private GLXGears gears;
-
 	public LWJGLCanvas() {
 		awt = JAWT.calloc();
 		awt.version(JAWT_VERSION_1_4);
@@ -47,7 +45,6 @@ public class LWJGLCanvas extends Canvas {
 		}
 
 		// AWT event listeners are invoked in the EDT
-//        gears = new GLXGears();
 
 		ComponentAdapter componentAdapter = getComponentAdapter();
 		FocusListener focusListener = getFocusListener();
@@ -126,18 +123,20 @@ public class LWJGLCanvas extends Canvas {
 
 		long hdc = dsi_win.hdc();
 		if (hdc == NULL) {
+//			System.out.println("hdc null");
 			return;
 		}
 
 		// The render method is invoked in the EDT
 		if (context == NULL) {
+//			System.out.println("context null");
 			createContextGLFW(dsi_win);
 			if (renderThing != null) {
 				renderThing.init();
 			}
-//            gears = new GLXGears();
 		} else {
 			glfwMakeContextCurrent(context);
+			GL.createCapabilities();
 			GL.setCapabilities(caps);
 		}
 
@@ -256,9 +255,12 @@ public class LWJGLCanvas extends Canvas {
 
 	public void destroy() {
 		// Free the drawing surface
-		JAWT_FreeDrawingSurface(ds, awt.FreeDrawingSurface());
+		if (ds != null) {
 
-		awt.free();
+			JAWT_FreeDrawingSurface(ds, awt.FreeDrawingSurface());
+			awt.free();
+		}
+
 
 		if (context != NULL) {
 			glfwDestroyWindow(context);
@@ -274,7 +276,7 @@ public class LWJGLCanvas extends Canvas {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
@@ -314,6 +316,9 @@ public class LWJGLCanvas extends Canvas {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				System.out.println(e);
+				if (renderThing != null) {
+					renderThing.onKeyPressed(e);
+				}
 			}
 
 			@Override

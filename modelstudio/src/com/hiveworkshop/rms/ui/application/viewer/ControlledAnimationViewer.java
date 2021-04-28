@@ -4,9 +4,9 @@ import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import com.hiveworkshop.rms.ui.util.lwjglcanvas.GearRenderer;
 import com.hiveworkshop.rms.ui.util.lwjglcanvas.LWJGLCanvas;
-import net.miginfocom.swing.MigLayout;
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.ModelRenderer;
+import com.hiveworkshop.rms.util.Quat;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import javax.swing.*;
@@ -19,13 +19,20 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 	private ModelView modelView;
 	//	private final AnimatedPerspectiveViewport perspectiveViewport;
 	ComPerspRenderEnv renderEnv;
+	static LWJGLCanvas canvas;
+	RenderModel renderModel;
+	ModelRenderer gearRenderer;
+	int animationTime = 0;
 
 	public ControlledAnimationViewer(final ModelView modelView, final ProgramPreferences programPreferences, final boolean doDefaultCamera) {
+		if (canvas != null) {
+			canvas.destroy();
+		}
 		this.modelView = modelView;
 		try {
 			renderEnv = new ComPerspRenderEnv();
 			modelView.setVetoOverrideParticles(true);
-			RenderModel renderModel = new RenderModel(modelView.getModel(), modelView);
+			renderModel = new RenderModel(modelView.getModel(), modelView);
 //			perspectiveViewport = new AnimatedPerspectiveViewport(modelView, renderModel, programPreferences, renderEnv, doDefaultCamera);
 //			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			renderEnv.setAnimationTime(0);
@@ -33,32 +40,11 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		canvas = getLwjglCanvas();
 		setLayout(new BorderLayout());
-		add(getMainPanel(), BorderLayout.CENTER);
-	}
-
-	private static JPanel getMainPanel() {
-		GLFWErrorCallback.createPrint().set();
-		if (!glfwInit()) {
-			throw new IllegalStateException("Unable to initialize glfw");
-		}
-
-		GearRenderer gearRenderer = new GearRenderer();
-
-		LWJGLCanvas canvas = new LWJGLCanvas();
-		canvas.setRenderThing(gearRenderer);
-		canvas.setSize(640, 480);
-
-		JPanel jPanel = new JPanel(new MigLayout("fill"));
-		jPanel.add(new JButton("Ugg"));
-		jPanel.add(canvas);
-//		frame.addWindowListener(new WindowAdapter() {
-//			@Override
-//			public void windowClosed(WindowEvent e) {
-//				canvas.destroy();
-//			}
-//		});
-		return jPanel;
+//		add(getMainPanel(), BorderLayout.CENTER);
+		add(canvas, BorderLayout.CENTER);
 	}
 
 	public void setModel(final ModelView modelView) {
@@ -86,10 +72,18 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 		//perspectiveViewport.reloadTextures();
 	}
 
-	@Override
-	public void setAnimation(final Animation animation) {
-//		perspectiveViewport.setAnimation(animation);
-		renderEnv.setAnimation(animation);
+	private LWJGLCanvas getLwjglCanvas() {
+		GLFWErrorCallback.createPrint().set();
+		if (!glfwInit()) {
+			throw new IllegalStateException("Unable to initialize glfw");
+		}
+
+		gearRenderer = new ModelRenderer(modelView.getModel(), renderModel, renderEnv);
+
+		LWJGLCanvas canvas = new LWJGLCanvas();
+		canvas.setRenderThing(gearRenderer);
+		canvas.setSize(640, 480);
+		return canvas;
 	}
 
 	public void setAnimationTime(int time) {
@@ -98,10 +92,32 @@ public class ControlledAnimationViewer extends JPanel implements AnimationContro
 	}
 
 	@Override
+	public void setAnimation(final Animation animation) {
+//		perspectiveViewport.setAnimation(animation);
+		renderEnv.setAnimation(animation);
+		if (gearRenderer != null) {
+			gearRenderer.setAnimate(false);
+		}
+
+		renderModel.refreshFromEditor(renderEnv, new Quat(0, 0, 0, 1), new Quat(0, 0, 0, 1), new Quat(0, 0, 0, 1), null);
+	}
+
+	@Override
 	public void playAnimation() {
 //		perspectiveViewport.setAnimationTime(0);
 		renderEnv.setLive(true);
-		renderEnv.setAnimationTime(0);
+		if (gearRenderer != null) {
+			gearRenderer.setAnimate(true);
+		}
+//		animationTime += 100;
+//		if(renderEnv.getCurrentAnimation()!= null){
+//			animationTime = (100 + animationTime)%renderEnv.getCurrentAnimation().length();
+//			System.out.println("animationTime: "+ animationTime);
+//		}
+		renderEnv.setAnimationTime(animationTime);
+
+
+//		renderModel.updateNodes(false, false);
 
 	}
 
