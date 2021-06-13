@@ -16,11 +16,7 @@ import com.hiveworkshop.rms.util.Quat;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.PixelFormat;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +24,6 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 public class PerspectiveViewport extends BetterAWTGLCanvas {
 	Vec3 Y_AXIS = new Vec3(0, 1, 0);
@@ -85,7 +79,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	ExtLog modelExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
 	int ugg = 0;
 
-	public PerspectiveViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, TimeEnvironmentImpl renderEnvironment, boolean loadDefaultCamera) throws LWJGLException {
+	public PerspectiveViewport(final ModelView modelView, RenderModel renderModel, final ProgramPreferences programPreferences, TimeEnvironmentImpl renderEnvironment, boolean loadDefaultCamera) throws Exception {
 		super();
 		this.programPreferences = programPreferences;
 
@@ -323,32 +317,32 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 			int height = getHeight();
 			int width = getWidth();
 			final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-			// paintComponent(image.getGraphics(),5);
-			final Pbuffer buffer = new Pbuffer(width, height, new PixelFormat(), null, null);
-			buffer.makeCurrent();
-			final ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * 4);
-
-			initGL();
-			paintGL(false);
-
-			GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-			final int[] array = new int[pixels.capacity() / 4];
-			final int[] flippedArray = new int[pixels.capacity() / 4];
-
-			pixels.asIntBuffer().get(array);
-			for (int i = 0; i < array.length; i++) {
-				final int rgba = array[i];
-				final int a = rgba & 0xFF;
-				array[i] = (rgba >>> 8) | (a << 24);
-			}
-
-			for (int i = 0; i < height; i++) {
-				System.arraycopy(array, i * width, flippedArray, (height - 1 - i) * width, width);
-			}
-			image.getRaster().setDataElements(0, 0, width, height, flippedArray);
-
-			buffer.releaseContext();
+//			// paintComponent(image.getGraphics(),5);
+//			final Pbuffer buffer = new Pbuffer(width, height, new PixelFormat(), null, null);
+//			buffer.makeCurrent();
+//			final ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * 4);
+//
+//			initGL();
+//			paintGL(false);
+//
+//			GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+//
+//			final int[] array = new int[pixels.capacity() / 4];
+//			final int[] flippedArray = new int[pixels.capacity() / 4];
+//
+//			pixels.asIntBuffer().get(array);
+//			for (int i = 0; i < array.length; i++) {
+//				final int rgba = array[i];
+//				final int a = rgba & 0xFF;
+//				array[i] = (rgba >>> 8) | (a << 24);
+//			}
+//
+//			for (int i = 0; i < height; i++) {
+//				System.arraycopy(array, i * width, flippedArray, (height - 1 - i) * width, width);
+//			}
+//			image.getRaster().setDataElements(0, 0, width, height, flippedArray);
+//
+//			buffer.releaseContext();
 			return image;
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
@@ -405,13 +399,13 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	}
 
 
-	@Override
-	protected void exceptionOccurred(final LWJGLException exception) {
-		super.exceptionOccurred(exception);
-		exception.printStackTrace();
-	}
+//	@Override
+//	protected void exceptionOccurred(final LWJGLException exception) {
+//		super.exceptionOccurred(exception);
+//		exception.printStackTrace();
+//	}
 
-	@Override
+	//	@Override
 	public void initGL() {
 		try {
 			if ((programPreferences == null) || programPreferences.textureModels()) {
@@ -424,14 +418,14 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		}
 		// JAVA 9+ or maybe WIN 10 allow ridiculous virtual pixes, this combination of
 		// old library code and java std library code give me a metric for the ridiculous ratio:
-		xRatio = (float) (Display.getDisplayMode().getWidth() / Toolkit.getDefaultToolkit().getScreenSize().getWidth());
-		yRatio = (float) (Display.getDisplayMode().getHeight() / Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		xRatio = 1;//todo (float) (Display.getDisplayMode().getWidth() / Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+		yRatio = 1;//todo (float) (Display.getDisplayMode().getHeight() / Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		// These ratios will be wrong and users will see corrupted visuals (bad scale, only fits part of window,
 		// etc) if they are using Windows 10 differing UI scale per monitor. I don't think I have an API
 		// to query that information yet, though.
 	}
 
-	@Override
+	//	@Override
 	public void paintGL() {
 		paintGL(true);
 	}
@@ -476,7 +470,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 
 			final FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
 			ambientColor.put(0.6f).put(0.6f).put(0.6f).put(1f).flip();
-			glLightModel(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+//			glLightModel(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 
 			addLamp(0.8f, 40.0f, 100.0f, 80.0f, GL_LIGHT0);
 
@@ -552,11 +546,11 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	}
 
 	private void paintAndUpdate() {
-		try {
-			swapBuffers();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			swapBuffers();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		final boolean showing = isShowing();
 		final boolean running = paintTimer.isRunning();
 		if (showing && !running) {
@@ -571,8 +565,8 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		lightColor.put(lightValue).put(lightValue).put(lightValue).put(1f).flip();
 		final FloatBuffer lightPos = BufferUtils.createFloatBuffer(4);
 		lightPos.put(x).put(y).put(z).put(1f).flip();
-		glLight(glLight, GL_DIFFUSE, lightColor);
-		glLight(glLight, GL_POSITION, lightPos);
+//		glLight(glLight, GL_DIFFUSE, lightColor);
+//		glLight(glLight, GL_POSITION, lightPos);
 	}
 
 	private void renderParticles() {
@@ -622,7 +616,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 			float h = getHeight() / 2.0f / ortoFac;
 			glOrtho(-w, w, -h, h, 20.0f, 6000.0f);
 		} else {
-			gluPerspective(45f, (float) getWidth() / (float) getHeight(), 20.0f, 6000.0f);
+//			gluPerspective(45f, (float) getWidth() / (float) getHeight(), 20.0f, 6000.0f);
 		}
 
 		Vec3 statCamPos = new Vec3(0f, -70f, -200f);

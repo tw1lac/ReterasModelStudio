@@ -4,14 +4,18 @@ import com.hiveworkshop.rms.editor.model.Geoset;
 import com.hiveworkshop.rms.ui.application.viewer.PerspectiveViewport;
 import com.hiveworkshop.rms.ui.gui.modeledit.ModelHandler;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.LWJGLCanvas;
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.ModelRenderer;
 import net.infonode.docking.View;
-import org.lwjgl.LWJGLException;
+import org.lwjgl.glfw.GLFWErrorCallback;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.glfwInit;
 
 /**
  * Write a description of class DisplayPanel here.
@@ -26,6 +30,7 @@ public class PerspDisplayPanel extends JPanel {
 	private String title;
 	private final ProgramPreferences programPreferences;
 	private final View view;
+	static LWJGLCanvas canvas;
 
 	// private JCheckBox wireframe;
 	public PerspDisplayPanel(String title, ModelHandler modelHandler, ProgramPreferences programPreferences) {
@@ -35,7 +40,7 @@ public class PerspDisplayPanel extends JPanel {
 
 		this.modelHandler = modelHandler;
 		setViewport(modelHandler);
-		getViewport().setMinimumSize(new Dimension(200, 200));
+//		getViewport().setMinimumSize(new Dimension(200, 200));
 		this.title = title;
 
 		JButton plusZoom = getButton(e -> zoom(.15), 20, 20);
@@ -51,10 +56,32 @@ public class PerspDisplayPanel extends JPanel {
 		JButton right = getButton(e -> translateViewLeftRight(-20), 16, 32);
 		// add(right);
 
+
+		if (canvas != null) {
+			canvas.destroy();
+		}
+
+		canvas = getLwjglCanvas();
+
 		setLayout(new BorderLayout());
-		add(vp);
+//		add(vp);
+		add(canvas);
 
 		view = new View(title, null, this);
+	}
+
+	private LWJGLCanvas getLwjglCanvas() {
+		GLFWErrorCallback.createPrint().set();
+		if (!glfwInit()) {
+			throw new IllegalStateException("Unable to initialize glfw");
+		}
+
+		ModelRenderer gearRenderer = new ModelRenderer(modelHandler.getModel(), modelHandler.getRenderModel(), modelHandler.getEditTimeEnv());
+
+		LWJGLCanvas canvas = new LWJGLCanvas();
+		canvas.setRenderThing(gearRenderer);
+		canvas.setSize(640, 480);
+		return canvas;
 	}
 
 	private static JButton getButton(ActionListener actionListener, int width, int height) {
@@ -72,7 +99,8 @@ public class PerspDisplayPanel extends JPanel {
 	}
 
 	public Color getViewportBackground() {
-		return vp.getBackground();
+		return Color.BLACK;
+//		return vp.getBackground();
 	}
 
 	public View getView() {
@@ -80,15 +108,15 @@ public class PerspDisplayPanel extends JPanel {
 	}
 
 	public void addGeosets(List<Geoset> list) {
-		vp.addGeosets(list);
+//		vp.addGeosets(list);
 	}
 
 	public void reloadTextures() {
-		vp.reloadTextures();
+//		vp.reloadTextures();
 	}
 
 	public void reloadAllTextures() {
-		vp.reloadAllTextures();
+//		vp.reloadAllTextures();
 	}
 
 	public void setViewport(ModelHandler modelHandler) {
@@ -101,17 +129,17 @@ public class PerspDisplayPanel extends JPanel {
 				vp.destroy();
 			}
 			removeAll();
-//			vp = new PerspectiveViewport(modelView, renderModel, programPreferences, renderEnvironment);
-			vp = new PerspectiveViewport(modelHandler.getModelView(), modelHandler.getRenderModel(), programPreferences, modelHandler.getEditTimeEnv(), false);
-			vp.setIgnoreRepaint(false);
-			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
+////			vp = new PerspectiveViewport(modelView, renderModel, programPreferences, renderEnvironment);
+//			vp = new PerspectiveViewport(modelHandler.getModelView(), modelHandler.getRenderModel(), programPreferences, modelHandler.getEditTimeEnv(), false);
+//			vp.setIgnoreRepaint(false);
+//			vp.setMinimumSize(new Dimension(viewerSize, viewerSize));
 
 			setLayout(new BorderLayout());
-		} catch (LWJGLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		add(vp, BorderLayout.CENTER);
+//		add(vp, BorderLayout.CENTER);
 	}
 
 	public void setTitle(String what) {
@@ -129,32 +157,38 @@ public class PerspDisplayPanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		vp.paint(vp.getGraphics());
+//		vp.paint(vp.getGraphics());
 		// g.drawString(title,3,3);
 		// vp.repaint();
 	}
 
 	public void zoom(double v) {
-		vp.zoom(v);
-		vp.repaint();
+//		vp.zoom(v);
+//		vp.repaint();
 	}
 
 	public void translateViewLeftRight(int i) {
-		vp.translate((i * (1 / vp.getZoomAmount())), 0);
-		vp.repaint();
+//		vp.translate((i * (1 / vp.getZoomAmount())), 0);
+//		vp.repaint();
 	}
 
 	public void translateViewUpDown(int i) {
-		vp.translate(0, (i * (1 / vp.getZoomAmount())));
-		vp.repaint();
+//		vp.translate(0, (i * (1 / vp.getZoomAmount())));
+//		vp.repaint();
 	}
 
+	//	public ImageIcon getImageIcon() {
+//		return new ImageIcon(vp.getBufferedImage());
+//	}
 	public ImageIcon getImageIcon() {
-		return new ImageIcon(vp.getBufferedImage());
+		return new ImageIcon();
 	}
 
+	//	public BufferedImage getBufferedImage() {
+//		return vp.getBufferedImage();
+//	}
 	public BufferedImage getBufferedImage() {
-		return vp.getBufferedImage();
+		return new BufferedImage(30, 30, 1);
 	}
 
 

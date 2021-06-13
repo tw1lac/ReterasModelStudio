@@ -80,7 +80,13 @@ public class ModelLoader {
 						ModelStructureChangeListener.IDENTITY,
 						ModelStructureChangeListener.IDENTITY,
 						ModelStructureChangeListener.IDENTITY,
-						ProgramGlobals.getCurrentModelPanel().getPerspArea().getViewport().getParticleTextureInstance());
+						null);
+//		editorRenderModel
+//				.refreshFromEditor(
+//						ModelStructureChangeListener.IDENTITY,
+//						ModelStructureChangeListener.IDENTITY,
+//						ModelStructureChangeListener.IDENTITY,
+//						ProgramGlobals.getCurrentModelPanel().getPerspArea().getViewport().getParticleTextureInstance());
 		editorRenderModel.updateNodes(false); // update to 0 position
 	}
 

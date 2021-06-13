@@ -4,7 +4,6 @@ import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.ui.application.edit.animation.TimeEnvironmentImpl;
 import com.hiveworkshop.rms.ui.gui.modeledit.ModelHandler;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
-import org.lwjgl.LWJGLException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +23,7 @@ public class AnimationControllerListener extends JPanel {
 			perspectiveViewport.setMinimumSize(new Dimension(200, 200));
 			renderEnv.setAnimationTime(0);
 			renderEnv.setLive(true);
-		} catch (LWJGLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		setLayout(new BorderLayout());

@@ -1,3 +1,15 @@
+project.ext.appName = "retera-jwc3"
+project.ext.jtattooVersion = '1.6.11'
+project.ext.miglayoutVersion = '4.2'
+//project.ext.lwjglVersion = '2.9.3'
+project.ext.image4jVersion = '0.7'
+project.ext.rsyntaxtextareaVersion = '3.0.2'
+project.ext.nashornVersion = '15.2'
+
+project.ext.lwjglVersion = "3.2.3"
+project.ext.lwjglNatives = "natives-windows"
+project.ext.jomlVersion = "1.10.1"
+
 buildscript {
     repositories {
         mavenLocal()
@@ -18,16 +30,8 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '0.5'
-    ext {
-        appName = "retera-jwc3"
-        jtattooVersion = '1.6.11'
-        miglayoutVersion = '4.2'
-		lwjglVersion = '2.9.3'
-		image4jVersion = '0.7'
-		rsyntaxtextareaVersion = '3.0.2'
-        nashornVersion = '15.2'
-    }
+//    version = 'HelpTwilacFindBugs 0.5'
+    version = 'HelpTwilacFindBugs_1'
 
     repositories {
         mavenLocal()
@@ -53,6 +57,20 @@ project(":modelstudio") {
         compile "com.github.inwc3:JMPQ3:1.7.14"
         compile "org.json:json:20200518"
         compile "org.openjdk.nashorn:nashorn-core:${nashornVersion}"
+
+        implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+        implementation "org.lwjgl:lwjgl:$lwjglVersion"
+        implementation "org.lwjgl:lwjgl-assimp"
+        implementation "org.lwjgl:lwjgl-glfw"
+        implementation "org.lwjgl:lwjgl-jawt"
+        implementation "org.lwjgl:lwjgl-openal"
+        implementation "org.lwjgl:lwjgl-opengl"
+        implementation "org.joml:joml:$jomlVersion"
+        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
     }
 }
 
@@ -64,21 +82,30 @@ project(":thirdparty") {
     dependencies {
         compile "com.jtattoo:JTattoo:$jtattooVersion"
         compile "com.miglayout:miglayout-swing:$miglayoutVersion"
-        compile "org.lwjgl.lwjgl:lwjgl:${lwjglVersion}"
-        compile "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
-        compile "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
-        compile "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
-        compile "org.lwjgl.lwjgl:lwjgl_util:${lwjglVersion}"
+
+        implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+        implementation "org.lwjgl:lwjgl:$lwjglVersion"
+        implementation "org.lwjgl:lwjgl-assimp"
+        implementation "org.lwjgl:lwjgl-glfw"
+        implementation "org.lwjgl:lwjgl-jawt"
+        implementation "org.lwjgl:lwjgl-openal"
+        implementation "org.lwjgl:lwjgl-opengl"
+        implementation "org.joml:joml:$jomlVersion"
+        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
         compile "net.nikr:dds:1.0.0"
 //        compile "com.github.ebourg:infonode:master"
 //        compile "com.github.DrSuperGood:blp-iio-plugin:master"
         compile files(fileTree(dir: '../jars', includes: ['*.jar']))
 
-        implementation "org.lwjgl.lwjgl:lwjgl:${lwjglVersion}"
-        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
-        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
-        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
-        implementation "org.lwjgl.lwjgl:lwjgl_util:${lwjglVersion}"
+//        implementation "org.lwjgl.lwjgl:lwjgl:${lwjglVersion}"
+//        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
+//        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
+//        implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
+//        implementation "org.lwjgl.lwjgl:lwjgl_util:${lwjglVersion}"
     }
 }
 

@@ -286,7 +286,7 @@ public class FileDialog {
     }
 
     public void exportAnimatedFramePNG() {
-        if (getModelPanel() != null) {
+        if (getModelPanel() != null && getModelPanel().getPerspArea().getViewport() != null) {
             final BufferedImage fBufferedImage = getModelPanel().getPerspArea().getViewport().getBufferedImage();
             if (fBufferedImage != null) {
                 onClickSaveAs(null, fBufferedImage, SAVE_TEXTURE, false);

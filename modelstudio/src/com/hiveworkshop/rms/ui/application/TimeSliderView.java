@@ -48,11 +48,15 @@ public class TimeSliderView {
 				//			tbcPanel.applyTo(mainPanel.animatedRenderEnvironment);
 				tbcPanel.applyTo(modelPanel.getModelHandler().getEditTimeEnv());
 				modelPanel.getEditorRenderModel().refreshFromEditor(
-						//						mainPanel.animatedRenderEnvironment,
 						ModelStructureChangeListener.IDENTITY,
 						ModelStructureChangeListener.IDENTITY,
 						ModelStructureChangeListener.IDENTITY,
-						modelPanel.getPerspArea().getViewport().getParticleTextureInstance());
+						null);
+//				modelPanel.getEditorRenderModel().refreshFromEditor(
+//						ModelStructureChangeListener.IDENTITY,
+//						ModelStructureChangeListener.IDENTITY,
+//						ModelStructureChangeListener.IDENTITY,
+//						modelPanel.getPerspArea().getViewport().getParticleTextureInstance());
 				modelPanel.getEditorRenderModel().updateNodes(false);
 			}
 		}

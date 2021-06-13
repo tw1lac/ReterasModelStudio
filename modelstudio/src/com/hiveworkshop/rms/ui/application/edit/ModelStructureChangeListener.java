@@ -31,7 +31,10 @@ public class ModelStructureChangeListener {
 
 		modelPanel.getEditorRenderModel().refreshFromEditor(
 				IDENTITY, IDENTITY, IDENTITY,
-				modelPanel.getPerspArea().getViewport().getParticleTextureInstance());
+				null);
+//		modelPanel.getEditorRenderModel().refreshFromEditor(
+//				IDENTITY, IDENTITY, IDENTITY,
+//				modelPanel.getPerspArea().getViewport().getParticleTextureInstance());
 	}
 
 	public static ModelStructureChangeListener getModelStructureChangeListener() {

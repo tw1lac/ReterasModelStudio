@@ -1,6 +1,5 @@
 package com.hiveworkshop.rms;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.filesystem.GameDataFileSystem;
@@ -47,7 +46,7 @@ public class Main {
 
 	private static void startRealRMS(List<String> startupModelPaths, boolean dataPromptForced) throws IOException {
 		try {
-			LwjglNativesLoader.load();
+//			LwjglNativesLoader.load();
 
 			// Load the jassimp natives.
 			tryLoadJAssImp();

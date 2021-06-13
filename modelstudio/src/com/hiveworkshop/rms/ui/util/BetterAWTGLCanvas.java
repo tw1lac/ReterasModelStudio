@@ -31,14 +31,7 @@
  */
 package com.hiveworkshop.rms.ui.util;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.AWTGLCanvas;
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Drawable;
-import org.lwjgl.opengl.PixelFormat;
-
-import java.awt.*;
-import java.awt.event.ComponentEvent;
+import com.hiveworkshop.rms.ui.util.lwjglcanvas.LWJGLCanvas;
 
 /**
  * <p/>
@@ -48,37 +41,9 @@ import java.awt.event.ComponentEvent;
  * @author $Author$ $Id$
  * @version $Revision$
  */
-public class BetterAWTGLCanvas extends AWTGLCanvas {
+public class BetterAWTGLCanvas extends LWJGLCanvas {
 
-	public BetterAWTGLCanvas() throws LWJGLException {
+	public BetterAWTGLCanvas() {
 		super();
-	}
-
-	public BetterAWTGLCanvas(final GraphicsDevice device, final PixelFormat pixel_format, final Drawable drawable,
-			final ContextAttribs attribs) throws LWJGLException {
-		super(device, pixel_format, drawable, attribs);
-	}
-
-	public BetterAWTGLCanvas(final GraphicsDevice device, final PixelFormat pixel_format, final Drawable drawable)
-			throws LWJGLException {
-		super(device, pixel_format, drawable);
-	}
-
-	public BetterAWTGLCanvas(final GraphicsDevice device, final PixelFormat pixel_format) throws LWJGLException {
-		super(device, pixel_format);
-	}
-
-	public BetterAWTGLCanvas(final PixelFormat pixel_format) throws LWJGLException {
-		super(pixel_format);
-	}
-
-	@Override
-	public void componentShown(final ComponentEvent e) {
-		super.componentResized(e);
-	}
-
-	@Override
-	public void componentHidden(final ComponentEvent e) {
-		super.componentHidden(e);
 	}
 }

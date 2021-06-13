@@ -307,6 +307,9 @@ public class ModelPanel {
 		Quat IDENTITY = new Quat();
 		getEditorRenderModel().refreshFromEditor(
 				IDENTITY, IDENTITY, IDENTITY,
-				getPerspArea().getViewport().getParticleTextureInstance());
+				null);
+//		getEditorRenderModel().refreshFromEditor(
+//				IDENTITY, IDENTITY, IDENTITY,
+//				getPerspArea().getViewport().getParticleTextureInstance());
 	}
 }
