@@ -31,7 +31,7 @@ public class ModelRenderer extends RenderThing {
     }
 
     public void render(int width, int height) {
-        if (animate) {
+        if (animate || renderEnv.isLive()) {
             renderEnv.updateAnimationTime();
             renderModel.updateNodes(false, false);
         }
