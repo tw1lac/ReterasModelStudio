@@ -278,6 +278,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	}
 
 	private void setCurrentExtent() {
+		modelExtent.setMinMax(modelView.getModel().getExtents());
 		if ((renderEnv.getCurrentAnimation() != null) && renderEnv.getCurrentAnimation().getExtents() != null) {
 			currentExt = renderEnv.getCurrentAnimation().getExtents();
 		}

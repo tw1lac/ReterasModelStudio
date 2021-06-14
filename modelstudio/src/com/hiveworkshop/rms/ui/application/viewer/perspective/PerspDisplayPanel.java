@@ -30,7 +30,7 @@ public class PerspDisplayPanel extends JPanel {
 	private String title;
 	private final ProgramPreferences programPreferences;
 	private final View view;
-	static LWJGLCanvas canvas;
+	LWJGLCanvas canvas;
 
 	// private JCheckBox wireframe;
 	public PerspDisplayPanel(String title, ModelHandler modelHandler, ProgramPreferences programPreferences) {

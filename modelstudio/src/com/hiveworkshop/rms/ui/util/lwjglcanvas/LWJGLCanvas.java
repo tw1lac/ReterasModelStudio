@@ -151,6 +151,8 @@ public class LWJGLCanvas extends Canvas {
 			}
 
 			drawGrid();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		glfwSwapBuffers(context);
 
@@ -271,7 +273,7 @@ public class LWJGLCanvas extends Canvas {
 		return new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
@@ -281,27 +283,27 @@ public class LWJGLCanvas extends Canvas {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
@@ -315,7 +317,7 @@ public class LWJGLCanvas extends Canvas {
 		return new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 				if (renderThing != null) {
 					renderThing.onKeyPressed(e);
 				}
@@ -323,12 +325,12 @@ public class LWJGLCanvas extends Canvas {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 		};
 	}
@@ -337,12 +339,12 @@ public class LWJGLCanvas extends Canvas {
 		return new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				System.out.println(e);
+//				System.out.println(e);
 			}
 		};
 	}

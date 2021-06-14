@@ -19,7 +19,7 @@ public class AnimationControllerListener extends JPanel {
 	//	private final PerspectiveViewport perspectiveViewport;
 	TimeEnvironmentImpl renderEnv;
 	private ModelHandler modelHandler;
-	static LWJGLCanvas canvas;
+	LWJGLCanvas canvas;
 
 	public AnimationControllerListener(ModelHandler modelHandler, ProgramPreferences programPreferences, boolean doDefaultCamera) {
 		this.modelHandler = modelHandler;

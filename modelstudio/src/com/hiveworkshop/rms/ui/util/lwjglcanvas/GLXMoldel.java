@@ -7,6 +7,7 @@ import com.hiveworkshop.rms.editor.model.Triangle;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
 import com.hiveworkshop.rms.util.Mat4;
+import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
 import org.joml.Matrix3d;
 import org.joml.Matrix4d;
@@ -65,6 +66,9 @@ public class GLXMoldel {
 	private double distance = 40.0f;
 	private double angle;
 
+	Vec3 cameraPos = new Vec3(0, 0, 0);
+
+	private double zoom = 1;
 
 	public GLXMoldel(EditableModel model, RenderModel renderModel) {
 		System.err.println("GL_VENDOR: " + glGetString(GL_VENDOR));
@@ -90,10 +94,13 @@ public class GLXMoldel {
 
 			int version;
 			if (caps.OpenGL33) {
+				System.out.println("version: " + 330);
 				version = 330;
 			} else if (caps.OpenGL21) {
+				System.out.println("version: " + 120);
 				version = 120;
 			} else {
+				System.out.println("version: " + 110);
 				version = 110;
 			}
 
@@ -114,6 +121,7 @@ public class GLXMoldel {
 			int vao = glGenVertexArrays();
 			glBindVertexArray(vao); // bind and forget
 		}
+		System.out.println("ugg0");
 		glEnableVertexAttribArray(positions);
 		glEnableVertexAttribArray(normals);
 
@@ -198,6 +206,33 @@ public class GLXMoldel {
 		}
 	}
 
+	public GLXMoldel setZoom(double zoom) {
+		this.zoom = zoom;
+		System.out.println("zoom: " + zoom);
+		return this;
+	}
+
+	public GLXMoldel setAngleX(double angleX) {
+		this.angleX = angleX;
+		return this;
+	}
+
+	public GLXMoldel setAngleY(double angleY) {
+		this.angleY = angleY;
+		return this;
+	}
+
+	public GLXMoldel setAngleZ(double angleZ) {
+		this.angleZ = angleZ;
+		return this;
+	}
+
+	public GLXMoldel setCameraPos(Vec3 cameraPos) {
+		System.out.println("cameraPos: " + cameraPos);
+		this.cameraPos.set(cameraPos);
+		return this;
+	}
+
 	public void render() {
 		GLModel.makeModelBuffers(model, renderModel);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,8 +248,10 @@ public class GLXMoldel {
 
 		// GEAR 1
 		double angle2 = 180;
-		M.scale(1);
-		M.translation(-3.0, -2.0, -500.0);
+//		M.translation(-3.0, -2.0, -500.0);
+		M.translation(cameraPos.x, cameraPos.y, cameraPos.z);
+		M.scale(zoom);
+//		M.scale(zoom, zoom, zoom);
 
 		M.rotateX(angleX * PI / 180);
 		M.rotateY(angleY * PI / 180);
@@ -225,7 +262,7 @@ public class GLXMoldel {
 
 		double theTime = System.currentTimeMillis() / 1000.0;
 		if (theTime >= startTime + 1.0) {
-			System.out.format("%d fps\n", count);
+//			System.out.format("%d fps\n", count);
 			startTime = theTime;
 			count = 0;
 		}
@@ -372,7 +409,7 @@ public class GLXMoldel {
 			}
 
 			private void addVertex(double x, double y, double z) {
-				positions.put(vertexCount * 3, (float) x);
+				positions.put(vertexCount * 3 + 0, (float) x);
 				positions.put(vertexCount * 3 + 1, (float) y);
 				positions.put(vertexCount * 3 + 2, (float) z);
 
