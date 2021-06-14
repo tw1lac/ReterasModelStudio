@@ -312,28 +312,22 @@ public class GLXMoldel {
 		}
 
 		private static class Builder {
-			private final double[] quads = new double[4 * 3];
-			private final double[] tris = new double[3 * 3];
+			private final Vec3[] verts = new Vec3[] {new Vec3(0, 0, 0), new Vec3(0, 0, 0), new Vec3(0, 0, 0)};
+			private final Vec3[] norms = new Vec3[] {new Vec3(0, 0, 1), new Vec3(0, 0, 1), new Vec3(0, 0, 1)};
 			private int vertexCount;
 			private FloatBuffer positions;
 			private FloatBuffer normals;
-			private double
-					normalX,
-					normalY,
-					normalZ;
-			private int quadCount;
-			private int trisCount;
+			private final Vec4 normalSumHeap = new Vec4(0, 0, 1, 0);
 
 			Builder renderModel(EditableModel model, RenderModel renderModel) {
 				int size = 0;
 				for (final Geoset geo : model.getGeosets()) {
-					size += geo.getVertices().size();
+//					size += geo.getVertices().size();
+					size += geo.getTriangles().size() * 3;
 				}
 
 				positions = memAllocFloat(size * 3 * 8);
 				normals = memAllocFloat(size * 3 * 8);
-
-				normal3f(0.0, 0.0, 1.0);
 
 				for (final Geoset geo : model.getGeosets()) {
 					processMesh(geo, isHD(geo, model.getFormatVersion()), renderModel);
@@ -348,7 +342,7 @@ public class GLXMoldel {
 			private void processMesh(Geoset geo, boolean isHd, RenderModel renderModel) {
 
 				for (final Triangle tri : geo.getTriangles()) {
-					trisCount = 0;
+					int trisCount = 0;
 					for (final GeosetVertex vertex : tri.getVerts()) {
 						Mat4 skinBonesMatrixSumHeap;
 						if (isHd) {
@@ -356,66 +350,34 @@ public class GLXMoldel {
 						} else {
 							skinBonesMatrixSumHeap = ModelUtils.processSdBones(renderModel, vertex.getBones());
 						}
-						Vec4 vertexSumHeap = Vec4.getTransformed(new Vec4(vertex, 1), skinBonesMatrixSumHeap);
+						verts[trisCount].set(vertex).transform(skinBonesMatrixSumHeap);
 
 
 						if (vertex.getNormal() != null) {
-							Vec4 normalSumHeap = Vec4.getTransformed(new Vec4(vertex.getNormal(), 0), skinBonesMatrixSumHeap);
+							normalSumHeap.set(vertex.getNormal(), 0).transform(skinBonesMatrixSumHeap).normalize();
 							normalSumHeap.normalize();
-							normal3f(normalSumHeap.x, normalSumHeap.y, normalSumHeap.z);
+						} else {
+							normalSumHeap.set(0, 0, 0, 1);
 						}
-						vertex3f(vertexSumHeap.x, vertexSumHeap.y, vertexSumHeap.z);
+
+						norms[trisCount].set(normalSumHeap);
+
+						trisCount++;
 					}
+					addVertex(verts[0], norms[0]);
+					addVertex(verts[1], norms[1]);
+					addVertex(verts[2], norms[2]);
 				}
 			}
 
-			private void normal3f(double x, double y, double z) {
-				normalX = x;
-				normalY = y;
-				normalZ = z;
-			}
+			private void addVertex(Vec3 vertex, Vec3 normal) {
+				positions.put(vertexCount * 3 + 0, vertex.x);
+				positions.put(vertexCount * 3 + 1, vertex.y);
+				positions.put(vertexCount * 3 + 2, vertex.z);
 
-
-			private void vertex3f(double x, double y, double z) {
-//				quads[quadCount * 3] = x;
-//				quads[quadCount * 3 + 1] = y;
-//				quads[quadCount * 3 + 2] = z;
-//
-//				if (++quadCount == 4) {
-//					addVertex(quads[0], quads[1], quads[2]);
-//					addVertex(quads[3], quads[4], quads[5]);
-//					addVertex(quads[6], quads[7], quads[8]);
-//
-//					addVertex(quads[6], quads[7], quads[8]);
-//					addVertex(quads[3], quads[4], quads[5]);
-//					addVertex(quads[9], quads[10], quads[11]);
-//
-//					System.arraycopy(quads, 2 * 3, quads, 0, 2 * 3);
-//					quadCount = 2;
-//				}
-
-				tris[trisCount * 3] = x;
-				tris[trisCount * 3 + 1] = y;
-				tris[trisCount * 3 + 2] = z;
-
-				if (++trisCount == 3) {
-					addVertex(tris[0], tris[1], tris[2]);
-					addVertex(tris[3], tris[4], tris[5]);
-					addVertex(tris[6], tris[7], tris[8]);
-
-					System.arraycopy(tris, 3, tris, 0, 3);
-					trisCount = 1;
-				}
-			}
-
-			private void addVertex(double x, double y, double z) {
-				positions.put(vertexCount * 3 + 0, (float) x);
-				positions.put(vertexCount * 3 + 1, (float) y);
-				positions.put(vertexCount * 3 + 2, (float) z);
-
-				normals.put(vertexCount * 3, (float) normalX);
-				normals.put(vertexCount * 3 + 1, (float) normalY);
-				normals.put(vertexCount * 3 + 2, (float) normalZ);
+				normals.put(vertexCount * 3 + 0, normal.x);
+				normals.put(vertexCount * 3 + 1, normal.y);
+				normals.put(vertexCount * 3 + 2, normal.z);
 
 				vertexCount++;
 			}
