@@ -68,7 +68,9 @@ public class LWJGLCanvas extends Canvas {
 	@Override
 	public void paint(Graphics g) {
 		paint();
+//		System.out.println("ugg-painted");
 		repaint();
+//		System.out.println("ugg-repainted");
 	}
 
 	public LWJGLCanvas setRenderThing(RenderThing renderThing) {
@@ -108,11 +110,15 @@ public class LWJGLCanvas extends Canvas {
 						break;
 				}
 			} finally {
+
+//				System.out.println("ugg-FreeDrawingSurface");
 				// Free the drawing surface info
 				JAWT_DrawingSurface_FreeDrawingSurfaceInfo(dsi, ds.FreeDrawingSurfaceInfo());
 			}
 		} finally {
 			// Unlock the drawing surface
+
+//			System.out.println("ugg-Unlock DrawingSurface");
 			JAWT_DrawingSurface_Unlock(ds, ds.Unlock());
 		}
 	}
@@ -147,15 +153,19 @@ public class LWJGLCanvas extends Canvas {
 			glfwGetFramebufferSize(context, pw, ph);
 
 			if (renderThing != null) {
+//				System.out.println("ugg-renderThing1");
 				renderThing.render(pw.get(0), ph.get(0));
+//				System.out.println("ugg-renderThing2");
 			}
 
 			drawGrid();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+//		System.out.println("ugg-SwapBuffers");
 		glfwSwapBuffers(context);
 
+//		System.out.println("ugg-nullContext");
 		glfwMakeContextCurrent(NULL);
 		GL.setCapabilities(null);
 	}
@@ -257,6 +267,9 @@ public class LWJGLCanvas extends Canvas {
 
 	public void destroy() {
 		// Free the drawing surface
+		if (renderThing != null) {
+			renderThing.cleanup();
+		}
 		if (ds != null) {
 
 			JAWT_FreeDrawingSurface(ds, awt.FreeDrawingSurface());

@@ -1,14 +1,10 @@
 package com.hiveworkshop.rms.ui.util.lwjglcanvas;
 
+import com.hiveworkshop.rms.editor.model.Bitmap;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.Geoset;
-import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.model.Triangle;
-import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
-import com.hiveworkshop.rms.util.Mat4;
 import com.hiveworkshop.rms.util.Vec3;
-import com.hiveworkshop.rms.util.Vec4;
 import org.joml.Matrix3d;
 import org.joml.Matrix4d;
 import org.joml.Matrix4x3d;
@@ -16,40 +12,43 @@ import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.joml.Math.PI;
 import static org.lwjgl.opengl.GL30C.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.memAllocFloat;
-import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * Modern OpenGL port of <a href="https://www.opengl.org/archives/resources/code/samples/glut_examples/mesademos/gears.c">gears.c</a>.
  */
 public class GLXMoldel {
-	private final int program;
+	ShaderProgram shaderProgram;
+
 	private final int positions;
 	private final int normals;
+	private final int textureCoords;
+	private final int tris;
+	//	private final int u_TEX_COORDS;
 	private final int u_NORMAL;
 	private final int u_MVP;
 	private final int u_LIGHT;
 	private final int u_COLOR;
-	private final Matrix4d
-			P = new Matrix4d(),
-			MVP = new Matrix4d();
+
+	private final Matrix4d P = new Matrix4d();
+	private final Matrix4d MVP = new Matrix4d();
 
 	// ---------------------
-	private final Matrix4x3d
-			V = new Matrix4x3d(),
-			M = new Matrix4x3d(),
-			MV = new Matrix4x3d();
+	private final Matrix4x3d V = new Matrix4x3d();
+	private final Matrix4x3d M = new Matrix4x3d();
+	private final Matrix4x3d MV = new Matrix4x3d();
+
 	private final Matrix3d normal = new Matrix3d();
 	private final Vector3d light = new Vector3d();
+
 	private final FloatBuffer vec3f = BufferUtils.createFloatBuffer(3);
 	private final FloatBuffer mat3f = BufferUtils.createFloatBuffer(3 * 3);
 	private final FloatBuffer mat4f = BufferUtils.createFloatBuffer(4 * 4);
@@ -66,9 +65,16 @@ public class GLXMoldel {
 	private double distance = 40.0f;
 	private double angle;
 
+	//	private Map<RenderGeoset, BufferTracker> geosetBufferMap = new HashMap<>();
+	private Map<Geoset, BufferTracker> geosetBufferMap = new HashMap<>();
+	private Map<Geoset, RenderGeoset> geosetRenderMap = new HashMap<>();
+
+	int vaoId;
+
 	Vec3 cameraPos = new Vec3(0, 0, 0);
 
 	private double zoom = 1;
+	TextureThing2 textureThing2;
 
 	public GLXMoldel(EditableModel model, RenderModel renderModel) {
 		System.err.println("GL_VENDOR: " + glGetString(GL_VENDOR));
@@ -77,6 +83,7 @@ public class GLXMoldel {
 
 		this.model = model;
 		this.renderModel = renderModel;
+		this.textureThing2 = new TextureThing2(model);
 
 		GLCapabilities caps = GL.getCapabilities();
 		if (!caps.OpenGL20) {
@@ -88,107 +95,194 @@ public class GLXMoldel {
 
 		P.setFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 100.0);
 
+		int program;
 		try {
-			ByteBuffer vs = IOUtil.ioResourceToByteBuffer("gears.vert", 4096);
-			ByteBuffer fs = IOUtil.ioResourceToByteBuffer("gears.frag", 4096);
+			shaderProgram = new ShaderProgram()
+					.createVertShader("vertex_test2.vert")
+					.createFragShader("vertex_test2.frag")
+					.link();
 
-			int version;
-			if (caps.OpenGL33) {
-				System.out.println("version: " + 330);
-				version = 330;
-			} else if (caps.OpenGL21) {
-				System.out.println("version: " + 120);
-				version = 120;
-			} else {
-				System.out.println("version: " + 110);
-				version = 110;
-			}
-
-			program = compileShaders(version, vs, fs);
+			program = shaderProgram.getProgramId();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			throw new RuntimeException(exception);
 		}
 
 		u_MVP = glGetUniformLocation(program, "u_MVP");
 		u_NORMAL = glGetUniformLocation(program, "u_NORMAL");
 		u_LIGHT = glGetUniformLocation(program, "u_LIGHT");
 		u_COLOR = glGetUniformLocation(program, "u_COLOR");
+//		u_TEX_COORDS = glGetUniformLocation(program, "u_TEX_COORDS");
 
 		positions = glGetAttribLocation(program, "in_Position");
 		normals = glGetAttribLocation(program, "in_Normal");
+		textureCoords = glGetAttribLocation(program, "in_TVerts");
+		tris = glGetAttribLocation(program, "in_Tris");
 
 		if (caps.OpenGL30) {
-			int vao = glGenVertexArrays();
-			glBindVertexArray(vao); // bind and forget
+			vaoId = glGenVertexArrays();
+			glBindVertexArray(vaoId); // bind and forget
 		}
-		System.out.println("ugg0");
-		glEnableVertexAttribArray(positions);
-		glEnableVertexAttribArray(normals);
+
+//		enableAttributes();
 
 //		gear1 = new Gear(1.0, 4.0, 1.0, 20, 0.7, new float[] {0.8f, 0.1f, 0.0f, 1.0f});
 //		gear2 = new Gear(0.5, 2.0, 2.0, 10, 0.7, new float[] {0.0f, 0.8f, 0.2f, 1.0f});
 //		gear3 = new Gear(1.3, 2.0, 0.5, 10, 0.7, new float[] {0.2f, 0.2f, 1.0f, 1.0f});
 
-		GLModel = new GLModel(model, renderModel, new float[] {0.8f, 0.1f, 0.0f, 1.0f});
+//		GLModel = new GLModel(model, renderModel, new float[] {0.8f, 0.1f, 0.0f, 1.0f});
+
+
+		textureThing2.createTextureMap();
+		shaderProgram.createUniform("texture_sampler");
+		shaderProgram.createUniform("color");
+		shaderProgram.createUniform("useColor");
+//		GLModel = new GLModel(model, renderModel);
 
 		startTime = System.currentTimeMillis() / 1000.0;
 	}
 
-	private static void printShaderInfoLog(int obj) {
-		int infologLength = glGetShaderi(obj, GL_INFO_LOG_LENGTH);
-		if (infologLength > 0) {
-			glGetShaderInfoLog(obj);
-			System.out.format("%s\n", glGetShaderInfoLog(obj));
-		}
+	private void enableAttributes() {
+		glEnableVertexAttribArray(positions);
+		glEnableVertexAttribArray(normals);
+		glEnableVertexAttribArray(textureCoords);
+		glEnableVertexAttribArray(tris);
 	}
 
-	private static void printProgramInfoLog(int obj) {
-		int infologLength = glGetProgrami(obj, GL_INFO_LOG_LENGTH);
-		if (infologLength > 0) {
-			glGetProgramInfoLog(obj);
-			System.out.format("%s\n", glGetProgramInfoLog(obj));
-		}
+	private void disableAttributes() {
+		glDisableVertexAttribArray(positions);
+		glDisableVertexAttribArray(normals);
+		glDisableVertexAttribArray(textureCoords);
+		glDisableVertexAttribArray(tris);
 	}
 
-	private static void compileShader(int version, int shader, ByteBuffer code) {
-		try (MemoryStack stack = stackPush()) {
-			ByteBuffer header = stack.ASCII("#version " + version + "\n#line 0\n", false);
+	public void render() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shaderProgram.bind();
+//		GLModel.makeModelBuffers(model, renderModel);
 
-			glShaderSource(
-					shader,
-					stack.pointers(header, code),
-					stack.ints(header.remaining(), code.remaining())
-			);
+		// LIGHT
+		glUniform3fv(u_LIGHT, V.transformDirection(light.set(5.0, 5.0, 10.0)).normalize().get(vec3f));
 
-			glCompileShader(shader);
-			printShaderInfoLog(shader);
 
-			if (glGetShaderi(shader, GL_COMPILE_STATUS) != GL_TRUE) {
-				throw new IllegalStateException("Failed to compile shader.");
-			}
+		M.translation(cameraPos.x, cameraPos.y, cameraPos.z);
+		M.scale(zoom);
+
+		M.rotateX(angleX * PI / 180);
+		M.rotateY(angleY * PI / 180);
+		M.rotateZ(angleZ * PI / 180);
+
+
+		textureThing2.bindTexture(model.getTexture(0));
+
+//		drawModel(GLModel);
+
+		shaderProgram.setUniform("texture_sampler", 0);
+		for (Geoset geoset : model.getGeosets()) {
+
+//			System.out.println("drawing geoset: " + geoset.getName());
+			RenderGeoset renderGeoset = geosetRenderMap.computeIfAbsent(geoset, k -> new RenderGeoset(geoset, renderModel));
+//			System.out.println("renderGeoset");
+			BufferTracker bufferTracker = geosetBufferMap.computeIfAbsent(geoset, k -> new BufferTracker());
+//			System.out.println("bufferTracker fetched");
+
+////			System.out.println("binding things");
+
+
+			Bitmap bitmap = geoset.getMaterial().firstLayer().getTextureBitmap();
+//			System.out.println("texture: " + bitmap.getName());
+//			glBindVertexArray(vaoId);
+			glBindVertexArray(bufferTracker.vaoId);
+			enableAttributes();
+
+
+			FloatBuffer color = memAllocFloat(4);
+			color.put(new float[] {0.8f, 0.1f, 0.0f, 1.0f}).flip();
+			glUniformMatrix3fv(u_NORMAL, false, V.mul(M, MV).normal(normal).get(mat3f));
+			glUniformMatrix4fv(u_MVP, false, P.mul(MV, MVP).get(mat4f));
+			glUniform4fv(u_COLOR, color);
+
+
+			float[] c = {1, 0, 0};
+
+			shaderProgram.setUniform("color", c);
+			shaderProgram.setUniform("useColor", 0);
+
+			textureThing2.bindTexture(bitmap);
+			renderGeoset.addToBuffers(bufferTracker, positions, normals, textureCoords, tris);
+//			glDrawArrays(GL_TRIANGLES, 0, renderGeoset.getVertCount());
+//			System.out.println("drawing geoset elements");
+//			glDrawArrays(GL_TRIANGLES, 0, renderGeoset.getVertCount());
+			glDrawElements(GL_TRIANGLES, renderGeoset.getVertCount(), GL_UNSIGNED_INT, 0);
+//			System.out.println("drawn geoset elements");
+			disableAttributes();
+//			glDisableVertexAttribArray(positions);
+//			glDisableVertexAttribArray(normals);
+//			glDisableVertexAttribArray(textureCoords);
+//			glDisableVertexAttribArray(tris);
+			glBindVertexArray(0);
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//			System.out.println("bound vao 0");
 		}
+
+		count++;
+
+		double theTime = System.currentTimeMillis() / 1000.0;
+		if (theTime >= startTime + 1.0) {
+//			System.out.format("%d fps\n", count);
+			startTime = theTime;
+			count = 0;
+		}
+//
+//		glDisableVertexAttribArray(positions);
+//		glDisableVertexAttribArray(normals);
+//		glDisableVertexAttribArray(textureCoords);
+
+//
+//		glBindVertexArray(0);
+//		glBindTexture(GL_TEXTURE_2D, 0);
+
+		shaderProgram.unbind();
 	}
 
-	private static int compileShaders(int version, ByteBuffer vs, ByteBuffer fs) {
-		int v = glCreateShader(GL_VERTEX_SHADER);
-		int f = glCreateShader(GL_FRAGMENT_SHADER);
+	// this should probably be draw geoset...
+	private void drawModel(GLModel GLModel) {
+		glUniformMatrix3fv(u_NORMAL, false, V.mul(M, MV).normal(normal).get(mat3f));
+		glUniformMatrix4fv(u_MVP, false, P.mul(MV, MVP).get(mat4f));
+		glUniform4fv(u_COLOR, GLModel.color);
 
-		compileShader(version, v, vs);
-		compileShader(version, f, fs);
+		GLModel.bind(positions, normals, textureCoords);
+		glDrawArrays(GL_TRIANGLES, 0, GLModel.vertexCount);
 
-		int p = glCreateProgram();
-		glAttachShader(p, v);
-		glAttachShader(p, f);
-		glLinkProgram(p);
-		printProgramInfoLog(p);
+//		glDrawElements(GL_TRIANGLES, GLModel.vertexCount, GL_UNSIGNED_INT, 0);
+	}
 
-		if (glGetProgrami(p, GL_LINK_STATUS) != GL_TRUE) {
-			throw new IllegalStateException("Failed to link program.");
+	public void cleanup() {
+		if (shaderProgram != null) {
+			shaderProgram.cleanup();
 		}
 
-		glUseProgram(p);
-		return p;
+		glDisableVertexAttribArray(0);
+
+		// Delete the VBO
+		for (BufferTracker bufferTracker : geosetBufferMap.values()) {
+			bufferTracker.destroy();
+		}
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		GLModel.cleanup();
+
+		// Delete the VAO
+		glBindVertexArray(0);
+		glDeleteVertexArrays(vaoId);
+		shaderProgram.cleanup();
 	}
+
+	public void clear() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 
 	public void animate() {
 		angle += 2.0;
@@ -233,177 +327,54 @@ public class GLXMoldel {
 		return this;
 	}
 
-	public void render() {
-		GLModel.makeModelBuffers(model, renderModel);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// VIEW
-//		V.translation(0.0, 0.0, -distance)
-//				.rotateX(20.0f * PI / 180)
-//				.rotateY(30.0f * PI / 180);
-		//V.rotateZ(0.0f * PI / 180);
-
-		// LIGHT
-		glUniform3fv(u_LIGHT, V.transformDirection(light.set(5.0, 5.0, 10.0)).normalize().get(vec3f));
-
-		// GEAR 1
-		double angle2 = 180;
-//		M.translation(-3.0, -2.0, -500.0);
-		M.translation(cameraPos.x, cameraPos.y, cameraPos.z);
-		M.scale(zoom);
-//		M.scale(zoom, zoom, zoom);
-
-		M.rotateX(angleX * PI / 180);
-		M.rotateY(angleY * PI / 180);
-		M.rotateZ(angleZ * PI / 180);
-		drawModel(GLModel);
-
-		count++;
-
-		double theTime = System.currentTimeMillis() / 1000.0;
-		if (theTime >= startTime + 1.0) {
-//			System.out.format("%d fps\n", count);
-			startTime = theTime;
-			count = 0;
+	private int getVersion(GLCapabilities caps) {
+		if (caps.OpenGL33) {
+			System.out.println("version: " + 330);
+			return 330;
+		} else if (caps.OpenGL21) {
+			System.out.println("version: " + 120);
+			return 120;
+		} else {
+			System.out.println("version: " + 110);
+			return 110;
 		}
 	}
 
-	private void drawModel(GLModel GLModel) {
-		glUniformMatrix3fv(u_NORMAL, false, V.mul(M, MV).normal(normal).get(mat3f));
-		glUniformMatrix4fv(u_MVP, false, P.mul(MV, MVP).get(mat4f));
-		glUniform4fv(u_COLOR, GLModel.color);
-
-		GLModel.bind(positions, normals);
-		glDrawArrays(GL_TRIANGLES, 0, GLModel.vertexCount);
-	}
-
-	private static class GLModel {
-
-		final FloatBuffer color;
-
-		int positionVBO;
-		int normalVBO;
-
-		int vertexCount;
-
-		private GLModel(EditableModel model, RenderModel renderModel, float[] color) {
-			this.color = BufferUtils.createFloatBuffer(4);
-			this.color.put(color).flip();
-
-			positionVBO = makeModelBuffers(model, renderModel);
-		}
-
-		private int makeModelBuffers(EditableModel model, RenderModel renderModel) {
-			positionVBO = glGenBuffers();
-			normalVBO = glGenBuffers();
-
-			vertexCount = new Builder()
-					.renderModel(model, renderModel)
-					.updateVBO(positionVBO, normalVBO);
-			return positionVBO;
-		}
-
-		void bind(int positions, int normals) {
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glVertexAttribPointer(positions, 3, GL_FLOAT, false, 0, 0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glVertexAttribPointer(normals, 3, GL_FLOAT, false, 0, 0);
-		}
-
-		private static class Builder {
-			private final Vec3[] verts = new Vec3[] {new Vec3(0, 0, 0), new Vec3(0, 0, 0), new Vec3(0, 0, 0)};
-			private final Vec3[] norms = new Vec3[] {new Vec3(0, 0, 1), new Vec3(0, 0, 1), new Vec3(0, 0, 1)};
-			private int vertexCount;
-			private FloatBuffer positions;
-			private FloatBuffer normals;
-			private final Vec4 normalSumHeap = new Vec4(0, 0, 1, 0);
-
-			Builder renderModel(EditableModel model, RenderModel renderModel) {
-				int size = 0;
-				for (final Geoset geo : model.getGeosets()) {
-//					size += geo.getVertices().size();
-					size += geo.getTriangles().size() * 3;
-				}
-
-				positions = memAllocFloat(size * 3 * 8);
-				normals = memAllocFloat(size * 3 * 8);
-
-				for (final Geoset geo : model.getGeosets()) {
-					processMesh(geo, isHD(geo, model.getFormatVersion()), renderModel);
-				}
-				return this;
-			}
-
-			private boolean isHD(Geoset geo, int formatVersion) {
-				return (ModelUtils.isTangentAndSkinSupported(formatVersion)) && (geo.getVertices().size() > 0) && (geo.getVertex(0).getSkinBones() != null);
-			}
-
-			private void processMesh(Geoset geo, boolean isHd, RenderModel renderModel) {
-
-				for (final Triangle tri : geo.getTriangles()) {
-					int trisCount = 0;
-					for (final GeosetVertex vertex : tri.getVerts()) {
-						Mat4 skinBonesMatrixSumHeap;
-						if (isHd) {
-							skinBonesMatrixSumHeap = ModelUtils.processHdBones(renderModel, vertex.getSkinBones());
-						} else {
-							skinBonesMatrixSumHeap = ModelUtils.processSdBones(renderModel, vertex.getBones());
-						}
-						verts[trisCount].set(vertex).transform(skinBonesMatrixSumHeap);
-
-
-						if (vertex.getNormal() != null) {
-							normalSumHeap.set(vertex.getNormal(), 0).transform(skinBonesMatrixSumHeap).normalize();
-							normalSumHeap.normalize();
-						} else {
-							normalSumHeap.set(0, 0, 0, 1);
-						}
-
-						norms[trisCount].set(normalSumHeap);
-
-						trisCount++;
-					}
-					addVertex(verts[0], norms[0]);
-					addVertex(verts[1], norms[1]);
-					addVertex(verts[2], norms[2]);
-				}
-			}
-
-			private void addVertex(Vec3 vertex, Vec3 normal) {
-				positions.put(vertexCount * 3 + 0, vertex.x);
-				positions.put(vertexCount * 3 + 1, vertex.y);
-				positions.put(vertexCount * 3 + 2, vertex.z);
-
-				normals.put(vertexCount * 3 + 0, normal.x);
-				normals.put(vertexCount * 3 + 1, normal.y);
-				normals.put(vertexCount * 3 + 2, normal.z);
-
-				vertexCount++;
-			}
-
-			int updateVBO(int positionVBO, int normalVBO) {
-				// VBO for vertex data
-				positions.limit(vertexCount * 3);
-
-				glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-				glBufferData(GL_ARRAY_BUFFER, positions, GL_STATIC_DRAW);
-
-				// VBO for normals data
-				normals.limit(vertexCount * 3);
-
-				glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-				glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
-
-				memFree(positions);
-				memFree(normals);
-
-				positions = null;
-				normals = null;
-
-				return vertexCount;
-			}
-		}
-	}
-
+//	static class BufferTracker{
+//		int vaoId;
+//		int positionVBO = -1;
+//		int normalVBO = -1;
+//		int triangleVBO = -1;
+//		int textureCoordVBO = -1;
+//
+//		BufferTracker(){
+//			vaoId = glGenVertexArrays();
+//		}
+//
+//		private void destroy(){
+//			if(vaoId != -1){
+//				glDisableVertexAttribArray(0);
+//				glBindBuffer(GL_ARRAY_BUFFER, 0);
+//				if(positionVBO != -1){
+//					glDeleteBuffers(positionVBO);
+//					positionVBO = -1;
+//				}
+//				if(normalVBO != -1){
+//					glDeleteBuffers(normalVBO);
+//					normalVBO = -1;
+//				}
+//				if(triangleVBO != -1){
+//					glDeleteBuffers(triangleVBO);
+//					triangleVBO = -1;
+//				}
+//				if(textureCoordVBO != -1){
+//					glDeleteBuffers(textureCoordVBO);
+//					textureCoordVBO = -1;
+//				}
+//				glBindVertexArray(0);
+//				glDeleteVertexArrays(vaoId);
+//				vaoId = -1;
+//			}
+//		}
+//	}
 }

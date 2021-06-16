@@ -245,7 +245,8 @@ public class ViewportTransferHandler extends TransferHandler {
 							}
 						}
 					} else if (!vertex.getBones().isEmpty()) {
-						vertex.getBones().replaceAll(bone1 -> (Bone) nodesToClonedNodes.get(bone1));
+//						vertex.getBones().replaceAll(bone1 -> (Bone) nodesToClonedNodes.get(bone1));
+						vertex.replaceBones(nodesToClonedNodes);
 					}
 				}
 			}

@@ -77,36 +77,41 @@ public class ModelRenderer extends RenderThing {
     }
 
     private Vec3 getAdjustedCameraPos() {
-        System.out.println("ugg-dynPos");
+//        System.out.println("ugg-dynPos");
         return dynCamPos.set(cameraPos).scale((float) m_zoom).add(statCamPos);
 //        return Vec3.getScaled(cameraPos, (float) m_zoom).sub(statCamPos);
     }
 
     public void render(int width, int height) {
+//        System.out.println("ugg - render");
         if (animate || renderEnv.isLive()) {
             renderEnv.updateAnimationTime();
             renderModel.updateNodes(false, false);
         }
 
+//        System.out.println("ugg - render2");
         int scale = 1;
         if (glxMoldel != null) {
             glxMoldel.setSize(width * scale, height * scale);
             glxMoldel.render();
+//            System.out.println("ugg - glxMoldel.render");
             glxMoldel.animate();
+//            System.out.println("ugg - glxMoldel.animate");
         }
     }
 
     public void onKeyPressed(KeyEvent e) {
+        int ctrlDir = e.isControlDown() ? -1 : 1;
         if (e.getKeyCode() == KeyEvent.VK_X) {
-            glxMoldel.angleX = (glxMoldel.angleX + 90) % 360;
+            glxMoldel.angleX = (glxMoldel.angleX + 30 * ctrlDir) % 360;
             System.out.println("angleX: " + glxMoldel.angleX);
 
         } else if (e.getKeyCode() == KeyEvent.VK_Y) {
-            glxMoldel.angleY = (glxMoldel.angleY + 90) % 360;
+            glxMoldel.angleY = (glxMoldel.angleY + 30 * ctrlDir) % 360;
             System.out.println("angleY: " + glxMoldel.angleY);
 
         } else if (e.getKeyCode() == KeyEvent.VK_Z) {
-            glxMoldel.angleZ = (glxMoldel.angleZ + 90) % 360;
+            glxMoldel.angleZ = (glxMoldel.angleZ + 30 * ctrlDir) % 360;
             System.out.println("angleZ: " + glxMoldel.angleZ);
         }
 
@@ -115,19 +120,19 @@ public class ModelRenderer extends RenderThing {
             System.out.println("VK_NUMPAD7, pos: " + dynCamPos + ", zoom: " + m_zoom + ", (" + cameraPos + ")");
             Vec3 maxExt = resetZoom();
 //            setViewportCamera(0, (int) -(maxExt.length() * .54), 0, 90, 0, 0);
-            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 90, 0, 0);
+            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 90 * ctrlDir, 0, 0);
         }
         if (e.getKeyCode() == KeyEvent.VK_NUMPAD1) {
             // Front view
             System.out.println("VK_NUMPAD1, pos: " + dynCamPos + ", zoom: " + m_zoom + ", (" + cameraPos + ")");
             Vec3 maxExt = resetZoom();
-            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 0, 0, 0);
+            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 0, 0, 90 - 90 * ctrlDir);
         }
         if (e.getKeyCode() == KeyEvent.VK_NUMPAD3) {
             // Side view
             System.out.println("VK_NUMPAD3, pos: " + dynCamPos + ", zoom: " + m_zoom + ", (" + cameraPos + ")");
             Vec3 maxExt = resetZoom();
-            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 0, 0, 90);
+            setViewportCamera(0, (int) -(maxExt.length() / 6), 0, 0, 0, 90 * ctrlDir);
         }
         if (e.getKeyCode() == KeyEvent.VK_O) {
             // Orto Mode
@@ -247,5 +252,9 @@ public class ModelRenderer extends RenderThing {
         }
 
         return boundsRadius;
+    }
+
+    public void cleanup() {
+        glxMoldel.cleanup();
     }
 }

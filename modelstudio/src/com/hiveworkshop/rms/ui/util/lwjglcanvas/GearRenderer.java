@@ -30,19 +30,23 @@ public class GearRenderer extends RenderThing {
         }
     }
 
-    public void onKeyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_X) {
+	public void onKeyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_X) {
 //            gears.angleX = (gears.angleX + 90)%360;
 //            System.out.println("angleX: " + gears.angleX);
 
-        } else if (e.getKeyCode() == KeyEvent.VK_Y) {
+		} else if (e.getKeyCode() == KeyEvent.VK_Y) {
 //            gears.angleY = (gears.angleY + 90)%360;
 //            System.out.println("angleY: " + gears.angleY);
 
-        } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+		} else if (e.getKeyCode() == KeyEvent.VK_Z) {
 //            gears.angleZ = (gears.angleZ + 90)%360;
 //            System.out.println("angleZ: " + gears.angleZ);
-        }
+		}
 
-    }
+	}
+
+	public void cleanup() {
+
+	}
 }

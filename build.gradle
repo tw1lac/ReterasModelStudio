@@ -1,5 +1,5 @@
 project.ext.appName = "retera-jwc3"
-project.ext.jtattooVersion = '1.6.11'
+project.ext.jtattooVersion = '1.6.12'
 project.ext.miglayoutVersion = '4.2'
 //project.ext.lwjglVersion = '2.9.3'
 project.ext.image4jVersion = '0.7'

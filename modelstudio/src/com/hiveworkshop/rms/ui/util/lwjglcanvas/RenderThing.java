@@ -9,4 +9,6 @@ public abstract class RenderThing {
 
     public void onKeyPressed(KeyEvent e) {
     }
+
+    public abstract void cleanup();
 }

@@ -223,8 +223,8 @@ public class ScriptActions {
 				if (vertex.getSkinBones() != null) {
 					vertex.setSkinBones(new Bone[] {boneRoot, null, null, null}, new short[] {255, 0, 0, 0});
 				} else {
-					vertex.getBones().clear();
-					vertex.getBones().add(boneRoot);
+					vertex.clearBoneAttachments();
+					vertex.addBoneAttachment(boneRoot);
 				}
 			}
 		}
@@ -555,8 +555,8 @@ public class ScriptActions {
 					heroGlow.getVertices().addAll(heroGlowPlane.getVertices());
 					for (GeosetVertex gv : heroGlow.getVertices()) {
 						gv.setGeoset(heroGlow);
-						gv.getBones().clear();
-						gv.getBones().add(dummyHeroGlowNode);
+						gv.clearBoneAttachments();
+						gv.addBoneAttachment(dummyHeroGlowNode);
 					}
 					heroGlow.getTriangles().addAll(heroGlowPlane.getTriangles());
 					heroGlow.setUnselectable(true);

@@ -19,6 +19,7 @@ import java.util.*;
 public class GeosetVertex extends Vec3 {
 	private int vertexGroup = -1;
 	private Matrix matrixRef;
+	private Matrix matrix = new Matrix();
 	List<Vec2> tverts = new ArrayList<>();
 	List<Bone> bones = new ArrayList<>();
 	Set<Triangle> triangles = new HashSet<>();
@@ -45,6 +46,7 @@ public class GeosetVertex extends Vec3 {
 		super(old.x, old.y, old.z);
 		normal.set(old.getNormal());
 		bones.addAll(old.bones);
+		matrix.addAll(old.bones);
 		tverts = new ArrayList<>();
 		for (Vec2 tv : old.tverts) {
 			tverts.add(new Vec2(tv));
@@ -104,6 +106,7 @@ public class GeosetVertex extends Vec3 {
 			tangent = null;
 		}
 		if (skinBones != null) {
+			matrix.clear();
 			bones.clear();
 			boolean fallback = false;
 			for (SkinBone skinBone : skinBones) {
@@ -139,6 +142,10 @@ public class GeosetVertex extends Vec3 {
 		}
 	}
 
+	public void clearTVerts() {
+		tverts.clear();
+	}
+
 	public int getVertexGroup() {
 		return vertexGroup;
 	}
@@ -149,18 +156,22 @@ public class GeosetVertex extends Vec3 {
 
 	public void clearBoneAttachments() {
 		bones.clear();
-	}
-
-	public void clearTVerts() {
-		tverts.clear();
+		matrix.clear();
 	}
 
 	public void addBoneAttachment(Bone b) {
 		bones.add(b);
+		matrix.add(b);
+	}
+
+	public void addBoneAttachment(int i, Bone b) {
+		bones.add(i, b);
+		matrix.add(i, b);
 	}
 
 	public void addBoneAttachments(Collection<Bone> b) {
 		bones.addAll(b);
+		matrix.addAll(b);
 	}
 
 	public List<Bone> getBoneAttachments() {
@@ -169,6 +180,46 @@ public class GeosetVertex extends Vec3 {
 
 	public void setMatrix(Matrix ref) {
 		matrixRef = ref;
+	}
+
+	public List<Bone> getBones() {
+		return bones;
+	}
+
+
+	public void setBone(int i, final Bone bone) {
+		if (bone != null) {
+			bones.set(i, bone);
+		}
+		matrix.set(i, bone);
+	}
+
+	public void removeBone(Bone b) {
+		bones.remove(b);
+		matrix.remove(b);
+	}
+
+	public GeosetVertex removeBones(Collection<Bone> bones) {
+		this.bones.removeAll(bones);
+		matrix.removeAll(bones);
+		return this;
+	}
+
+	//	public GeosetVertex replaceBone(Bone boneToReplace, Bone newBone){
+	public GeosetVertex replaceBones(Map<IdObject, IdObject> newBoneMap) {
+		bones.replaceAll(b -> (Bone) newBoneMap.get(b));
+		matrix.replaceBones(newBoneMap);
+		return this;
+	}
+
+	public Matrix getMatrix() {
+		return matrix;
+	}
+
+	public void setBones(List<Bone> bones) {
+		this.bones = bones;
+		matrix.clear();
+		matrix.addAll(bones);
 	}
 
 	public Vec3 getNormal() {
@@ -195,14 +246,6 @@ public class GeosetVertex extends Vec3 {
 
 	public void setTverts(List<Vec2> tverts) {
 		this.tverts = tverts;
-	}
-
-	public List<Bone> getBones() {
-		return bones;
-	}
-
-	public void setBones(List<Bone> bones) {
-		this.bones = bones;
 	}
 
 	public Set<Triangle> getTriangles() {

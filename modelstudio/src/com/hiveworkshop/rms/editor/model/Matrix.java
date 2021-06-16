@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Vertex motion matrices.
@@ -109,14 +110,51 @@ public class Matrix {
 		}
 	}
 
-	public void add(final Bone b) {
-		if (b != null) {
-			bones.add(b);
+	public void add(final Bone bone) {
+		if (bone != null) {
+			bones.add(bone);
 		}
+	}
+
+	public void add(int i, final Bone bone) {
+		if (bone != null) {
+			bones.add(i, bone);
+		}
+	}
+
+	public void set(int i, final Bone bone) {
+		if (bone != null) {
+			bones.set(i, bone);
+		}
+	}
+
+	public void addAll(Collection<Bone> bones) {
+		this.bones.addAll(bones);
+		this.bones.remove(null);
+	}
+
+	public void remove(int i) {
+		bones.remove(i);
+	}
+
+	public void remove(final Bone bone) {
+		bones.remove(bone);
+	}
+
+	public void removeAll(Collection<Bone> bones) {
+		this.bones.removeAll(bones);
+	}
+
+	public void clear() {
+		bones.clear();
 	}
 
 	public void addId(final int id) {
 		m_boneIds.add(id);
+	}
+
+	public void replaceBones(Map<IdObject, IdObject> newBoneMap) {
+		bones.replaceAll(b -> (Bone) newBoneMap.get(b));
 	}
 
 	public int getBoneId(final int index) {
