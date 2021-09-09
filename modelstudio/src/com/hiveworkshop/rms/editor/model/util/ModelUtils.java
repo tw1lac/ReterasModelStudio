@@ -306,16 +306,17 @@ public final class ModelUtils {
 
 	public static Mat4 processBones(RenderModel renderModel, GeosetVertex geosetVertex, Geoset geoset) {
 		if (isTangentAndSkinSupported(geoset.getParentModel()) && (geoset.getVertex(0).getSkinBoneBones() != null)) {
-			return processHdBones(renderModel, geosetVertex.getSkinBones());
+			/// TODO: Move this allocation upwards and make it static.
+			return processHdBones(renderModel, geosetVertex.getSkinBones(), new Mat4());
 		} else {
-			return processSdBones(renderModel, geosetVertex.getBones());
+			/// TODO: Move this allocation upwards and make it static.
+			return processSdBones(renderModel, geosetVertex.getBones(), new Mat4());
 		}
 	}
 
-
-	public static Mat4 processHdBones(RenderModel renderModel, GeosetVertex.SkinBone[] skinBones) {
+	public static Mat4 processHdBones(RenderModel renderModel, GeosetVertex.SkinBone[] skinBones, Mat4 out) {
 		boolean processedBones = false;
-		Mat4 skinBonesMatrixSumHeap = new Mat4().setZero();
+		Mat4 skinBonesMatrixSumHeap = out.setZero();
 
 		for (int boneIndex = 0; boneIndex < 4; boneIndex++) {
 			Bone bone = skinBones[boneIndex].getBone();
@@ -334,9 +335,9 @@ public final class ModelUtils {
 		return skinBonesMatrixSumHeap;
 	}
 
-	public static Mat4 processSdBones(RenderModel renderModel, List<Bone> bones) {
+	public static Mat4 processSdBones(RenderModel renderModel, List<Bone> bones, Mat4 out) {
 		int boneCount = bones.size();
-		Mat4 bonesMatrixSumHeap = new Mat4().setZero();
+		Mat4 bonesMatrixSumHeap = out.setZero();
 		if (boneCount > 0) {
 			for (Bone bone : bones) {
 				bonesMatrixSumHeap.add(renderModel.getRenderNode(bone).getWorldMatrix());

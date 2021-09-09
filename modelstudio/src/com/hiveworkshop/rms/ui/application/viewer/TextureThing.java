@@ -9,13 +9,13 @@ import com.hiveworkshop.rms.parsers.blp.GPUReadyTexture;
 import com.hiveworkshop.rms.ui.preferences.ProgramPreferences;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.util.glu.GLU;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 public class TextureThing {
 	public static final boolean LOG_EXCEPTIONS = true;
@@ -41,11 +41,16 @@ public class TextureThing {
 		bindTexture(bitmap, textureID);
 
 		// Setup texture scaling filtering
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
-		// Send texel data to OpenGL
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, texture.getWidth(), texture.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+
+		// Send texel data to OpenGL.
+		// Also tell GLU to generate mipmaps.
+		// In the future it might be worthwhile to load the mipmaps directly from BLP/DDS textures.
+		GLU.gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA8, texture.getWidth(), texture.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+		//GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, texture.getWidth(), texture.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 
 		// Return the texture ID so we can bind it later again
 		return textureID;

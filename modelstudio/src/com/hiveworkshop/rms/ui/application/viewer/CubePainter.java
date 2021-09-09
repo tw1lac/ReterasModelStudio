@@ -71,7 +71,7 @@ public class CubePainter {
 				} else {
 					glColor4f(.5f, .3f, .7f, .7f);
 				}
-				RenderGeoset.RenderVert renderVert = renderGeoset.getRenderVert(vertex);
+				RenderGeoset.RenderVert renderVert = vertex.renderVert;
 				if (renderVert != null) {
 					Vec3 renderPos = renderVert.getRenderPos();
 
@@ -295,7 +295,7 @@ public class CubePainter {
 				} else {
 					glColor4f(.5f, .3f, .7f, .7f);
 				}
-				RenderGeoset.RenderVert renderVert = renderGeoset.getRenderVert(vertex);
+				RenderGeoset.RenderVert renderVert = vertex.renderVert;
 				if (renderVert != null) {
 					Vec3 renderPos = renderVert.getRenderPos();
 
@@ -822,7 +822,7 @@ public class CubePainter {
 				} else {
 					glColor4f(.4f, .3f, .7f, .4f);
 				}
-				RenderGeoset.RenderVert renderVert = renderGeoset.getRenderVert(vertex);
+				RenderGeoset.RenderVert renderVert = vertex.renderVert;
 				if (renderVert != null) {
 					Vec3 renderPos = renderVert.getRenderPos();
 
@@ -882,7 +882,7 @@ public class CubePainter {
 //					glColor4f(.4f, .3f, .7f, .4f);
 				}
 				glColor4f(components[0], components[1], components[2], components[3]);
-				RenderGeoset.RenderVert renderVert = renderGeoset.getRenderVert(vertex);
+				RenderGeoset.RenderVert renderVert = vertex.renderVert;
 				if (renderVert != null) {
 					vertRendererThing.transform(cameraHandler.getInverseCameraRotation(), renderVert.getRenderPos()).doGlGeom();
 				}

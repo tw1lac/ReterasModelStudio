@@ -101,9 +101,10 @@ public class QuatAnimFlag extends AnimFlag<Quat> {
 		ArrayList<float[]> tempInTans2 = new ArrayList<>();
 		ArrayList<float[]> tempOutTans2 = new ArrayList<>();
 
-		for (Sequence anim : sequenceMap.keySet()) {
+		for (var mapEntry : sequenceMap.entrySet()) {
+			Sequence anim = mapEntry.getKey();
 			if (globalSeq == null || anim == globalSeq) {
-				TreeMap<Integer, Entry<Quat>> entryTreeMap = sequenceMap.get(anim);
+				TreeMap<Integer, Entry<Quat>> entryTreeMap = mapEntry.getValue();
 				for (Integer time : entryTreeMap.keySet()) {
 					if (time > anim.getLength()) {
 						break;

@@ -1,5 +1,6 @@
 package com.hiveworkshop.rms.editor.model;
 
+import com.hiveworkshop.rms.ui.application.edit.mesh.viewport.renderers.renderparts.RenderGeoset;
 import com.hiveworkshop.rms.util.Vec2;
 import com.hiveworkshop.rms.util.Vec3;
 import com.hiveworkshop.rms.util.Vec4;
@@ -26,6 +27,7 @@ public class GeosetVertex extends Vec3 {
 	private byte[] skinBoneIndexes;
 	private Vec4 tangent;
 	private SkinBone[] skinBones;
+	public RenderGeoset.RenderVert renderVert = new RenderGeoset.RenderVert(this);
 
 	public GeosetVertex(double x, double y, double z) {
 		super(x, y, z);

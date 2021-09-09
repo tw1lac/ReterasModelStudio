@@ -27,6 +27,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -610,10 +612,10 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 				} else {
 					setStandardColors(geosetAnim, geosetAnimVisibility, renderEnv, layer);
 				}
-				glBegin(GL11.GL_TRIANGLES);
 
+//				glBegin(GL_TRIANGLES);
 				renderMesh2(geo, layer);
-				glEnd();
+//				glEnd();
 			}
 		}
 	}
@@ -659,52 +661,111 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		return true;
 	}
 
+	FloatBuffer positionsBuffer;
+	FloatBuffer uvsBuffer;
+	FloatBuffer normalsBuffer;
+	FloatBuffer colorsBuffer;
+
+	// Default color.
+	float[] WHITE = { 1, 1, 1, 1 };
+
 	private void renderMesh2(Geoset geo, Layer layer) {
 		RenderGeoset renderGeoset = renderModel.getRenderGeoset(geo);
 		if (renderGeoset != null) {
-			for (Triangle tri : geo.getTriangles()) {
-				if (programPreferences != null && !programPreferences.textureModels() && cameraHandler.isOrtho()) {
-					getTriAreaColor(tri);
-				}
-				for (GeosetVertex vertex : tri.getVerts()) {
-					if(!modelView.isHidden(vertex) && renderGeoset.getRenderVert(vertex) != null){
-						Vec3 renderPos = renderGeoset.getRenderVert(vertex).getRenderPos();
-						Vec3 renderNorm = renderGeoset.getRenderVert(vertex).getRenderNorm();
+			var triangles = geo.getTriangles();
+			int trianglesCount = triangles.size();
 
-						paintVert(layer, vertex, renderPos, renderNorm);
+			// Grow/create the buffers if needed.
+			// Triangles * 3 Vertices * 3 floats.
+			if (positionsBuffer == null || positionsBuffer.capacity() < trianglesCount * 9) {
+				positionsBuffer = ByteBuffer.allocateDirect(trianglesCount * 9 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+				uvsBuffer = ByteBuffer.allocateDirect(trianglesCount * 6 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+				normalsBuffer = ByteBuffer.allocateDirect(trianglesCount * 9 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+				colorsBuffer = ByteBuffer.allocateDirect(trianglesCount * 12 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+			}
+
+			int renderedVertices = 0;
+
+			for (Triangle tri : geo.getTriangles()) {
+				float[] color;
+
+				if (programPreferences != null && !programPreferences.textureModels() && cameraHandler.isOrtho()) {
+					color = getTriAreaColor(tri);
+				} else {
+					color = WHITE;
+				}
+
+//				glColor4f(color[0], color[1], color[2], color[3]);
+
+				for (GeosetVertex vertex : tri.getVerts()) {
+					if(!modelView.isHidden(vertex)){
+						RenderGeoset.RenderVert renderVert = vertex.renderVert;
+						Vec3 renderPos = renderVert.getRenderPos();
+						Vec3 renderNorm = renderVert.getRenderNorm();
+
+						int coordId = layer.getCoordId();
+						var uvs = vertex.getTverts();
+						if (coordId >= uvs.size()) {
+							coordId = uvs.size() - 1;
+						}
+
+						Vec2 uv = uvs.get(coordId);
+
+						int offset2 = renderedVertices * 2;
+						int offset3 = renderedVertices * 3;
+						int offset4 = renderedVertices * 4;
+
+						positionsBuffer.put(offset3 + 0, renderPos.x);
+						positionsBuffer.put(offset3 + 1, renderPos.y);
+						positionsBuffer.put(offset3 + 2, renderPos.z);
+
+						uvsBuffer.put(offset2 + 0, uv.x);
+						uvsBuffer.put(offset2 + 1, uv.y);
+
+						normalsBuffer.put(offset3 + 0, renderNorm.x);
+						normalsBuffer.put(offset3 + 1, renderNorm.y);
+						normalsBuffer.put(offset3 + 2, renderNorm.z);
+
+						colorsBuffer.put(offset4 + 0, color[0]);
+						colorsBuffer.put(offset4 + 1, color[1]);
+						colorsBuffer.put(offset4 + 2, color[2]);
+						colorsBuffer.put(offset4 + 3, color[3]);
+
+						renderedVertices++;
+
+//						paintVert(layer, vertex, renderPos, renderNorm);
 					}
 				}
 			}
+
+			GL11.glEnableClientState(GL_VERTEX_ARRAY);
+			GL11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			GL11.glEnableClientState(GL_NORMAL_ARRAY);
+			GL11.glEnableClientState(GL_COLOR_ARRAY);
+
+			GL11.glVertexPointer(3, 0, positionsBuffer);
+			GL11.glTexCoordPointer(2, 0, uvsBuffer);
+			GL11.glNormalPointer(0, normalsBuffer);
+			GL11.glColorPointer(4, 0, colorsBuffer);
+
+			GL11.glDrawArrays(GL_TRIANGLES, 0, renderedVertices);
+
+			GL11.glDisableClientState(GL_VERTEX_ARRAY);
+			GL11.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			GL11.glDisableClientState(GL_NORMAL_ARRAY);
+			GL11.glDisableClientState(GL_COLOR_ARRAY);
 		}
 	}
-	private void getTriAreaColor(Triangle triangle) {
-		float[] color;
-//		if (triangle.getGeoset() == modelView.getHighlightedGeoset()) {
-//			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_AREA_HIGHLIGHTED);
-////				GL11.glColor4f(.95f, .2f, .2f, 1f);
-//		} else if (triFullySelected(triangle)) {
-//			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_AREA_SELECTED);
-//		} else if (triFullyEditable(triangle)) {
-//			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_AREA);
-////				GL11.glColor4f(1f, 1f, 1f, 1f);
-//		} else {
-//			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_AREA_UNEDITABLE);
-////				GL11.glColor4f(.5f, .5f, .5f, 1f);
-//		}
+	private float[] getTriAreaColor(Triangle triangle) {
 		if (triangle.getGeoset() == modelView.getHighlightedGeoset()) {
-			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_HIGHLIGHTED);
-//				GL11.glColor4f(.95f, .2f, .2f, 1f);
+			return colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_HIGHLIGHTED);
 		} else if (triFullySelected(triangle)) {
-			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_SELECTED);
+			return colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_SELECTED);
 		} else if (triFullyEditable(triangle)) {
-			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE);
-//				GL11.glColor4f(1f, 1f, 1f, 1f);
+			return colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE);
 		} else {
-			color = colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_UNEDITABLE);
-//				GL11.glColor4f(.5f, .5f, .5f, 1f);
+			return colorPrefs.getColorComponents(ColorThing.TRIANGLE_LINE_UNEDITABLE);
 		}
-
-		glColor4f(color[0], color[1], color[2], color[3]);
 	}
 
 	private boolean triFullySelected(Triangle triangle){
@@ -718,6 +779,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 //		if (programPreferences != null && !programPreferences.textureModels() && cameraHandler.isOrtho()) {
 //			getTriLineColor(vertex);
 //		}
+
 		GL11.glNormal3f(normal.x, normal.y, normal.z);
 		int coordId = layer.getCoordId();
 		if (coordId >= vertex.getTverts().size()) {
@@ -759,12 +821,10 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 			RenderGeoset renderGeoset = renderModel.getRenderGeoset(geo);
 			if (correctLoD(geo, formatVersion) && renderGeoset != null) {
 				for(GeosetVertex vertex : geo.getVertices()){
-					if(renderGeoset.getRenderVert(vertex) != null){
-						Vec3 renderPos = renderGeoset.getRenderVert(vertex).getRenderPos();
-						Vec3 renderNorm = renderGeoset.getRenderVert(vertex).getRenderNorm();
+					Vec3 renderPos = vertex.renderVert.getRenderPos();
+					Vec3 renderNorm = vertex.renderVert.getRenderNorm();
 
-						paintNormal(renderPos, renderNorm);
-					}
+					paintNormal(renderPos, renderNorm);
 				}
 			}
 		}

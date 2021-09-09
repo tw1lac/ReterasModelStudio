@@ -391,7 +391,7 @@ public class SelectionManager extends AbstractSelectionManager {
 			RenderGeoset renderGeoset = editorRenderModel.getRenderGeoset(geoset);
 			for (GeosetVertex geosetVertex : geoset.getVertices()) {
 
-				if (HitTestStuff.hitTest(min, max, renderGeoset.getRenderVert(geosetVertex).getRenderPos(), viewPortMat, vertSize, zoom))
+				if (HitTestStuff.hitTest(min, max, geosetVertex.renderVert.getRenderPos(), viewPortMat, vertSize, zoom))
 					newSelection.add(geosetVertex);
 			}
 		}

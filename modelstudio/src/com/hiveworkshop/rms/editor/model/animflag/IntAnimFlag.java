@@ -147,9 +147,10 @@ public class IntAnimFlag extends AnimFlag<Integer> {
 		ArrayList<long[]> tempInTans2 = new ArrayList<>();
 		ArrayList<long[]> tempOutTans2 = new ArrayList<>();
 
-		for (Sequence anim : sequenceMap.keySet()) {
+		for (var mapEntry : sequenceMap.entrySet()) {
+			Sequence anim = mapEntry.getKey();
 			if (globalSeq == null || anim == globalSeq) {
-				TreeMap<Integer, Entry<Integer>> entryTreeMap = sequenceMap.get(anim);
+				TreeMap<Integer, Entry<Integer>> entryTreeMap = mapEntry.getValue();
 				for (Integer time : entryTreeMap.keySet()) {
 					if (time > anim.getLength()) {
 						break;

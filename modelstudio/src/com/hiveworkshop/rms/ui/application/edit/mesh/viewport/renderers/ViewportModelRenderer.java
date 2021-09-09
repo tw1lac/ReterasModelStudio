@@ -155,14 +155,15 @@ public class ViewportModelRenderer {
 //	private void renderGeoset2(Geoset geoset, Function<GeosetVertex, Boolean> passFunction) {
 	private void renderGeoset2(Geoset geoset) {
 		RenderGeoset renderGeoset = renderModel.getRenderGeoset(geoset);
-		for (RenderGeoset.RenderVert vertex : renderGeoset.getRenderVertexMap().values()) {
+		for (var geosetVertex : renderGeoset.geoset.getVertices()) {
+			var renderVert = geosetVertex.renderVert;
 
-			Vec2 vert2 = CoordSysUtils.convertToViewVec2(coordinateSystem, vertex.getRenderPos());
-			vertsMap.put(vertex.getVertex(), vert2);
+			Vec2 vert2 = CoordSysUtils.convertToViewVec2(coordinateSystem, renderVert.getRenderPos());
+			vertsMap.put(geosetVertex, vert2);
 
 			if (ProgramGlobals.getPrefs().showNormals()) {
-				Vec3 normalPoint = Vec3.getScaled(vertex.getRenderNorm(), (float) (12 / coordinateSystem.getZoom())).add(vertex.getRenderPos());
-				normalMap.put(vertex.getVertex(), CoordSysUtils.convertToViewVec2(coordinateSystem, normalPoint));
+				Vec3 normalPoint = Vec3.getScaled(renderVert.getRenderNorm(), (float) (12 / coordinateSystem.getZoom())).add(renderVert.getRenderPos());
+				normalMap.put(geosetVertex, CoordSysUtils.convertToViewVec2(coordinateSystem, normalPoint));
 			}
 
 		}
