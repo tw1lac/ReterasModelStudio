@@ -140,7 +140,7 @@ public class TempSaveModelStuff {
 		// BEFORE clearing the file
 
 		// Animations
-		fixAnimIntervals(model);
+		//fixAnimIntervals(model);
 
 		// Geosets -- delete if empty
 		List<Geoset> emptyGeosets = new ArrayList<>();

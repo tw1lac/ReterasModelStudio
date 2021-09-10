@@ -882,10 +882,7 @@ public class CubePainter {
 //					glColor4f(.4f, .3f, .7f, .4f);
 				}
 				glColor4f(components[0], components[1], components[2], components[3]);
-				RenderGeoset.RenderVert renderVert = vertex.renderVert;
-				if (renderVert != null) {
-					vertRendererThing.transform(cameraHandler.getInverseCameraRotation(), renderVert.getRenderPos()).doGlGeom();
-				}
+				vertRendererThing.transform(cameraHandler.getInverseCameraRotation(), vertex.renderVert.getRenderPos()).doGlGeom();
 			}
 		}
 		glEnd();

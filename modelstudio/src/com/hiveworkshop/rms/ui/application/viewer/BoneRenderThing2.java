@@ -154,21 +154,6 @@ public class BoneRenderThing2 {
 
 		return this;
 	}
-	public BoneRenderThing2 transform2(Vec3 p1, Vec3 p2, Vec3 scale){
-		diffVec.set(p2).sub(p1);
-		if(diffVec.x==0 && diffVec.y == 0 && diffVec.z == 0){
-			diffVec.set(zAxis).scale(0.01f);
-		}
-		tempVec.set(zAxis).cross(diffVec).normalize();
-
-		difRotR.setFromAxisAngle(tempVec, (float) (diffVec.getAngleToZaxis())).normalize();
-		rot90.setFromAxisAngle(tempVec, (float) (Math.PI/2)).normalize();
-		difRotR.mul(rot90).normalize();
-
-		transform(difRotR, p1, p2);
-
-		return this;
-	}
 
 	public BoneRenderThing2 doGlGeom(float[] color) {
 //		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -243,36 +228,6 @@ public class BoneRenderThing2 {
 		doGlTriQuad(renderPointsStemTop[2], renderPointsStemBot[2], renderPointsStemTop[3], renderPointsStemBot[3], renderNormals[5]);
 	}
 
-
-//	pointsStem =
-	private void doStem() {
-
-//		Vec3[] ugg = new Vec3[]{
-//				new Vec3( 1, -1, 1),// F R 0
-//				new Vec3(-1, -1, 1),// B R 1
-//				new Vec3( 1,  1, 1),// F L 2
-//				new Vec3(-1,  1, 1),// B L 3
-//				new Vec3( 0, 0, -1)};
-		//Front
-//		doGlTri(renderPointsStem[0], renderPointsStem[2], renderPointsStem[4], renderNormals[0]);
-//
-//		//Back
-//		doGlTri(renderPointsStem[3], renderPointsStem[1], renderPointsStem[4], renderNormals[1]);
-//
-//		//Left
-//		doGlTri(renderPointsStem[3], renderPointsStem[2], renderPointsStem[4], renderNormals[2]);
-//
-//		//Right
-//		doGlTri(renderPointsStem[0], renderPointsStem[1], renderPointsStem[4], renderNormals[3]);
-	}
-
-	private static void doGlQuad(Vec3 RT, Vec3 LT, Vec3 RB, Vec3 LB, Vec3 normal) {
-		GL11.glNormal3f(normal.x,normal.y,normal.z);
-		GL11.glVertex3f(RT.x, RT.y, RT.z);
-		GL11.glVertex3f(LT.x, LT.y, LT.z);
-		GL11.glVertex3f(LB.x, LB.y, LB.z);
-		GL11.glVertex3f(RB.x, RB.y, RB.z);
-	}
 	private static void doGlTriQuad(Vec3 LT, Vec3 LB, Vec3 RT, Vec3 RB, Vec3 normal) {
 		GL11.glNormal3f(normal.x,normal.y,normal.z);
 

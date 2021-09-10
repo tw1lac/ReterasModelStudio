@@ -3,6 +3,7 @@ package com.hiveworkshop.rms.ui.application.viewer;
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
+import com.hiveworkshop.rms.editor.render3d.RenderNode;
 import com.hiveworkshop.rms.editor.render3d.RenderParticleEmitter2;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer.FilterMode;
@@ -71,13 +72,14 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	//   Vec3 normal
 	//   Vec4 color
 	// "up to" because for example the normals rendering only uses the position and the RGB part of the color.
-	private FloatBuffer positionsBuffer;
-	private FloatBuffer uvsBuffer;
-	private FloatBuffer normalsBuffer;
-	private FloatBuffer colorsBuffer;
+	VertexBuffers renderBuffers = new VertexBuffers();
 
 	ExtLog currentExt = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
 	ExtLog modelExtent = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
+
+	FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
+	FloatBuffer lightColor = BufferUtils.createFloatBuffer(4);
+	FloatBuffer lightPos = BufferUtils.createFloatBuffer(4);
 
 	public PerspectiveViewport() throws LWJGLException {
 		super();
@@ -339,12 +341,8 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 				glLoadIdentity();
 
 				cameraHandler.setUpCamera();
-
-				FloatBuffer ambientColor = BufferUtils.createFloatBuffer(4);
 				ambientColor.put(0.6f).put(0.6f).put(0.6f).put(1f).flip();
 				glLightModel(GL_LIGHT_MODEL_AMBIENT, ambientColor);
-//			addLamp(0.8f, 40.0f, 200.0f, 80.0f, GL_LIGHT0);
-//			addLamp(0.2f, -100.0f, 200.5f, 0.5f, GL_LIGHT1);
 				addLamp(0.8f, 80.0f, 40.0f, 200.0f, GL_LIGHT0);
 				addLamp(0.2f, 0.5f, -100.0f, 200.5f, GL_LIGHT1);
 
@@ -449,9 +447,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	}
 
 	private void addLamp(float lightValue, float x, float y, float z, int glLight) {
-		FloatBuffer lightColor = BufferUtils.createFloatBuffer(4);
 		lightColor.put(lightValue).put(lightValue).put(lightValue).put(1f).flip();
-		FloatBuffer lightPos = BufferUtils.createFloatBuffer(4);
 		lightPos.put(x).put(y).put(z).put(1f).flip();
 		glLight(glLight, GL_DIFFUSE, lightColor);
 		glLight(glLight, GL_POSITION, lightPos);
@@ -474,33 +470,47 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	}
 
 	private void paintGridFloor() {
+		float lineLength = 200;
+		float lineSpacing = 50;
+		int numberOfLines = 5;
+		float lineSpread = (numberOfLines + 1) * lineSpacing / 2;
+		int renderedLines = 0;
+
+		renderBuffers.ensureCapacity(numberOfLines * 2 * 4);
+
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
 		disableGlThings(GL_ALPHA_TEST, GL_TEXTURE_2D, GL_CULL_FACE);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		float lineLength = 200;
-		float lineSpacing = 50;
-		float numberOfLines = 5;
-		glColor3f(255f, 1f, 255f);
-		glColor4f(.7f, .7f, .7f, .4f);
-		glBegin(GL11.GL_LINES);
-		GL11.glNormal3f(0, 0, 0);
-		float lineSpread = (numberOfLines + 1) * lineSpacing / 2;
 
-		glColor4f(.7f, 1f, .7f, .4f);
 		for (float x = -lineSpread + lineSpacing; x < lineSpread; x += lineSpacing) {
-//			GL11.glVertex3f(-lineLength, 0, x);
-//			GL11.glVertex3f(lineLength, 0, x);
-			GL11.glVertex3f(x, -lineLength, 0);
-			GL11.glVertex3f(x, lineLength, 0);
+			int offset = renderedLines * 4;
+
+			// Line 1
+			renderBuffers.setPosition(offset + 0, x, -lineLength, 0);
+			renderBuffers.setColorRGBA(offset + 0, 0.7f, 0.1f, 0.7f, 0.4f);
+			renderBuffers.setPosition(offset + 1, x, lineLength, 0);
+			renderBuffers.setColorRGBA(offset + 1, 0.7f, 0.1f, 0.7f, 0.4f);
+
+			// Line 2
+			renderBuffers.setPosition(offset + 2, -lineLength, x, 0);
+			renderBuffers.setColorRGBA(offset + 2, 0.1f, 0.7f, 0.7f, 0.4f);
+			renderBuffers.setPosition(offset + 3, lineLength, x, 0);
+			renderBuffers.setColorRGBA(offset + 3, 0.1f, 0.7f, 0.7f, 0.4f);
+
+			renderedLines++;
 		}
 
-		glColor4f(1f, .7f, .7f, .4f);
-		for (float y = -lineSpread + lineSpacing; y < lineSpread; y += lineSpacing) {
-			GL11.glVertex3f(-lineLength, y, 0);
-			GL11.glVertex3f(lineLength, y, 0);
-		}
-		glEnd();
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+
+		glVertexPointer(3, 0, renderBuffers.getPositions());
+		glColorPointer(4, 0, renderBuffers.getColors());
+
+		glDrawArrays(GL_LINES, 0, renderedLines * 4);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
 
 		cameraMarkerPainter();
 	}
@@ -657,23 +667,12 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		return true;
 	}
 
-	private void ensureBuffersCapacity(int vertices) {
-		if (positionsBuffer == null || positionsBuffer.capacity() < vertices * 3) {
-			positionsBuffer = ByteBuffer.allocateDirect(vertices * 3 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
-			uvsBuffer = ByteBuffer.allocateDirect(vertices * 2 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
-			normalsBuffer = ByteBuffer.allocateDirect(vertices * 3 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
-			colorsBuffer = ByteBuffer.allocateDirect(vertices * 4 * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
-		}
-	}
-
 	private void renderMesh2(Geoset geo, Layer layer) {
 		var triangles = geo.getTriangles();
 		int trianglesCount = triangles.size();
 		int renderedVertices = 0;
 
-		// Grow/create the buffers if needed.
-		// Triangles * 3 Vertices * 3 floats.
-		ensureBuffersCapacity(trianglesCount * 3);
+		renderBuffers.ensureCapacity(trianglesCount * 3);
 
 		for (Triangle tri : geo.getTriangles()) {
 			float[] color = getTriAreaColor(tri);
@@ -690,27 +689,13 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 						coordId = uvs.size() - 1;
 					}
 
-					Vec2 uv = uvs.get(coordId);
+					Vec2 texcoord = uvs.get(coordId);
 
-					int offset2 = renderedVertices * 2;
-					int offset3 = renderedVertices * 3;
-					int offset4 = renderedVertices * 4;
 
-					positionsBuffer.put(offset3 + 0, renderPos.x);
-					positionsBuffer.put(offset3 + 1, renderPos.y);
-					positionsBuffer.put(offset3 + 2, renderPos.z);
-
-					uvsBuffer.put(offset2 + 0, uv.x);
-					uvsBuffer.put(offset2 + 1, uv.y);
-
-					normalsBuffer.put(offset3 + 0, renderNorm.x);
-					normalsBuffer.put(offset3 + 1, renderNorm.y);
-					normalsBuffer.put(offset3 + 2, renderNorm.z);
-
-					colorsBuffer.put(offset4 + 0, color[0]);
-					colorsBuffer.put(offset4 + 1, color[1]);
-					colorsBuffer.put(offset4 + 2, color[2]);
-					colorsBuffer.put(offset4 + 3, color[3]);
+					renderBuffers.setPosition(renderedVertices, renderPos);
+					renderBuffers.setTexcoord(renderedVertices, texcoord);
+					renderBuffers.setNormal(renderedVertices, renderNorm);
+					renderBuffers.setColorRGBA(renderedVertices, color);
 
 					renderedVertices++;
 				}
@@ -722,10 +707,10 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 
-		glVertexPointer(3, 0, positionsBuffer);
-		glTexCoordPointer(2, 0, uvsBuffer);
-		glNormalPointer(0, normalsBuffer);
-		glColorPointer(4, 0, colorsBuffer);
+		glVertexPointer(3, 0, renderBuffers.getPositions());
+		glTexCoordPointer(2, 0, renderBuffers.getTexcoords());
+		glNormalPointer(0, renderBuffers.getNormals());
+		glColorPointer(4, 0, renderBuffers.getColors());
 
 		glDrawArrays(GL_TRIANGLES, 0, renderedVertices);
 
@@ -793,30 +778,23 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		int verticesCount = vertices.size();
 		int renderedVertices = 0;
 
-		ensureBuffersCapacity(verticesCount * 2);
+		renderBuffers.ensureCapacity(verticesCount * 2);
 
 		float factor = (float) (6 / cameraHandler.getZoom());
 
 		for (GeosetVertex vertex : vertices) {
 			Vec3 renderPos = vertex.renderVert.getRenderPos();
 			Vec3 renderNorm = vertex.renderVert.getRenderNorm();
-			int offset6 = renderedVertices * 6;
+			int offset = renderedVertices * 2;
 
-			positionsBuffer.put(offset6 + 0, renderPos.x);
-			positionsBuffer.put(offset6 + 1, renderPos.y);
-			positionsBuffer.put(offset6 + 2, renderPos.z);
+			renderBuffers.setPosition(offset + 0, renderPos);
+			renderBuffers.setColorRGB(offset + 0, 1, 1, 3);
 
-			colorsBuffer.put(offset6 + 0, 1);
-			colorsBuffer.put(offset6 + 1, 1);
-			colorsBuffer.put(offset6 + 2, 3);
-
-			positionsBuffer.put(offset6 + 3, renderPos.x + renderNorm.x * factor);
-			positionsBuffer.put(offset6 + 4, renderPos.y + renderNorm.y * factor);
-			positionsBuffer.put(offset6 + 5, renderPos.z + renderNorm.z * factor);
-
-			colorsBuffer.put(offset6 + 3, 1);
-			colorsBuffer.put(offset6 + 4, 1);
-			colorsBuffer.put(offset6 + 5, 3);
+			renderBuffers.setPosition(offset + 1,
+					renderPos.x + renderNorm.x * factor,
+					renderPos.y + renderNorm.y * factor,
+					renderPos.z + renderNorm.z * factor);
+			renderBuffers.setColorRGB(offset + 1, 1, 1, 3);
 
 			renderedVertices++;
 		}
@@ -824,8 +802,8 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 
-		glVertexPointer(3, 0, positionsBuffer);
-		glColorPointer(3, 0, colorsBuffer);
+		glVertexPointer(3, 0, renderBuffers.getPositions());
+		glColorPointer(3, 0, renderBuffers.getColors());
 
 		glDrawArrays(GL_LINES, 0, renderedVertices);
 
