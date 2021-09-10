@@ -36,6 +36,10 @@ public class CameraHandler {
 	private Vec2 cameraPanStartPoint2;
 	private Vec2 cameraSpinStartPoint2;
 
+	private final Quat rotationHeap = new Quat();
+	private final Quat actualCameraRotation = new Quat();
+	private final Quat actualInverseCameraRotation = new Quat();
+
 	private Vec2 actStart;
 
 	Mat4 viewPortAntiRotMat = new Mat4();
@@ -110,6 +114,14 @@ public class CameraHandler {
 	}
 
 	private void calculateCameraRotation() {
+		actualCameraRotation.setIdentity();
+
+		actualCameraRotation.mul(rotationHeap.setFromAxisAngle(X_AXIS, (float) Math.toRadians(xAngle)));
+		actualCameraRotation.mul(rotationHeap.setFromAxisAngle(Y_AXIS, (float) Math.toRadians(yAngle)));
+		actualCameraRotation.mul(rotationHeap.setFromAxisAngle(Z_AXIS, (float) Math.toRadians(zAngle)));
+
+		actualInverseCameraRotation.set(actualCameraRotation).invertRotation();
+
 		inverseCameraRotXSpinX.setFromAxisAngle(X_AXIS, (float) Math.toRadians(xAngle)).normalize();
 		inverseCameraRotXSpinX.invertRotation();
 		inverseCameraRotXSpinY.setFromAxisAngle(X_AXIS, (float) Math.toRadians(yAngle)).normalize();
@@ -177,6 +189,10 @@ public class CameraHandler {
 	public Quat getInverseCameraRotation() {
 //		return inverseCameraRotation.invertRotation();
 		return inverseCameraRotation;
+	}
+
+	public Quat getActualInverseCameraRotation() {
+		return actualInverseCameraRotation;
 	}
 
 	public Quat getInverseCameraRot_XY_mulZX() {

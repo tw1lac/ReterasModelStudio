@@ -74,14 +74,6 @@ public class VertRendererThing {
 		return this;
 	}
 
-	private static void doGlQuad(Vec3 RT, Vec3 LT, Vec3 RB, Vec3 LB, Vec3 normal) {
-		GL11.glNormal3f(normal.x,normal.y,normal.z);
-		GL11.glVertex3f(RT.x, RT.y, RT.z);
-		GL11.glVertex3f(LT.x, LT.y, LT.z);
-		GL11.glVertex3f(LB.x, LB.y, LB.z);
-		GL11.glVertex3f(RB.x, RB.y, RB.z);
-	}
-
 	private static void doGlTriQuad(Vec3 LT, Vec3 LB, Vec3 RT, Vec3 RB, Vec3 normal) {
 		GL11.glNormal3f(normal.x,normal.y,normal.z);
 

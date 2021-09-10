@@ -3,7 +3,6 @@ package com.hiveworkshop.rms.ui.application.viewer;
 import com.hiveworkshop.rms.editor.model.*;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
 import com.hiveworkshop.rms.editor.render3d.RenderModel;
-import com.hiveworkshop.rms.editor.render3d.RenderNode;
 import com.hiveworkshop.rms.editor.render3d.RenderParticleEmitter2;
 import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.parsers.mdlx.MdlxLayer.FilterMode;
@@ -28,8 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -647,10 +644,10 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		glColor4f(.7f, .0f, .0f, .4f);
 		for (final Geoset geo : modelView.getEditableGeosets()) {
 			if (correctLoD(geo, formatVersion) && modelView.shouldRender(geo)) {
-//				CubePainter.paintVertCubes(modelView, renderModel, geo);
-//				CubePainter.paintVertCubes2(modelView, renderModel, geo, cameraHandler);
-				vertRendererThing.updateSquareSize(cameraHandler.getPixelSize());
-				CubePainter.paintVertSquares2(modelView, renderModel, geo, cameraHandler, vertRendererThing);
+//				vertRendererThing.updateSquareSize(cameraHandler.getPixelSize());
+//				CubePainter.paintVertSquares2(modelView, renderModel, geo, cameraHandler, vertRendererThing);
+
+				VertexRenderer.renderVertices(modelView, geo, cameraHandler);
 			}
 		}
 		for (final IdObject idObject : modelView.getVisibleIdObjects()) {
@@ -780,7 +777,8 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 
 		renderBuffers.ensureCapacity(verticesCount * 2);
 
-		float factor = (float) (6 / cameraHandler.getZoom());
+		/// TODO: this should really not be a constant defined here.
+		float factor = 2.f;
 
 		for (GeosetVertex vertex : vertices) {
 			Vec3 renderPos = vertex.renderVert.getRenderPos();
@@ -805,7 +803,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		glVertexPointer(3, 0, renderBuffers.getPositions());
 		glColorPointer(3, 0, renderBuffers.getColors());
 
-		glDrawArrays(GL_LINES, 0, renderedVertices);
+		glDrawArrays(GL_LINES, 0, renderedVertices * 2);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
