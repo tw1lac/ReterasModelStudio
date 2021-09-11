@@ -61,14 +61,6 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 	private final VertRendererThing vertRendererThing;
 	private final BoneRenderThing2 boneRenderThing;
 
-	// Used for the different rendering functions.
-	// Call ensureBuffersCapacity(vertices) to ensure there is space.
-	// Effectively every vertex can contain up to:
-	//   Vec3 position
-	//   Vec2 uv
-	//   Vec3 normal
-	//   Vec4 color
-	// "up to" because for example the normals rendering only uses the position and the RGB part of the color.
 	VertexBuffers renderBuffers = new VertexBuffers();
 
 	ExtLog currentExt = new ExtLog(new Vec3(0, 0, 0), new Vec3(0, 0, 0), 0);
@@ -364,11 +356,10 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 					if (programPreferences.getRenderParticles()) {
 						renderParticles();
 					}
-
-
-//				drawUglyTestLine();
-
 				}
+
+				cameraMarkerPainter();
+
 				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
 				if (autoRepainting) {
 					paintAndUpdate();
@@ -473,7 +464,8 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		float lineSpread = (numberOfLines + 1) * lineSpacing / 2;
 		int renderedLines = 0;
 
-		renderBuffers.ensureCapacity(numberOfLines * 2 * 4);
+		// Lines * 2 axes * 2 vertices.
+		renderBuffers.ensureCapacity(numberOfLines * 4);
 
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -508,8 +500,6 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
-
-		cameraMarkerPainter();
 	}
 
 	private void setStandardColors(GeosetAnim geosetAnim, float geosetAnimVisibility, TimeEnvironmentImpl timeEnvironment, Layer layer) {
@@ -644,15 +634,13 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		glColor4f(.7f, .0f, .0f, .4f);
 		for (final Geoset geo : modelView.getEditableGeosets()) {
 			if (correctLoD(geo, formatVersion) && modelView.shouldRender(geo)) {
-//				vertRendererThing.updateSquareSize(cameraHandler.getPixelSize());
-//				CubePainter.paintVertSquares2(modelView, renderModel, geo, cameraHandler, vertRendererThing);
-
-				VertexRenderer.renderVertices(modelView, geo, cameraHandler);
+				VertexRenderer.renderVertices(renderBuffers, modelView, geo, cameraHandler);
 			}
 		}
 		for (final IdObject idObject : modelView.getVisibleIdObjects()) {
 			CubePainter.paintBones4(modelView, renderModel, idObject, cameraHandler, boneRenderThing);
 		}
+		//SkeletonRenderer.renderSkeleton(renderBuffers, modelView, renderModel, cameraHandler);
 
 		GL11.glEnable(GL_SHADE_MODEL);
 	}
@@ -669,6 +657,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		int trianglesCount = triangles.size();
 		int renderedVertices = 0;
 
+		// Triangles * 3 vertices.
 		renderBuffers.ensureCapacity(trianglesCount * 3);
 
 		for (Triangle tri : geo.getTriangles()) {
@@ -687,7 +676,6 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 					}
 
 					Vec2 texcoord = uvs.get(coordId);
-
 
 					renderBuffers.setPosition(renderedVertices, renderPos);
 					renderBuffers.setTexcoord(renderedVertices, texcoord);
@@ -775,6 +763,7 @@ public class PerspectiveViewport extends BetterAWTGLCanvas {
 		int verticesCount = vertices.size();
 		int renderedVertices = 0;
 
+		// Vertices * 2.
 		renderBuffers.ensureCapacity(verticesCount * 2);
 
 		/// TODO: this should really not be a constant defined here.

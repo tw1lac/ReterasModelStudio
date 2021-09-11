@@ -8,6 +8,20 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+/**
+ * Used for the different rendering functions.
+ *
+ * Call ensureCapacity(vertices) to ensure there is space.
+ *
+ * Every vertex can contain up to:
+ *
+ *     Vec3 position
+ * 	   Vec2 uv
+ * 	   Vec3 normal
+ * 	   Vec4 color
+ *
+ * "up to" because for example the normals rendering only uses the position and the RGB part of the color.
+ */
 public class VertexBuffers {
 	private int capacity = 0;
 	private FloatBuffer positions;

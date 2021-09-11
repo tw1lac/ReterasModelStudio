@@ -30,7 +30,7 @@ public class CubePainter {
 
 //		glBegin(GL11.GL_TRIANGLES);
 //		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		GL11.glDepthMask(false);
+		glDisable(GL_DEPTH_TEST);
 		glBegin(GL11.GL_LINES);
 
 		float frnt = 1;
@@ -59,11 +59,6 @@ public class CubePainter {
 
 			EditorColorPrefs colorPrefs = ProgramGlobals.getEditorColorPrefs();
 
-////			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//			glPolygonMode(GL_FRONT_FACE, GL_FILL);
-////			glPolygonMode(GL_CULL_FACE, GL_FILL);
-//			glBegin(GL_QUADS);
-
 			float[] components;
 			if (modelView.getHighlightedNode() == idObject) {
 				components = colorPrefs.getColorComponents(ColorThing.NODE_HIGHLIGHTED);
@@ -74,15 +69,6 @@ public class CubePainter {
 			} else {
 				components = colorPrefs.getColorComponents(ColorThing.NODE_UNEDITABLE);
 			}
-//			glColor4f(components[0], components[1], components[2], components[3]);
-
-//			if (modelView.isSelected(idObject)) {
-//				glColor4f(1f, .0f, .0f, .7f);
-//			} else if (modelView.isEditable(idObject)){
-//				glColor4f(.5f, .3f, .7f, .7f);
-//			} else {
-//				glColor4f(.4f, .3f, .7f, .4f);
-//			}
 
 			boneRenderThing.doGlGeom(components);
 
@@ -95,38 +81,5 @@ public class CubePainter {
 		GL11.glVertex3f(LT.x, LT.y, LT.z);
 		GL11.glVertex3f(LB.x, LB.y, LB.z);
 		GL11.glVertex3f(RB.x, RB.y, RB.z);
-	}
-
-	public static void paintVertSquares2(ModelView modelView, RenderModel renderModel, Geoset geo, CameraHandler cameraHandler, VertRendererThing vertRendererThing) {
-//		float v = (float) ((cameraHandler.geomX(4) - cameraHandler.geomX(0)));//*cameraHandler.getZoom());
-//		glBegin(GL11.GL_TRIANGLES);
-
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glPolygonMode(GL_FRONT, GL_FILL);
-//		glPolygonMode(GL_COLOR, GL_FILL);
-//		glBegin(GL_QUADS);
-		glBegin(GL11.GL_TRIANGLES);
-		RenderGeoset renderGeoset = renderModel.getRenderGeoset(geo);
-		EditorColorPrefs colorPrefs = ProgramGlobals.getEditorColorPrefs();
-
-		if (renderGeoset != null) {
-			for (GeosetVertex vertex : geo.getVertices()) {
-				float[] components;
-				if (modelView.isSelected(vertex)) {
-					components = colorPrefs.getColorComponents(ColorThing.VERTEX_SELECTED);
-//					glColor4f(1f, .0f, .0f, .7f);
-//					glColor4f(components[0], components[1], components[2], components[3]);
-				} else if (modelView.isEditable(vertex)) {
-					components = colorPrefs.getColorComponents(ColorThing.VERTEX);
-//					glColor4f(.5f, .3f, .7f, .7f);
-				} else {
-					components = colorPrefs.getColorComponents(ColorThing.VERTEX_UNEDITABLE);
-//					glColor4f(.4f, .3f, .7f, .4f);
-				}
-				glColor4f(components[0], components[1], components[2], components[3]);
-				vertRendererThing.transform(cameraHandler.getInverseCameraRotation(), vertex.renderVert.getRenderPos()).doGlGeom();
-			}
-		}
-		glEnd();
 	}
 }
