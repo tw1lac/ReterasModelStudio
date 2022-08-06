@@ -217,7 +217,7 @@ public class TwilacStuff {
 
 		private static void doStuff(ModelHandler modelHandler) {
 			if(modelHandler != null && modelHandler.getPreviewRenderModel() != null){
-				MeshShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler.getPreviewRenderModel().getBufferFiller());
+				MeshShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler);
 			}
 		}
 	}
@@ -230,7 +230,7 @@ public class TwilacStuff {
 
 		private static void doStuff(ModelHandler modelHandler) {
 			if(modelHandler != null && modelHandler.getRenderModel() != null){
-				BoneShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler.getRenderModel().getBufferFiller());
+				BoneShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler);
 			}
 		}
 	}
@@ -243,7 +243,7 @@ public class TwilacStuff {
 
 		private static void doStuff(ModelHandler modelHandler) {
 			if(modelHandler != null && modelHandler.getRenderModel() != null){
-				GridShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler.getRenderModel().getBufferFiller());
+				GridShaderEditPanel.show(ProgramGlobals.getMainPanel(), modelHandler);
 			}
 		}
 	}
@@ -435,9 +435,7 @@ public class TwilacStuff {
 	private static class LinearizeSelected extends TwiFunction{
 
 		public LinearizeSelected() {
-			super("Linearize Animations For Selected Nodes", LinearizeSelected::linearizeAnimations);
-		}
-		private static void doStuff(ModelHandler modelHandler) {
+			super("Change Transform Interpolation For Selected Nodes", LinearizeSelected::linearizeAnimations);
 		}
 		public static void linearizeAnimations(ModelHandler modelHandler) {
 			JPanel panel = new JPanel(new MigLayout());
@@ -462,7 +460,7 @@ public class TwilacStuff {
 
 			final int x = JOptionPane.showConfirmDialog(ProgramGlobals.getMainPanel(),
 					panel,
-					"Linearize Animations For Selected", JOptionPane.OK_CANCEL_OPTION);
+					"Change Transform Interpolation For Selected Nodes", JOptionPane.OK_CANCEL_OPTION);
 			if (x == JOptionPane.OK_OPTION) {
 				InterpolationType interpolationType =
 						switch (buttonGroup.getSelectedIndex()){
@@ -488,7 +486,7 @@ public class TwilacStuff {
 					}
 				}
 
-				UndoAction action = new CompoundAction("Liniarize Animations", interpTypActions, ModelStructureChangeListener.changeListener::materialsListChanged);
+				UndoAction action = new CompoundAction("Set Interpolation To " + interpolationType, interpTypActions, ModelStructureChangeListener.changeListener::materialsListChanged);
 				modelHandler.getUndoManager().pushAction(action.redo());
 			}
 		}

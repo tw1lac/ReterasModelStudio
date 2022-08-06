@@ -210,9 +210,9 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 
 		String cameraSideKBTextKey = "Camera Side";
 		hotkeysPanel.add(new JLabel(cameraSideKBTextKey));
-		JButton cameraSideKBButton = new JButton(KeyEvent.getKeyText(pref.getCameraSideKB()));
+		JButton cameraSideKBButton = new JButton(KeyEvent.getKeyText(pref.getCameraRightKB()));
 //		cameraSideKBButton.addActionListener(e -> pref.setCameraSideKB(editMouseButtonBinding(cameraSideKBTextKey, cameraSideKBButton, pref.getCameraSideKB(), false)));
-		cameraSideKBButton.addActionListener(e -> editKeyBinding(cameraSideKBTextKey, cameraSideKBButton, pref::getCameraSideKB, pref::setCameraSideKB));
+		cameraSideKBButton.addActionListener(e -> editKeyBinding(cameraSideKBTextKey, cameraSideKBButton, pref::getCameraRightKB, pref::setCameraRightKB));
 		hotkeysPanel.add(cameraSideKBButton, "wrap");
 
 		String cameraTopKBTextKey = "Camera Top";
@@ -242,6 +242,13 @@ public final class ProgramPreferencesPanel extends JTabbedPane {
 //		cameraLocZoomResetButton.addActionListener(e -> pref.setCameraLocZoomReset(editMouseButtonBinding(cameraLocZoomResetTextKey, cameraLocZoomResetButton, pref.getCameraLocZoomReset(), false)));
 		cameraToggleOrthoButton.addActionListener(e -> editKeyBinding(cameraToggleOrtho, cameraToggleOrthoButton, pref::getCameraToggleOrtho, pref::setCameraToggleOrtho));
 		hotkeysPanel.add(cameraToggleOrthoButton, "wrap");
+
+		String cameraTargetKB = "Camera Look At Selection";
+		hotkeysPanel.add(new JLabel(cameraTargetKB));
+		JButton cameraTargetKBButton = new JButton(KeyEvent.getKeyText(pref.getCameraTargetKB()));
+//		cameraLocZoomResetButton.addActionListener(e -> pref.setCameraLocZoomReset(editMouseButtonBinding(cameraLocZoomResetTextKey, cameraLocZoomResetButton, pref.getCameraLocZoomReset(), false)));
+		cameraTargetKBButton.addActionListener(e -> editKeyBinding(cameraTargetKB, cameraTargetKBButton, pref::getCameraTargetKB, pref::setCameraTargetKB));
+		hotkeysPanel.add(cameraTargetKBButton, "wrap");
 
 		String modifyTextKey = "Manipulate";
 		hotkeysPanel.add(new JLabel(modifyTextKey));

@@ -33,7 +33,7 @@ public class KeylistenerThing extends KeyAdapter {
 			//Front (0,0) / Back (180,0)
 			cameraHandler.setCameraRotation(90 - controlAdj * 90, 0);
 		}
-		if (e.getKeyCode() == prefs.getCameraSideKB()) {
+		if (e.getKeyCode() == prefs.getCameraRightKB()) {
 			//Left (90,0) / Right (-90,0)
 			cameraHandler.setCameraRotation(controlAdj * 90, 0);
 		}

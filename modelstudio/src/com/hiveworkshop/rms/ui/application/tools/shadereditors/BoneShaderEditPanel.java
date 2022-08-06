@@ -2,22 +2,41 @@ package com.hiveworkshop.rms.ui.application.tools.shadereditors;
 
 import com.hiveworkshop.rms.ui.application.viewer.ObjectRenderers.ShaderManager;
 import com.hiveworkshop.rms.ui.application.viewer.twiTestRenderMaster.BufferFiller;
+import com.hiveworkshop.rms.ui.gui.modeledit.ModelHandler;
 import com.hiveworkshop.rms.util.FramePopup;
 import com.hiveworkshop.rms.util.ScreenInfo;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BoneShaderEditPanel extends ShaderEditPanel {
 	public BoneShaderEditPanel(ShaderManager shaderManager) {
 		super(shaderManager, "Bone.vert", "Bone.glsl", "Bone.frag");
 	}
+	public BoneShaderEditPanel(List<ShaderManager> shaderManagers) {
+		super(shaderManagers, "Bone.vert", "Bone.glsl", "Bone.frag");
+	}
+	public BoneShaderEditPanel(ModelHandler modelHandler) {
+		super(modelHandler.getRenderModel().getBufferFiller().getShaderManager(), "Bone.vert", "Bone.glsl", "Bone.frag");
+	}
 
 	protected void createCustomShader(){
-		shaderManager.createCustomBoneShader(shaderTrackers[0].getCurrShader(), shaderTrackers[2].getCurrShader(), shaderTrackers[1].getCurrShader());
+		for(ShaderManager shaderManager : shaderManagers){
+			shaderManager.createCustomBoneShader(shaderTrackers[0].getCurrShader(), shaderTrackers[2].getCurrShader(), shaderTrackers[1].getCurrShader());
+		}
 	}
 	protected void removeCustomShader(){
-		shaderManager.removeCustomBoneShader();
+		for(ShaderManager shaderManager : shaderManagers){
+			shaderManager.removeCustomBoneShader();
+		}
 	}
+//	protected void createCustomShader(){
+//		shaderManager.createCustomBoneShader(shaderTrackers[0].getCurrShader(), shaderTrackers[2].getCurrShader(), shaderTrackers[1].getCurrShader());
+//	}
+//	protected void removeCustomShader(){
+//		shaderManager.removeCustomBoneShader();
+//	}
 
 	public static void show(JComponent parent, BufferFiller bufferFiller) {
 		BoneShaderEditPanel shaderEditPanel = new BoneShaderEditPanel(bufferFiller.getShaderManager());
@@ -25,6 +44,18 @@ public class BoneShaderEditPanel extends ShaderEditPanel {
 		shaderEditPanel.setPreferredSize(ScreenInfo.getSmallWindow());
 		FramePopup.show(shaderEditPanel, parent, "Node Shader Editor");
 
+	}
+	public static void show(JComponent parent, ModelHandler modelHandler) {
+		BufferFiller bufferFiller = modelHandler.getRenderModel().getBufferFiller();
+
+		List<ShaderManager> managers = new ArrayList<>();
+		managers.add(bufferFiller.getShaderManager());
+		managers.add(modelHandler.getRenderModel().getBufferFiller().getShaderManager());
+
+		BoneShaderEditPanel shaderEditPanel = new BoneShaderEditPanel(managers);
+//		shaderEditPanel.setSize(1600, 900);
+		shaderEditPanel.setPreferredSize(ScreenInfo.getSmallWindow());
+		FramePopup.show(shaderEditPanel, parent, "Node Shader Editor");
 	}
 
 }

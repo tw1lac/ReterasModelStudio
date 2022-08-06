@@ -6,6 +6,11 @@ layout (location = 2) in vec2 a_uv;
 layout (location = 3) in vec4 a_color;
 layout (location = 4) in float a_scale;
 
+
+uniform vec4 u_particleColors[3];
+uniform vec3 u_particleTextures[2];
+uniform float u_scale[3];
+
 out VS_OUT {
     vec4 pos;
     float scale;

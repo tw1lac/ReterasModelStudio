@@ -63,7 +63,7 @@ public class MdlxMaterial implements MdlxBlock, MdlxChunk {
 		sizeTracker += laysersSize;
 //		System.out.println("sizeTracker: " + sizeTracker);
 		int matReadBytes = matEndPos - matStartPos;
-		System.out.println("read material bytes: " + matReadBytes);
+//		System.out.println("read material bytes: " + matReadBytes);
 		for (int i = sizeTracker; i < size; i+=4) {
 			System.out.println(i/4 + " (" + i + "): " + reader.readInt32());
 		}

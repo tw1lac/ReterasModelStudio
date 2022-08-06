@@ -1,10 +1,8 @@
 package com.hiveworkshop.rms.editor.actions.animation;
 
 import com.hiveworkshop.rms.editor.actions.UndoAction;
-import com.hiveworkshop.rms.editor.model.Animation;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.EventObject;
-import com.hiveworkshop.rms.editor.model.GlobalSeq;
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlag;
 import com.hiveworkshop.rms.editor.model.animflag.AnimFlagUtils;
 import com.hiveworkshop.rms.editor.model.util.ModelUtils;
@@ -25,11 +23,9 @@ public final class ScaleSequencesLengthsAction implements UndoAction {
 		this.sequenceToNewLength = sequenceToNewLength;
 		this.changeListener = changeListener;
 
-		for (Animation animation : mdl.getAnims()) {
-			sequenceToOldLength.put(animation, animation.getLength());
-		}
-		for (GlobalSeq globalSeq : mdl.getGlobalSeqs()) {
-			sequenceToOldLength.put(globalSeq, globalSeq.getLength());
+		// ToDo save old keyframes!!!
+		for (Sequence sequence : sequenceToNewLength.keySet()) {
+			sequenceToOldLength.put(sequence, sequence.getLength());
 		}
 	}
 
@@ -53,7 +49,7 @@ public final class ScaleSequencesLengthsAction implements UndoAction {
 
 	private void setSequenceLengths(Map<Sequence, Integer> animLengthMap) {
 		for (final AnimFlag<?> af : ModelUtils.getAllAnimFlags(mdl)) {
-			for (Sequence sequence : af.getAnimMap().keySet()) {
+			for (Sequence sequence : animLengthMap.keySet()) {
 				Integer newLength = animLengthMap.get(sequence);
 				if (newLength != null && newLength != sequence.getLength()) {
 					AnimFlagUtils.timeScale2(af, sequence, newLength, 0);
@@ -62,7 +58,7 @@ public final class ScaleSequencesLengthsAction implements UndoAction {
 		}
 
 		for (final EventObject e : mdl.getEvents()) {
-			for (Sequence sequence : e.getEventTrackAnimMap().keySet()) {
+			for (Sequence sequence : animLengthMap.keySet()) {
 				Integer newLength = animLengthMap.get(sequence);
 				if (newLength != null && newLength != sequence.getLength()) {
 					e.timeScale(sequence, newLength, 0);

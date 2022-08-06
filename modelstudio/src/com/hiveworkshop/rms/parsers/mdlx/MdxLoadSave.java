@@ -40,6 +40,8 @@ public class MdxLoadSave {
 	private static final int FAFX = ('F' << 24) | ('A' << 16) | ('F' << 8) | ('X');// War3ID.fromString("FAFX").getValue();
 	private static final int BPOS = ('B' << 24) | ('P' << 16) | ('O' << 8) | ('S');// War3ID.fromString("BPOS").getValue();
 
+
+	//https://www.hiveworkshop.com/threads/mdx-secrets-discussion.238635/#post2389715
 	public static void loadMdxORG(MdlxModel mdlxModel, final ByteBuffer buffer) {
 		final BinaryReader reader = new BinaryReader(buffer);
 
@@ -127,7 +129,7 @@ public class MdxLoadSave {
 					mode = 1;
 					size = reader.readInt32();
 					mode = 2;
-					System.out.println("tag: " + new War3ID(tag));
+//					System.out.println("(loadMDX)tag: " + new War3ID(tag));
 
 					lodByTag(mdlxModel, reader, tag, size);
 				} catch (Exception e) {
@@ -142,9 +144,9 @@ public class MdxLoadSave {
 //			throw new RuntimeException(e);
 		}
 
-		for(int i = 0; i<mdlxModel.textures.size(); i++){
-			System.out.println("#" + i + ": " + mdlxModel.textures.get(i).path + ", " + mdlxModel.textures.get(i).replaceableId);
-		}
+//		for(int i = 0; i<mdlxModel.textures.size(); i++){
+//			System.out.println("#" + i + ": " + mdlxModel.textures.get(i).path + ", " + mdlxModel.textures.get(i).replaceableId);
+//		}
 	}
 
 	private static void tryToRecover(MdlxModel mdlxModel, BinaryReader reader, int tag, int size, int mode) {

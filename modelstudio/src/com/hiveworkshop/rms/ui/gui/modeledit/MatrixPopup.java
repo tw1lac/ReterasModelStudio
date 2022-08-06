@@ -3,7 +3,6 @@ package com.hiveworkshop.rms.ui.gui.modeledit;
 import com.hiveworkshop.rms.editor.model.Bone;
 import com.hiveworkshop.rms.editor.model.EditableModel;
 import com.hiveworkshop.rms.editor.model.GeosetVertex;
-import com.hiveworkshop.rms.editor.wrapper.v2.ModelView;
 import com.hiveworkshop.rms.ui.gui.modeledit.importpanel.IdObjectShell;
 import com.hiveworkshop.rms.ui.gui.modeledit.importpanel.ImportPanel;
 import com.hiveworkshop.rms.ui.gui.modeledit.renderers.MatrixEditListRenderer;
@@ -12,10 +11,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,8 +43,10 @@ public class MatrixPopup extends JPanel {
 	MatrixEditListRenderer renderer;
 
 	public MatrixPopup(ModelHandler modelHandler) {
+		this(modelHandler.getModel(), modelHandler.getModelView().getSelectedVertices());
+	}
+	public MatrixPopup(EditableModel model, Collection<GeosetVertex> vertices) {
 		setLayout(new MigLayout("gap 0", "[grow][][grow]", "[align center][grow][align center]"));
-		this.model = modelHandler.getModel();
 
 		renderer = new MatrixEditListRenderer(model, null).setShowClass(false);
 
@@ -64,7 +63,7 @@ public class MatrixPopup extends JPanel {
 
 		// Built before oldBoneRefs, so that the MatrixShells can default to using New Refs with the same name as their first bone
 		buildBonesList();
-		getBoneLists(modelHandler.getModelView());
+		getBoneLists(vertices);
 
 		bonesList = new JList<>(bones);
 		bonesList.setCellRenderer(renderer);
@@ -115,11 +114,10 @@ public class MatrixPopup extends JPanel {
 		repaint();
 	}
 
-	private void getBoneLists(ModelView modelView) {
-		Set<GeosetVertex> selectedVertices = modelView.getSelectedVertices();
-		if (!selectedVertices.isEmpty()) {
-			bonesInAll.addAll(selectedVertices.stream().findFirst().get().getBones());
-			for (GeosetVertex vertex : selectedVertices) {
+	private void getBoneLists(Collection<GeosetVertex> vertices) {
+		if (!vertices.isEmpty()) {
+			bonesInAll.addAll(vertices.stream().findFirst().get().getBones());
+			for (GeosetVertex vertex : vertices) {
 				allBones.addAll(vertex.getBones());
 				bonesInAll.removeIf(b -> !vertex.getBones().contains(b));
 			}

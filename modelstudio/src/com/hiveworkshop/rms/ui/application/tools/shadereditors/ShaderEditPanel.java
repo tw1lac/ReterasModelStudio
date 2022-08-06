@@ -16,6 +16,8 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class ShaderEditPanel extends JPanel {
@@ -26,13 +28,39 @@ public abstract class ShaderEditPanel extends JPanel {
 	ShaderTracker[] shaderTrackers;
 
 
-	ShaderManager shaderManager;
+//	ShaderManager shaderManager;
+	List<ShaderManager> shaderManagers;
 	JLabel loadedLabel = new JLabel();
 	JTextPane logPane;
 
 	public ShaderEditPanel(ShaderManager shaderManager, String... shaderFiles) {
+		this(Collections.singletonList(shaderManager), shaderFiles);
+	}
+//	public ShaderEditPanel(ShaderManager shaderManager, String... shaderFiles) {
+//		super(new MigLayout("gap 0, ins 0, fill, wrap 1", "[grow]", "[50%][50%][]"));
+//		this.shaderManager = shaderManager;
+//		shaderTrackers = loadShaderStrings(shaderFiles);
+//
+//		StyleContext sc = StyleContext.getDefaultStyleContext();
+//		redText = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.RED.brighter().brighter());
+//		whiteText = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.WHITE.darker());
+//
+//
+//		TabWindow tabs = new TabWindow(getAsViews(shaderTrackers));
+//		tabs.setSelectedTab(1);
+//		add(tabs, "growx, growy, spany 2");
+//
+//		JButton applyButton = new JButton("Use Shader");
+//		applyButton.addActionListener(e -> apply());
+//		add(applyButton, "split 3");
+//		JButton useInternal = new JButton("Use Internal Shader");
+//		useInternal.addActionListener(e -> useInternalShader());
+//		add(useInternal, "");
+//		add(loadedLabel, "");
+//	}
+	public ShaderEditPanel(List<ShaderManager> shaderManagers, String... shaderFiles) {
 		super(new MigLayout("gap 0, ins 0, fill, wrap 1", "[grow]", "[50%][50%][]"));
-		this.shaderManager = shaderManager;
+		this.shaderManagers = shaderManagers;
 		shaderTrackers = loadShaderStrings(shaderFiles);
 
 		StyleContext sc = StyleContext.getDefaultStyleContext();
@@ -88,8 +116,40 @@ public abstract class ShaderEditPanel extends JPanel {
 		}
 	}
 
+//	private void checkShader() {
+//		Exception shaderException = shaderManager.getCustomShaderException();
+////		System.out.println("time: " + LocalTime.now().format(DateTimeFormatter.ISO_TIME));
+//		LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+//		String text;
+//		AttributeSet aset;
+//		if(shaderException != null){
+//			aset = redText;
+//			loadedLabel.setForeground(Color.RED.darker());
+//			text = "Failed to load " + makePrettyMessage(shaderException);
+//
+//			shaderManager.clearLastException();
+//			for(ShaderTracker shaderTracker : shaderTrackers){
+//				shaderTracker.setCurrShader(null);
+//			}
+//		} else {
+//			aset = whiteText;
+//			loadedLabel.setForeground(null);
+//			text = "Shader Loaded";
+//		}
+//		try {
+//			String timeString = time.toString();
+//			if(!timeString.matches("\\d\\d:\\d\\d:\\d\\d")){
+//				timeString = timeString + ":00";
+//			}
+//			loadedLabel.setText(text);
+////			logPane.getDocument().insertString(logPane.getDocument().getLength(), "\n" + time + " " + text, aset);
+//			logPane.getDocument().insertString(logPane.getDocument().getLength(), "\n" + timeString + " " + text, aset);
+//		} catch (BadLocationException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 	private void checkShader() {
-		Exception shaderException = shaderManager.getCustomShaderException();
+		Exception shaderException = shaderManagers.get(0).getCustomShaderException();
 //		System.out.println("time: " + LocalTime.now().format(DateTimeFormatter.ISO_TIME));
 		LocalTime time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
 		String text;
@@ -99,7 +159,9 @@ public abstract class ShaderEditPanel extends JPanel {
 			loadedLabel.setForeground(Color.RED.darker());
 			text = "Failed to load " + makePrettyMessage(shaderException);
 
-			shaderManager.clearLastException();
+			for (ShaderManager sm : shaderManagers){
+				sm.clearLastException();
+			}
 			for(ShaderTracker shaderTracker : shaderTrackers){
 				shaderTracker.setCurrShader(null);
 			}

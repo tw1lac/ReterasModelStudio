@@ -32,7 +32,7 @@ public class MdlxLayer extends MdlxAnimatedObject {
 	public void readMdx(final BinaryReader reader, final int version) {
 		final int position = reader.position();
 		final long size = reader.readUInt32();
-		System.out.println("layer size: " + size);
+//		System.out.println("layer size: " + size);
 //		if(version == 1100){
 //			System.out.println("v" + 1100 + ", number: " + reader.readInt32());
 //			filterMode = FilterMode.fromId(1);

@@ -81,9 +81,13 @@ public class ProgramPreferences implements Serializable {
 	private Integer removeSelectModifier = MouseEvent.CTRL_DOWN_MASK;
 
 	private Integer cameraFrontKB = KeyEvent.VK_NUMPAD1;
-	private Integer cameraSideKB = KeyEvent.VK_NUMPAD3;
+	private Integer cameraRightKB = KeyEvent.VK_NUMPAD3;
 	private Integer cameraTopKB = KeyEvent.VK_NUMPAD7;
+	private Integer cameraBackKB = KeyEvent.VK_NUMPAD1 | KeyEvent.CTRL_DOWN_MASK;
+	private Integer cameraLeftKB = KeyEvent.VK_NUMPAD3;
+	private Integer cameraBottomKB = KeyEvent.VK_NUMPAD7;
 	private Integer cameraLocZoomReset = KeyEvent.VK_NUMPAD0;
+	private Integer cameraTargetKB = KeyEvent.VK_DECIMAL;
 	private Integer cameraOppositeKB = KeyEvent.CTRL_DOWN_MASK;
 	private Integer cameraRotateSidePosKB = KeyEvent.VK_NUMPAD4;
 	private Integer cameraRotateSideNegKB = KeyEvent.VK_NUMPAD6;
@@ -590,12 +594,12 @@ public class ProgramPreferences implements Serializable {
 		return this;
 	}
 
-	public Integer getCameraSideKB() {
-		return cameraSideKB;
+	public Integer getCameraRightKB() {
+		return cameraRightKB;
 	}
 
-	public ProgramPreferences setCameraSideKB(Integer cameraSideKB) {
-		this.cameraSideKB = cameraSideKB;
+	public ProgramPreferences setCameraRightKB(Integer cameraRightKB) {
+		this.cameraRightKB = cameraRightKB;
 		saveAndFireListeners();
 		return this;
 	}
@@ -626,6 +630,16 @@ public class ProgramPreferences implements Serializable {
 
 	public ProgramPreferences setCameraOppositeKB(Integer cameraOppositeKB) {
 		this.cameraOppositeKB = cameraOppositeKB;
+		saveAndFireListeners();
+		return this;
+	}
+
+	public Integer getCameraTargetKB() {
+		return cameraTargetKB;
+	}
+
+	public ProgramPreferences setCameraTargetKB(Integer cameraTargetKB) {
+		this.cameraTargetKB = cameraTargetKB;
 		saveAndFireListeners();
 		return this;
 	}

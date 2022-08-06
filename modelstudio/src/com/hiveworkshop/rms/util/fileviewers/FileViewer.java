@@ -119,10 +119,14 @@ public abstract class FileViewer {
 	}
 
 	protected JEditorPane getEditorPane() {
-		HTMLEditorKit editorKit = new HTMLEditorKit();
+//		HTMLEditorKit editorKit = new HTMLEditorKit();
+		MyEditorKit editorKit = new MyEditorKit();
 		JEditorPane jEditorPane = new JEditorPane();
+		jEditorPane.getDocument().putProperty("i18n", Boolean.TRUE);
 		jEditorPane.setEditable(false);
+		jEditorPane.setSize(200, 200);
 		jEditorPane.setEditorKit(editorKit);
+		jEditorPane.setText("Loading....");
 		return jEditorPane;
 	}
 
@@ -164,15 +168,15 @@ public abstract class FileViewer {
 		JFrame frame = new JFrame(title);
 		frame.setSize(650, 500);
 
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
 		JEditorPane jEditorPane = getEditorPane();
 		JScrollPane scrollPane = new JScrollPane(jEditorPane);
-		jEditorPane.setText("Loading....");
-
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		scrollPane.setPreferredSize(new Dimension(650, 500));
 		frame.setContentPane(scrollPane);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 		frame.revalidate();
 		frame.repaint();
 

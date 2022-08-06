@@ -42,15 +42,13 @@ public class KeyframeHandler {
 	private UndoManager undoManager;
 	private final ModelStructureChangeListener changeListener;
 
-	private TimeSliderTimeListener notifier;
-
 	boolean useAllKFs = false;
 	boolean visKFs = true;
 
 	private boolean useAllCopiedKeyframes = false;
 
-	public KeyframeHandler(TimeSliderTimeListener notifier, JPanel timelinePanel){
-		this.notifier = notifier;
+	public KeyframeHandler(JPanel timelinePanel){
+//		this.notifier = notifier;
 		this.timelinePanel = timelinePanel;
 
 		changeListener = ModelStructureChangeListener.changeListener;
@@ -350,12 +348,30 @@ public class KeyframeHandler {
 	}
 
 	public KeyFrame initDragging(Point lastMousePoint) {
+		tempKeyframe = null;
 		for (KeyFrame frame : timeToKey.values()) {
 			if (frame.containsPoint(lastMousePoint)) {
-				return frame;
+				return frame.initDrag(timeEnvironment.getCurrentSequence(), this::revalidateKeyframeDisplay);
 			}
 		}
 		return null;
+	}
+
+	KeyFrame tempKeyframe;
+	public KeyFrame dragFrame(KeyFrame draggingFrame, int newTime){
+		int oldTime = draggingFrame.getTime();
+		if(oldTime != newTime){
+			KeyFrame tempFrame = removeFrame(newTime);
+			removeFrame(oldTime);
+			draggingFrame.dragTime(newTime);
+			putFrame(newTime, draggingFrame);
+			if(tempKeyframe != null){
+				System.out.println("setting keyframe at " + tempKeyframe.getTime());
+				putFrame(tempKeyframe.getTime(), tempKeyframe);
+			}
+			tempKeyframe = tempFrame;
+		}
+		return draggingFrame;
 	}
 
 	public void slideExistingKeyFramesForResize() {
@@ -386,7 +402,7 @@ public class KeyframeHandler {
 			newEntry.setTime(mouseClickAnimationTime);
 			return new SetKeyframeAction_T<>(sourceTimeline, newEntry, timeEnvironment.getCurrentSequence(), () -> {
 				// TODO this is a hack to refresh screen while dragging
-				notifier.timeChanged(timeEnvironment.getEnvTrackTime());
+//				notifier.timeChanged(timeEnvironment.getEnvTrackTime());
 			});
 		} else {
 			newEntry.setTime(mouseClickAnimationTime);
